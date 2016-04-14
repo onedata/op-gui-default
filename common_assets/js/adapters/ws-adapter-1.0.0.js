@@ -1,3 +1,5 @@
+// jshint esversion: 6
+
 /**
  * Custom adapter that handles model synchronization between client and server
  * using a websocket connection.
@@ -192,16 +194,11 @@ export default DS.RESTAdapter.extend({
   /** Called when ember store wants to update a record */
   updateRecord(store, type, record) {
     this.logToConsole(OP_UPDATE_RECORD, [store, type, record]);
+    let data = {};
+    let serializer = store.serializerFor(type.modelName);
+    serializer.serializeIntoHash(data, type, record, {includeId: true});
     let id = Ember.get(record, 'id');
-    let changedAttributes = record.changedAttributes();
-    let keys = Object.keys(changedAttributes);
-    let changesData = {};
-    keys.forEach((key) => {
-      // changedAttributes hold a map with key of record field names and
-      // values of two-element array [oldValue, newValue]
-      changesData[key] = changedAttributes[key][1];
-    });
-    return this.asyncRequest(OP_UPDATE_RECORD, type.modelName, id, changesData);
+    return this.asyncRequest(OP_UPDATE_RECORD, type.modelName, id, data);
   },
 
   /** Called when ember store wants to delete a record */
@@ -230,7 +227,7 @@ export default DS.RESTAdapter.extend({
    * @param {object} data - json data
    */
   RPC(type, operation, data) {
-    this.logToConsole('RPC', [type, operation, JSON.stringify(data)]);
+    this.logToConsole('RPC', [type, operation, data]);
     let payload = {
       msgType: TYPE_RPC_REQ,
       resourceType: type,
@@ -249,7 +246,7 @@ export default DS.RESTAdapter.extend({
    * promise, which will be resolved in receive function.
    */
   asyncRequest(operation, type, ids, data) {
-    this.logToConsole('asyncRequest', [operation, type, ids, JSON.stringify(data)]);
+    this.logToConsole('asyncRequest', [operation, type, ids, data]);
     if (!ids) {
       ids = null;
     }
@@ -299,11 +296,11 @@ export default DS.RESTAdapter.extend({
   generateUuid() {
     let date = new Date().getTime();
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
-        function (character) {
-          let random = (date + Math.random() * 16) % 16 | 0;
-          date = Math.floor(date / 16);
-          return (character === 'x' ? random : (random & 0x7 | 0x8)).toString(16);
-        });
+      function (character) {
+        let random = (date + Math.random() * 16) % 16 | 0;
+        date = Math.floor(date / 16);
+        return (character === 'x' ? random : (random & 0x7 | 0x8)).toString(16);
+      });
   },
 
   /**
@@ -312,14 +309,11 @@ export default DS.RESTAdapter.extend({
    */
   transformRequest(json, type, operation) {
     switch (operation) {
-      case OP_CREATE_RECORD:
+      case OP_UPDATE_RECORD:
         return json[type];
 
-      case OP_FIND_QUERY:
-        // In case of find_query, json is in form
-        // {filter: {key: value}}
-        // Just send the filter
-        return json.filter;
+      case OP_CREATE_RECORD:
+        return json[type];
 
       default:
         return json;
@@ -396,13 +390,14 @@ export default DS.RESTAdapter.extend({
       // Received a response to data fetch
       promise = adapter.promises.get(json.uuid);
       if (json.result === RESULT_OK) {
+        // TODO VFS-1508: sometimes, the callback is undefined - debug
         let transformed_data = adapter.transformResponse(json.data,
-            promise.type, promise.operation);
+          promise.type, promise.operation);
         console.log('FETCH_RESP success: ' + JSON.stringify(transformed_data));
 
         promise.success(transformed_data);
       } else if (json.result === RESULT_ERROR) {
-        console.log('FETCH_RESP error: ' + JSON.stringify(json.data));
+        console.log('FETCH_RESP error: ' + json.data);
         promise.error(json.data);
       } else {
         console.log('Unknown operation result: ' + json.result);
@@ -420,23 +415,37 @@ export default DS.RESTAdapter.extend({
         console.log('Unknown operation result: ' + json.result);
       }
     }
-    else if (json.msgType === TYPE_MODEL_CRT_PUSH ||
-        json.msgType === TYPE_MODEL_UPT_PUSH) {
+    else if (json.msgType === TYPE_MODEL_CRT_PUSH) {
       // Received a push message that something was created
-      console.log(json.msgType + ': ' + JSON.stringify(json));
-      let payload = {};
-      payload[json.resourceType] = json.data;
-      this.get('store').pushPayload(payload);
-    } else if (json.msgType === TYPE_MODEL_DLT_PUSH) {
+      console.log('Create:' + JSON.stringify(json));
+      this.get('store').push({
+        data: {
+          id: json.data.id,
+          type: json.resourceType,
+          attributes: json.data
+        }
+      });
+    } else if (json.msgType === TYPE_MODEL_UPT_PUSH) {
+      // Received a push message that something was updated
+      console.log('Update:' + JSON.stringify(json));
+      this.get('store').push({
+        data: {
+          id: json.data.id,
+          type: json.resourceType,
+          attributes: json.data
+        }
+      });
+    }
+    else if (json.msgType === TYPE_MODEL_DLT_PUSH) {
       let store = this.get('store');
       // Received a push message that something was deleted
       console.log('Delete:' + JSON.stringify(json));
       // data field contains a list of ids to delete
       json.data.forEach(function (id) {
         store.findRecord(json.resourceType, id).then(
-            function (record) {
-              store.unloadRecord(record);
-            });
+          function (record) {
+            store.unloadRecord(record);
+          });
       });
     }
     if (json.uuid) {
@@ -453,5 +462,11 @@ export default DS.RESTAdapter.extend({
     if (onError) {
       onError();
     }
+
+    //this.promises.forEach(function (promise) {
+    //  console.log('promise.error -> ' + promise);
+    //  promise.error();
+    //});
+    //this.promises.clear();
   }
 });

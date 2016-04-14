@@ -1,1 +1,1 @@
-../../../../../deps/gui/common_assets/js/server-service-1.0.0.js
+../../../gui/common_assets/js/services/server-service-1.0.0.js

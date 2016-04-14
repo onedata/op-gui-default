@@ -1,3 +1,5 @@
+// jshint esnext: true
+
 /**
  * Custom adapter that handles model synchronization between client and server
  * using a websocket connection.
@@ -230,7 +232,7 @@ export default DS.RESTAdapter.extend({
    * @param {object} data - json data
    */
   RPC(type, operation, data) {
-    this.logToConsole('RPC', [type, operation, data]);
+    this.logToConsole('RPC', [type, operation, JSON.stringify(data)]);
     let payload = {
       msgType: TYPE_RPC_REQ,
       resourceType: type,
@@ -249,7 +251,7 @@ export default DS.RESTAdapter.extend({
    * promise, which will be resolved in receive function.
    */
   asyncRequest(operation, type, ids, data) {
-    this.logToConsole('asyncRequest', [operation, type, ids, data]);
+    this.logToConsole('asyncRequest', [operation, type, ids, JSON.stringify(data)]);
     if (!ids) {
       ids = null;
     }
@@ -299,11 +301,11 @@ export default DS.RESTAdapter.extend({
   generateUuid() {
     let date = new Date().getTime();
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
-      function (character) {
-        let random = (date + Math.random() * 16) % 16 | 0;
-        date = Math.floor(date / 16);
-        return (character === 'x' ? random : (random & 0x7 | 0x8)).toString(16);
-      });
+        function (character) {
+          let random = (date + Math.random() * 16) % 16 | 0;
+          date = Math.floor(date / 16);
+          return (character === 'x' ? random : (random & 0x7 | 0x8)).toString(16);
+        });
   },
 
   /**
@@ -314,6 +316,12 @@ export default DS.RESTAdapter.extend({
     switch (operation) {
       case OP_CREATE_RECORD:
         return json[type];
+
+      case OP_FIND_QUERY:
+        // In case of find_query, json is in form
+        // {filter: {key: value}}
+        // Just send the filter
+        return json.filter;
 
       default:
         return json;
@@ -391,7 +399,7 @@ export default DS.RESTAdapter.extend({
       promise = adapter.promises.get(json.uuid);
       if (json.result === RESULT_OK) {
         let transformed_data = adapter.transformResponse(json.data,
-          promise.type, promise.operation);
+            promise.type, promise.operation);
         console.log('FETCH_RESP success: ' + JSON.stringify(transformed_data));
 
         promise.success(transformed_data);
@@ -414,37 +422,23 @@ export default DS.RESTAdapter.extend({
         console.log('Unknown operation result: ' + json.result);
       }
     }
-    else if (json.msgType === TYPE_MODEL_CRT_PUSH) {
+    else if (json.msgType === TYPE_MODEL_CRT_PUSH ||
+        json.msgType === TYPE_MODEL_UPT_PUSH) {
       // Received a push message that something was created
-      console.log('Create:' + JSON.stringify(json));
-      this.get('store').push({
-        data: {
-          id: json.data.id,
-          type: json.resourceType,
-          attributes: json.data
-        }
-      });
-    } else if (json.msgType === TYPE_MODEL_UPT_PUSH) {
-      // Received a push message that something was updated
-      console.log('Update:' + JSON.stringify(json));
-      this.get('store').push({
-        data: {
-          id: json.data.id,
-          type: json.resourceType,
-          attributes: json.data
-        }
-      });
-    }
-    else if (json.msgType === TYPE_MODEL_DLT_PUSH) {
+      console.log(json.msgType + ': ' + JSON.stringify(json));
+      let payload = {};
+      payload[json.resourceType] = json.data;
+      this.get('store').pushPayload(payload);
+    } else if (json.msgType === TYPE_MODEL_DLT_PUSH) {
       let store = this.get('store');
       // Received a push message that something was deleted
       console.log('Delete:' + JSON.stringify(json));
       // data field contains a list of ids to delete
       json.data.forEach(function (id) {
         store.findRecord(json.resourceType, id).then(
-          function (record) {
-            store.unloadRecord(record);
-          });
+            function (record) {
+              store.unloadRecord(record);
+            });
       });
     }
     if (json.uuid) {

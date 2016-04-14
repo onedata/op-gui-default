@@ -1,3 +1,5 @@
+// jshint esnext: true
+
 /**
  * This module implements callbacks for ember-simple-auth basic authenticator.
  * @module authenticators/basic

@@ -1,3 +1,5 @@
+// jshint esnext: true
+
 /**
  * Provides a session abstraction using ember-simple-auth. The session validity
  * is resolved via WebSocket.
@@ -11,15 +13,12 @@
 // This file should be linked to app/services/session.js
 
 import Ember from 'ember';
-import SessionService from 'ember-simple-auth/services/session';
 
-export default SessionService.extend({
+export default Ember.Service.extend({
   server: Ember.inject.service('server'),
 
   sessionInitResolve: null,
   sessionInitReject: null,
-  sessionRestoreResolve: null,
-  sessionRestoreReject: null,
 
   // This flag indicates if the client has active session. Null when
   // the session validity hasn't been resolved yet.
@@ -35,6 +34,8 @@ export default SessionService.extend({
    * restoration rather than run authenticate. */
   initSession: function () {
     let session = this;
+    // Initialize the WebSocket and, when it is done, resolve simple-auth
+    // session.
     let onOpen = () => {
       // Ask the server for session details when the WebSocket connection
       // is established
@@ -55,8 +56,6 @@ export default SessionService.extend({
       }
       this.set('sessionInitResolve', null);
       this.set('sessionInitReject', null);
-      this.set('sessionRestoreResolve', null);
-      this.set('sessionRestoreReject', null);
     };
     this.get('server').initWebSocket(onOpen, onError);
     return new Ember.RSVP.Promise((resolve, reject) => {
@@ -64,22 +63,6 @@ export default SessionService.extend({
       // and session details are sent via WS.
       this.set('sessionInitResolve', resolve);
       this.set('sessionInitReject', reject);
-    });
-  },
-
-  /** If this is called, session data from WebSocket will resolve session
-   * restoration rather than run authenticate. */
-  tryToRestoreSession: function () {
-    return new Ember.RSVP.Promise((resolve, reject) => {
-      console.log('tryToRestoreSession, sessionValid = ', this.get('sessionValid'));
-      if (this.get('sessionValid') === true) {
-        resolve();
-      } else {
-        // This promise will be resolved when WS connection is established
-        // and session details are sent via WS.
-        this.set('sessionRestoreResolve', resolve);
-        this.set('sessionRestoreReject', reject);
-      }
     });
   },
 
@@ -92,30 +75,14 @@ export default SessionService.extend({
     this.get('server').sessionRPC().then((data) => {
       console.log("RESOLVE SESSION REQ");
       console.log('data: ' + JSON.stringify(data));
-      if (data.sessionValid === true) {
+      this.set('sessionValid', data.sessionValid);
+      if (this.get('sessionValid') === true) {
         this.set('sessionDetails', data.sessionDetails);
-        let sessionRestoreResolveFun = this.get('sessionRestoreResolve');
-        if (sessionRestoreResolveFun) {
-          console.log("SESSION VALID, RESTORED");
-          sessionRestoreResolveFun();
-        } else {
-          console.log("SESSION VALID, AUTHENTICATED");
-          this.get('session').authenticate('authenticator:basic');
-        }
-      } else {
-        console.log("SESSION INVALID");
-        let sessionRestoreRejectFun = this.get('sessionRestoreReject');
-        if (sessionRestoreRejectFun) {
-          console.log("RESTORE REJECTED");
-          sessionRestoreRejectFun();
-        }
       }
       let resolveFunction = this.get('sessionInitResolve');
       resolveFunction();
       this.set('sessionInitResolve', null);
       this.set('sessionInitReject', null);
-      this.set('sessionRestoreResolve', null);
-      this.set('sessionRestoreReject', null);
     });
   }
 });

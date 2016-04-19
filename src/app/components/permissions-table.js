@@ -60,7 +60,8 @@ export default Ember.Component.extend({
   type: null,
 
   typeSingular: function() {
-    return this.get('type') === 'groups' ? 'group' : 'user';
+    let type = this.get('type');
+    return (type.slice(-1) === 's') ? type.slice(0, -1) : type;
   }.property('type'),
 
   /** A localized title of table (based on type) */
@@ -84,17 +85,11 @@ export default Ember.Component.extend({
    *  It is true when at least one permission model in collection is modified.
    */
   isModified: function() {
-    var val = this.get('permissions').any(p => p.get('isModified'));
-    return val;
+    let permisssions = this.get('permissions');
+    return permisssions ? permisssions.any(p => p.get('isModified')) : false;
   }.property('permissions.@each.isModified'),
 
-  didInsertElement() {
-    this.get('permissions').forEach((p) => {
-      $(`#perm-row-${p.get('owner').get('id')} .one-first`).click(() => {
-        $(`#perm-row-${p.get('owner').get('id')}`).toggleClass('active');
-      });
-    });
-  },
+  activePermissions: null,
 
   actions: {
     /** Change state of single permission checkbox */
@@ -127,5 +122,9 @@ export default Ember.Component.extend({
         space: this.get('space')
       });
     },
+
+    activatePermissions(permissions) {
+      this.set('activePermissions', permissions);
+    }
   }
 });

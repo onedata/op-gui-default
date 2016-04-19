@@ -79,6 +79,10 @@
   float: left;
 }
 
+.one-td:hover .one-table-label {
+  color: $onedata-azure;
+}
+
 .one-table .one-tbody .one-td .one-table-checkbox {
   float: right;
   padding-right: 60px;

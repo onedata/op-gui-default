@@ -1,43 +1,38 @@
 import Ember from 'ember';
 
-// TODO: doc
+/**
+ * Pseudo-selector (specifically, a dropdown) to change data-spaces in data view.
+ *
+ * Sends actions:
+ * - goToDataSpace(space) - should load view associated with data-space;
+ *     specifically, loads a root of tree of space directories
+ * @module components/data-spaces-select
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
   classNames: ['data-spaces-select'],
+  fileSystemTree: Ember.inject.service(),
 
   /** List of DataSpace records */
   spaces: null,
 
   /** Space currently selected */
-  selectedSpace: null,
+  selectedSpace: function() {
+    return this.get('fileSystemTree.selectedSpace');
+  }.property('fileSystemTree.selectedSpace'),
 
-  prevSelectedSpace: null,
-
-  spacesChanged: function() {
-    console.debug(`Spaces changed: len ${this.get('spaces.length')}, prev: ${this.get('prevSelectedSpace')}`);
-    if (!this.get('prevSelectedSpace') && this.get('spaces.length') > 0) {
-      let defaultSpace = this.get('spaces').find((s) => s.get('isDefault'));
-      console.debug('spaces: ' + this.get('spaces').map((s) => s.get('isDefault')));
-      if (defaultSpace) {
-        console.debug(`Will set new selectedSpace: ${defaultSpace.get('name')}`);
-      } else {
-        console.debug('DataSpacesSelect: no selectedSpace!');
-      }
-
-      this.set('prevSelectedSpace', this.get('selectedSpace'));
-      this.set('selectedSpace', defaultSpace);
-    }
-  }.observes('spaces', 'spaces.length', 'spaces.@each.isDefault'),
+  prevSelectedSpace: function() {
+    return this.get('fileSystemTree.prevSelectedSpace');
+  }.property('fileSystemTree.prevSelectedSpace'),
 
   selectedSpaceDidChange: function() {
+    console.debug(`Spaces Select component: selected space changed to ${this.get('selectedSpace.id')}`);
     if (this.get('selectedSpace')) {
       this.sendAction('goToDataSpace', this.get('selectedSpace.id'));
     }
   }.observes('selectedSpace'),
-
-  didInsertElement() {
-    console.warn('did insert spaces');
-    this.spacesChanged();
-  },
 
   actions: {
     setSelectedSpace(space) {

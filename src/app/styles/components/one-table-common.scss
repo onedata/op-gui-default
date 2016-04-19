@@ -1,6 +1,5 @@
 .one-table {
   min-width: 100%;
-  font-size: $table-font-size;
 
   .one-th,
   .one-td {
@@ -9,7 +8,6 @@
     // TODO: make dynamic
     &.one-first {
       text-align: left;
-      min-width: 114px; // TODO: please do not static...
     }
   }
 
@@ -38,6 +36,7 @@
 
       .one-td {
         height: 46px;
+        line-height: 46px;
         vertical-align: middle;
         text-align: center;
 

@@ -1,6 +1,13 @@
 import Ember from 'ember';
 import FileChunksBar from '../utils/file-chunks-bar';
 
+/**
+ * Draw a bar with file chunks (blocks) using function from utils.
+ * @module components/file-chunks-bar
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
   file: null,
   fileBlocks: null,

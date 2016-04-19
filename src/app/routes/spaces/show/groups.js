@@ -12,7 +12,7 @@ import ShowPermissionsBase from './show-permissions-base';
 
 
 export default ShowPermissionsBase.extend({
- permissionsType: 'group',
+ permissionsType: 'groups',
 
  actions: {
    inviteItem() {

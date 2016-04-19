@@ -1,5 +1,13 @@
 import Ember from 'ember';
 
+/**
+ * A file upload status container. When no file is uploaded, it is hidden.
+ * It requires a file-upload-service to run, which hosts a ResumableJS instance.
+ * @module components/file-upload
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
   fileUploadService: Ember.inject.service('file-upload'),
   notify: Ember.inject.service(),

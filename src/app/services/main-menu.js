@@ -16,4 +16,12 @@
 
 import Ember from 'ember';
 
-export default Ember.Service.extend(Ember.Evented);
+export default Ember.Service.extend({
+  component: null,
+  currentItem: null,
+  isVisible: false,
+
+  clearSelection() {
+    this.set('currentItem', null);
+  }
+});

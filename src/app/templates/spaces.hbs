@@ -3,8 +3,8 @@
 
 {{!-- Secondary sidebar --}}
 <nav class="secondary-sidebar">
-  {{spaces-menu spaces=model
-    showSpaceOptions='goToSpace' showUsersConfig='goToUsers' showGroupsConfig='goToGroups'}}
+  {{spaces-menu spaces=model activeSpace=activeSpace
+    showSpaceOptions='goToSpace' openSubmenuEntry='openSubmenuEntry'}}
 </nav>
 
 <div id='content-scroll'>

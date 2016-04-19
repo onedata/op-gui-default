@@ -13,10 +13,15 @@ $onedata-mint-green: #55E191;
 // TODO: same as graphite?
 $onedata-topbar-graphite: #363A42;
 
+// TODO: clean up red versions
 // elements colors
+$onedata-red-menu: $onedata-red;
+$onedata-red-left: #F14A4D;
+$onedata-red-file: #F63A39;
+
 $color-folder: $onedata-gray;
 // TODO: onedata-red ?
-$color-file: #F63A39;
+$color-file: $onedata-red-file;
 $color-toolbar-icon: $onedata-graphite;
 $color-toolbar-icon-disabled: rgba($onedata-graphite, 0.25);
 $color-toolbar-icon-hover: $onedata-red;

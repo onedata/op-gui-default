@@ -1,5 +1,12 @@
 import Ember from 'ember';
 
+/**
+ * A generic modal that is used to fetch a token (see type property).
+ * @module
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
   i18n: Ember.inject.service(),
   oneproviderServer: Ember.inject.service(),
@@ -48,7 +55,7 @@ export default Ember.Component.extend({
           this.set('inviteToken', token);
         },
         (error) => {
-          // this.set('errorMessage', error);
+          this.set('errorMessage', error || this.get('i18n').t('common.unknownError'));
           console.error(`Token ${type} fetch failed: ` + JSON.stringify(error));
         }
       );

@@ -36,10 +36,7 @@ export default DS.Model.extend({
   // TODO: implement B, MB, GB, TODO: move to helper
   sizeHumanReadable: function() {
     let bytes = this.get('size');
-    if (bytes !== 0 && !bytes) {
-      return '';
-    }
-    if (bytes === null || bytes === 'undefined') {
+    if (!bytes && bytes !== 0) {
       return '';
     }
 

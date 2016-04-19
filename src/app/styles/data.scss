@@ -148,7 +148,26 @@
   }
 }
 
-.dropdown.open .oneicon.oneicon-settings {
+/// file list table column styles
+
+.file-list-col-file {
+  width: 100%;
+}
+.file-list-col-size {
+  width: 140px;
+  max-width: 140px;
+}
+.file-list-col-permissions {
+  width: 140px;
+  max-width: 140px;
+}
+.file-list-col-modification {
+  width: 140px;
+  max-width: 140px;
+}
+
+.dropdown.open .oneicon.oneicon-settings,
+.oneicon.oneicon-settings:hover {
     color: $onedata-red;
 }
 

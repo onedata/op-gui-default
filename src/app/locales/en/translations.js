@@ -9,6 +9,7 @@
 */
 export default {
   common: {
+    unknownError: 'Unknown error',
     modal: {
       ok: 'OK',
       cancel: 'Cancel',
@@ -210,7 +211,7 @@ export default {
     rootDirectory: 'Root directory',
     dataSpace: {
       title: 'Space "{{spaceName}}"',
-      nullDir: 'This space is not supported by any providers',
+      nullDir: 'This space is not supported by any providers or cannot be synchronized',
       dir: {
         title: 'File browser',
         file: {

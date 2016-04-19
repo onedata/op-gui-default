@@ -1,20 +1,27 @@
 import Ember from 'ember';
 
-// TODO: jsdoc
+/**
+ * Files and subdirectories browser for single directory.
+ * For file operations, see data-files-list-toolbar.
+ * @module components/data-files-list
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
-  store: Ember.inject.service('store'),
-  fileSystemTree: Ember.inject.service('file-system-tree'),
-  errorNotifier: Ember.inject.service('error-notifier'),
-  fileBrowser: Ember.inject.service('file-browser'),
-  notify: Ember.inject.service('notify'),
-  fileUpload: Ember.inject.service('file-upload'),
+  store: Ember.inject.service(),
+  fileSystemTree: Ember.inject.service(),
+  errorNotifier: Ember.inject.service(),
+  fileBrowser: Ember.inject.service(),
+  notify: Ember.inject.service(),
+  fileUpload: Ember.inject.service(),
 
   classNames: ['data-files-list'],
 
-  // TODO: doc
+  /** A parent directory to list its files */
   dir: null,
 
-  // TODO: enable sorting in GUI
+  // TODO: sorting switch in GUI
   filesSorting: ['type:asc', 'name:asc'],
   filesSorted: Ember.computed.sort('dir.children', 'filesSorting'),
 
@@ -29,6 +36,7 @@ export default Ember.Component.extend({
   }.observes('dir'),
 
   actions: {
+    /** If file - download it with backend; if dir - use route to browse other dir */
     openFile(file) {
       if (file.get('isDir')) {
         this.sendAction('openDirInBrowser', file.get('id'));
@@ -37,31 +45,11 @@ export default Ember.Component.extend({
       }
     },
 
-    // TODO: show modal
-    createFile(type) {
-      this.get('dir').createFile(type, this.get('createFileName'));
-    },
-
     // TODO: multiple select only with ctrl
+    // TODO: select range with shift
     selectFile(file) {
       file.set('isSelected', !file.get('isSelected'));
     },
-
-    // TODO: renameFileName will be probably in modal
-    renameSelectedFile() {
-      let file = this.get('dir.singleSelectedFile');
-      if (file) {
-        file.set('name', this.get('renameFileName') || '');
-        file.save();
-      } else {
-        console.error('No file selected to rename or multiple selected');
-      }
-    },
-
-    // TODO: error handling
-    removeSelectedFiles() {
-      this.get('dir').removeSelectedFiles();
-    }
   }
 
 });

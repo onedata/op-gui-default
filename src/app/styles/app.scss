@@ -38,14 +38,9 @@ $modal-inner-padding: 30px;
 
 @import "bootstrap";
 
+@import 'onedata-common';
+
 @import 'colors';
-
-$icomoon-font-path: 'fonts/oneicons';
-@import 'oneicons/style.scss';
-// TODO: this is style from VFS-1508, will be changed
-// @import 'components/file-browser'
-
-@import 'floater';
 
 @media screen
   and (min-width: $min-width-desktop-large) {

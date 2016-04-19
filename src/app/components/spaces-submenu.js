@@ -15,43 +15,35 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  activeOption: null,
-  spacesMenu: null,
+  tagName: 'ul',
+  classNames: ['submenu'],
+
+  spacesMenu: Ember.inject.service(),
+
+  isSpaceActive: function() {
+    return this.get('space.id') === this.get('spacesMenu.activeSpace.id');
+  }.property('space.id', 'spacesMenu.activeSpace.id'),
+
+  // NOTE: readonly property, if want to modify, set spacesMenu.activeOption
+  activeOption: function() {
+    return this.get('isSpaceActive') ? this.get('spacesMenu.activeOption') : null;
+  }.property('isSpaceActive', 'spacesMenu.activeOption'),
+
   space: null,
 
-  items: [
-    {type: 'user', labelI18n: 'components.spacesSubmenu.users', icon: 'user'},
-    {type: 'group', labelI18n: 'components.spacesSubmenu.groups', icon: 'group'},
-    // TODO: disabled untils providers settings done
-    // {type: 'provider', labelI18n: 'components.spacesSubmenu.providers', icon: 'provider'},
-  ],
-
   sidebarEntryId: function() {
-    return this.get('space').get('sidebarEntryId');
-  }.property('space'),
+    return this.get('space.sidebarEntryId');
+  }.property('space', 'space.sidebarEntryId'),
 
-  clearSelection() {
-    $(`#${this.get('sidebarEntryId')} .submenu li.active`).removeClass('active');
-  },
+  activeOptionDidChange: function() {
+    this.sendAction('openSubmenuEntry', this.get('activeOption'));
+  }.observes('activeOption'),
 
   actions: {
-    /** Selects active option page (send external action) */
-    changeActiveOption(optionName) {
+    setOption(optionName) {
+      console.debug(`set active option to ${optionName}`);
       this.set('activeOption', optionName);
-      let space = this.get('space');
-      // TODO: try-catch on sendAction?
-      // TODO: redundancy...
-      switch (optionName) {
-        case 'user':
-          this.sendAction('showUsersConfig', space);
-          break;
-        case 'group':
-          this.sendAction('showGroupsConfig', space);
-          break;
-        default:
-          break;
-      }
-    }
+    },
   }
 
 });

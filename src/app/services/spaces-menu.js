@@ -16,4 +16,25 @@
 
 import Ember from 'ember';
 
-export default Ember.Service.extend(Ember.Evented);
+export default Ember.Service.extend({
+  component: null,
+
+  activeSpace: null,
+  activeOption: null,
+
+  clear: function() {
+    this.setProperties({
+      component: null,
+      activeSpace: null,
+      activeOption: null,
+    });
+  },
+
+  activeSpaceDidChange: function() {
+    this.set('activeOption', null);
+  }.observes('activeSpace'),
+
+  componentChanged: function() {
+    console.debug(`service.spaces-menu: Component changed: ${this.get('component')}`);
+  }.observes('component'),
+});

@@ -15,32 +15,17 @@ $top-bar-foreground-color: $onedata-topbar-graphite !default;
 $sidebar-background-color: $onedata-graphite !default;
 $content-background-color: #FFF !default;
 
-$sidebar-item-hover-color: $onedata-red;
+$sidebar-item-hover-color: $onedata-red-menu;
 
 /// Font and icon sizes
-$secondary-sidebar-font-size: 13pt !default;
+$secondary-sidebar-font-size: 14px !default;
 $secondary-sidebar-icon-font-size: 38px !default;
 
 $top-bar-icon-font-size: 32px !default;
 
-$table-font-size: 13pt !default;
-$table-checkbox-size: 64px * $responsive-multiplier !default;
+$table-checkbox-size: 48px !default;
 
 $transition-time: 0.25s !default;
-
-/// Set Open Sans font globally
-@font-face {
-    font-family: 'Open Sans';
-    src: url('OpenSans-Regular-webfont.eot');
-    src: local('Open Sans'), local('OpenSans'),
-         url('fonts/opensans/OpenSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/opensans/OpenSans-Regular-webfont.woff') format('woff'),
-         url('fonts/opensans/OpenSans-Regular-webfont.ttf') format('truetype'),
-         url('fonts/opensans/OpenSans-Regular-webfont.svg#open_sansregular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
 
 // TODO: should be used with Bootstrap SASS
 $font-family-sans-serif: 'Open Sans';
@@ -186,6 +171,11 @@ html, body {
           font-size: 40px;
         }
 
+        &.active a,
+        a:hover {
+          background-color: $sidebar-item-hover-color;
+        }
+
         a {
           display: table;
           height: $sidebar-item-height;
@@ -193,10 +183,7 @@ html, body {
           color: #fff;
           width: 100%;
 
-          &:hover,
-          &.active {
-            background-color: $sidebar-item-hover-color;
-          }
+
 
           // TODO: generic figure styles moved up
           figure {
@@ -277,7 +264,7 @@ html, body {
           padding-right: 15px;
 
           &:hover {
-            color: $onedata-red;
+            color: $onedata-red-menu;
           }
         }
       }
@@ -341,8 +328,9 @@ html, body {
               padding-left: $secondary-sidebar-item-padding * 3.64;
             }
 
-            // when is a child of non-active parent, it is invisible
-            display: none;
+            // TODO
+            // // when is a child of non-active parent, it is invisible
+            // display: none;
             background-color: $onedata-light-gray;
 
             .secondary-sidebar-item {
@@ -352,19 +340,19 @@ html, body {
 
               &:hover,
               &.active {
-                color: $onedata-red;
+                color: $onedata-red-left;
               }
             }
           }
 
           &.first-level {
             // TODO: this causes a left "margin" of horizontal lines...
-            border-left: 4px solid;
+            border-left: 5px solid;
             border-left-color: transparent;
           }
 
           &.active.first-level {
-            border-left-color: $onedata-red;
+            border-left-color: $onedata-red-left;
 
             .secondary-sidebar-item.first-level {
               background-color: $onedata-light-gray;
@@ -381,6 +369,8 @@ html, body {
             }
           }
 
+          // TODO
+
           // active first-level entry
           &.active {
             // submenu uncollapses when parent menu is clicked
@@ -389,7 +379,7 @@ html, body {
 
               .active {
                 .secondary-sidebar-item {
-                  color: $onedata-red;
+                  color: $onedata-red-left;
                 }
               }
             }
@@ -434,45 +424,6 @@ html, body {
 
 }
 
-.hover-parent {
-  &:not(:hover) {
-    .transparent-not-hovered {
-      color: transparent !important;
-    }
-  }
-}
-
-.loading-throbber {
-  width: 32px;
-  height: 32px;
-  background-image: url("/assets/images/loading-32.gif");
-  background-position: center;
-  background-repeat: no-repeat;
-}
-.loading-label {
-  padding-left: 15px;
-}
-
-.modal-loading {
-  display: table;
-  > * {
-    display: table-cell;
-    vertical-align: middle;
-  }
-}
-
-.route-loading {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-
-  background-color: white;
-  background-image: url("/assets/images/loading-128.gif");
-  background-position: center;
-  background-repeat: no-repeat;
-}
 
 .input-with-button {
   display: table;
@@ -529,16 +480,7 @@ html, body {
   }
 }
 
-// HACKS
-
-// DEPRECATED
-.trim-hack {
-  overflow: hidden;
-
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  table-layout: fixed;
-}
+// Specific truncate classes
 
 .truncate-secondary-sidebar-select {
   max-width: $secondary-sidebar-width - 110px;
@@ -576,34 +518,10 @@ html, body {
   max-width: $secondary-sidebar-width - 70px;
 }
 
-// base class for string truncation
-.truncate {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 
-// Bootstrap extensions
-
-.table-no-border>thead>tr>th,
-.table-no-border>tbody>tr>th,
-.table-no-border>tfoot>tr>th,
-.table-no-border>thead>tr>td,
-.table-no-border>tbody>tr>td,
-.table-no-border>tfoot>tr>td,
-.table-no-border>tbody,
-.table-no-border>thead,
-.table-no-border>tfoot{
-  border-top: none !important;
-  border-bottom: none !important;
-}
-
-.one-row {
-  display: table;
-  > * {
-    display: table-cell;
-    vertical-align: middle;
-  }
+// Additional classes, that should be moved to onedata-common someday
+.clickable {
+  cursor: pointer; cursor: hand;
 }
 
 // TODO: temporary

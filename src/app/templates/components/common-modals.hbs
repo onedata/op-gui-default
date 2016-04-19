@@ -1,10 +1,4 @@
-{{!-- ADD ITEM (user/group) --}}
-
-{{!-- TODO: move translations keys to common-modals --}}
-
-{{token-modals isOpened=openedTokenGroup type='group' space=modalParams.space}}
-{{token-modals isOpened=openedTokenUser type='user' space=modalParams.space}}
-{{token-modals isOpened=openedTokenSupport type='support' space=modalParams.space}}
+{{!-- TODO: make more generic common-modals component with only info modal --}}
 
 {{!-- simple info modal with OK button --}}
 
@@ -20,3 +14,10 @@
     {{/bs-button}}
   {{/bs-modal-footer}}
 {{/bs-modal}}
+
+
+{{!-- token modals --}}
+
+{{token-modals isOpened=openedTokenGroup type='group' space=modalParams.space}}
+{{token-modals isOpened=openedTokenUser type='user' space=modalParams.space}}
+{{token-modals isOpened=openedTokenSupport type='support' space=modalParams.space}}

@@ -11,7 +11,7 @@
 import ShowPermissionsBase from './show-permissions-base';
 
 export default ShowPermissionsBase.extend({
-  permissionsType: 'user',
+  permissionsType: 'users',
 
   actions: {
     inviteItem() {

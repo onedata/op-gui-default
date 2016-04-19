@@ -40,6 +40,11 @@ export default Ember.Route.extend({
   /** Abstract: <string> should be set in subclasses, eg. user, group */
   permissionsType: null,
 
+  permissionsTypeSingular: function() {
+    let type = this.get('permissionsType');
+    return type.slice(-1) === 's' ? type.slice(0, -1) : type;
+  }.property('permissionsType'),
+
   model() {
     var space = this.modelFor('spaces.show');
     return {
@@ -49,25 +54,25 @@ export default Ember.Route.extend({
   },
 
   collectionName: function() {
-    return `${this.get('permissionsType')}Permissions`;
-  }.property('permissionsType'),
+    return `${this.get('permissionsTypeSingular')}Permissions`;
+  }.property('permissionsTypeSingular'),
 
-  activate() {
-    let permissionsType = this.get('permissionsType');
-    console.debug(`show ${permissionsType} activate`);
-    Ember.run.scheduleOnce('afterRender', this, function() {
-      console.debug(`will trigger selectSubmenu for show ${permissionsType}`);
-      this.get('spacesMenuService').trigger('selectSubmenu', permissionsType);
-      $('nav.secondary-sidebar').removeClass('visible');
-    });
-    return true;
-  },
+  // onActivate: function() {
+  //   let permissionsType = this.get('permissionsType');
+  //   console.debug(`show ${permissionsType} activate`);
+  //   Ember.run.scheduleOnce('afterRender', this, function() {
+  //     console.debug(`will trigger selectSubmenu for show ${permissionsType}`);
+  //     this.get('spacesMenuService').trigger('selectSubmenu', permissionsType);
+  //     $('nav.secondary-sidebar').removeClass('visible');
+  //   });
+  //   return true;
+  // }.on('activate'),
 
-  deactivate() {
+  onDeactivate: function() {
     Ember.run.scheduleOnce('afterRender', this, function() {
       $('nav.secondary-sidebar').addClass('visible');
     });
-  },
+  }.on('deactivate'),
 
   actions: {
     /** Change state of single permission checkbox */

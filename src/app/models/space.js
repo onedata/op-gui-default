@@ -5,8 +5,6 @@ import DS from 'ember-data';
  * that can be reached from "spaces" button in primary sidebar.
  *
  * @module models/space
- *
- * @todo TODO: don't know if should list attributes here, maybe it's redundant
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.

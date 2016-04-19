@@ -1,6 +1,15 @@
 import Ember from 'ember';
-// import fileToTreeNode from '../utils/file-to-tree-node';
 
+/**
+ * Container for data-files-tree-nodes.
+ *
+ * Sends actions:
+ * - openDirInBrowser(fileId) - open dir for browsing
+ * @module components/data-files-tree
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
   fileSystemTreeService: Ember.inject.service('fileSystemTree'),
 
@@ -12,7 +21,7 @@ export default Ember.Component.extend({
   */
   rootDir: null,
 
-  /*** Bind with main-menu service, TODO: mixin or something? ***/
+  /*** Bind with main-menu service, TODO: use mixin or something? ***/
   SERVICE_API: ['setRootDir'],
 
   /** Listen on mainMenuService's events */
@@ -30,6 +39,7 @@ export default Ember.Component.extend({
   /*** Service API ***/
 
   actions: {
+    /** Typically invoked by actions passed up from tree nodes */
     openDirInBrowser(fileId) {
       this.sendAction('openDirInBrowser', fileId);
     }

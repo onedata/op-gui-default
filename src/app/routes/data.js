@@ -8,16 +8,19 @@
  */
 
 import Ember from 'ember';
+import MainRouteMixin from '../mixins/main-route-mixin';
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(MainRouteMixin, {
   fileSystemTree: Ember.inject.service('file-system-tree'),
+
+  mainRouteName: 'data',
 
   model() {
     return this.store.findAll('data-space');
   },
 
   afterModel(dataSpaces) {
-    this.set('fileSystemTree.dataSpaces', dataSpaces);
+    this.set('fileSystemTree.spaces', dataSpaces);
   },
 
   actions: {

@@ -1,3 +1,5 @@
+// TODO: update as in English
+// TODO: maybe we should use English strings, when translation is missing? (merge objects recursive)
 /**
  * Polish translation of GUI strings.
  * Translations dictionary is organized as in routes dir.

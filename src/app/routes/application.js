@@ -17,7 +17,6 @@ export default Ember.Route.extend({
     console.debug('app activate');
     Ember.run.scheduleOnce('afterRender', this, function() {
       console.debug('clear selection');
-      this.get('mainMenuService').trigger('clearSelection');
 
       return true;
     });

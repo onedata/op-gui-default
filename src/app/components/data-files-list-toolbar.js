@@ -1,5 +1,13 @@
 import Ember from 'ember';
 
+/**
+ * Provides set of tools for file manipulation and getting info.
+ * Beside toolbar buttons, contains a set of modals for toolbar actions.
+ * @module components/data-files-list-toolbar
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
   notify: Ember.inject.service('notify'),
   fileUpload: Ember.inject.service('fileUpload'),
@@ -18,6 +26,7 @@ export default Ember.Component.extend({
    * - action {String} - name of action to invoke when clicked,
    *     the function should be parameterless
    * - disabled {Boolean}
+   * - tooltip {String} - message in tooltip (on hover)
    */
   items: function() {
     let i18n = this.get('i18n');
@@ -39,6 +48,7 @@ export default Ember.Component.extend({
         id: 'share-file-tool',
         icon: 'share',
         action: 'notImplemented',
+        // TODO: feature not implemented yet
         //disabled: !this.get('dir.isSomeFileSelected'),
         disabled: true,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.shareFile')
@@ -54,6 +64,7 @@ export default Ember.Component.extend({
         id: 'rename-file-tool',
         icon: 'rename',
         action: 'renameSelectedFile',
+        // TODO: feature not implemented yet
         //disabled: !this.get('dir.singleSelectedFile'),
         disabled: true,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.renameFile')
@@ -69,6 +80,7 @@ export default Ember.Component.extend({
         id: 'copy-file-tool',
         icon: 'copy',
         action: 'notImplemented',
+        // TODO: feature not implemented yet
         //disabled: !this.get('dir.isSomeFileSelected'),
         disabled: true,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.copy')
@@ -77,6 +89,7 @@ export default Ember.Component.extend({
         id: 'cut-file-tool',
         icon: 'cut',
         action: 'notImplemented',
+        // TODO: feature not implemented yet
         //disabled: !this.get('dir.isSomeFileSelected'),
         disabled: true,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.cut')
@@ -168,7 +181,9 @@ export default Ember.Component.extend({
       );
     },
 
-    // TODO: set fileForChunks to null on close
+    chunksModalClosed() {
+      this.set('fileForChunks', null);
+    },
 
     uploadBrowse() {
       this.$('#toolbar-file-browse').trigger('click');

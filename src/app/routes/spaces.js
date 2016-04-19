@@ -9,39 +9,16 @@
  */
 
 import Ember from 'ember';
+import MainRouteMixin from '../mixins/main-route-mixin';
 
-export default Ember.Route.extend({
-  mainMenuService: Ember.inject.service('main-menu'),
-
-  activate() {
-    console.debug('spaces activate');
-    Ember.run.scheduleOnce('afterRender', this, function() {
-      console.debug('select spaces');
-      this.get('mainMenuService').trigger('selectItem', 'spaces');
-      $('nav.secondary-sidebar').addClass('visible');
-      return true;
-    });
-    return true;
-  },
-
-  deactivate() {
-    console.debug('spaces deactivate');
-    Ember.run.scheduleOnce('afterRender', this, function() {
-      console.debug('deselect spaces');
-      this.get('mainMenuService').trigger('deselectItem', 'spaces');
-      return true;
-    });
-    return true;
-  },
+export default Ember.Route.extend(MainRouteMixin, {
+  mainRouteName: 'spaces',
 
   model() {
     return this.store.findAll('space');
   },
 
-  // afterModel(spaces) {
-  //   let spaceToGo = spaces.find((s) => s.get('isDefault')) || spaces.objectAt(0);
-  //   this.transitionTo('spaces.show', spaceToGo);
-  // },
+  // afterModel moved to onSpaceChange in controller because of model load problems
 
   actions: {
     /** Show submenu for Space */
@@ -49,14 +26,13 @@ export default Ember.Route.extend({
       this.transitionTo('spaces.show', space);
     },
 
-    /** Show users permissions table using route */
-    goToUsers(space) {
-      this.transitionTo('spaces.show.users', space);
-    },
-
-    /** Show groups permissions table using route */
-    goToGroups(space) {
-      this.transitionTo('spaces.show.groups', space);
-    },
+    /** Show users/groups/etc. permissions table using route */
+    openSubmenuEntry(space, name) {
+      if (space && name) {
+        this.transitionTo(`spaces.show.${name}`, space);
+      } else {
+        console.debug(`Tried to openSubmenuEntry in spaces route, but space: '${space}', name: '${name}'`);
+      }
+    }
   }
 });

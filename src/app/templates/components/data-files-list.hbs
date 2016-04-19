@@ -9,10 +9,9 @@
   <th class="hidden-xs">
     {{t 'components.dataFilesList.size'}}
   </th>
-  {{!-- TODO: temporary disabled --}}
-  {{!-- <th class="hidden-xs hidden-sm">
+  <th class="hidden-xs hidden-sm">
     {{t 'components.dataFilesList.permissions'}}
-  </th> --}}
+  </th>
   <th class="hidden-xs">
     {{t 'components.dataFilesList.modification'}}
   </th>
@@ -23,7 +22,7 @@
     <tr {{action "openFile" file on="doubleClick"}}
       {{action "selectFile" file on="click"}}
         class="{{if file.isSelected 'active'}}">
-      <td id="file-{{file.id}}">
+      <td id="file-{{file.id}}" class="file-list-col-file">
         <div class="file-icon">
           {{#if file.isBroken}}
             {{icon "file" "color-directory"}}
@@ -43,14 +42,13 @@
           {{/if}}
         </div>
       </td>
-      <td class="hidden-xs">
+      <td class="hidden-xs file-list-col-size nowrap">
         {{file.sizeHumanReadable}}
       </td>
-      {{!-- TODO: temporary disabled --}}
-      {{!-- <td class="col-permissions hidden-xs hidden-sm">
+      <td class="col-permissions hidden-xs hidden-sm file-list-col-permissions nowrap">
         {{file.permissionsHumanReadable}}
-      </td> --}}
-      <td class="hidden-xs">
+      </td>
+      <td class="hidden-xs file-list-col-modification nowrap">
         {{file.modificationMoment}}
       </td>
     </tr>

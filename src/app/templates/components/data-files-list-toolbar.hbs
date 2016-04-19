@@ -130,7 +130,7 @@
 
 {{#bs-modal open=isFileChunksModal body=false footer=false
     title=(t 'components.dataFilesListToolbar.fileChunksModal.title')
-    id="file-chunks"}}
+    id="file-chunks" closedAction=chunksModalClosed}}
   {{#bs-modal-body}}
 
     <div class="container-fluid">
@@ -177,9 +177,6 @@
         {{/if}}
       </div>
     </div>
-
-
-
 
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}

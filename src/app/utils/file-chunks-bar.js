@@ -1,3 +1,12 @@
+/**
+ * A class to draw a file chunks bar using HTML5 canvas.
+ * NOTE: a fill color is defined here, but background color of canvas is defined in CSS.
+ * @module utils/file-chunks-bar
+ * @author Łukasz Opioła
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 var canvasWidth = 320;
 var canvasHeight = 20;
 // Onedata colors

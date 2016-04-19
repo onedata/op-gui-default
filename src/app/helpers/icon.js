@@ -1,5 +1,6 @@
 import Ember from 'ember';
 
+// TODO: refactor OP to use one-icon component from deps/gui
 /**
  * Insert an icon from onedata icons collection.
  *

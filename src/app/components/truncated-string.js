@@ -13,7 +13,6 @@ export default Ember.Component.extend({
     let shrinkBy = this.get('shrinkBy') || 0;
     let changeMaxWidth = (/*event*/) => {
       let maxWidth = parent.width();
-      console.debug(`truncated string - set max width to: ${maxWidth}`);
       this.$().css({
         maxWidth: (parseInt(maxWidth) - shrinkBy)
       });

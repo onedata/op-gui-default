@@ -1,1 +1,1 @@
-../../../../../deps/gui/common_assets/js/helpers/trim-string.js
+../../../gui/common_assets/js/helpers/trim-string.js

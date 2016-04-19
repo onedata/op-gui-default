@@ -1,1 +1,1 @@
-../../../../../deps/gui/common_assets/js/utils/bind-floater.js
+../../../gui/common_assets/js/utils/bind-floater.js

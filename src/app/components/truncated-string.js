@@ -2,10 +2,17 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   tagName: 'div',
-  classNames: ['truncate', 'truncated-string'],
+  classNames: ['truncated-string'],
 
   parentSelector: null,
   shrinkBy: 0,
+
+  // disabled by default due to tooltip update bugs, and lack of truncate detect
+  /**
+    If true, shows Bootstrap tooltip with this component yielded text
+    If false, uses HTML "title" property with this component yielded text
+  */
+  showTooltip: false,
 
   didInsertElement() {
     let parentSelector = this.get('parentSelector');
@@ -19,5 +26,15 @@ export default Ember.Component.extend({
     };
     $(window).resize(changeMaxWidth);
     changeMaxWidth();
+
+    this.updateTooltipText();
+  },
+
+  updateTooltipText() {
+    this.set('tooltipText', this.$().find('.truncated-string-content').text().trim());
+  },
+
+  mouseEnter() {
+    this.updateTooltipText();
   }
 });

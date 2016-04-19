@@ -20,7 +20,7 @@
   {{#each filesSorted as |file|}}
   {{!-- TODO: open file when selected and enter pressed --}}
     <tr {{action "openFile" file on="doubleClick"}}
-      {{action "selectFile" file on="click"}}
+        {{action "selectFile" file on="click"}}
         class="{{if file.isSelected 'active'}}">
       <td id="file-{{file.id}}" class="file-list-col-file">
         <div class="file-icon">
@@ -35,11 +35,14 @@
           {{/if}}
         </div>
         <div class="file-label">
-          {{#if file.isBroken}}
-            <i>This file is not yet synced</i>
-          {{else}}
-            {{file.name}}
-          {{/if}}
+          {{#truncated-string parentSelector=".file-list-col-file" shrinkBy=100}}
+            {{#if file.isBroken}}
+              {{!-- TODO: translations --}}
+              <i>This file is not yet synced</i>
+            {{else}}
+                {{file.name}}
+            {{/if}}
+          {{/truncated-string}}
         </div>
       </td>
       <td class="hidden-xs file-list-col-size nowrap">

@@ -9,8 +9,10 @@
 %%% This module keeps the session context for GUI processes. The context
 %%% includes session_id (saved in cookies and database), is-session
 %%% key-value memory and the login status of user. This module calls
-%%% gui_session_plugin undearneath to perform application-specific
-%%% operations like saving or retireving sessions.
+%%% gui_session_plugin underneath to perform application-specific
+%%% operations like saving or retrieving sessions.
+%%% module implementing gui_session_plugin behaviour should take care of
+%%% deleting outdated sessions.
 %%% @end
 %%%-------------------------------------------------------------------
 -module(g_session).

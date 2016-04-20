@@ -40,6 +40,10 @@ $secondary-sidebar-item-height: 60px;
 $modal-inner-padding: 30px;
 
 @import "bootstrap";
+.row {
+  margin-left: 0px;
+  margin-right: 0px;
+}
 
 @import 'onedata-common';
 

@@ -4,11 +4,22 @@
     padding: 12px 5px;
 
     .btn-permissions {
-      float: right;
-      margin-left: 20px;
-      // fist child is placed right because of float: right
-      &:first-of-type {
+      &:not(.mobile) {
+        float: right;
+        margin-left: 20px;
+        // fist child is placed right because of float: right
+        &:first-of-type {
+          margin-right: 20px;
+        }
+      }
+
+      &.mobile {
+        float: left;
+        margin-left: 0px;
         margin-right: 20px;
+        &:first-of-type {
+          margin-left: 20px;
+        }
       }
     }
   }

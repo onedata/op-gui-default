@@ -1,4 +1,18 @@
 .permissions-table {
+  .row-permissions-buttons {
+    height: $secondary-sidebar-item-height;
+    padding: 12px 5px;
+
+    .btn-permissions {
+      float: right;
+      margin-left: 20px;
+      // fist child is placed right because of float: right
+      &:first-of-type {
+        margin-right: 20px;
+      }
+    }
+  }
+
   .item-tool {
     &:hover {
       color: $onedata-red;

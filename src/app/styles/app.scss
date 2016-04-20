@@ -14,6 +14,9 @@ $max-width-desktop-medium: 1800px;
 
 $min-width-desktop-large: $max-width-desktop-medium + 1;
 
+// Non-media-dependent variables
+$secondary-sidebar-item-height: 60px;
+
 // TODO: use mixin, min-width only, maybe common should not be included N-times
 
 // TODO: some refactor:

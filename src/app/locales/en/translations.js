@@ -92,6 +92,8 @@ export default {
       providers: 'providers'
     },
     permissionsTable: {
+      save: 'save',
+      discard: 'discard',
       inviteButton: 'Invite {{type}}',
       viewSpace: 'view space',
       modifySpace: 'modify space',

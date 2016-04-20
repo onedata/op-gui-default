@@ -1,26 +1,13 @@
 {{!-- Users permissions table for single Space --}}
-<div class="row">
-  <div class="col-xs-12 col-md-12">
-    <div class="row">
-      <div class="col-md-8">
-        {{!-- TODO: use other bootstrap align style --}}
-      </div>
-      <div class="col-md-4">
-        <div class="{{if isModified '' 'hidden'}}">
-          <div class="row">
-            <div class="col-md-6">
-              <button {{action 'discardChanges' userPermissions}} type="button"
-              name="discard-changes" class="btn btn-danger">discard</button>
-            </div>
-            <div class="col-md-6">
-              <button {{action 'saveChanges' userPermissions}} type="button"
-              name="save-changes" class="btn btn-success">save</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="row row-permissions-buttons hidden-xs hidden-sm">
+  <button {{action 'saveChanges' userPermissions}} type="button" name="save-changes"
+    class="btn btn-permissions btn-save no-outline {{unless isModified 'disabled'}}">
+    {{t 'components.permissionsTable.save'}}
+  </button>
+  <button {{action 'discardChanges' userPermissions}} type="button" name="discard-changes"
+    class="btn btn-permissions btn-discard no-outline {{unless isModified 'disabled'}}">
+    {{t 'components.permissionsTable.discard'}}
+  </button>
 </div>
 
 <div class="one-table normal">

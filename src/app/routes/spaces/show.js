@@ -15,8 +15,11 @@ export default Ember.Route.extend({
     return this.store.find('space', params.space_id);
   },
 
-  /** By default, open users settings */
-  afterModel(/*space*/) {
-    this.transitionTo('spaces.show.users');
+  activate() {
+    console.debug(`spaces.show.index activate`);
+  },
+
+  deactivate() {
+    console.debug(`spaces.show.index ! deactivate`);
   }
 });

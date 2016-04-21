@@ -36,7 +36,7 @@ export default Ember.Service.extend(Ember.Evented, {
       this.set('prevSelectedSpace', this.get('selectedSpace'));
       this.set('selectedSpace', defaultSpace);
     }
-  }.observes('spaces', 'spaces.length', 'spaces.@each.isDefault'),
+  }.observes('spaces', 'spaces.[]', 'spaces.@each.isDefault'),
 
   getSpaceIdForFile(file) {
     if (file) {

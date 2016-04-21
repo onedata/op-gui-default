@@ -50,18 +50,6 @@ export default Ember.Component.extend({
     this.get('service').clear();
   }.on('willDestroyElement'),
 
-  /** If activeSpace not set, choose default space if available */
-  initActiveSpace: function() {
-    if (!this.get('activeSpace')) {
-      if (this.get('spaces.length') > 0) {
-        let defaultSpace = this.get('spaces').find((s) => s.get('isDefault'));
-        if (defaultSpace) {
-          this.set('activeSpace', defaultSpace);
-        }
-      }
-    }
-  }.observes('spaces.length'),
-
   activeSpaceDidChange: function() {
     if (this.get('activeSpace')) {
       this.sendAction('showSpaceOptions', this.get('activeSpace'));
@@ -71,7 +59,6 @@ export default Ember.Component.extend({
   didInsertElement() {
     // reset spaces expanded state
     this.get('spaces').forEach((s) => s.set('isExpanded', false));
-    this.initActiveSpace();
   },
 
   spaceActionMessage(notifyType, messageId, spaceName) {
@@ -81,6 +68,7 @@ export default Ember.Component.extend({
 
   actions: {
     openSubmenuEntry(space, name) {
+      console.debug(`spaces-menu: openSubmenuEntry(${space}, ${name})`);
       this.sendAction('openSubmenuEntry', space, name);
     },
 

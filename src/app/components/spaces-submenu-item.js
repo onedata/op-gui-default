@@ -15,8 +15,9 @@ export default Ember.Component.extend({
   }.property('type'),
 
   isActive: function() {
-    return this.get('submenu.activeOption') === this.get('type');
-  }.property('submenu', 'submenu.activeOption'),
+    return this.get('submenu.isSpaceActive') &&
+      this.get('submenu.activeOption') === this.get('type');
+  }.property('submenu', 'submenu.activeOption', 'submenu.isSpaceActive'),
 
   typePermissionsClass: function() {
     return `${this.get('type')}-permissions`;

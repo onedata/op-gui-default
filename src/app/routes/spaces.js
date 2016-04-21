@@ -18,8 +18,6 @@ export default Ember.Route.extend(MainRouteMixin, {
     return this.store.findAll('space');
   },
 
-  // afterModel moved to onSpaceChange in controller because of model load problems
-
   actions: {
     /** Show submenu for Space */
     goToSpace(space) {
@@ -28,6 +26,7 @@ export default Ember.Route.extend(MainRouteMixin, {
 
     /** Show users/groups/etc. permissions table using route */
     openSubmenuEntry(space, name) {
+      console.debug(`route spaces: openSubmenuEntry(${space.get('id')}, ${name})`);
       if (space && name) {
         this.transitionTo(`spaces.show.${name}`, space);
       } else {

@@ -15,6 +15,7 @@ import requests
 import time
 import sys
 from . import docker
+from timeouts import *
 
 try:
     import xml.etree.cElementTree as eTree
@@ -23,11 +24,13 @@ except ImportError:
 
 requests.packages.urllib3.disable_warnings()
 
+HOST_STORAGE_PATH = "/tmp/onedata/storage"
+
 
 def nagios_up(ip, port=None, protocol='https'):
     url = '{0}://{1}{2}/nagios'.format(protocol, ip, (':' + port) if port else '')
     try:
-        r = requests.get(url, verify=False, timeout=5)
+        r = requests.get(url, verify=False, timeout=REQUEST_TIMEOUT)
         if r.status_code != requests.codes.ok:
             return False
 
@@ -153,7 +156,7 @@ def fix_sys_config_walk(element, current_app_name, parents, file_path):
 
 
 def apps_with_sysconfig():
-    return ["cluster_manager", "appmock", "cluster_worker", "op_worker", "globalregistry", "onepanel", "oneclient"]
+    return ["cluster_manager", "appmock", "cluster_worker", "op_worker", "globalregistry", "onepanel", "oneclient", "oz_worker"]
 
 
 def get_docker_name(name_or_container):
@@ -191,7 +194,7 @@ def format_hostname(domain_parts, uid):
 def format_erl_node_name(app_name, hostname):
     """Formats full node name for an erlang VM hosted on docker based on app_name and hostname.
     NOTE: Hostnames are also used as docker names!
-    app_name - application name, e.g.: 'cluster_manager', 'globalregistry'
+    app_name - application name, e.g.: 'cluster_manager', 'oz_worker'
     hostname - hostname aquired by format_*_hostname
     """
     return '{0}@{1}'.format(app_name, hostname)
@@ -230,4 +233,18 @@ def volume_for_storage(storage):
     """Returns tuple (path_on_host, path_on_docker, read_write_mode)
     for a given storage
     """
-    return os.path.join('/tmp/onedata/storage/', storage), storage, 'rw'
+    return storage_host_path(storage), storage, 'rw'
+
+
+def storage_host_path(storage):
+    """Returns path to storage on host
+    """
+    return os.path.join(HOST_STORAGE_PATH, ensure_relative_path(storage))
+
+
+def ensure_relative_path(path):
+    """Ensures that given path is relative (doesn't start with '/')
+    """
+    if path[0] == "/":
+        return path[1:]
+    return path

@@ -12,7 +12,7 @@ export default Ember.Component.extend({
 
   isExpanded: function() {
     return this.get('spacesMenu.activeSpace.id') === this.get('space.id');
-  }.property('spacesMenu.activeSpace'),
+  }.property('spacesMenu.activeSpace.id'),
 
   actions: {
     /** Delegate to goToSpace action, should show submenu to configure Space */
@@ -21,6 +21,7 @@ export default Ember.Component.extend({
     },
 
     openSubmenuEntry(name) {
+      console.debug(`spaces-menu-item: openSubmenuEntry(${name})`);
       this.sendAction('openSubmenuEntry', this.get('space'), name);
     },
 

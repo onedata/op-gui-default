@@ -36,7 +36,9 @@ export default Ember.Component.extend({
   }.property('space', 'space.sidebarEntryId'),
 
   activeOptionDidChange: function() {
-    this.sendAction('openSubmenuEntry', this.get('activeOption'));
+    if (this.get('isSpaceActive') && this.get('activeOption')) {
+      this.sendAction('openSubmenuEntry', this.get('activeOption'));
+    }
   }.observes('activeOption'),
 
   actions: {

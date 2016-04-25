@@ -24,7 +24,7 @@ export default Ember.Route.extend({
 
   actions: {
     goToItem(name) {
-      this.transitionTo(name);
+      this.transitionTo(`${name}.index`);
     }
   },
 

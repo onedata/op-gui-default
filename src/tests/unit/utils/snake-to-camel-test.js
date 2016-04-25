@@ -1,10 +1,19 @@
-import snakeToCamel from '../../../utils/snake-to-camel';
-import { module, test } from 'qunit';
+/* jshint expr:true */
+import { expect } from 'chai';
+import {
+  describe,
+  it
+} from 'mocha';
+import snakeToCamel from 'op-worker-gui/utils/snake-to-camel';
 
-module('Unit | Utility | snake to camel');
+describe('snakeToCamel', function() {
+  it('converts snake-case to camelCase by default', function() {
+    let result = snakeToCamel('hello-world');
+    expect(result).to.be.equal('helloWorld');
+  });
 
-// Replace this with your real tests.
-test('it works', function(assert) {
-  let result = snakeToCamel();
-  assert.ok(result);
+  it('converts snake_case to camelCase when using "_" separator', function() {
+    let result = snakeToCamel('hello_world', '_');
+    expect(result).to.be.equal('helloWorld');
+  });
 });

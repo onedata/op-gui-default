@@ -1,10 +1,14 @@
-import langDetect from '../../../utils/lang-detect';
-import { module, test } from 'qunit';
+/* jshint expr:true */
+import { expect } from 'chai';
+import {
+  describe,
+  it
+} from 'mocha';
+import langDetect from 'op-worker-gui/utils/lang-detect';
 
-module('Unit | Utility | lang detect');
-
-// Replace this with your real tests.
-test('it works', function(assert) {
-  let result = langDetect();
-  assert.ok(result);
+describe('langDetect', function() {
+  it('returns always "en" in version 3.0', function() {
+    let result = langDetect();
+    expect(result).to.be.equal('en');
+  });
 });

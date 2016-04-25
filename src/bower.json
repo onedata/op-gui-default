@@ -3,7 +3,7 @@
   "dependencies": {
     "ember": "1.13.12",
     "ember-cli-shims": "0.0.6",
-    "ember-cli-test-loader": "0.2.1",
+    "ember-cli-test-loader": "0.2.2",
     "ember-data": "1.13.15",
     "ember-load-initializers": "0.1.7",
     "ember-qunit": "0.4.16",
@@ -17,7 +17,10 @@
     "bootstrap": "~3.3.6",
     "bootstrap-sass": "~3.3.6",
     "moment": "^2.12.0",
-    "clipboard": "~1.5.5"
+    "clipboard": "~1.5.5",
+    "mocha": "~2.2.4",
+    "chai": "~2.3.0",
+    "ember-mocha-adapter": "~0.3.1"
   },
   "resolutions": {
     "ember-data": "1.13.15",

@@ -79,7 +79,8 @@ export default Ember.Component.extend({
     'buttonStyle:data-style',
     'size:data-size',
     'spinnerColor:data-spinner-color',
-    'spinnerSize:data-spinner-size'],
+    'spinnerSize:data-spinner-size',
+    'buttonType:type'],
   classNameBindings: ['inFlight:in-flight:ready', ':spin-button'],
 
   _timer: null,

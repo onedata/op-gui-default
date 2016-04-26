@@ -50,5 +50,16 @@ describeComponent(
       // TODO: integrate and use chai-jquery
       expect(this.$().find('button').attr('data-spinner-size')).to.be.equal('99');
     });
+
+    it('allows to set buttonType, which maps to button`s type attribute', function () {
+      this.render(hbs`
+      {{#spin-button-onedata buttonType='submit'}}
+        hello
+      {{/spin-button-onedata}}
+      `);
+
+      // TODO: integrate and use chai-jquery
+      expect(this.$().find('button').attr('type')).to.be.equal('submit');
+    });
   }
 );

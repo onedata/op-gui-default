@@ -8,30 +8,36 @@
   }
 }
 
-.btn-primary {
-  color: white !important;
-  background-color: $color-button-primary;
+@mixin button-background-colors($fg-color, $base-bg-color) {
+  color: $fg-color !important;
+  background-color: $base-bg-color;
 
   &:hover {
-    background-color: lighten($color-button-primary, 10%);
+    background-color: lighten($base-bg-color, 10%);
+  }
+
+  &[disabled],
+  &.disabled,
+  &.disabled:hover,
+  &.disabled:focus,
+  &.disabled.focus,
+  &[disabled]:hover,
+  &[disabled]:focus,
+  &[disabled].focus {
+    background-color: darken($base-bg-color, 20%);
   }
 
   &:active:focus, &:active:hover, &:focus, &:active {
-    background-color: darken($color-button-primary, 10%);
+    background-color: darken($base-bg-color, 10%);
   }
 }
 
+.btn-primary {
+  @include button-background-colors(white, $color-button-primary);
+}
+
 .btn-default {
-  color: white !important;
-  background-color: $color-button-default;
-
-  &:hover {
-    background-color: lighten($color-button-default, 10%);
-  }
-
-  &:active:focus, &:active:hover, &:focus, &:active {
-    background-color: darken($color-button-default, 10%);
-  }
+  @include button-background-colors(white, $color-button-default);
 }
 
 @mixin btn-before-oneicon($icon-name, $top, $left, $font-size) {

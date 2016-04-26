@@ -16,6 +16,7 @@ export default {
       yes: 'Yes',
       no: 'No',
       close: 'Close',
+      create: 'Create',
       fetchingToken: 'Fetching token...',
       fetchingTokenError: 'Fetching token failed!',
     },
@@ -78,6 +79,8 @@ export default {
         label: 'Are you sure you want to remove the "{{spaceName}}" space?'
       },
       notify: {
+        createSuccess: 'Space "{{spaceName}}" created successfully',
+        createFailed: 'Space "{{spaceName}}" cannot be created due to an error',
         leaveSuccess: 'Space "{{spaceName}}" left successfully',
         leaveFailed: 'Cannot leave space "{{spaceName}}" due to an error',
         removeSuccess: 'Space "{{spaceName}}" has been removed',

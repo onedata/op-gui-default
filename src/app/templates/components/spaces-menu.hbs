@@ -13,7 +13,7 @@
 </div>
 
 <ul class="spaces-list">
-  {{#each spacesSorted as |space|}}
+  {{#each validSpacesSorted as |space|}}
     {{spaces-menu-item space=space isExpanded=(eq activeSpace.id space.id)
       openSettingsModal='openSettingsModal' openSubmenuEntry='openSubmenuEntry'
       setAsHome='setAsHome' collapseAllSpaces='collapseAllSpaces'}}
@@ -36,10 +36,13 @@
     {{/bs-form}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
-    {{#bs-button buttonType="submit" type="primary"}}
-      {{t "common.modal.ok"}}
-    {{/bs-button}}
-    {{#bs-button action=(action "close" target=footer) type="default"}}
+    {{#spin-button-onedata buttonType="submit" action=(action "submitCreateSpace")
+      class="btn btn-primary" spinnerColor="#fff"
+      inFlight=isSavingSpace}}
+      {{t "common.modal.create"}}
+    {{/spin-button-onedata}}
+
+    {{#bs-button action=(action "close" target=footer) type="default" disabled=isSavingSpace}}
       {{t "common.modal.cancel"}}
     {{/bs-button}}
   {{/bs-modal-footer}}

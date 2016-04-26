@@ -147,13 +147,55 @@ export default Ember.Component.extend({
     },
 
     setAsHome(space) {
-      this.get('spaces').filter((s) => s.get('isDefault')).forEach((s) => {
-        s.set('isDefault', false);
-        s.save();
-      });
-      space.set('isDefault', true);
-      // TODO: notify success
-      space.save();
+      this.$().addClass('is-loading');
+
+      let currentHome = this.get('spaces').find((s) => s.get('isDefault'));
+
+      let setNewHome = () => {
+        space.set('isDefault', true);
+        let savePromise = space.save();
+        savePromise.then(
+          () => {
+            this.spaceActionMessage('info', 'setAsHomeSuccess', space.get('name'));
+          },
+          (error) => {
+            this.get('notify').error(
+              this.get('i18n').t('components.spacesMenu.notify.setAsHomeFailed', {
+                spaceName: space.get('name')
+              }) + ': ' +
+                error
+            );
+          }
+        );
+
+        savePromise.finally(() => {
+          this.$().removeClass('is-loading');
+        });
+      };
+
+      if (currentHome) {
+        // remove isDefault from current home space
+        currentHome.set('isDefault', false);
+        let unsetCurrentHomePromise = currentHome.save();
+        unsetCurrentHomePromise.then(
+          () => {
+            setNewHome();
+          },
+          (error) => {
+            this.get('notify').error(
+              this.get('i18n').t('components.spacesMenu.notify.setAsHomeFailed', {
+                spaceName: space.get('name')
+              }) + ': ' +
+                error
+            );
+            this.$().removeClass('is-loading');
+          }
+        );
+      } else {
+        // there is some error, because current home should be found
+        // anyway, force set new home
+        setNewHome();
+      }
     },
 
     submitLeaveSpace() {

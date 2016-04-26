@@ -80,6 +80,8 @@ export default {
         label: 'Are you sure you want to remove the "{{spaceName}}" space?'
       },
       notify: {
+        setAsHomeSuccess: 'Space "{{spaceName}}" set as home',
+        setAsHomeFailed: 'Space "{{spaceName}}" cannot be set as home due to an error',
         createSuccess: 'Space "{{spaceName}}" created successfully',
         createFailed: 'Space "{{spaceName}}" cannot be created due to an error',
         leaveSuccess: 'Space "{{spaceName}}" left successfully',

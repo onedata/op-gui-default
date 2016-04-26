@@ -1,16 +1,24 @@
 {{!-- Users permissions table for single Space --}}
 <div class="row row-permissions-buttons hidden-xs hidden-sm">
-  <button {{action 'saveChanges' userPermissions}} type="button" name="save-changes"
-    class="btn btn-permissions btn-save no-outline {{unless isModified 'disabled'}}">
+  {{!-- NOTE: currently these buttons are copied in bottom of this file --}}
+  {{!-- because of mobile view --}}
+
+  {{#spin-button-onedata
+    action=(action 'saveChanges' userPermissions)
+    buttonStyle="expand-left" class=(concat "btn btn-permissions btn-save no-outline" (unless isModified ' disabled' ''))
+    disabled=(unless isModified true) spinnerSize=spinnerSize size=spinButtonSize}}
     {{t 'components.permissionsTable.save'}}
-  </button>
-  <button {{action 'discardChanges' userPermissions}} type="button" name="discard-changes"
-    class="btn btn-permissions btn-discard no-outline {{unless isModified 'disabled'}}">
+  {{/spin-button-onedata}}
+
+  {{#spin-button-onedata
+    action=(action 'discardChanges' userPermissions)
+    buttonStyle="expand-left" class=(concat "btn btn-permissions btn-discard no-outline" (unless isModified ' disabled' ''))
+    disabled=(unless isModified true) spinnerSize=18 size=spinButtonSize}}
     {{t 'components.permissionsTable.discard'}}
-  </button>
+  {{/spin-button-onedata}}
 </div>
 
-<div class="one-table normal">
+<div class="one-table normal {{if isLocked 'is-loading'}}">
   <div class="one-thead">
     <div class="one-th one-first">
       <div class="cell-body">
@@ -43,12 +51,17 @@
 </div>
 
 <div class="row row-permissions-buttons hidden-md hidden-lg">
-  <button {{action 'discardChanges' userPermissions}} type="button" name="discard-changes"
-    class="btn btn-permissions btn-discard no-outline mobile {{unless isModified 'disabled'}}">
-    {{t 'components.permissionsTable.discard'}}
-  </button>
-  <button {{action 'saveChanges' userPermissions}} type="button" name="save-changes"
-    class="btn btn-permissions btn-save no-outline mobile {{unless isModified 'disabled'}}">
+  {{#spin-button-onedata
+    action=(action 'saveChanges' userPermissions)
+    buttonStyle="expand-left" class=(concat "btn btn-permissions btn-save no-outline" (unless isModified ' disabled' ''))
+    disabled=(unless isModified true) spinnerSize=18 size=spinButtonSize}}
     {{t 'components.permissionsTable.save'}}
-  </button>
+  {{/spin-button-onedata}}
+
+  {{#spin-button-onedata
+    action=(action 'discardChanges' userPermissions)
+    buttonStyle="expand-left" class=(concat "btn btn-permissions btn-discard no-outline" (unless isModified ' disabled' ''))
+    disabled=(unless isModified true) spinnerSize=18 size=spinButtonSize}}
+    {{t 'components.permissionsTable.discard'}}
+  {{/spin-button-onedata}}
 </div>

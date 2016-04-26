@@ -62,18 +62,32 @@
   text-transform: uppercase;
   background-color: white;
 
+  // support for spin-button
+  &.disabled,
+  &[disabled],
+  &.in-flight {
+    color: $onedata-gray !important;
+    border-color: $onedata-gray !important;
+    background-color: white;
+  }
+
+  .spin-button-spinner {
+    left: 20px !important;
+  }
+
   &.btn-save {
     color: $onedata-green-save;
 
-    @include btn-before-oneicon-permissions($oneicon-checkbox-check);
+    &:not(.in-flight) {
+      @include btn-before-oneicon-permissions($oneicon-checkbox-check);
+    }
   }
   &.btn-discard {
     color: $onedata-red-discard;
 
-    @include btn-before-oneicon-permissions($oneicon-checkbox-x);
-  }
-  &.btn-save.disabled, &.btn-discard.disabled {
-    color: $onedata-gray;
+    &:not(.in-flight) {
+      @include btn-before-oneicon-permissions($oneicon-checkbox-x);
+    }
   }
 }
 

@@ -32,15 +32,39 @@ let onSaveSuccess = function(permission) {
  *
  * @param {SpaceUserPermission} permission - a model that saving failed
  */
-let onSaveFailure = function(permission) {
-  console.debug('permission ' + permission + ' saving failed!');
+let onSaveFailure = function(permission, error) {
+  error = error || this.get('i18n').t('common.unknownError');
+  console.debug('permission ' + permission + ' saving failed: ' + error);
+  this.get('notify').error(this.get('i18n')
+    .t('components.permissionsTable.notify.saveFailedSingle', {
+      name: permission.owner.name
+    }) + ': ' + error);
 };
 
 export default Ember.Component.extend({
   oneproviderServer: Ember.inject.service(),
   commonModals: Ember.inject.service(),
+  notify: Ember.inject.service(),
 
   classNames: ['permissions-table'],
+
+  /** If true, then table will has is-loading class */
+  isLocked: false,
+
+  /** Unfortunately, some colors are used by spin.js and must be passed from JS code
+    should be the same as $onedata-gray **/
+  colorSpinnerDisabled: '#B6BAC0',
+
+  /** Common size of buttons spinners */
+  spinnerSize: 18,
+  /** Common size of spin-buttons */
+  spinButtonSize: 's',
+
+  // these colors are currently not used - but stay here just in case
+  // // should be the same as $onedata-green-save
+  // colorSpinnerSave: '#4FD56E',
+  // // should be the same as $onedata-red-discard
+  // colorSpinnerDiscard: '#F14549',
 
   /**
    * Collection of permissions-base model subclasses instances.
@@ -102,17 +126,30 @@ export default Ember.Component.extend({
 
     /** Save all permission models in table */
     saveChanges: function() {
-      this.get('permissions').forEach(function(permission) {
+      this.set('isLocked', true);
+      let promises = this.get('permissions').map((permission) => {
         if (permission.get('isModified')) {
-          permission.save().then(onSaveSuccess, onSaveFailure);
+          return permission.save().then(onSaveSuccess, onSaveFailure);
         }
       });
+      let masterPromise = Ember.RSVP.Promise.all(promises);
+      masterPromise.finally(() => this.set('isLocked', false));
+      masterPromise.catch((error) => {
+        error = error || this.get('i18n').t('common.unknownError');
+        this.get('notify').error(
+          `${this.get('i18n').t('components.permissionsTable.notify.saveFailedAny')}: ${error}`
+        );
+      });
+      return masterPromise;
     },
 
     /** Bring back all permission models from table to state before user modification */
     discardChanges: function() {
       this.get('permissions').forEach(function(permission) {
         permission.reset();
+      });
+      return new Ember.RSVP.Promise((resolve) => {
+        resolve();
       });
     },
 

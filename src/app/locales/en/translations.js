@@ -108,6 +108,10 @@ export default {
       inviteModal: {
         title: 'Invite {{type}} to space',
         label: 'Pass the below token to the {{type}} you want to invite'
+      },
+      notify: {
+        saveFailedAny: 'Some of permissions saving failed',
+        saveFailedSingle: 'Cannot set permissions for "{{name}}"'
       }
     },
     // data

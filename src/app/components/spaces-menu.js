@@ -120,23 +120,23 @@ export default Ember.Component.extend({
     },
 
     submitJoinSpace() {
-      try {
-        let token = this.get('joinSpaceToken').trim();
-        // TODO: loading gif in modal?
-        this.get('oneproviderServer').joinSpace(token).then(
-          (spaceName) => {
-            this.spaceActionMessage('info', 'joinSuccess', spaceName);
-          },
-          (errorJson) => {
-            console.log(errorJson.message);
-            let message = this.get('i18n').t('components.spacesMenu.notify.joinFailed', {errorDetails: errorJson.message});
-            this.get('notify')['error'](message);
-            //this.spaceActionMessage('error', 'joinFailed', message);
-          }
-        );
-      } finally {
+      this.set('isJoiningSpaceWorking', true);
+      let token = this.get('joinSpaceToken') && this.get('joinSpaceToken').trim();
+      let serverPromise = this.get('oneproviderServer').joinSpace(token);
+      serverPromise.then(
+        (spaceName) => {
+          this.spaceActionMessage('info', 'joinSuccess', spaceName);
+        },
+        (errorJson) => {
+          console.log(errorJson.message);
+          let message = this.get('i18n').t('components.spacesMenu.notify.joinFailed', {errorDetails: errorJson.message});
+          this.get('notify').error(message);
+        }
+      );
+      serverPromise.finally(() => {
+        this.set('isJoiningSpaceWorking', false);
         this.set('isJoiningSpace', false);
-      }
+      });
     },
 
     /*** Single space operation modals ***/

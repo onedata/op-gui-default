@@ -60,9 +60,11 @@
     {{/bs-form}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
-    {{#bs-button buttonType="submit" type="primary"}}
-      {{t "common.modal.ok"}}
-    {{/bs-button}}
+    {{#spin-button-onedata buttonType="submit"
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isJoiningSpaceWorking disabled=(unless joinSpaceToken true)}}
+      {{t "common.modal.join"}}
+    {{/spin-button-onedata}}
   {{/bs-modal-footer}}
 {{/bs-modal}}
 

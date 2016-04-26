@@ -17,6 +17,7 @@ export default {
       no: 'No',
       close: 'Close',
       create: 'Create',
+      join: 'Join',
       fetchingToken: 'Fetching token...',
       fetchingTokenError: 'Fetching token failed!',
     },

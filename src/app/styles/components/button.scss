@@ -34,12 +34,28 @@
   }
 }
 
-.btn-permissions {
+@mixin btn-before-oneicon($icon-name, $top, $left, $font-size) {
   // because we need absolute-positioned icons inside
   position: relative;
-  padding: 5px 30px;
   // we need extra space for absolute icon
-  padding-left: 48px;
+  padding-left: $left + $font-size + 10px;
+
+  &:before {
+    position: absolute;
+    top: $top;
+    left: $left;
+    font-size: $font-size;
+    font-family: 'oneicons';
+    content: $icon-name;
+  }
+}
+
+@mixin btn-before-oneicon-permissions($icon-name) {
+  @include btn-before-oneicon($icon-name, -3px, 14px, 24px);
+}
+
+.btn-permissions {
+  padding: 5px 30px;
   border-radius: 2px !important;
   border-width: 1px !important;
   border-style: solid !important;
@@ -49,26 +65,12 @@
   &.btn-save {
     color: $onedata-green-save;
 
-    &:before {
-      position: absolute;
-      top: -3px;
-      left: 14px;
-      font-size: 24px;
-      font-family: 'oneicons';
-      content: $oneicon-checkbox-check;
-    }
+    @include btn-before-oneicon-permissions($oneicon-checkbox-check);
   }
   &.btn-discard {
     color: $onedata-red-discard;
 
-    &:before {
-      position: absolute;
-      top: -3px;
-      left: 14px;
-      font-size: 24px;
-      font-family: 'oneicons';
-      content: $oneicon-checkbox-x;
-    }
+    @include btn-before-oneicon-permissions($oneicon-checkbox-x);
   }
   &.btn-save.disabled, &.btn-discard.disabled {
     color: $onedata-gray;

@@ -19,7 +19,10 @@ export default Ember.Component.extend({
   commonLoader: Ember.inject.service(),
 
   spaces: null,
-  validSpaces: Ember.computed.filter('spaces', (s) => s.get('id') && s.get('name')),
+  validSpaces: function() {
+    return this.get('spaces').filter((s) => s.get('isLoaded'));
+  }.property('spaces', 'spaces.[]', 'spaces.@each.isLoaded'),
+  //validSpaces: Ember.computed.filter('spaces', (s) => s.get('id') && s.get('name')),
   spacesSorting: ['isDefault:desc', 'name'],
   validSpacesSorted: Ember.computed.sort('validSpaces', 'spacesSorting'),
 

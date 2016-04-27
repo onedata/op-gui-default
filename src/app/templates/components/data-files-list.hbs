@@ -1,0 +1,59 @@
+<table class="table table-strips files-table {{if isLoadingFiles 'is-loading'}}">
+  <div class="drop-area">
+    {{icon 'upload'}}
+  </div>
+  <thead>
+  <th>
+    {{t 'components.dataFilesList.files'}}
+  </th>
+  <th class="hidden-xs">
+    {{t 'components.dataFilesList.size'}}
+  </th>
+  <th class="hidden-xs hidden-sm">
+    {{t 'components.dataFilesList.permissions'}}
+  </th>
+  <th class="hidden-xs">
+    {{t 'components.dataFilesList.modification'}}
+  </th>
+  </thead>
+  <tbody>
+  {{#each visibleFilesSorted as |file|}}
+  {{!-- TODO: open file when selected and enter pressed --}}
+    <tr {{action "openFile" file on="doubleClick"}}
+        {{action "selectFile" file on="click"}}
+        class="{{if file.isSelected 'active'}}">
+      <td id="file-{{file.id}}" class="file-list-col-file">
+        <div class="file-icon">
+          {{#if file.isBroken}}
+            {{icon "file" "color-directory"}}
+          {{else}}
+            {{#if file.isDir}}
+              {{icon "folder" "color-directory"}}
+            {{else}}
+              {{icon "file" "color-file"}}
+            {{/if}}
+          {{/if}}
+        </div>
+        <div class="file-label">
+          {{#truncated-string parentSelector=".file-list-col-file" shrinkBy=100}}
+            {{#if file.isBroken}}
+              <em>{{t 'components.dataFilesList.fileIsBroken'}}</em>
+            {{else}}
+              {{file.name}}
+            {{/if}}
+          {{/truncated-string}}
+        </div>
+      </td>
+      <td class="hidden-xs file-list-col-size nowrap">
+        {{file.sizeHumanReadable}}
+      </td>
+      <td class="col-permissions hidden-xs hidden-sm file-list-col-permissions nowrap">
+        {{file.permissionsHumanReadable}}
+      </td>
+      <td class="hidden-xs file-list-col-modification nowrap">
+        {{file.modificationMoment}}
+      </td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>

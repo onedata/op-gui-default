@@ -1,0 +1,67 @@
+{{!-- Users permissions table for single Space --}}
+<div class="row row-permissions-buttons hidden-xs hidden-sm">
+  {{!-- NOTE: currently these buttons are copied in bottom of this file --}}
+  {{!-- because of mobile view --}}
+
+  {{#spin-button-onedata
+    action=(action 'saveChanges' userPermissions)
+    buttonStyle="expand-left" class=(concat "btn btn-permissions btn-save no-outline" (unless isModified ' disabled' ''))
+    disabled=(unless isModified true) spinnerSize=spinnerSize size=spinButtonSize}}
+    {{t 'components.permissionsTable.save'}}
+  {{/spin-button-onedata}}
+
+  {{#spin-button-onedata
+    action=(action 'discardChanges' userPermissions)
+    buttonStyle="expand-left" class=(concat "btn btn-permissions btn-discard no-outline" (unless isModified ' disabled' ''))
+    disabled=(unless isModified true) spinnerSize=18 size=spinButtonSize}}
+    {{t 'components.permissionsTable.discard'}}
+  {{/spin-button-onedata}}
+</div>
+
+<div class="one-table normal {{if isLocked 'is-loading'}}">
+  <div class="one-thead">
+    <div class="one-th one-first">
+      <div class="cell-body">
+        <div class="item-element item-label">{{title}}</div>
+        <div class="item-element item-icon item-tool" {{action 'invite'}}>
+          <figure class="icon">
+            {{icon inviteButton}}
+            <figcaption>{{t 'components.permissionsTable.inviteButton' type=typeSingular}}</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+    <div class="one-th">{{t 'components.permissionsTable.viewSpace'}}</div>
+    <div class="one-th">{{t 'components.permissionsTable.modifySpace'}}</div>
+    <div class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</div>
+    <div class="one-th">{{t 'components.permissionsTable.removeSpace'}}</div>
+    <div class="one-th">{{t 'components.permissionsTable.inviteUser'}}</div>
+    <div class="one-th">{{t 'components.permissionsTable.removeUser'}}</div>
+    <div class="one-th">{{t 'components.permissionsTable.inviteGroup'}}</div>
+    <div class="one-th">{{t 'components.permissionsTable.removeGroup'}}</div>
+    <div class="one-th">{{t 'components.permissionsTable.inviteProvider'}}</div>
+    <div class="one-th">{{t 'components.permissionsTable.removeProvider'}}</div>
+  </div>
+  <div class="one-tbody">
+    {{#each permissionsSorted as |perm|}}
+      {{permissions-table-row permissions=perm isActive=(eq activePermissions.id perm.id)
+        activatePermissions="activatePermissions" togglePermission="togglePermission"}}
+    {{/each}}
+  </div>
+</div>
+
+<div class="row row-permissions-buttons hidden-md hidden-lg">
+  {{#spin-button-onedata
+    action=(action 'saveChanges' userPermissions)
+    buttonStyle="expand-left" class=(concat "btn btn-permissions btn-save no-outline" (unless isModified ' disabled' ''))
+    disabled=(unless isModified true) spinnerSize=18 size=spinButtonSize}}
+    {{t 'components.permissionsTable.save'}}
+  {{/spin-button-onedata}}
+
+  {{#spin-button-onedata
+    action=(action 'discardChanges' userPermissions)
+    buttonStyle="expand-left" class=(concat "btn btn-permissions btn-discard no-outline" (unless isModified ' disabled' ''))
+    disabled=(unless isModified true) spinnerSize=18 size=spinButtonSize}}
+    {{t 'components.permissionsTable.discard'}}
+  {{/spin-button-onedata}}
+</div>

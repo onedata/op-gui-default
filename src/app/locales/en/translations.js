@@ -16,6 +16,8 @@ export default {
       yes: 'Yes',
       no: 'No',
       close: 'Close',
+      create: 'Create',
+      join: 'Join',
       fetchingToken: 'Fetching token...',
       fetchingTokenError: 'Fetching token failed!',
     },
@@ -27,6 +29,11 @@ export default {
     featureNotSupportedLong: 'Sorry, this feature is not supported yet.',
   },
   components: {
+    commonLoader: {
+      defaultMessage: 'Loading...',
+      synchronizingSpaces: 'Synchronizing user spaces...',
+      firstLogin: 'This might take a while if this is the first login to this provider'
+    },
     topBar: {
       logout: 'Log out',
       manageProviders: 'Manage account'
@@ -78,6 +85,10 @@ export default {
         label: 'Are you sure you want to remove the "{{spaceName}}" space?'
       },
       notify: {
+        setAsHomeSuccess: 'Space "{{spaceName}}" set as home',
+        setAsHomeFailed: 'Space "{{spaceName}}" cannot be set as home due to an error',
+        createSuccess: 'Space "{{spaceName}}" created successfully',
+        createFailed: 'Space "{{spaceName}}" cannot be created due to an error',
         leaveSuccess: 'Space "{{spaceName}}" left successfully',
         leaveFailed: 'Cannot leave space "{{spaceName}}" due to an error',
         removeSuccess: 'Space "{{spaceName}}" has been removed',
@@ -108,6 +119,10 @@ export default {
       inviteModal: {
         title: 'Invite {{type}} to space',
         label: 'Pass the below token to the {{type}} you want to invite'
+      },
+      notify: {
+        saveFailedAny: 'Some of permissions saving failed',
+        saveFailedSingle: 'Cannot set permissions for "{{name}}"'
       }
     },
     // data
@@ -118,7 +133,8 @@ export default {
       files: 'files',
       size: 'size',
       modification: 'modification',
-      permissions: 'permissions'
+      permissions: 'permissions',
+      fileIsBroken: 'This file is not synced yet'
     },
     dataFilesListToolbar: {
       tooltip: {
@@ -159,6 +175,9 @@ export default {
         providerName: 'Provider',
         dataDitribution: 'File blocks'
       },
+      notify: {
+        createFileFailed: 'File or directory "{{fileName}}" creation failed'
+      }
     },
     fileUpload: {
       titleUpload: 'Uploading {{count}} file(s)',

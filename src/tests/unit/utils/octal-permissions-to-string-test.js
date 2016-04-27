@@ -1,7 +1,10 @@
-import octalPermissionsToString from '../../../utils/octal-permissions-to-string';
-import { module, test } from 'qunit';
-
-module('Unit | Utility | octal permissions to string');
+/* jshint expr:true */
+import { expect } from 'chai';
+import {
+  describe,
+  it
+} from 'mocha';
+import octalPermissionsToString from 'op-worker-gui/utils/octal-permissions-to-string';
 
 let perms = {
   644: 'rw-r--r--',
@@ -12,11 +15,14 @@ let perms = {
   777: 'rwxrwxrwx',
 };
 
-for (let octal in perms) {
-  // @todo remove this suppresion when the test is written in a better way
-  // https://jslinterrors.com/dont-make-functions-within-a-loop
-  /*jshint -W083 */
-  test('perms ' + octal, function(assert) {
-    assert.equal(octalPermissionsToString(octal), perms[octal]);
-  });
-}
+let mochaExpectEqualAfterConvert = (octal) => {
+  return () => {
+    expect(octalPermissionsToString(octal)).to.be.equal(perms[octal]);
+  };
+};
+
+describe('octalPermissionsToString', function() {
+  for (let octal in perms) {
+    it(`converts ${octal} to ${perms[octal]}`, mochaExpectEqualAfterConvert(octal));
+  }
+});

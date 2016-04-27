@@ -29,7 +29,8 @@ export default Ember.Component.extend({
 
   subdirsSorting: ['name:asc'],
   subdirs: Ember.computed.filterBy('rootDir.children', 'isDir', true),
-  subdirsSorted: Ember.computed.sort('subdirs', 'subdirsSorting'),
+  visibleSubdirs: Ember.computed.filter('subdirs', (sd) => sd.get('id') && sd.get('name')),
+  visibleSubdirsSorted: Ember.computed.sort('visibleSubdirs', 'subdirsSorting'),
 
   actions: {
     /** Expand/collapse a dir, showing/hiding its children */

@@ -213,7 +213,15 @@ export default DS.Model.extend({
     });
   },
 
-  /** Creates file in this directory (only if this.isDir()) */
+  /**
+    Creates file in this directory (only if this.isDir())
+    @param {String} type Type of file-object: 'file' or 'dir'
+    @param {String} fileName
+    @returns {RVSP.Promise} Promise that resolves with created file on save success
+      and rejects with error on error:
+      - resolve(file)
+      - reject(error)
+  */
   createFile(type, fileName) {
     this.onlyDirectory();
     let record = this.get('store').createRecord('file', {
@@ -221,9 +229,26 @@ export default DS.Model.extend({
       parent: this,
       type: type
     });
-    record.save().then(() => {}, (failMessage) => {
-      this.get('errorNotifier').handle(failMessage);
-      record.destroy();
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      let savePromise = record.save();
+      savePromise.then(
+        () => {
+          resolve(record);
+        },
+        (error) => {
+          // advanced error notifier moved up
+          // this.get('errorNotifier').handle(failMessage);
+          try {
+            console.error(
+`File with name "${record.get('name')}" creation failed: ${JSON.stringify(error)};
+File parent id: ${this.get('id')}`
+            );
+            record.destroyRecord();
+          } finally {
+            reject(error.message || error);
+          }
+        }
+      );
     });
   },
 

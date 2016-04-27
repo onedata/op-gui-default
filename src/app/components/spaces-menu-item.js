@@ -1,5 +1,16 @@
 import Ember from 'ember';
 
+/**
+ * An entry for single space in spaces-menu.
+ * It contains space options dropdown and submenu with permissions.
+ * Space-manipulation actions are delegated to spaces-menu, because most actions
+ * needs to have access to full spaces list.
+ *
+ * @module components/spaces-menu-item
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
   tagName: 'li',
   classNames: ['first-level', 'hover-parent'],

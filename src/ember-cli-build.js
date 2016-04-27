@@ -32,5 +32,7 @@ module.exports = function(defaults) {
   app.import("bower_components/resumable.js/resumable.js");
   app.import("bower_components/moment/min/moment-with-locales.min.js");
 
+  app.import(app.bowerDirectory + '/spin.js/spin.js');
+
   return app.toTree();
 };

@@ -1,6 +1,12 @@
 import Ember from 'ember';
 
-// TODO jsdoc
+/**
+ * Load a single dir (File model) and show a file browser for it (passed as route name).
+ * @module routes/data/data-space/dir
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Route.extend({
   fileSystemTree: Ember.inject.service('file-system-tree'),
   dataFilesTree: Ember.inject.service('dataFilesTree'),

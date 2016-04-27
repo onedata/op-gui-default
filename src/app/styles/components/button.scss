@@ -8,70 +8,92 @@
   }
 }
 
-.btn-primary {
-  color: white !important;
-  background-color: $color-button-primary;
+@mixin button-background-colors($fg-color, $base-bg-color) {
+  color: $fg-color !important;
+  background-color: $base-bg-color;
 
   &:hover {
-    background-color: lighten($color-button-primary, 10%);
+    background-color: lighten($base-bg-color, 10%);
+  }
+
+  &[disabled],
+  &.disabled,
+  &.disabled:hover,
+  &.disabled:focus,
+  &.disabled.focus,
+  &[disabled]:hover,
+  &[disabled]:focus,
+  &[disabled].focus {
+    background-color: darken($base-bg-color, 20%);
   }
 
   &:active:focus, &:active:hover, &:focus, &:active {
-    background-color: darken($color-button-primary, 10%);
+    background-color: darken($base-bg-color, 10%);
   }
+}
+
+.btn-primary {
+  @include button-background-colors(white, $color-button-primary);
 }
 
 .btn-default {
-  color: white !important;
-  background-color: $color-button-default;
+  @include button-background-colors(white, $color-button-default);
+}
 
-  &:hover {
-    background-color: lighten($color-button-default, 10%);
-  }
+@mixin btn-before-oneicon($icon-name, $top, $left, $font-size) {
+  // because we need absolute-positioned icons inside
+  position: relative;
+  // we need extra space for absolute icon
+  padding-left: $left + $font-size + 10px;
 
-  &:active:focus, &:active:hover, &:focus, &:active {
-    background-color: darken($color-button-default, 10%);
+  &:before {
+    position: absolute;
+    top: $top;
+    left: $left;
+    font-size: $font-size;
+    font-family: 'oneicons';
+    content: $icon-name;
   }
 }
 
+@mixin btn-before-oneicon-permissions($icon-name) {
+  @include btn-before-oneicon($icon-name, -3px, 14px, 24px);
+}
+
 .btn-permissions {
-  // because we need absolute-positioned icons inside
-  position: relative;
   padding: 5px 30px;
-  // we need extra space for absolute icon
-  padding-left: 48px;
   border-radius: 2px !important;
   border-width: 1px !important;
   border-style: solid !important;
   text-transform: uppercase;
   background-color: white;
 
+  // support for spin-button
+  &.disabled,
+  &[disabled],
+  &.in-flight {
+    color: $onedata-gray !important;
+    border-color: $onedata-gray !important;
+    background-color: white;
+  }
+
+  .spin-button-spinner {
+    left: 20px !important;
+  }
+
   &.btn-save {
     color: $onedata-green-save;
 
-    &:before {
-      position: absolute;
-      top: -3px;
-      left: 14px;
-      font-size: 24px;
-      font-family: 'oneicons';
-      content: $oneicon-checkbox-check;
+    &:not(.in-flight) {
+      @include btn-before-oneicon-permissions($oneicon-checkbox-check);
     }
   }
   &.btn-discard {
     color: $onedata-red-discard;
 
-    &:before {
-      position: absolute;
-      top: -3px;
-      left: 14px;
-      font-size: 24px;
-      font-family: 'oneicons';
-      content: $oneicon-checkbox-x;
+    &:not(.in-flight) {
+      @include btn-before-oneicon-permissions($oneicon-checkbox-x);
     }
-  }
-  &.btn-save.disabled, &.btn-discard.disabled {
-    color: $onedata-gray;
   }
 }
 

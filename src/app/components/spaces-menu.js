@@ -166,6 +166,7 @@ export default Ember.Component.extend({
       let currentHome = this.get('spaces').find((s) => s.get('isDefault'));
 
       let setNewHome = () => {
+        console.debug(`Will set new home space to ${space.get('id')}`);
         space.set('isDefault', true);
         let savePromise = space.save();
         savePromise.then(
@@ -177,8 +178,19 @@ export default Ember.Component.extend({
               this.get('i18n').t('components.spacesMenu.notify.setAsHomeFailed', {
                 spaceName: space.get('name')
               }) + ': ' +
-                error
+                (error && error.message) || this.get('i18n').t('common.unknownError')
             );
+            space.rollbackAttributes();
+            if (currentHome) {
+              currentHome.set('isDefault', true);
+              // NOTE: this save is not checked for error
+              // if there is error no setting current home to default, we got some serious problem...
+              currentHome.save().catch((error) => {
+                console.error(`Cannot rollback ${currentHome.get('id')} to default space: ${error.message}`);
+              });
+            } else {
+              console.warn(`No current home to rollback`);
+            }
           }
         );
 
@@ -193,21 +205,25 @@ export default Ember.Component.extend({
         let unsetCurrentHomePromise = currentHome.save();
         unsetCurrentHomePromise.then(
           () => {
+            console.debug(`Unsetting home space ${currentHome.get('id')} success`);
             setNewHome();
           },
           (error) => {
+            console.error(`Unsetting home space ${currentHome.get('id')} failed`);
             this.get('notify').error(
               this.get('i18n').t('components.spacesMenu.notify.setAsHomeFailed', {
                 spaceName: space.get('name')
               }) + ': ' +
-                error
+                (error && error.message) || this.get('i18n').t('common.unknownError')
             );
+            currentHome.rollbackAttributes();
             this.$().removeClass('is-loading');
           }
         );
       } else {
         // there is some error, because current home should be found
         // anyway, force set new home
+        console.warn(`No current home space to be unset!`);
         setNewHome();
       }
     },

@@ -1,6 +1,5 @@
 /**
  * A main route, setting up whole application.
- * - clear the main-menu selection
  * @module routes/spaces
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
@@ -15,11 +14,6 @@ export default Ember.Route.extend({
 
   activate() {
     console.debug('app activate');
-    Ember.run.scheduleOnce('afterRender', this, function() {
-      console.debug('clear selection');
-
-      return true;
-    });
   },
 
   actions: {

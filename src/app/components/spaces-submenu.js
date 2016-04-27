@@ -1,10 +1,6 @@
 /**
  * A submenu for spaces-menu, displaying options page for Space permissions:
- * users, groups or providers
- *
- * Send actions:
- * - showUsersConfig(space)
- * - showGroupsConfig(space)
+ * users, groups or providers (using spaces-submenu-item)
  *
  * @module components/spaces-submenu
  * @author Jakub Liput

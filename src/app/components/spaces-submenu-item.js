@@ -1,5 +1,13 @@
 import Ember from 'ember';
 
+/**
+ * A item in space submenu, eg. "users" which should transit to users permission
+ * table.
+ * @module components/spaces-submenu-item
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
   tagName: 'li',
   classNameBindings: ['typePermissionsClass', 'isActive:active'],

@@ -1,5 +1,14 @@
 import Ember from 'ember';
 
+/**
+ * Controller used to redirect to default space on model load.
+ * Not using afterModel of route, because there were some problems
+ * (afterModel was invoked before model load).
+ * @module controllers/spaces/index
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Controller.extend({
   goToDefaultSpace() {
     console.debug(`spaces.index: Will try to go to default space`);

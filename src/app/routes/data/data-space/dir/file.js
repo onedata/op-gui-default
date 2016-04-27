@@ -1,4 +1,4 @@
-/* TODO: this will be probably selected file */
+/* TODO: this will be probably selected file - not used currently */
 
 import Ember from 'ember';
 

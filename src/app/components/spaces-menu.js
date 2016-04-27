@@ -1,12 +1,6 @@
 /**
  * A secondary sidebar for selecting Space to modify its permissions.
- * Uses internally spaces-submenu component to render select for
- * users/groups/providers permissions.
- *
- * Send actions:
- * - showSpaceOptions(space)
- * - showUsersConfig(space)
- * - showGroupsConfig(space)
+ * Renders list of spaces-menu-item.
  *
  * @module components/spaces-menu
  * @author Jakub Liput

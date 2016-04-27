@@ -1,12 +1,30 @@
 import Ember from 'ember';
 import bindFloater from '../utils/bind-floater';
 
+/**
+ * Drop-right menu for single space, conaining i.a. rename space, remove space etc.
+ * Component does not have spaces manipulation logic - actions are sended to parent components or services.
+ * @module components/space-settings-drop
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
   commonModals: Ember.inject.service(),
 
   classNames: ['item-element', 'item-icon'],
 
-  /** Items in "space settings" dropright menu */
+  /**
+    Items in "space settings" dropright menu
+    Each item has properties:
+    ```
+    {
+      icon: <string> - name of oneicon,
+      label: <string> - label to show in menu (please use i18n service),
+      action: <string> - name of action of this component
+    }
+    ```
+  */
   menuItems: function() {
     let i18n = this.get('i18n');
     return [
@@ -48,7 +66,8 @@ export default Ember.Component.extend({
     ];
   }.property(),
 
-  // TODO: deregister event from sidebar?
+  // TODO: deregister event from sidebar on willDestroyElement
+  // maybe use: this.on('willDestroyElement', () => { sidebar.off(...) } ) etc.
   didInsertElement() {
     let sidebar = $('.secondary-sidebar');
     let drop = this.$().find('.dropdown-menu');
@@ -57,7 +76,10 @@ export default Ember.Component.extend({
     });
     sidebar.on('scroll', updater);
     drop.on('mouseover', updater);
-    // TODO: this hack is probably not needed anymore
+
+    // a hack to update drop position after space menu expand
+    // this hack is probably not needed anymore, because spaces menu doesn't expand
+    // on settings icon click - but we leave it "just in case"
     drop.closest('.settings-dropdown').on('click', function() {
       window.setTimeout(() => {
         updater();

@@ -1,9 +1,16 @@
 import Ember from 'ember';
 
+/**
+ * Controller used to watch if model of route changed - and then change active
+ * spaces menu option.
+ * @module controllers/spaces/show
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Controller.extend({
   spacesMenu: Ember.inject.service(),
 
-  // FIXME: using this instead of afterMoldel of route, because afterModel did not work properly
   onSpaceChange: function() {
     if (this.get('model')) {
       Ember.run.scheduleOnce('afterRender', this, function() {

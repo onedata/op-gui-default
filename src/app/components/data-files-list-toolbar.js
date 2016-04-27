@@ -225,7 +225,7 @@ export default Ember.Component.extend({
         );
       });
       createPromise.finally(() => {
-        this.set({
+        this.setProperties({
           isCreatingFileWorking: false,
           isCreatingFile: false,
           isCreatingDir: false

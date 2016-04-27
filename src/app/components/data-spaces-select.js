@@ -14,9 +14,30 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   classNames: ['data-spaces-select'],
   fileSystemTree: Ember.inject.service(),
+  commonLoader: Ember.inject.service(),
 
   /** List of DataSpace records */
   spaces: null,
+
+  isLoading: function() {
+    return !this.get('spaces.length') || this.get('spaces').any((s) => !s.get('name'));
+  }.property('spaces', 'spaces.length', 'spaces.@each.name'),
+
+  isLoadingChanged: function() {
+    if (this.get('isLoading')) {
+      this.setProperties({
+        'commonLoader.isLoading': true,
+        'commonLoader.message': this.get('i18n').t('components.commonLoader.synchronizingSpaces'),
+        'commonLoader.messageSecondary': this.get('i18n').t('components.commonLoader.firstLogin')
+      });
+    } else {
+      this.setProperties({
+        'commonLoader.isLoading': false,
+        'commonLoader.message': null,
+        'commonLoader.messageSecondary': null,
+      });
+    }
+  }.observes('isLoading'),
 
   /** Space currently selected */
   selectedSpace: function() {
@@ -33,6 +54,10 @@ export default Ember.Component.extend({
       this.sendAction('goToDataSpace', this.get('selectedSpace.id'));
     }
   }.observes('selectedSpace'),
+
+  didInsertElement() {
+    this.isLoadingChanged();
+  },
 
   actions: {
     setSelectedSpace(space) {

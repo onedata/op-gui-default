@@ -527,6 +527,12 @@ html, body {
 .clickable {
   cursor: pointer; cursor: hand;
 }
+
+.non-clickable {
+  pointer-events: none;
+  cursor: default;
+}
+
 .no-outline {
   outline: none !important;
 }

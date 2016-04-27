@@ -29,6 +29,11 @@ export default {
     featureNotSupportedLong: 'Sorry, this feature is not supported yet.',
   },
   components: {
+    commonLoader: {
+      defaultMessage: 'Loading...',
+      synchronizingSpaces: 'Synchronizing user spaces...',
+      firstLogin: 'This might take a while if this is the first login to this provider'
+    },
     topBar: {
       logout: 'Log out',
       manageProviders: 'Manage account'

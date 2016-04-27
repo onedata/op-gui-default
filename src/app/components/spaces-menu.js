@@ -16,6 +16,7 @@ export default Ember.Component.extend({
   notify: Ember.inject.service(),
   oneproviderServer: Ember.inject.service(),
   commonModals: Ember.inject.service(),
+  commonLoader: Ember.inject.service(),
 
   spaces: null,
   validSpaces: Ember.computed.filter('spaces', (s) => s.get('id') && s.get('name')),
@@ -23,6 +24,26 @@ export default Ember.Component.extend({
   validSpacesSorted: Ember.computed.sort('validSpaces', 'spacesSorting'),
 
   activeSpace: Ember.computed.alias('service.activeSpace'),
+
+  isLoading: function() {
+    return !this.get('spaces.length') || this.get('spaces').any((s) => !s.get('name'));
+  }.property('spaces', 'spaces.length', 'spaces.@each.name'),
+
+  isLoadingChanged: function() {
+    if (this.get('isLoading')) {
+      this.setProperties({
+        'commonLoader.isLoading': true,
+        'commonLoader.message': this.get('i18n').t('components.commonLoader.synchronizingSpaces'),
+        'commonLoader.messageSecondary': this.get('i18n').t('components.commonLoader.firstLogin')
+      });
+    } else {
+      this.setProperties({
+        'commonLoader.isLoading': false,
+        'commonLoader.message': null,
+        'commonLoader.messageSecondary': null,
+      });
+    }
+  }.observes('isLoading'),
 
   /*** Variables for actions and modals ***/
 
@@ -54,6 +75,8 @@ export default Ember.Component.extend({
   didInsertElement() {
     // reset spaces expanded state
     this.get('spaces').forEach((s) => s.set('isExpanded', false));
+
+    this.isLoadingChanged();
   },
 
   spaceActionMessage(notifyType, messageId, spaceName) {

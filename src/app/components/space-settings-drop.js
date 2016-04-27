@@ -79,7 +79,13 @@ export default Ember.Component.extend({
     },
 
     removeSpace() {
-      this.sendAction('openSettingsModal', 'remove', this.get('space'));
+      let i18n = this.get('i18n');
+      this.get('commonModals').openInfoModal(
+        i18n.t('common.featureNotSupportedShort'),
+        i18n.t('common.featureNotSupportedLong')
+      );
+      // TODO: remove function currently disabled
+      // this.sendAction('openSettingsModal', 'remove', this.get('space'));
     },
 
     inviteGroup() {

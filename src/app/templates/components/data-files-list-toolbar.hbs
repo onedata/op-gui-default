@@ -57,9 +57,11 @@
     {{/bs-form}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
-    {{#bs-button buttonType="submit" type="primary"}}
-      {{t "common.modal.ok"}}
-    {{/bs-button}}
+    {{#spin-button-onedata buttonType="submit"
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isCreatingFileWorking disabled=(unless createFileName true)}}
+      {{t "common.modal.create"}}
+    {{/spin-button-onedata}}
     {{#bs-button action=(action "close" target=footer) type="default"}}
       {{t "common.modal.cancel"}}
     {{/bs-button}}
@@ -78,9 +80,11 @@
     {{/bs-form}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
-    {{#bs-button buttonType="submit" type="primary"}}
-      {{t "common.modal.ok"}}
-    {{/bs-button}}
+    {{#spin-button-onedata buttonType="submit"
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isCreatingFileWorking disabled=(unless createFileName true)}}
+      {{t "common.modal.create"}}
+    {{/spin-button-onedata}}
     {{#bs-button action=(action "close" target=footer) type="default"}}
       {{t "common.modal.cancel"}}
     {{/bs-button}}

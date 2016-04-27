@@ -23,7 +23,9 @@ export default Ember.Component.extend({
 
   // TODO: sorting switch in GUI
   filesSorting: ['type:asc', 'name:asc'],
-  filesSorted: Ember.computed.sort('dir.children', 'filesSorting'),
+  files: Ember.computed.alias('dir.children'),
+  visibleFiles: Ember.computed.filter('files', (f) => f.get('id')),
+  visibleFilesSorted: Ember.computed.sort('visibleFiles', 'filesSorting'),
 
   didInsertElement() {
     this.dirChanged();

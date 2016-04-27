@@ -17,7 +17,7 @@
   </th>
   </thead>
   <tbody>
-  {{#each filesSorted as |file|}}
+  {{#each visibleFilesSorted as |file|}}
   {{!-- TODO: open file when selected and enter pressed --}}
     <tr {{action "openFile" file on="doubleClick"}}
         {{action "selectFile" file on="click"}}
@@ -37,10 +37,9 @@
         <div class="file-label">
           {{#truncated-string parentSelector=".file-list-col-file" shrinkBy=100}}
             {{#if file.isBroken}}
-              {{!-- TODO: translations --}}
-              <i>This file is not yet synced</i>
+              <em>{{t 'components.dataFilesList.fileIsBroken'}}</em>
             {{else}}
-                {{file.name}}
+              {{file.name}}
             {{/if}}
           {{/truncated-string}}
         </div>

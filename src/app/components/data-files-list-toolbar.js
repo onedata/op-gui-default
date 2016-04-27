@@ -215,12 +215,22 @@ export default Ember.Component.extend({
     },
 
     submitCreateFile(type) {
-      try {
-        this.get('dir').createFile(type, this.get('createFileName'));
-      } finally {
-        this.set('isCreatingFile', false);
-        this.set('isCreatingDir', false);
-      }
+      this.set('isCreatingFileWorking', true);
+      let createPromise = this.get('dir').createFile(type, this.get('createFileName'));
+      createPromise.catch((error) => {
+        this.get('notify').error(
+          this.get('i18n').t('components.dataFilesListToolbar.notify.createFileFailed', {
+            fileName: this.get('createFileName')
+          }) + ': ' + (error || this.get('i18n').t('common.unknownError'))
+        );
+      });
+      createPromise.finally(() => {
+        this.set({
+          isCreatingFileWorking: false,
+          isCreatingFile: false,
+          isCreatingDir: false
+        });
+      });
     },
 
     submitRemoveFiles() {

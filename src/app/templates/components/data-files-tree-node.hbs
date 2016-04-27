@@ -1,5 +1,5 @@
 <ul>
-  {{#each subdirsSorted as |file|}}
+  {{#each visibleSubdirsSorted as |file|}}
     <li class="{{levelClass}}">
       <div id="tree-dir-{{file.id}}" class="secondary-sidebar-item dir-item single-selectable onedata-red">
         <span class="item-element item-icon" {{action 'toggleDir' file}}>

@@ -128,7 +128,8 @@ export default {
       files: 'files',
       size: 'size',
       modification: 'modification',
-      permissions: 'permissions'
+      permissions: 'permissions',
+      fileIsBroken: 'This file is not synced yet'
     },
     dataFilesListToolbar: {
       tooltip: {
@@ -169,6 +170,9 @@ export default {
         providerName: 'Provider',
         dataDitribution: 'File blocks'
       },
+      notify: {
+        createFileFailed: 'File or directory "{{fileName}}" creation failed'
+      }
     },
     fileUpload: {
       titleUpload: 'Uploading {{count}} file(s)',

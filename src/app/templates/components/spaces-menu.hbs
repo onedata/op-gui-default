@@ -37,12 +37,13 @@
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata buttonType="submit" action=(action "submitCreateSpace")
-      class="btn btn-primary" spinnerColor="#fff"
-      inFlight=isSavingSpace}}
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isSavingSpace disabled=(unless newSpaceName true)}}
       {{t "common.modal.create"}}
     {{/spin-button-onedata}}
 
-    {{#bs-button action=(action "close" target=footer) type="default" disabled=isSavingSpace}}
+    {{#bs-button action=(action "close" target=footer) type="default" disabled=isSavingSpace
+      class="no-outline"}}
       {{t "common.modal.cancel"}}
     {{/bs-button}}
   {{/bs-modal-footer}}

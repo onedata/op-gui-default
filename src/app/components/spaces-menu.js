@@ -100,35 +100,29 @@ export default Ember.Component.extend({
 
     submitCreateSpace() {
       this.set('isSavingSpace', true);
-      try {
-        let s = this.get('store').createRecord('space', {
-          name: this.get('newSpaceName')
-        });
-        let savePromise = s.save();
-        savePromise.then(
-          () => {
-            this.set('isSavingSpace', false);
-            this.get('i18n').t('components.spacesMenu.notify.createSuccess', {
-              spaceName: s.get('name')
-            });
-          },
-          (error) => {
-            this.set('isSavingSpace', false);
-            this.get('notify').error(
-              this.get('i18n').t('components.spacesMenu.notify.createFailed', {
-                spaceName: s.get('name')
-              }) + ': ' + error
-            );
-            s.removeRecord();
-          }
-        );
-        savePromise.finally(() => this.set('isCreatingSpace', false));
-      } catch (error) {
-        this.get('notify').error(`Creating space with name "${this.get('newSpaceName')}" failed`);
-        console.error(`Space create failed: ${error}`);
-        this.set('isSavingSpace', false);
-        this.set('isCreatingSpace', false);
-      }
+      let name = this.get('newSpaceName');
+      let s = this.get('store').createRecord('space', {
+        name: name
+      });
+      let savePromise = s.save();
+      savePromise.then(
+        () => {
+          this.set('isSavingSpace', false);
+          this.get('i18n').t('components.spacesMenu.notify.createSuccess', {
+            spaceName: name
+          });
+        },
+        (error) => {
+          this.set('isSavingSpace', false);
+          this.get('notify').error(
+            this.get('i18n').t('components.spacesMenu.notify.createFailed', {
+              spaceName: name
+            }) + ': ' + ((error && error.message) || this.get('i18n').t('common.unknownError'))
+          );
+          s.deleteRecord();
+        }
+      );
+      savePromise.finally(() => this.set('isCreatingSpace', false));
     },
 
     startJoinSpace() {

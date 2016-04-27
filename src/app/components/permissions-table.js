@@ -109,9 +109,9 @@ export default Ember.Component.extend({
               error = (error && error.message) || this.get('i18n').t('common.unknownError');
               console.debug('permission ' + permission + ' saving failed: ' + error);
               this.get('notify').error(this.get('i18n')
-                .t('components.permissionsTable.notify.saveFailedSingle', {
-                  name: permission.get('owner.name')
-                }) + ': ' + error);
+              .t('components.permissionsTable.notify.saveFailedSingle', {
+                name: permission.get('owner.name')
+              }) + ': ' + error);
             }
           );
         }

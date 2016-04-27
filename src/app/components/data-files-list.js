@@ -24,12 +24,14 @@ export default Ember.Component.extend({
   // TODO: sorting switch in GUI
   filesSorting: ['type:asc', 'name:asc'],
   files: Ember.computed.alias('dir.children'),
-  visibleFiles: Ember.computed.filter('files', (f) => f.get('id')),
+  visibleFiles: function() {
+    return this.get('files').filter((f) => f.get('isLoaded'));
+  }.property('files', 'files.[]', 'files.@each.isLoaded'),
   visibleFilesSorted: Ember.computed.sort('visibleFiles', 'filesSorting'),
 
   isLoadingFiles: function() {
-    return !this.get('visibleFiles').every((f) => f.get('name'));
-  }.property('visibleFiles', 'visibleFiles.[]', 'visibleFiles.@each.name'),
+    return this.get('files').any((f) => !f.get('isLoaded'));
+  }.property('files', 'files.[]', 'files.@each.isLoaded'),
 
   didInsertElement() {
     this.dirChanged();

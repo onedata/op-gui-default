@@ -27,6 +27,10 @@ export default Ember.Component.extend({
   visibleFiles: Ember.computed.filter('files', (f) => f.get('id')),
   visibleFilesSorted: Ember.computed.sort('visibleFiles', 'filesSorting'),
 
+  isLoadingFiles: function() {
+    return !this.get('visibleFiles').every((f) => f.get('name'));
+  }.property('visibleFiles', 'visibleFiles.[]', 'visibleFiles.@each.name'),
+
   didInsertElement() {
     this.dirChanged();
     console.debug('Binding upload area for file list');

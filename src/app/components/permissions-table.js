@@ -12,35 +12,6 @@
 
 import Ember from 'ember';
 
-/**
- * Callback used when saving permissions table succeeded.
- * @private
- * @todo the spaces/show/permissions-base route copies this method
- *
- * @param {SpaceUserPermission} permission - a saved model
- */
-let onSaveSuccess = function(permission) {
-  console.debug('permission ' + permission + ' saved successfully');
-  permission.setUnmodified();
-};
-
-/**
- * Callback used when saving permissions table failed.
- * @private
- * @todo implement real save failure behavior
- * @todo the spaces/show/permissions-base route copies this method
- *
- * @param {SpaceUserPermission} permission - a model that saving failed
- */
-let onSaveFailure = function(permission, error) {
-  error = error || this.get('i18n').t('common.unknownError');
-  console.debug('permission ' + permission + ' saving failed: ' + error);
-  this.get('notify').error(this.get('i18n')
-    .t('components.permissionsTable.notify.saveFailedSingle', {
-      name: permission.owner.name
-    }) + ': ' + error);
-};
-
 export default Ember.Component.extend({
   oneproviderServer: Ember.inject.service(),
   commonModals: Ember.inject.service(),
@@ -129,7 +100,20 @@ export default Ember.Component.extend({
       this.set('isLocked', true);
       let promises = this.get('permissions').map((permission) => {
         if (permission.get('isModified')) {
-          return permission.save().then(onSaveSuccess, onSaveFailure);
+          return permission.save().then(
+            () => {
+              console.debug('permission ' + permission + ' saved successfully');
+              permission.setUnmodified();
+            },
+            (error) => {
+              error = (error && error.message) || this.get('i18n').t('common.unknownError');
+              console.debug('permission ' + permission + ' saving failed: ' + error);
+              this.get('notify').error(this.get('i18n')
+                .t('components.permissionsTable.notify.saveFailedSingle', {
+                  name: permission.get('owner.name')
+                }) + ': ' + error);
+            }
+          );
         }
       });
       let masterPromise = Ember.RSVP.Promise.all(promises);

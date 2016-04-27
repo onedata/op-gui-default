@@ -173,7 +173,8 @@ export default {
         title: 'File distribution',
         text: 'Distribution of file blocks among providers for file',
         providerName: 'Provider',
-        dataDitribution: 'File blocks'
+        dataDitribution: 'File blocks',
+        loading: 'Loading file chunks table...'
       },
       notify: {
         createFileFailed: 'File or directory "{{fileName}}" creation failed'

@@ -139,7 +139,6 @@
 
     <div class="container-fluid">
       <div class="modal-row large-space">
-        {{!-- TODO: loader throbber when fileChunks is null --}}
         {{t 'components.dataFilesListToolbar.fileChunksModal.text'}}
         <strong>{{fileForChunks.name}}</strong>
       </div>
@@ -174,8 +173,7 @@
           <div class="one-row">
             <div class="loading-throbber"></div>
             <div class="loading-label">
-              {{!-- TODO translate --}}
-              Loading file chunks table...
+              {{t 'components.dataFilesListToolbar.fileChunksModal.loading'}}
             </div>
           </div>
         {{/if}}
@@ -194,10 +192,10 @@
 {{!-- TODO: translate --}}
 
 {{#bs-modal open=isNotImplementedModal body=false footer=false
-    title="Feature not implemented"
+    title=(t 'commmon.featureNotSupportedShort')
     id="not-implemented"}}
   {{#bs-modal-body}}
-    Feature not implemented
+    {{t 'commmon.featureNotSupportedShort'}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#bs-button action=(action "close" target=footer) type="primary"}}

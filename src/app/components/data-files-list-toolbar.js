@@ -30,6 +30,9 @@ export default Ember.Component.extend({
    */
   items: function() {
     let i18n = this.get('i18n');
+    let isSingleFileSelected = this.get('dir.singleSelectedFile');
+    let isSingleSelectedFileAFile = isSingleFileSelected && !this.get('dir.singleSelectedFile.isDir');
+    let isSomeFileSelected = this.get('dir.isSomeFileSelected');
     return [
       {
         id: 'create-dir-tool',
@@ -49,7 +52,7 @@ export default Ember.Component.extend({
         icon: 'share',
         action: 'notImplemented',
         // TODO: feature not implemented yet
-        //disabled: !this.get('dir.isSomeFileSelected'),
+        //disabled: !isSomeFileSelected,
         disabled: true,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.shareFile')
       },
@@ -65,7 +68,7 @@ export default Ember.Component.extend({
         icon: 'rename',
         action: 'renameSelectedFile',
         // TODO: feature not implemented yet
-        //disabled: !this.get('dir.singleSelectedFile'),
+        //disabled: !isSingleFileSelected,
         disabled: true,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.renameFile')
       },
@@ -73,7 +76,7 @@ export default Ember.Component.extend({
         id: 'lock-file-tool',
         icon: 'lock',
         action: 'editPermissions',
-        disabled: !this.get('dir.isSomeFileSelected'),
+        disabled: !isSomeFileSelected,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.permissions')
       },
       {
@@ -81,7 +84,7 @@ export default Ember.Component.extend({
         icon: 'copy',
         action: 'notImplemented',
         // TODO: feature not implemented yet
-        //disabled: !this.get('dir.isSomeFileSelected'),
+        //disabled: !isSomeFileSelected,
         disabled: true,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.copy')
       },
@@ -90,7 +93,7 @@ export default Ember.Component.extend({
         icon: 'cut',
         action: 'notImplemented',
         // TODO: feature not implemented yet
-        //disabled: !this.get('dir.isSomeFileSelected'),
+        //disabled: !isSomeFileSelected,
         disabled: true,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.cut')
       },
@@ -98,14 +101,14 @@ export default Ember.Component.extend({
         id: 'remove-file-tool',
         icon: 'remove',
         action: 'removeSelectedFiles',
-        disabled: !this.get('dir.isSomeFileSelected'),
+        disabled: !isSomeFileSelected,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.remove')
       },
       {
         id: 'file-chunks-tool',
         icon: 'provider',
         action: 'showChunks',
-        disabled: !this.get('dir.singleSelectedFile'),
+        disabled: !(isSingleFileSelected && isSingleSelectedFileAFile),
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.chunks')
       },
     ];

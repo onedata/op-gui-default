@@ -11,8 +11,8 @@
 %%% key-value memory and the login status of user. This module calls
 %%% gui_session_plugin underneath to perform application-specific
 %%% operations like saving or retrieving sessions.
-%%% This module does NOT perform clearing of outdated sessions. This should be
-%%% done by the application that uses gui.
+%%% module implementing gui_session_plugin behaviour should take care of
+%%% deleting outdated sessions.
 %%% @end
 %%%-------------------------------------------------------------------
 -module(g_session).

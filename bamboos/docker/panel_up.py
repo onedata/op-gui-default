@@ -19,14 +19,14 @@ from environment import common, panel
 parser = common.standard_arg_parser('Bring up onepanel nodes.')
 
 parser.add_argument(
-    '--oz-ip',
+    '--gr-ip',
     action='store',
     default=socket.gethostbyname('onedata.org'),
-    help='onezone IP address',
-    dest='oz_ip')
+    help='Global Registry IP address',
+    dest='gr_ip')
 
 args = parser.parse_args()
 output = panel.up(args.image, args.bin, args.dns, args.uid, args.config_path,
-                  args.oz_ip)
+                  args.gr_ip)
 
 print(json.dumps(output))

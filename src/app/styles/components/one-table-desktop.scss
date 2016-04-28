@@ -1,4 +1,5 @@
-$cell-width: 95px;
+$cell-width: 95px !default;
+$table-font-size: 1em !default;
 
 // emulate HTML table
 .one-table    { display: table }
@@ -13,6 +14,7 @@ $cell-width: 95px;
 
 .one-table {
   max-width: 100%;
+  font-size: $table-font-size;
 
   .one-th,
   .one-td {
@@ -87,6 +89,12 @@ $cell-width: 95px;
           display: none;
         }
       }
+    }
+  }
+
+  .one-first {
+    .item-element {
+      padding-right: 20px;
     }
   }
 }

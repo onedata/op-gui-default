@@ -345,23 +345,34 @@ handle_model_req(Props, Handler) ->
     RsrcType = proplists:get_value(?KEY_RESOURCE_TYPE, Props),
     Data = proplists:get_value(?KEY_DATA, Props),
     EntityIdOrIds = proplists:get_value(?KEY_RESOURCE_IDS, Props),
-    case proplists:get_value(?KEY_OPERATION, Props) of
-        ?OP_FIND ->
-            erlang:apply(Handler, find, [RsrcType, [EntityIdOrIds]]);
-        ?OP_FIND_MANY ->
-            erlang:apply(Handler, find, [RsrcType, EntityIdOrIds]);
-        ?OP_FIND_ALL ->
-            erlang:apply(Handler, find_all, [RsrcType]);
-        ?OP_FIND_QUERY ->
-            erlang:apply(Handler, find_query, [RsrcType, Data]);
-        ?OP_CREATE_RECORD ->
-            erlang:apply(Handler, create_record, [RsrcType, Data]);
-        ?OP_UPDATE_RECORD ->
-            erlang:apply(Handler, update_record,
-                [RsrcType, EntityIdOrIds, Data]);
-        ?OP_DELETE_RECORD ->
-            erlang:apply(Handler, delete_record,
-                [RsrcType, EntityIdOrIds])
+    % Catch crashes here so we can respond with an error corresponding
+    % to given request rather that with generic error.
+    try
+        case proplists:get_value(?KEY_OPERATION, Props) of
+            ?OP_FIND ->
+                erlang:apply(Handler, find, [RsrcType, [EntityIdOrIds]]);
+            ?OP_FIND_MANY ->
+                erlang:apply(Handler, find, [RsrcType, EntityIdOrIds]);
+            ?OP_FIND_ALL ->
+                erlang:apply(Handler, find_all, [RsrcType]);
+            ?OP_FIND_QUERY ->
+                erlang:apply(Handler, find_query, [RsrcType, Data]);
+            ?OP_CREATE_RECORD ->
+                erlang:apply(Handler, create_record, [RsrcType, Data]);
+            ?OP_UPDATE_RECORD ->
+                erlang:apply(Handler, update_record,
+                    [RsrcType, EntityIdOrIds, Data]);
+            ?OP_DELETE_RECORD ->
+                erlang:apply(Handler, delete_record,
+                    [RsrcType, EntityIdOrIds])
+        end
+    catch
+        T:M ->
+            % There was an error processing the request, reply with
+            % an error.
+            ?error_stacktrace("Error while handling GUI model request - ~p:~p",
+                [T, M]),
+            gui_error:internal_server_error()
     end.
 
 
@@ -379,18 +390,29 @@ handle_RPC_req(Props) ->
     ResourceType = proplists:get_value(?KEY_RESOURCE_TYPE, Props),
     Operation = proplists:get_value(?KEY_OPERATION, Props),
     Data = proplists:get_value(?KEY_DATA, Props),
-    case ResourceType of
-        ?RESOURCE_TYPE_SESSION ->
-            handle_session_RPC();
-        ?RESOURCE_TYPE_PUBLIC_RPC ->
-            handle_public_RPC(Operation, Data);
-        ?RESOURCE_TYPE_PRIVATE_RPC ->
-            case g_session:is_logged_in() of
-                true ->
-                    handle_private_RPC(Operation, Data);
-                false ->
-                    gui_error:no_session()
-            end
+    % Catch crashes here so we can respond with an error corresponding
+    % to given request rather that with generic error.
+    try
+        case ResourceType of
+            ?RESOURCE_TYPE_SESSION ->
+                handle_session_RPC();
+            ?RESOURCE_TYPE_PUBLIC_RPC ->
+                handle_public_RPC(Operation, Data);
+            ?RESOURCE_TYPE_PRIVATE_RPC ->
+                case g_session:is_logged_in() of
+                    true ->
+                        handle_private_RPC(Operation, Data);
+                    false ->
+                        gui_error:no_session()
+                end
+        end
+    catch
+        T:M ->
+            % There was an error processing the request, reply with
+            % an error.
+            ?error_stacktrace("Error while handling GUI RPC request - ~p:~p",
+                [T, M]),
+            gui_error:internal_server_error()
     end.
 
 

@@ -12,10 +12,7 @@
     "os_configs": {
         "cfg1": {
             "storages": [
-                {
-                    "type": "posix",
-                    "name": "/mnt/st1"
-                }
+                "/mnt/st1"
             ],
             "users": [
                 "user1"
@@ -29,7 +26,7 @@
     },
     "cluster_domains": {
         "p1": {
-            "db_driver": "couchdb",
+            "db_driver": "couchbase",
             "os_config": "cfg1",
             "cluster_manager": {
                 "cm1": {
@@ -57,9 +54,9 @@
                                 "cm1"
                             ],
                             "db_nodes": [
-                                "dbnode1"
+                                "riaknode1"
                             ],
-                            "verify_oz_cert": false
+                            "verify_gr_cert": false
                         }
                     }
                 }

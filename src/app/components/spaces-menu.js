@@ -71,7 +71,7 @@ export default Ember.Component.extend({
 
   activeSpaceDidChange: function() {
     if (this.get('activeSpace')) {
-      this.sendAction('showSpaceOptions', this.get('activeSpace'));
+      this.sendAction('goToSpace', this.get('activeSpace'));
     }
   }.observes('activeSpace'),
 

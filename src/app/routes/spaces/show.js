@@ -21,5 +21,18 @@ export default Ember.Route.extend({
 
   deactivate() {
     console.debug(`spaces.show.index ! deactivate`);
+  },
+
+  actions: {
+    /**
+      Capture goToSpace event, because if we are already there,
+      we do not want to make more actions.
+      @param {Space} space model of space we want to change to
+      @returns {Boolean} False, if space we want to go is current space (or not specified)
+        True, if the other space was requested - so we pass the action up
+    */
+    goToSpace(space) {
+      return !space || space.get('id') !== this.controllerFor(this.routeName).get('model.id');
+    },
   }
 });

@@ -6,6 +6,11 @@
     text-align: center;
   }
 
+  .one-tbody .one-tr .one-td.one-first,
+  .one-thead .one-th.one-first {
+    background-color: #D5D5D5 !important;
+  }
+
   .one-thead {
     overflow: hidden;
     clear: both;
@@ -17,6 +22,21 @@
       // only first element of header - owner name
       &.one-first {
         display: block;
+        height: auto;
+
+        .cell-body {
+          position: relative;
+
+          .item-label {
+            line-height: 51px;
+          }
+
+          .item-icon {
+            position: absolute;
+            top: 0;
+            right: 0;
+          }
+        }
       }
     }
   }
@@ -34,8 +54,13 @@
         &.one-first {
           text-transform: none;
           text-align: left;
-          background-color: #D5D5D5;
           padding-left: 24px; // TODO
+          font-weight: bold;
+
+          cursor: pointer; cursor: hand;  
+          * {
+            cursor: pointer; cursor: hand;
+          }
         }
       }
 

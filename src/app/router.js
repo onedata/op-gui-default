@@ -41,7 +41,7 @@ Router.map(function() {
       });
     });
 
-    this.route('groups', {resetNamespace: true});
+    this.route('groups', {resetNamespace: true}, function() {});
 
     // TODO: activate after routes implementation
     // this.route('recent', {resetNamespace: true});

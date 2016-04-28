@@ -10,6 +10,8 @@
 %%% that is capable of persisting GUI sessions (in ETS, DB or anything else).
 %%% Such module will be called from gui_session_handler.
 %%% The implementing module must be called ?GUI_SESSION_PLUGIN.
+%%% Note that gui logic does NOT perform clearing of outdated sessions.
+%%% This should be done by the application that uses gui.
 %%% @end
 %%%-------------------------------------------------------------------
 -module(gui_session_plugin_behaviour).

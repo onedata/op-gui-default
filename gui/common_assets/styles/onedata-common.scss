@@ -68,6 +68,11 @@ $icomoon-font-path: 'fonts/oneicons';
   background-position: center;
   background-repeat: no-repeat;
 
+  &.small {
+    width: 24px;
+    height: 24px;
+  }
+
   &.inverted {
     background-image: url("/assets/images/loading-32-inverted.gif");
 

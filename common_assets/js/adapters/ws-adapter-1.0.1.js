@@ -293,6 +293,7 @@ export default DS.RESTAdapter.extend({
         operation: operation
       });
       console.log('registerPromise: ' + JSON.stringify(payload));
+      adapter.send(payload);
     });
   },
 

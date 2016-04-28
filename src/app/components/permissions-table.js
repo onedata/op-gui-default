@@ -145,7 +145,11 @@ export default Ember.Component.extend({
     },
 
     activatePermissions(permissions) {
-      this.set('activePermissions', permissions);
+      if (this.get('activePermissions.id') === permissions.get('id')) {
+        this.set('activePermissions', null);
+      } else {
+        this.set('activePermissions', permissions);
+      }
     }
   }
 });

@@ -38,6 +38,11 @@ $secondary-sidebar-item-height: 60px;
 // TODO: set to values from app.scss
 // @grid-float-breakpoint
 $modal-inner-padding: 30px;
+$screen-xs-min: $min-width-mobile;
+$screen-sm-min: $min-width-tablet;
+$screen-md-min: $min-width-desktop-small;
+$screen-lg-min: $min-width-desktop-medium;
+
 
 @import "bootstrap";
 .row {

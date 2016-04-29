@@ -27,14 +27,6 @@ export default DS.Model.extend({
   /** users, groups or permissions - option highlighted in Space submenu */
   currentMenuOption: null,
 
-  /*** Template helper methods ***/
-
-  // TODO: computing entryId in model is not very elegant
-  /** Id of this space menu element used in sidebar HTML */
-  sidebarEntryId: function() {
-    return 'space-entry-'+this.id;
-  }.property('id'),
-
   /*** Temporary properties used in view ***/
   isExpanded: false,
 });

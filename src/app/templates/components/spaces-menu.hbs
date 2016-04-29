@@ -36,9 +36,9 @@
     {{/bs-form}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
-    {{#spin-button-onedata buttonType="submit" action=(action "submitCreateSpace")
+    {{#spin-button-onedata buttonType="submit"
       class="btn btn-primary no-outline" spinnerColor="#fff"
-      inFlight=isSavingSpace disabled=(unless newSpaceName true)}}
+      inFlight=isSavingSpace disabled=(or (unless newSpaceName true) isSavingSpace)}}
       {{t "common.modal.create"}}
     {{/spin-button-onedata}}
 

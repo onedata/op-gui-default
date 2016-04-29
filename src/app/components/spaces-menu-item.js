@@ -15,9 +15,6 @@ export default Ember.Component.extend({
   tagName: 'li',
   classNames: ['first-level', 'hover-parent'],
   classNameBindings: ['isExpanded:active'],
-  setElementId: Ember.on('init', function() {
-    this.set('elementId', this.get('space.sidebarEntryId'));
-  }),
 
   spacesMenu: Ember.inject.service(),
 

@@ -1,14 +1,6 @@
 {{!-- TODO: dir path or name? --}}
 {{page-title (t 'data.dataSpace.dir.title')}}
 
-{{#if model.isBroken}}
-
-
-Chyba jakieś jaja
-
-
-{{else}}
-
 <div class="files-list">
   {{data-files-list dir=model openDirInBrowser='openDirInBrowser'}}
 </div>
@@ -16,5 +8,3 @@ Chyba jakieś jaja
 <div class="file-upload">
   {{file-upload dir=model}}
 </div>
-
-{{/if}}

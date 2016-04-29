@@ -409,6 +409,24 @@ html, body {
       // to achieve proper alignment with secondary sidebar header line
       // we do not set top padding of content
       padding-top: 0;
+
+      // add a padding-top if not added already
+      .inner-content {
+        padding-top: $content-padding;
+      }
+
+      .content-error {
+        margin-top: 40px;
+        font-size: 2em;
+        text-align: center;
+      }
+
+      .content-error-icon {
+        width: 100%;
+        margin-top: 40px;
+        font-size: 128px;
+        text-align: center;
+      }
     }
   }
 

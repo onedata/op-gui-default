@@ -10,21 +10,24 @@ import Ember from 'ember';
 export default Ember.Route.extend({
   fileSystemTree: Ember.inject.service('file-system-tree'),
   dataFilesTree: Ember.inject.service('dataFilesTree'),
+  notify: Ember.inject.service('notify'),
 
   model(params) {
     // TODO: check if loaded dir belongs to loaded space (data/data-space model)?
     return this.store.findRecord('file', params.dir_id);
   },
 
-  afterModel(file, transition) {
+  afterModel(file/*, transition*/) {
     if (file.get('isDeleted')) {
       console.error('Loaded file is deleted');
-      transition.abort();
+      this.get('notify').error(`Cannot load dir because it is marked as deleted`);
+      this.set('invalid', true);
     }
 
     if (!file.get('isDir')) {
       console.error('Loaded file is not a directory - it cannot be viewed in browser');
-      transition.abort();
+      this.get('notify').error(`Cannot load dir because it not a valid directory`);
+      this.set('invalid', true);
     }
 
     // @todo this sometimes runs too early and getSpaceIdForFile does not work
@@ -48,13 +51,20 @@ export default Ember.Route.extend({
     Render it in "data" template, because it's a master view of a data browser.
   */
   renderTemplate() {
-    this.render('data.dataSpace.dir.dirToolbar', {
-      into: 'application',
-      outlet: 'toolbar'
-    });
-    this.render({
-      into: 'data',
-      outlet: 'dir'
-    });
-  },
+    if (!this.get('invalid')) {
+      this.render('data.dataSpace.dir.dirToolbar', {
+        into: 'application',
+        outlet: 'toolbar'
+      });
+      this.render({
+        into: 'data',
+        outlet: 'dir'
+      });
+    } else {
+      this.render('data.dataSpace.dir.error', {
+        into: 'data',
+        outlet: 'dir'
+      });
+    }
+  }
 });

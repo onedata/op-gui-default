@@ -29,6 +29,10 @@ export default Ember.Route.extend({
   actions: {
     openDirInBrowser(fileId) {
       this.transitionTo('data.data-space.dir', fileId);
+    },
+
+    goToDataSpace(spaceId) {
+      return spaceId !== this.controllerFor(this.routeName).get('model.id');
     }
   }
 });

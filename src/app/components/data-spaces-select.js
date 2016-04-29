@@ -40,13 +40,9 @@ export default Ember.Component.extend({
   }.observes('isLoading'),
 
   /** Space currently selected */
-  selectedSpace: function() {
-    return this.get('fileSystemTree.selectedSpace');
-  }.property('fileSystemTree.selectedSpace'),
+  selectedSpace: Ember.computed.alias('fileSystemTree.selectedSpace'),
 
-  prevSelectedSpace: function() {
-    return this.get('fileSystemTree.prevSelectedSpace');
-  }.property('fileSystemTree.prevSelectedSpace'),
+  prevSelectedSpace: Ember.computed.alias('fileSystemTree.prevSelectedSpace'),
 
   selectedSpaceDidChange: function() {
     console.debug(`Spaces Select component: selected space changed to ${this.get('selectedSpace.id')}`);

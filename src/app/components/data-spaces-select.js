@@ -18,6 +18,11 @@ export default Ember.Component.extend({
 
   /** List of DataSpace records */
   spaces: null,
+  validSpaces: function() {
+    return this.get('spaces').filter((s) => s.get('isLoaded'));
+  }.property('spaces', 'spaces.[]', 'spaces.@each.isLoaded'),
+  spacesSorting: ['isDefault:desc', 'name'],
+  spacesSorted: Ember.computed.sort('validSpaces', 'spacesSorting'),
 
   isLoading: function() {
     return !this.get('spaces.length') || this.get('spaces').any((s) => !s.get('name'));

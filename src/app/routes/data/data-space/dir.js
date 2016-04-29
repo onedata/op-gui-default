@@ -8,9 +8,9 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Route.extend({
-  fileSystemTree: Ember.inject.service('file-system-tree'),
-  dataFilesTree: Ember.inject.service('dataFilesTree'),
-  notify: Ember.inject.service('notify'),
+  fileSystemTree: Ember.inject.service(),
+  dataFilesTree: Ember.inject.service(),
+  notify: Ember.inject.service(),
 
   model(params) {
     // TODO: check if loaded dir belongs to loaded space (data/data-space model)?

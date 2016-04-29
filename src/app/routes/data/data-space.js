@@ -22,6 +22,10 @@ export default Ember.Route.extend({
     }
   },
 
+  activate() {
+    this.controllerFor(this.routeName).onDataSpaceChange();
+  },
+
   renderTemplate() {
     this.render({outlet: 'data-space'});
   },

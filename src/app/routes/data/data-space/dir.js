@@ -22,13 +22,15 @@ export default Ember.Route.extend({
 
     if (file.get('isDeleted')) {
       console.error('Loaded file is deleted');
-      this.get('notify').error(`Cannot load dir because it is marked as deleted`);
+      // TODO: translate
+      this.get('notify').error(`Cannot start file browser, because selected directory is marked as deleted`);
       this.set('invalid', true);
     }
 
     if (!file.get('isDir')) {
       console.error('Loaded file is not a directory - it cannot be viewed in browser');
-      this.get('notify').error(`Cannot load dir because it not a valid directory`);
+      // TODO: translate
+      this.get('notify').error(`Cannot start file browser, because selected directory is not valid`);
       this.set('invalid', true);
     }
 

@@ -168,7 +168,7 @@ export default DS.Model.extend({
   /// Directory utils
 
   hasSubDirs: function() {
-    if (this.isDir()) {
+    if (this.get('isDir')) {
       return this.get('children').filter((child) => child.get('isDir'))
         .length > 0;
     } else {
@@ -177,7 +177,7 @@ export default DS.Model.extend({
   }.property('children.@each.isDir'),
 
   selectedFiles: function() {
-    if (this.isDir()) {
+    if (this.get('isDir')) {
       return this.get('children').filter((file) => file.get('isSelected'));
     } else {
       return null;
@@ -185,7 +185,7 @@ export default DS.Model.extend({
   }.property('children.@each.isSelected'),
 
   singleSelectedFile: function() {
-    if (this.isDir()) {
+    if (this.get('isDir')) {
       let selected = this.get('selectedFiles');
       return selected.length === 1 ? selected[0] : null;
     } else {
@@ -194,7 +194,7 @@ export default DS.Model.extend({
   }.property('selectedFiles'),
 
   isSomeFileSelected: function() {
-    if (this.isDir()) {
+    if (this.get('isDir')) {
       return this.get('selectedFiles.length') > 0;
     } else {
       return false;
@@ -202,7 +202,7 @@ export default DS.Model.extend({
   }.property('selectedFiles'),
 
   removeSelectedFiles() {
-    if (this.isDir()) {
+    if (this.get('isDir')) {
       this.get('selectedFiles').forEach((file) => {
         file.destroyRecursive();
       });
@@ -223,7 +223,7 @@ export default DS.Model.extend({
   },
 
   /**
-    Creates file in this directory (only if this.isDir())
+    Creates file in this directory (only if this.get('isDir'))
     @param {String} type Type of file-object: 'file' or 'dir'
     @param {String} fileName
     @returns {RVSP.Promise} Promise that resolves with created file on save success
@@ -232,7 +232,7 @@ export default DS.Model.extend({
       - reject(error)
   */
   createFile(type, fileName) {
-    if (!this.isDir()) {
+    if (!this.get('isDir')) {
       console.error(`Called createFile on file that is not a directory: ${this.get('id')}`);
     }
 

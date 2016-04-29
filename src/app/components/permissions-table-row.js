@@ -19,11 +19,11 @@ export default Ember.Component.extend({
 
   perm: Ember.computed.alias('permissions'),
 
-  click() {
-    this.sendAction('activatePermissions', this.get('perm'));
-  },
-
   actions: {
+    activate() {
+      this.sendAction('activatePermissions', this.get('perm'));
+    },
+
     /** Change state of single permission checkbox */
     togglePermission: function(permission, propertyName) {
       this.sendAction('togglePermission', permission, propertyName);

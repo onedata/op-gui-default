@@ -1,7 +1,24 @@
-<table class="table table-strips files-table {{if isLoadingFiles 'is-loading'}}">
+<table class="table table-strips files-table relative {{if isLoadingFiles 'is-loading'}}">
   <div class="drop-area">
     {{icon 'upload'}}
   </div>
+
+  {{#if dirIsEmpty}}
+
+  <div class="empty-dir">
+    <div class="empty-dir-container">
+      <div class="empty-dir-image"></div>
+      <div class="empty-dir-message">
+        Nothing here yet.
+      </div>
+      <div class="empty-dir-message secondary">
+        Drop your files here or use the <span class="inline-button">{{icon 'upload'}}</span> button in toolbar
+      </div>
+    </div>
+  </div>
+
+  {{/if}}
+
   <thead>
   <th>
     {{t 'components.dataFilesList.files'}}

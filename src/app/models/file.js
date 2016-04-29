@@ -167,39 +167,48 @@ export default DS.Model.extend({
   // TODO: move directory utils to mixin
   /// Directory utils
 
-  onlyDirectory() {
-    if (!this.get('isDir')) {
-      throw 'This file is not a directory!';
-    }
-  },
-
   hasSubDirs: function() {
-    this.onlyDirectory();
-    return this.get('children').filter((child) => child.get('isDir'))
-      .length > 0;
+    if (this.get('isDir')) {
+      return this.get('children').filter((child) => child.get('isDir'))
+        .length > 0;
+    } else {
+      return false;
+    }
   }.property('children.@each.isDir'),
 
   selectedFiles: function() {
-    this.onlyDirectory();
-    return this.get('children').filter((file) => file.get('isSelected'));
+    if (this.get('isDir')) {
+      return this.get('children').filter((file) => file.get('isSelected'));
+    } else {
+      return null;
+    }
   }.property('children.@each.isSelected'),
 
   singleSelectedFile: function() {
-    this.onlyDirectory();
-    let selected = this.get('selectedFiles');
-    return selected.length === 1 ? selected[0] : null;
+    if (this.get('isDir')) {
+      let selected = this.get('selectedFiles');
+      return selected.length === 1 ? selected[0] : null;
+    } else {
+      return null;
+    }
   }.property('selectedFiles'),
 
   isSomeFileSelected: function() {
-    this.onlyDirectory();
-    return this.get('selectedFiles.length') > 0;
+    if (this.get('isDir')) {
+      return this.get('selectedFiles.length') > 0;
+    } else {
+      return false;
+    }
   }.property('selectedFiles'),
 
   removeSelectedFiles() {
-    this.onlyDirectory();
-    this.get('selectedFiles').forEach((file) => {
-      file.destroyRecursive();
-    });
+    if (this.get('isDir')) {
+      this.get('selectedFiles').forEach((file) => {
+        file.destroyRecursive();
+      });
+    } else {
+      console.error(`Called removeSelectedFiles on file that is not a directory ${this.get('id')}`);
+    }
   },
 
   setSelectedFilesPermissions(permissions) {
@@ -214,7 +223,7 @@ export default DS.Model.extend({
   },
 
   /**
-    Creates file in this directory (only if this.isDir())
+    Creates file in this directory (only if this.get('isDir'))
     @param {String} type Type of file-object: 'file' or 'dir'
     @param {String} fileName
     @returns {RVSP.Promise} Promise that resolves with created file on save success
@@ -223,7 +232,10 @@ export default DS.Model.extend({
       - reject(error)
   */
   createFile(type, fileName) {
-    this.onlyDirectory();
+    if (!this.get('isDir')) {
+      console.error(`Called createFile on file that is not a directory: ${this.get('id')}`);
+    }
+
     let record = this.get('store').createRecord('file', {
       name: fileName,
       parent: this,

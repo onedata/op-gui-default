@@ -22,7 +22,6 @@ export default Ember.Component.extend({
   validSpaces: function() {
     return this.get('spaces').filter((s) => s.get('isLoaded'));
   }.property('spaces', 'spaces.[]', 'spaces.@each.isLoaded'),
-  //validSpaces: Ember.computed.filter('spaces', (s) => s.get('id') && s.get('name')),
   spacesSorting: ['isDefault:desc', 'name'],
   validSpacesSorted: Ember.computed.sort('validSpaces', 'spacesSorting'),
 
@@ -102,7 +101,7 @@ export default Ember.Component.extend({
     },
 
     submitCreateSpace() {
-      this.set('isSavingSpace', true);
+      // isSaving flag is set by spin-button on click
       let name = this.get('newSpaceName');
       let s = this.get('store').createRecord('space', {
         name: name
@@ -110,13 +109,11 @@ export default Ember.Component.extend({
       let savePromise = s.save();
       savePromise.then(
         () => {
-          this.set('isSavingSpace', false);
           this.get('i18n').t('components.spacesMenu.notify.createSuccess', {
             spaceName: name
           });
         },
         (error) => {
-          this.set('isSavingSpace', false);
           this.get('notify').error(
             this.get('i18n').t('components.spacesMenu.notify.createFailed', {
               spaceName: name
@@ -125,7 +122,10 @@ export default Ember.Component.extend({
           s.deleteRecord();
         }
       );
-      savePromise.finally(() => this.set('isCreatingSpace', false));
+      savePromise.finally(() => this.setProperties({
+        isCreatingSpace: false,
+        isSavingSpace: false
+      }));
     },
 
     startJoinSpace() {

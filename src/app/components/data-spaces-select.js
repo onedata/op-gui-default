@@ -18,6 +18,11 @@ export default Ember.Component.extend({
 
   /** List of DataSpace records */
   spaces: null,
+  validSpaces: function() {
+    return this.get('spaces').filter((s) => s.get('isLoaded'));
+  }.property('spaces', 'spaces.[]', 'spaces.@each.isLoaded'),
+  spacesSorting: ['isDefault:desc', 'name'],
+  spacesSorted: Ember.computed.sort('validSpaces', 'spacesSorting'),
 
   isLoading: function() {
     return !this.get('spaces.length') || this.get('spaces').any((s) => !s.get('name'));
@@ -40,13 +45,9 @@ export default Ember.Component.extend({
   }.observes('isLoading'),
 
   /** Space currently selected */
-  selectedSpace: function() {
-    return this.get('fileSystemTree.selectedSpace');
-  }.property('fileSystemTree.selectedSpace'),
+  selectedSpace: Ember.computed.alias('fileSystemTree.selectedSpace'),
 
-  prevSelectedSpace: function() {
-    return this.get('fileSystemTree.prevSelectedSpace');
-  }.property('fileSystemTree.prevSelectedSpace'),
+  prevSelectedSpace: Ember.computed.alias('fileSystemTree.prevSelectedSpace'),
 
   selectedSpaceDidChange: function() {
     console.debug(`Spaces Select component: selected space changed to ${this.get('selectedSpace.id')}`);

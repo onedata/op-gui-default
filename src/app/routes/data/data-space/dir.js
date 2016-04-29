@@ -18,6 +18,8 @@ export default Ember.Route.extend({
   },
 
   afterModel(file/*, transition*/) {
+    this.set('invalid', false);
+
     if (file.get('isDeleted')) {
       console.error('Loaded file is deleted');
       this.get('notify').error(`Cannot load dir because it is marked as deleted`);

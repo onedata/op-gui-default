@@ -1,0 +1,123 @@
+/// Import OpenSans Regular
+@font-face {
+    font-family: 'Open Sans';
+    src: url('OpenSans-Regular-webfont.eot');
+    src: local('Open Sans'), local('OpenSans'),
+         url('fonts/opensans/OpenSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/opensans/OpenSans-Regular-webfont.woff') format('woff'),
+         url('fonts/opensans/OpenSans-Regular-webfont.ttf') format('truetype'),
+         url('fonts/opensans/OpenSans-Regular-webfont.svg#open_sansregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/// Import OpenSans Bold
+@font-face {
+    font-family: 'Open Sans';
+    src: url('OpenSans-Bold-webfont.eot');
+    src: local('Open Sans'), local('OpenSans'),
+         url('fonts/opensans/OpenSans-Bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/opensans/OpenSans-Bold-webfont.woff') format('woff'),
+         url('fonts/opensans/OpenSans-Bold-webfont.ttf') format('truetype'),
+         url('fonts/opensans/OpenSans-Bold-webfont.svg#open_sansbold') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}
+
+/// Icons-fonts
+$icomoon-font-path: 'fonts/oneicons';
+@import 'oneicons/style.scss';
+
+.one-row {
+  display: table;
+  > * {
+    display: table-cell;
+    vertical-align: middle;
+  }
+}
+
+// base class for string truncation - please use additional context truncation classes
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nowrap {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.route-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+
+  background-color: white;
+  background-image: url("/assets/images/loading-128.gif");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.loading-throbber {
+  width: 32px;
+  height: 32px;
+  background-image: url("/assets/images/loading-32.gif");
+  background-position: center;
+  background-repeat: no-repeat;
+
+  &.small {
+    width: 24px;
+    height: 24px;
+  }
+
+  &.inverted {
+    background-image: url("/assets/images/loading-32-inverted.gif");
+
+    &.with-background {
+      background-color: black;
+    }
+  }
+
+  &.with-background {
+    background-size: 24px 24px;
+    border-radius: 4px;
+    background-color: white;
+  }
+}
+.loading-label {
+  padding-left: 15px;
+}
+
+.hover-parent {
+  &:not(:hover) {
+    .visible-on-parent-hover, .transparent-not-hovered {
+      color: transparent !important;
+    }
+  }
+}
+
+.floater {
+  position: fixed !important;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+}
+
+// Bootstrap extensions
+
+.table-no-border>thead>tr>th,
+.table-no-border>tbody>tr>th,
+.table-no-border>tfoot>tr>th,
+.table-no-border>thead>tr>td,
+.table-no-border>tbody>tr>td,
+.table-no-border>tfoot>tr>td,
+.table-no-border>tbody,
+.table-no-border>thead,
+.table-no-border>tfoot{
+  border-top: none !important;
+  border-bottom: none !important;
+}

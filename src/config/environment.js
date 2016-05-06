@@ -16,6 +16,11 @@ module.exports = function(environment) {
       }
     },
 
+    browserify: {
+      // your browserify options if you have any
+      ignores: [ ]
+    },
+
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
@@ -47,7 +52,7 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-
+    ENV.browserify.ignores.push('sinon-chai');
   }
 
   return ENV;

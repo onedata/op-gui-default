@@ -5,6 +5,10 @@ import {
   it
 } from 'ember-mocha';
 import hbs from 'htmlbars-inline-precompile';
+import sinon from 'sinon';
+import sinonChai from 'op-worker-gui/hacks/sinon-chai';
+import chai from 'chai';
+chai.use(sinonChai);
 
 describeComponent(
   'bs-tooltip',
@@ -35,6 +39,20 @@ describeComponent(
       });
 
       expect(this.$().text().trim()).to.be.equal(innerContent);
+    });
+
+    it('should invoke bootstrapize method when title is changed', function() {
+      // given
+      let bootstrapizeFun = sinon.stub(this.subject(), 'bootstrapize');
+      try {
+        // when
+        this.subject().set('title', 'hello');
+
+        // then
+        expect(bootstrapizeFun).to.have.been.called;
+      } finally {
+        bootstrapizeFun.restore();
+      }
     });
   }
 );

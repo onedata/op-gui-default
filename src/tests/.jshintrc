@@ -23,6 +23,7 @@
     "currentPath",
     "currentRouteName"
   ],
+  "expr": true,
   "node": false,
   "browser": false,
   "boss": true,

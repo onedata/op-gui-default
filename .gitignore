@@ -54,3 +54,6 @@ dockerimage.sha
 
 # compiled app
 rel
+
+# OSX
+.DS_Store

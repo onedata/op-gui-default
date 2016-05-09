@@ -50,7 +50,7 @@ export default Ember.Component.extend({
   actions: {
     getToken() {
       let type = this.get('type');
-      this.get('oneproviderServer').getToken(type, this.get('space.id')).then(
+      this.get('oneproviderServer').getSpaceToken(type, this.get('space.id')).then(
         (token) => {
           this.set('inviteToken', token);
         },

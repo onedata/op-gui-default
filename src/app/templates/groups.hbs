@@ -1,3 +1,12 @@
-{{page-title (t 'groups.title')}}
+{{!-- A Spaces view: sidebar with spaces list and content (if fit to screen) --}}
+{{page-title (t 'spaces.title')}}
 
-{{outlet}}
+{{!-- Secondary sidebar --}}
+<nav class="secondary-sidebar">
+  {{groups-menu groups=model activeGroup=activeGroup
+    goToGroup='goToGroup' openSubmenuEntry='openSubmenuEntry'}}
+</nav>
+
+<div id='content-scroll'>
+  {{outlet}}
+</div>

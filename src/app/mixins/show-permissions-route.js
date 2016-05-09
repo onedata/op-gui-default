@@ -4,7 +4,7 @@
  * Abstract methods/properties to implement in subclasses:
  * - collectionName - String property - a name of collection from spaces (users or groups)
  *
- * @module routes/spaces/show/show-permissions-base
+ * @module mixins/show-permissions-route
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
@@ -12,12 +12,11 @@
 
 import Ember from 'ember';
 
-export default Ember.Route.extend({
-  spacesMenuService: Ember.inject.service('spaces-menu'),
-  oneproviderServer: Ember.inject.service('oneproviderServer'),
-
+export default Ember.Mixin.create({
   /** Abstract: <string> should be set in subclasses, eg. user, group */
   permissionsType: null,
+  /** Abstract: <string> should be set in subclasses, eg. spaces, groups */
+  routeType: null,
 
   permissionsTypeSingular: function() {
     let type = this.get('permissionsType');
@@ -25,10 +24,10 @@ export default Ember.Route.extend({
   }.property('permissionsType'),
 
   model() {
-    var space = this.modelFor('spaces.show');
+    var subject = this.modelFor(`${this.get('routeType')}.show`);
     return {
-      space: space,
-      permissions: space.get(this.get('collectionName'))
+      subject: subject,
+      permissions: subject.get(this.get('collectionName'))
     };
   },
 

@@ -102,6 +102,57 @@ export default {
       groups: 'groups',
       providers: 'providers'
     },
+    groupsMenu: {
+      title: 'groups',
+      create: 'Create',
+      join: 'Join',
+      drop: {
+        moveUp: 'Move up',
+        moveDown: 'Move down',
+        leave: 'Leave group',
+        rename: 'Rename',
+        remove: 'Remove',
+        inviteUser: 'Invite user',
+        inviteGroup: 'Invite group',
+        createSpace: 'Create space',
+        joinSpace: 'Join space',
+        getSupport: 'Get support'
+      },
+      createModal: {
+        title: 'Create a new group',
+        enterName: 'Enter new group name:'
+      },
+      joinModal: {
+        title: 'Join a group',
+        label: 'Enter a token of a group to join:'
+      },
+      renameModal: {
+        title: 'Rename a group',
+        label: 'Enter new group name:'
+      },
+      leaveModal: {
+        title: 'Leave a group',
+        label: 'Are you sure you want to leave group "{{groupName}}"?'
+      },
+      removeModal: {
+        title: 'Remove a group',
+        label: 'Are you sure you want to remove the "{{groupName}}" group?'
+      },
+      notify: {
+        createSuccess: 'Group "{{name}}" created successfully',
+        createFailed: 'Group "{{name}}" cannot be created due to an error',
+        leaveSuccess: 'Group "{{name}}" left successfully',
+        leaveFailed: 'Cannot leave group "{{name}}" due to an error',
+        removeSuccess: 'Group "{{name}" has been removed',
+        removeFailed: 'Failed to remove group "{{name}}"',
+        joinSpaceSuccess: 'Successfully joined space "{{name}}"',
+        joinSpaceFailed: 'Cannot join space: "{{errorDetails}}"'
+      }
+    },
+    groupsSubmenu: {
+      members: 'members',
+      spaces: 'spaces'
+    },
     permissionsTable: {
       save: 'save',
       discard: 'discard',

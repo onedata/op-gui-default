@@ -136,7 +136,7 @@ export default Ember.Component.extend({
     submitJoinSpace() {
       this.set('isJoiningSpaceWorking', true);
       let token = this.get('joinSpaceToken') && this.get('joinSpaceToken').trim();
-      let serverPromise = this.get('oneproviderServer').joinSpace(token);
+      let serverPromise = this.get('oneproviderServer').userJoinSpace(token);
       serverPromise.then(
         (spaceName) => {
           this.spaceActionMessage('info', 'joinSuccess', spaceName);
@@ -232,7 +232,7 @@ export default Ember.Component.extend({
       try {
         let space = this.get('modalSpace');
         let spaceName = space.get('name');
-        this.get('oneproviderServer').leaveSpace(space).then(
+        this.get('oneproviderServer').userLeaveSpace(space).then(
           () => {
             this.spaceActionMessage('info', 'leaveSuccess', spaceName);
           },

@@ -1,0 +1,46 @@
+<div class="secondary-sidebar-header">
+  <div class="title">
+    {{t 'components.groupsMenu.title'}}
+  </div>
+  <figure class="icon" {{action 'startCreateGroup'}}>
+    {{icon 'group-invite'}}
+    <figcaption>{{t 'components.groupsMenu.create'}}</figcaption>
+  </figure>
+  <figure class="icon" {{action 'startJoinGroup'}}>
+    {{icon 'join'}}
+    <figcaption>{{t 'components.groupsMenu.join'}}</figcaption>
+  </figure>
+</div>
+
+<ul class="groups-list">
+  {{#each validGroupsSorted as |group|}}
+    {{groups-menu-item group=group isExpanded=(eq activeGroup.id group.id)
+      openSettingsModal='openSettingsModal' openSubmenuEntry='openSubmenuEntry'
+      collapseAllGroups='collapseAllGroups'}}
+  {{/each}}
+</ul>
+
+{{!-- CREATE GROUP --}}
+
+{{#bs-modal openedAction='createGroupModalOpened' open=isCreatingGroup body=false footer=false
+    title=(t "components.groupsMenu.createModal.title")
+    id="create-Group"}}
+  {{#bs-modal-body}}
+    {{#bs-form action=(action "submitCreateGroup") model=this}}
+      {{bs-form-element controlType="text" property="newGroupName" autofocus=true
+        label=(t 'components.groupsMenu.createModal.enterName')}}
+    {{/bs-form}}
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#spin-button-onedata buttonType="submit"
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isSavingGroup disabled=(or (unless newGroupName true) isSavingGroup)}}
+      {{t "common.modal.create"}}
+    {{/spin-button-onedata}}
+
+    {{#bs-button action=(action "close" target=footer) type="default" disabled=isSavingGroup
+      class="no-outline"}}
+      {{t "common.modal.cancel"}}
+    {{/bs-button}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}

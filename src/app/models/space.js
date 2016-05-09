@@ -21,12 +21,5 @@ export default DS.Model.extend({
 
 // TODO: currently not used - use list Order in templates
   /** An absolute position on list */
-  listOrder: DS.attr('number'),
-
-  /*** Non-presistable properties - probably shold be moved to components... ***/
-  /** users, groups or permissions - option highlighted in Space submenu */
-  currentMenuOption: null,
-
-  /*** Temporary properties used in view ***/
-  isExpanded: false,
+  listOrder: DS.attr('number')
 });

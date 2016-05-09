@@ -43,6 +43,17 @@ Router.map(function() {
 
     this.route('groups', {resetNamespace: true}, function() {});
 
+    // spaces/ - all spaces configuration reached from primary sidebar
+    this.route('groups', {resetNamespace: true}, function() {
+      // spaces/:group_id - entry for configuration of the single space
+      this.route('show', {path: ':group_id'}, function() {
+        // spaces/:group_id/users - configure users/groups (members) permissions for space
+        this.route('users');
+        // spaces/:group_id/spaces - list spaces belonging to group
+        this.route('spaces');
+      });
+    });
+
     // TODO: activate after routes implementation
     // this.route('recent', {resetNamespace: true});
     // this.route('links', {resetNamespace: true});

@@ -13,21 +13,47 @@ export default Ember.Service.extend({
   server: Ember.inject.service('server'),
 
   /** TODO: should resolve space name on success */
-  joinSpace(token) {
-    return this.get('server').privateRPC('joinSpace', {token: token});
+  userJoinSpace(token) {
+    return this.get('server').privateRPC('userJoinSpace', {token: token});
   },
 
-  leaveSpace(space) {
-    return this.get('server').privateRPC('leaveSpace', {
+  userLeaveSpace(space) {
+    return this.get('server').privateRPC('userLeaveSpace', {
       spaceId: space.get('id')
     });
   },
 
-  /** Allowed types: user, group, support */
-  getToken(type, spaceId) {
-    return this.get('server').privateRPC(`${type}Token`, {
-      spaceId: spaceId
+  userLeaveGroup(group) {
+    return this.get('server').privateRPC('userLeaveGroup', {
+      groupId: group.get('id')
     });
+  },
+
+  /** Allowed types: user, group, support */
+  getSpaceToken(type, spaceId) {
+    if (type.match(/^(user|group|support)$/)) {
+      this.getToken(type, {
+        spaceId: spaceId
+      });
+    } else {
+      throw `getSpaceToken type ${type} not supported`;
+    }
+  },
+
+  /** Allowed types: user, group, createSpace */
+  getGroupToken(type, groupId) {
+    if (type.match(/^(user|group|createSpace)$/)) {
+      this.getToken(type, {
+        groupId: groupId
+      });
+    } else {
+      throw `getGroupToken type ${type} not supported`;
+    }
+  },
+
+  /** Generic function to fetch tokens */
+  getToken(type, payload) {
+    return this.get('server').privateRPC(`${type}Token`, payload);
   },
 
   fileUploadComplete(fileId) {

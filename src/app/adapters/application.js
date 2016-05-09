@@ -1,1 +1,4 @@
-../../../gui/common_assets/js/adapters/ws-adapter-1.0.1.js
+export { default } from './application-onedata';
+
+// TODO: testing code - to use in memory, uncomment
+// export { default } from './application-in-memory';

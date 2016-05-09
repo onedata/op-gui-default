@@ -1,5 +1,6 @@
+import Ember from 'ember';
 import DS from 'ember-data';
-import PermissionsBase from './base/permissions-base';
+import PermissionsModelSpaceMixin from '../mixins/permissions-model-space';
 
 /**
  * A set of single Space permissions for a single User
@@ -8,11 +9,9 @@ import PermissionsBase from './base/permissions-base';
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default PermissionsBase.extend({
-  user: DS.belongsTo('spaceUser', {async: true}),
+export default DS.Model.extend(PermissionsModelSpaceMixin, {
+  user: DS.belongsTo('systemUser', {async: true}),
 
-  /** Common alias for owner - in this case group */
-  owner: function() {
-    return this.get('user');
-  }.property('user')
+  /** Common alias for owner - in this case a user (system-user) */
+  owner: Ember.computed.alias('user'),
 });

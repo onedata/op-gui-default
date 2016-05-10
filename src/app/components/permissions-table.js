@@ -19,6 +19,12 @@ export default Ember.Component.extend({
 
   classNames: ['permissions-table'],
 
+  /** An object with permissions property (which is a perm. collection) */
+  subject: null,
+
+  /** Temporary for backward compat. */
+  space: Ember.computed.alias('property'),
+
   /** If true, then table will has is-loading class */
   isLocked: false,
 
@@ -62,7 +68,7 @@ export default Ember.Component.extend({
   /** A localized title of table (based on type) */
   title: function() {
     return this.get('type') ?
-      this.get('i18n').t(`spaces.show.${this.get('type')}.tableTitle`) : '';
+      this.get('i18n').t(`components.permissionsTable.tableTitle.${this.get('type')}`) : '';
   }.property('type'),
 
   inviteButton: function() {

@@ -12,7 +12,8 @@ import PermissionsModelSpaceMixin from '../mixins/permissions-model-space';
  */
 export default DS.Model.extend(PermissionsModelSpaceMixin, {
   // TODO spaceUser or generic user?
-  user: DS.belongsTo('systemUser', {async: true}),
+  systemUser: DS.belongsTo('systemUser', {async: true}),
+  group: DS.belongsTo('group', {async: true}),
 
-  owner: Ember.computed.alias('user'),
+  owner: Ember.computed.alias('systemUser'),
 });

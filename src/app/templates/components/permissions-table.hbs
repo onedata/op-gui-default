@@ -44,7 +44,7 @@
   </div>
   <div class="one-tbody">
     {{#each permissionsSorted as |perm|}}
-      {{permissions-table-row permissions=perm isActive=(eq activePermissions.id perm.id)
+      {{permissions-table-row type=type permissions=perm isActive=(eq activePermissions.id perm.id)
         activatePermissions="activatePermissions" togglePermission="togglePermission"}}
     {{/each}}
   </div>

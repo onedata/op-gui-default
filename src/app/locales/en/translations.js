@@ -32,6 +32,7 @@ export default {
     commonLoader: {
       defaultMessage: 'Loading...',
       synchronizingSpaces: 'Synchronizing user spaces...',
+      synchronizingGroups: 'Synchronizing groups...',
       firstLogin: 'This might take a while if this is the first login to this provider'
     },
     topBar: {
@@ -102,6 +103,10 @@ export default {
       groups: 'groups',
       providers: 'providers'
     },
+    groupsSubmenu: {
+      members: 'members',
+      spaces: 'spaces'
+    },
     groupsMenu: {
       title: 'groups',
       create: 'Create',
@@ -149,10 +154,6 @@ export default {
         joinSpaceFailed: 'Cannot join space: "{{errorDetails}}"'
       }
     },
-    groupsSubmenu: {
-      members: 'members',
-      spaces: 'spaces'
-    },
     permissionsTable: {
       save: 'save',
       discard: 'discard',
@@ -174,6 +175,11 @@ export default {
       notify: {
         saveFailedAny: 'Some of permissions saving failed',
         saveFailedSingle: 'Cannot set permissions for "{{name}}"'
+      },
+      tableTitle: {
+        members: 'Members',
+        users: 'Users',
+        groups: 'Groups'
       }
     },
     // data
@@ -251,7 +257,14 @@ export default {
     },
   },
   groups: {
-    title: 'Groups'
+    title: 'Groups',
+    show: {
+      title: 'Group settings',
+      members: {
+        title: 'Members permissions'
+      },
+      spaces: "Spaces"
+    }
   },
   collection: {
     title: 'Collection'
@@ -270,12 +283,10 @@ export default {
     show: {
       title: 'Space settings',
       users: {
-        title: 'Users permissions',
-        tableTitle: 'users'
+        title: 'Users permissions'
       },
       groups: {
-        title: 'Groups permissions',
-        tableTitle: 'groups'
+        title: 'Groups permissions'
       },
     }
   },

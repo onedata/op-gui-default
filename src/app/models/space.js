@@ -19,6 +19,8 @@ export default DS.Model.extend({
   /** Whether user specified this space as default */
   isDefault: DS.attr('boolean', {defaultValue: false}),
 
+  groups: DS.hasMany('group', {async: true}),
+
 // TODO: currently not used - use list Order in templates
   /** An absolute position on list */
   listOrder: DS.attr('number')

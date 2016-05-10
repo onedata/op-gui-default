@@ -8,7 +8,7 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-import ShowPermissionsRouteMixin from '../mixins/show-permissions-route';
+import ShowPermissionsRouteMixin from '../../../mixins/show-permissions-route';
 import Ember from 'ember';
 
 export default Ember.Route.extend(ShowPermissionsRouteMixin, {

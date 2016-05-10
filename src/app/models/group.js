@@ -16,6 +16,8 @@ export default DS.Model.extend({
   /** Collection of group permissions - each will be a row in permissions table */
   groupPermissions: DS.hasMany('groupGroupPermission', {async: true}),
 
+  spaces: DS.hasMany('space', {async: true}),
+
 // TODO: currently not used - use list Order in templates
   /** An absolute position on list */
   listOrder: DS.attr('number'),

@@ -33,8 +33,13 @@ export default Ember.Service.extend({
   },
 
   activeGroupDidChange: function() {
+
     this.set('activeOption', null);
   }.observes('activeGroup'),
+
+  activeOptionDidChange: Ember.observer('activeOption', function () {
+
+  }),
 
   componentChanged: function() {
     console.debug(`service.groups-menu: Component changed: ${this.get('component')}`);

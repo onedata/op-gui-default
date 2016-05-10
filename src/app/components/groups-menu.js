@@ -38,7 +38,7 @@ export default Ember.Component.extend({
     if (this.get('isLoading')) {
       this.setProperties({
         'commonLoader.isLoading': true,
-        'commonLoader.message': this.get('i18n').t('components.commonLoader.synchronizingSpaces'),
+        'commonLoader.message': this.get('i18n').t('components.commonLoader.synchronizingGroups'),
         'commonLoader.messageSecondary': this.get('i18n').t('components.commonLoader.firstLogin')
       });
     } else {
@@ -73,6 +73,7 @@ export default Ember.Component.extend({
 
   activeGroupDidChange: function() {
     if (this.get('activeGroup')) {
+
       this.sendAction('goToGroup', this.get('activeGroup'));
     }
   }.observes('activeGroup'),

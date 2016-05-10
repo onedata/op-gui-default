@@ -13,8 +13,7 @@ export default Ember.Route.extend({
     return this.modelFor('groups');
   },
 
-  // TODO: uncomment
   activate() {
-    // this.controllerFor(this.routeName).goToDefaultGroup();
+    this.controllerFor(this.routeName).goToDefaultGroup();
   },
 });

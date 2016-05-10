@@ -10,8 +10,8 @@ import PermissionsModelSpaceMixin from '../mixins/permissions-model-space';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend(PermissionsModelSpaceMixin, {
-  user: DS.belongsTo('systemUser', {async: true}),
+  systemUser: DS.belongsTo('systemUser', {async: true}),
 
   /** Common alias for owner - in this case a user (system-user) */
-  owner: Ember.computed.alias('user'),
+  owner: Ember.computed.alias('systemUser'),
 });

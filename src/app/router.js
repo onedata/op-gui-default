@@ -16,6 +16,7 @@ const Router = Ember.Router.extend({
 
 Router.map(function() {
   this.route('lang', {path: '/:localeId'}, function() {
+
     // spaces/ - all spaces configuration reached from primary sidebar
     this.route('spaces', {resetNamespace: true}, function() {
       // spaces/:space_id - entry for configuration of the single space
@@ -41,15 +42,13 @@ Router.map(function() {
       });
     });
 
-    this.route('groups', {resetNamespace: true}, function() {});
-
-    // spaces/ - all spaces configuration reached from primary sidebar
+    // groups/ - all spaces configuration reached from primary sidebar
     this.route('groups', {resetNamespace: true}, function() {
-      // spaces/:group_id - entry for configuration of the single space
+      // groups/:group_id - entry for configuration of the single space
       this.route('show', {path: ':group_id'}, function() {
-        // spaces/:group_id/users - configure users/groups (members) permissions for space
-        this.route('users');
-        // spaces/:group_id/spaces - list spaces belonging to group
+        // groups/:group_id/members - configure users/groups (members) permissions for space
+        this.route('members');
+        // groups/:group_id/spaces - list spaces belonging to group
         this.route('spaces');
       });
     });

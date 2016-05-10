@@ -14,9 +14,11 @@ export default Ember.Component.extend({
   classNames: ['one-tr', 'permissions-table-row'],
   classNameBindings: ['isActive:active'],
   setElementId: Ember.on('init', function() {
-    this.set('elementId', `perm-row-${safeElementId(this.get('perm.id'))}`);
+    this.set('elementId', `perm-row-${safeElementId(this.get('perm.id'))}-${this.get('type')}`);
   }),
 
+  /** Optional - if set, the type is used to generate element id */
+  type: null,
   perm: Ember.computed.alias('permissions'),
 
   actions: {

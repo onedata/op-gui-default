@@ -12,6 +12,7 @@ export default Ember.Route.extend(MainRouteMixin, {
   actions: {
     /** Show submenu for Group */
     goToGroup(group) {
+
       this.transitionTo('groups.show', group);
     },
 

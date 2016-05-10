@@ -1,9 +1,9 @@
 import Ember from 'ember';
 
 /**
- * A item in space submenu, eg. "users" which should transit to users permission
+ * A item in group submenu, eg. "users" which should transit to users permission
  * table.
- * @module components/spaces-submenu-item
+ * @module components/groups-submenu-item
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
@@ -12,10 +12,10 @@ export default Ember.Component.extend({
   tagName: 'li',
   classNameBindings: ['typePermissionsClass', 'isActive:active'],
 
-  /** An instance of spaces-submenu component - logical parent of this component */
+  /** An instance of groups-submenu component - logical parent of this component */
   submenu: null,
 
-  /** Space submenu option type: "users" or "groups" */
+  /** group submenu option type: "users" or "groups" */
   type: null,
   typeSingular: function() {
     let type = this.get('type');
@@ -23,21 +23,22 @@ export default Ember.Component.extend({
   }.property('type'),
 
   isActive: function() {
-    return this.get('submenu.isSpaceActive') &&
+
+    return this.get('submenu.isGroupActive') &&
       this.get('submenu.activeOption') === this.get('type');
-  }.property('submenu', 'submenu.activeOption', 'submenu.isSpaceActive'),
+  }.property('submenu', 'submenu.activeOption', 'submenu.isGroupActive'),
 
   typePermissionsClass: function() {
     return `${this.get('type')}-permissions`;
   }.property('type'),
 
   label: function() {
-    return this.get('i18n').t(`components.spacesSubmenu.${this.get('type')}`);
+    return this.get('i18n').t(`components.groupsSubmenu.${this.get('type')}`);
   }.property('type'),
 
   icon: function() {
     return this.get('typeSingular');
-  }.property('icon'),
+  }.property(),
 
   click() {
     this.sendAction('action', this.get('type'));

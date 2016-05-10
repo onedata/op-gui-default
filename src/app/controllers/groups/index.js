@@ -31,6 +31,6 @@ export default Ember.Controller.extend({
     This is a workaround for afterModel, which does not recieve ready groups list.
   */
   onModelChange: function() {
-    // this.goToDefaultGroup();
+    this.goToDefaultGroup();
   }.observes('model.[]')
 });

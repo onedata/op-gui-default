@@ -8,10 +8,10 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Controller.extend({
-  defaultOption: 'users',
+  defaultOption: 'members',
 
   goToDefaultOption() {
-    this.transitionToRoute(`spaces.show.${this.defaultOption}`);
+    this.transitionToRoute(`groups.show.${this.defaultOption}`);
   },
 
   /**

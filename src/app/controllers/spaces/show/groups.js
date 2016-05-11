@@ -10,6 +10,5 @@ import ShowPermissionsControllerMixin from '../../../mixins/show-permissions-con
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Controller.extend(ShowPermissionsControllerMixin, {
-  secondaryMenu: Ember.inject.service('spacesMenu'),
   permissionsType: 'groups',
 });

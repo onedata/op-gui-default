@@ -16,16 +16,16 @@ export default Ember.Component.extend({
   classNames: ['first-level', 'hover-parent'],
   classNameBindings: ['isExpanded:active'],
 
-  spacesMenu: Ember.inject.service(),
+  secondaryMenu: Ember.inject.service(),
 
   isExpanded: function() {
-    return this.get('spacesMenu.activeSpace.id') === this.get('space.id');
-  }.property('spacesMenu.activeSpace.id'),
+    return this.get('secondaryMenu.activeItem.id') === this.get('space.id');
+  }.property('secondaryMenu.activeItem.id'),
 
   actions: {
     /** Delegate to goToSpace action, should show submenu to configure Space */
     expand() {
-      this.set('spacesMenu.activeSpace', this.get('space'));
+      this.set('secondaryMenu.activeItem', this.get('space'));
     },
 
     openSubmenuEntry(name) {

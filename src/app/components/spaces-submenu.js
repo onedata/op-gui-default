@@ -14,16 +14,17 @@ export default Ember.Component.extend({
   tagName: 'ul',
   classNames: ['submenu'],
 
-  spacesMenu: Ember.inject.service(),
+  secondaryMenu: Ember.inject.service(),
+  activeSpace: Ember.computed.alias('secondaryMenu.activeItem'),
 
   isSpaceActive: function() {
-    return this.get('space.id') === this.get('spacesMenu.activeSpace.id');
-  }.property('space.id', 'spacesMenu.activeSpace.id'),
+    return this.get('space.id') === this.get('activeSpace.id');
+  }.property('space.id', 'activeSpace.id'),
 
-  // NOTE: readonly property, if want to modify, set spacesMenu.activeOption
+  // NOTE: readonly property, if want to modify, set secondaryMenu.activeOption
   activeOption: function() {
-    return this.get('isSpaceActive') ? this.get('spacesMenu.activeOption') : null;
-  }.property('isSpaceActive', 'spacesMenu.activeOption'),
+    return this.get('isSpaceActive') ? this.get('secondaryMenu.activeOption') : null;
+  }.property('isSpaceActive', 'secondaryMenu.activeOption'),
 
   space: null,
 

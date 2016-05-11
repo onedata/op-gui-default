@@ -23,7 +23,6 @@ export default Ember.Component.extend({
   }.property('type'),
 
   isActive: function() {
-
     return this.get('submenu.isGroupActive') &&
       this.get('submenu.activeOption') === this.get('type');
   }.property('submenu', 'submenu.activeOption', 'submenu.isGroupActive'),

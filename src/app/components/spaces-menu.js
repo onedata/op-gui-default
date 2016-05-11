@@ -11,7 +11,7 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  service: Ember.inject.service('spaces-menu'),
+  secondaryMenu: Ember.inject.service(),
   store: Ember.inject.service(),
   notify: Ember.inject.service(),
   oneproviderServer: Ember.inject.service(),
@@ -25,7 +25,7 @@ export default Ember.Component.extend({
   spacesSorting: ['isDefault:desc', 'name'],
   validSpacesSorted: Ember.computed.sort('validSpaces', 'spacesSorting'),
 
-  activeSpace: Ember.computed.alias('service.activeSpace'),
+  activeSpace: Ember.computed.alias('secondaryMenu.activeItem'),
 
   isLoading: function() {
     return !this.get('spaces.length') || this.get('spaces').any((s) => !s.get('name'));
@@ -60,12 +60,12 @@ export default Ember.Component.extend({
 
   spaceToRemove: null,
 
-  registerInService: function() {
-    this.set('service.component', this);
+  registerInSecondaryMenu: function() {
+    this.set('secondaryMenu.component', this);
   }.on('init'),
 
-  clearService: function() {
-    this.get('service').clear();
+  clearSecondaryMenu: function() {
+    this.get('secondaryMenu').clear();
   }.on('willDestroyElement'),
 
   activeSpaceDidChange: function() {

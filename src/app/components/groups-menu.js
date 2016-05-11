@@ -13,7 +13,7 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  service: Ember.inject.service('groups-menu'),
+  secondaryMenu: Ember.inject.service(),
   store: Ember.inject.service(),
   notify: Ember.inject.service(),
   oneproviderServer: Ember.inject.service(),
@@ -27,7 +27,7 @@ export default Ember.Component.extend({
   groupsSorting: ['isDefault:desc', 'name'],
   validGroupsSorted: Ember.computed.sort('validGroups', 'groupsSorting'),
 
-  activeGroup: Ember.computed.alias('service.activeGroup'),
+  activeGroup: Ember.computed.alias('secondaryMenu.activeItem'),
 
   isLoading: function() {
     return !this.get('groups.length') || this.get('groups').any((s) => !s.get('name'));
@@ -63,12 +63,12 @@ export default Ember.Component.extend({
 
   groupToRemove: null,
 
-  registerInService: function() {
-    this.set('service.component', this);
+  registerInsecondaryMenu: function() {
+    this.set('secondaryMenu.component', this);
   }.on('init'),
 
-  clearService: function() {
-    this.get('service').clear();
+  clearsecondaryMenu: function() {
+    this.get('secondaryMenu').clear();
   }.on('willDestroyElement'),
 
   activeGroupDidChange: function() {

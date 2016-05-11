@@ -9,14 +9,15 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Controller.extend({
-  groupsMenu: Ember.inject.service(),
+  secondaryMenu: Ember.inject.service(),
 
   onGroupChange: function() {
     if (this.get('model')) {
-      Ember.run.scheduleOnce('afterRender', this, function() {
-        console.debug(`controller.groups: group changed: ${this.get('model.id')}`);
-        this.set('groupsMenu.activeGroup', this.get('model'));
+      console.debug(`controller.groups: group changed: ${this.get('model.id')}`);
+      this.set('secondaryMenu.activeItem', this.get('model'));
 
+      // TODO: use property binding
+      Ember.run.scheduleOnce('afterRender', this, function() {
         $('nav.secondary-sidebar').addClass('visible');
       });
     }

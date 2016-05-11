@@ -9,6 +9,12 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Route.extend({
+  notify: Ember.inject.service(),
+
+  beforeModel() {
+
+  },
+
   model() {
     return this.modelFor('groups.show');
   },

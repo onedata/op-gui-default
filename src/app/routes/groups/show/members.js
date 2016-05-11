@@ -28,6 +28,10 @@ export default Ember.Route.extend(ShowPermissionsRouteMixin, {
   },
 
   actions: {
+    didTransition() {
+      this.controllerFor(this.routeName).changeMenuActiveOption();
+    },
+
     // TODO: implement
     // inviteItem() {
     //   let space = this.modelFor('spaces.show');

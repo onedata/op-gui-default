@@ -35,6 +35,10 @@ export default Ember.Mixin.create({
     return `${this.get('permissionsTypeSingular')}Permissions`;
   }.property('permissionsTypeSingular'),
 
+  onActivate: function() {
+    this.controllerFor(this.routeName).changeMenuActiveOption();
+  }.on('activate'),
+
   onDeactivate: function() {
     Ember.run.scheduleOnce('afterRender', this, function() {
       $('nav.secondary-sidebar').addClass('visible');

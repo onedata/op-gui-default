@@ -171,9 +171,12 @@ html, body {
           font-size: 40px;
         }
 
-        &.active a,
-        a:hover {
+        &.active a {
           background-color: $sidebar-item-hover-color;
+        }
+
+        a:hover {
+          background-color: rgba($sidebar-item-hover-color, 0.55);
         }
 
         a {
@@ -578,3 +581,15 @@ html, body {
 
 // TODO: temporary
 @import 'data';
+
+// for debugging
+.service-debugger {
+  position: fixed;
+  width: 400px;
+  height: 150px;
+  bottom: 0;
+  right: 0;
+  border: 1px solid black;
+  background-color: white;
+  padding: 10px;
+}

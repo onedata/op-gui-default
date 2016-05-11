@@ -16,16 +16,16 @@ export default Ember.Component.extend({
   classNames: ['first-level', 'hover-parent'],
   classNameBindings: ['isExpanded:active'],
 
-  groupsMenu: Ember.inject.service(),
+  secondaryMenu: Ember.inject.service(),
 
   isExpanded: function() {
-    return this.get('groupsMenu.activeGroup.id') === this.get('group.id');
-  }.property('groupsMenu.activeGroup.id'),
+    return this.get('secondaryMenu.activeItem.id') === this.get('group.id');
+  }.property('secondaryMenu.activeItem.id'),
 
   actions: {
     /** Delegate to goToGroup action, should show submenu to configure Group */
     expand() {
-      this.set('groupsMenu.activeGroup', this.get('group'));
+      this.set('secondaryMenu.activeItem', this.get('group'));
     },
 
     openSubmenuEntry(name) {

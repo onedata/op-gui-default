@@ -4,5 +4,11 @@ import Ember from 'ember';
 export default Ember.Route.extend({
   model() {
     return this.modelFor('groups.show');
+  },
+
+  actions: {
+    didTransition() {
+      this.controllerFor(this.routeName).changeMenuActiveOption();
+    },
   }
 });

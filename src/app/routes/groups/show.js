@@ -31,6 +31,6 @@ export default Ember.Route.extend({
     */
     goToGroup(group) {
       return !group || group.get('id') !== this.controllerFor(this.routeName).get('model.id');
-    },
+    }
   }
 });

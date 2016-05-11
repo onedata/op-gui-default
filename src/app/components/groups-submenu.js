@@ -14,16 +14,17 @@ export default Ember.Component.extend({
   tagName: 'ul',
   classNames: ['submenu'],
 
-  groupsMenu: Ember.inject.service(),
+  secondaryMenu: Ember.inject.service(),
+  activeGroup: Ember.computed.alias('secondaryMenu.activeItem'),
 
   isGroupActive: function() {
-    return this.get('group.id') === this.get('groupsMenu.activeGroup.id');
-  }.property('group.id', 'groupsMenu.activeGroup.id'),
+    return this.get('group.id') === this.get('activeGroup.id');
+  }.property('group.id', 'activeGroup.id'),
 
   // NOTE: readonly property, if want to modify, set groupsMenu.activeOption
   activeOption: function() {
-    return this.get('isGroupActive') ? this.get('groupsMenu.activeOption') : null;
-  }.property('isGroupActive', 'groupsMenu.activeOption'),
+    return this.get('isGroupActive') ? this.get('secondaryMenu.activeOption') : null;
+  }.property('isGroupActive', 'secondaryMenu.activeOption'),
 
   group: null,
 

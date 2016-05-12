@@ -61,8 +61,42 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
   groupToRename: null,
   renameGroupName: null,
+  isRenameModalOpened: Ember.computed('openedModal', {
+    get() {
+      return this.get('openedModal') === 'rename';
+    },
+    set(key, value) {
+      if (!value) {
+        this.set('openedModal', null);
+      }
+      return value;
+    }
+  }),
 
   groupToRemove: null,
+  isRemoveModalOpened: Ember.computed('openedModal', {
+    get() {
+      return this.get('openedModal') === 'remove';
+    },
+    set(key, value) {
+      if (!value) {
+        this.set('openedModal', null);
+      }
+      return value;
+    }
+  }),
+
+  isLeaveModalOpened: Ember.computed('openedModal', {
+    get() {
+      return this.get('openedModal') === 'leave';
+    },
+    set(key, value) {
+      if (!value) {
+        this.set('openedModal', null);
+      }
+      return value;
+    }
+  }),
 
   registerInsecondaryMenu: function() {
     this.set('secondaryMenu.component', this);
@@ -138,6 +172,30 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
       }));
     },
 
+    startJoinGroup() {
+      this.set('joinGroupToken', null);
+      this.set('isJoiningGroup', true);
+    },
+
+    submitJoinGroup() {
+      let token = this.get('joinGroupToken') && this.get('joinGroupToken').trim();
+      let serverPromise = this.get('oneproviderServer').userJoinGroup(token);
+      serverPromise.then(
+        (groupName) => {
+          this.groupActionMessage('info', 'joinSuccess', groupName);
+        },
+        (errorJson) => {
+          console.log(errorJson.message);
+          let message = this.get('i18n').t('components.groupsMenu.notify.joinFailed', {errorDetails: errorJson.message});
+          this.get('notify').error(message);
+        }
+      );
+      serverPromise.finally(() => {
+        this.set('isJoiningGroupWorking', false);
+        this.set('isJoiningGroup', false);
+      });
+    },
+
     submitRenameGroup() {
       try {
         let group = this.get('modalGroup');
@@ -172,6 +230,58 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
           openedModal: null
         });
       }
-    }
+    },
+
+    submitLeaveGroup() {
+      try {
+        let group = this.get('modalGroup');
+        let groupName = group.get('name');
+        this.promiseLoading(this.get('oneproviderServer').userLeaveGroup(group.get('id')))
+          .then(
+            () => {
+              group.deleteRecord();
+              let message = this.get('i18n').t('components.groupsMenu.notify.leaveSuccess', {
+                name: groupName
+              });
+              this.get('notify').info(message);
+            },
+            (error) => {
+              console.log(`Leave group ${groupName} failed ${error.message}`);
+              let message = this.get('i18n').t('components.groupsMenu.notify.leaveFailed', {
+                name: groupName
+              });
+              message = message + ': ' + error.message;
+              this.get('notify').error(message);
+            }
+        );
+      } finally {
+        this.set('modalGroup', null);
+        this.set('openedModal', null);
+      }
+    },
+
+    startJoinSpace() {
+      this.set('joinSpaceToken', null);
+      this.set('isJoiningSpace', true);
+    },
+
+    submitJoinSpace() {
+      let token = this.get('joinSpaceToken') && this.get('joinSpaceToken').trim();
+      let serverPromise = this.get('oneproviderServer').userJoinSpace(token);
+      serverPromise.then(
+        () => {
+          // TODO FIXME
+        },
+        (errorJson) => {
+          console.log(errorJson.message);
+          let message = this.get('i18n').t('components.groupSettingsDrop.notify.joinSpaceFailed', {errorDetails: errorJson.message});
+          this.get('notify').error(message);
+        }
+      );
+      serverPromise.finally(() => {
+        this.set('isJoiningGroupWorking', false);
+        this.set('isJoiningGroup', false);
+      });
+    },
   }
 });

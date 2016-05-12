@@ -31,20 +31,35 @@
         </div>
       </div>
     </div>
-    <div class="one-th">{{t 'components.permissionsTable.viewSpace'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.modifySpace'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.removeSpace'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.inviteUser'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.removeUser'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.inviteGroup'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.removeGroup'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.inviteProvider'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.removeProvider'}}</div>
+    {{#if (eq subjectType "space")}}
+      <div class="one-th">{{t 'components.permissionsTable.viewSpace'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.modifySpace'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.removeSpace'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.inviteUser'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.removeUser'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.inviteGroup'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.removeGroup'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.inviteProvider'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.removeProvider'}}</div>
+    {{/if}}
+    {{#if (eq subjectType "group")}}
+      <div class="one-th">{{t 'components.permissionsTable.viewGroup'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.modifyGroup'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.removeGroup'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.inviteUser'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.removeUser'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.createSpace'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.joinSpace'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.leaveSpace'}}</div>
+      <div class="one-th">{{t 'components.permissionsTable.getSupport'}}</div>
+    {{/if}}
+
   </div>
   <div class="one-tbody">
     {{#each permissionsSorted as |perm|}}
-      {{permissions-table-row type=type permissions=perm isActive=(eq activePermissions.id perm.id)
+      {{permissions-table-row type=type subjectType=subjectType permissions=perm isActive=(eq activePermissions.id perm.id)
         activatePermissions="activatePermissions" togglePermission="togglePermission"}}
     {{/each}}
   </div>

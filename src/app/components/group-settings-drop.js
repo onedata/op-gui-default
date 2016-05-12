@@ -58,18 +58,13 @@ export default Ember.Component.extend({
       {
         icon: 'space-add',
         label: i18n.t('components.groupsMenu.drop.createSpace'),
-        action: 'inviteGroup'
+        action: 'requestSpaceCreation'
       },
       {
         // TODO: find an icon
         icon: 'space-join',
         label: i18n.t('components.groupsMenu.drop.joinSpace'),
-        action: 'inviteGroup'
-      },
-      {
-        icon: 'support',
-        label: i18n.t('components.groupsMenu.drop.getSupport'),
-        action: 'getSupport'
+        action: 'joinSpace'
       }
     ];
   }.property(),
@@ -114,22 +109,33 @@ export default Ember.Component.extend({
       // this.sendAction('openSettingsModal', 'remove', this.get('group'));
     },
 
+
     inviteGroup() {
-      this.get('commonModals').openModal('token-group', {
-        group: this.get('group')
+      this.get('commonModals').openModal('token', {
+        type: 'groupJoinGroup',
+        funArgs: [this.get('group.id')],
       });
     },
 
     inviteUser() {
-      this.get('commonModals').openModal('token-user', {
-        group: this.get('group')
+      this.get('commonModals').openModal('token', {
+        type: 'userJoinGroup',
+        funArgs: [this.get('group.id')],
       });
     },
 
-    getSupport() {
-      this.get('commonModals').openModal('token-support', {
-        group: this.get('group')
+    requestSpaceCreation() {
+      this.get('commonModals').openModal('token', {
+        type: 'requestSpaceCreation',
+        funArgs: [this.get('group.id')]
       });
-    }
+    },
+
+    joinSpace() {
+      this.get('commonModals').openModal('token', {
+        type: 'joinSpace',
+        funArgs: [this.get('group.id')]
+      });
+    },
   }
 });

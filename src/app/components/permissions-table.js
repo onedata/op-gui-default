@@ -53,9 +53,15 @@ export default Ember.Component.extend({
   permissionsSorting: ['owner'],
   permissionsSorted: Ember.computed.sort('permissions', 'permissionsSorting'),
 
+  /**
+   * For what entity permissions are? space/group
+   * It must be injected into component.
+   */
+  subjectType: null,
 
   /**
-   * A type of table: users/groups
+   * What permissions table shows: users/groups
+   * Eg. a row can represent permissions for user
    * It must be injected into component.
    */
   type: null,
@@ -146,7 +152,8 @@ export default Ember.Component.extend({
     invite() {
       // TODO: plural -> singular mess
       this.get('commonModals').openModal(`token-${this.get('typeSingular')}` , {
-        space: this.get('space')
+        type: `${this.get('typeSingular')}JoinGroup`,
+        groupId: this.get('group.id')
       });
     },
 

@@ -107,6 +107,12 @@ export default {
       members: 'members',
       spaces: 'spaces'
     },
+    groupSettingsDrop: {
+      notify: {
+        joinSpaceFailed: 'Joining group "{{groupName}}" to space "{{spaceName}}" failed',
+        joinSpaceSuccess: 'Joining group "{{groupName}}" to space "{{spaceName}}" succeeded!'
+      }
+    },
     groupsMenu: {
       title: 'groups',
       create: 'Create',
@@ -170,6 +176,12 @@ export default {
       removeGroup: 'remove group',
       inviteProvider: 'invite provider',
       removeProvider: 'remove provider',
+      viewGroup: 'view group',
+      modifyGroup: 'modify group',
+      createSpace: 'create space',
+      joinSpace: 'join space',
+      leaveSpace: 'leave space',
+      getSupport: 'get support',
       inviteModal: {
         title: 'Invite {{type}} to space',
         label: 'Pass the below token to the {{type}} you want to invite'
@@ -244,17 +256,29 @@ export default {
       cancelAll: 'Cancel all',
     },
     tokenModals: {
-      user: {
+      userJoinSpace: {
         title: 'Invite user to the space',
-        label: 'Pass the below token to the user you want to invite'
+        label: 'Pass the below token to the user you want to invite to space'
       },
-      group: {
+      groupJoinSpace: {
         title: 'Invite group to the space',
-        label: 'Pass the below token to the group you want to invite'
+        label: 'Pass the below token to the group you want to invite to space'
       },
-      support: {
+      providerSupport: {
         title: 'Get support for the space',
         label: 'Pass the below token to the provider you want to request support from'
+      },
+      userJoinGroup: {
+        title: 'Invite user to the group',
+        label: 'Pass the below token to the user you want to invite to group'
+      },
+      groupJoinGroup: {
+        title: 'Invite group to the group',
+        label: 'Pass the below token to the group you want to invite to group'
+      },
+      requestSpaceCreation: {
+        title: 'Request space creation for the group',
+        label: 'Pass the below token to the provider you want to create and support space for your group'
       }
     },
   },

@@ -17,8 +17,17 @@ export default Ember.Component.extend({
     this.set('elementId', `perm-row-${safeElementId(this.get('perm.id'))}-${this.get('type')}`);
   }),
 
-  /** Optional - if set, the type is used to generate element id */
+  /**
+    Optional - if set, the type is used to generate element id
+    Eg. it says, that the row represents user permissions
+  */
   type: null,
+
+  /**
+    The subject of permissions {String}: space/group
+  */
+  subjectType: null,
+
   perm: Ember.computed.alias('permissions'),
 
   actions: {

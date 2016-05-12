@@ -57,8 +57,42 @@ export default Ember.Component.extend({
 
   spaceToRename: null,
   renameSpaceName: null,
+  isRenameModalOpened: Ember.computed('openedModal', {
+    get() {
+      return this.get('openedModal') === 'rename';
+    },
+    set(key, value) {
+      if (!value) {
+        this.set('openedModal', null);
+      }
+      return value;
+    }
+  }),
 
   spaceToRemove: null,
+  isRemoveModalOpened: Ember.computed('openedModal', {
+    get() {
+      return this.get('openedModal') === 'remove';
+    },
+    set(key, value) {
+      if (!value) {
+        this.set('openedModal', null);
+      }
+      return value;
+    }
+  }),
+
+  isLeaveModalOpened: Ember.computed('openedModal', {
+    get() {
+      return this.get('openedModal') === 'leave';
+    },
+    set(key, value) {
+      if (!value) {
+        this.set('openedModal', null);
+      }
+      return value;
+    }
+  }),
 
   registerInSecondaryMenu: function() {
     this.set('secondaryMenu.component', this);
@@ -232,7 +266,7 @@ export default Ember.Component.extend({
       try {
         let space = this.get('modalSpace');
         let spaceName = space.get('name');
-        this.get('oneproviderServer').userLeaveSpace(space).then(
+        this.get('oneproviderServer').userLeaveSpace(space.get('id')).then(
           () => {
             this.spaceActionMessage('info', 'leaveSuccess', spaceName);
           },

@@ -45,11 +45,31 @@
   {{/bs-modal-footer}}
 {{/bs-modal}}
 
+{{!-- JOIN GROUP --}}
+
+{{#bs-modal open=isJoiningGroup body=false footer=false
+    title=(t "components.groupsMenu.joinModal.title")
+    id="join-group"}}
+  {{#bs-modal-body}}
+    {{#bs-form action=(action "submitJoinGroup") model=this}}
+      {{bs-form-element controlType="text" property="joinGroupToken" autofocus=true
+        label=(t 'components.groupsMenu.joinModal.label')}}
+    {{/bs-form}}
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#spin-button-onedata buttonType="submit"
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isJoiningGroupWorking disabled=(unless joinGroupToken true)}}
+      {{t "common.modal.join"}}
+    {{/spin-button-onedata}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}
+
 {{!-- group operations --}}
 
 {{!-- RENAME GROUP --}}
 
-{{#bs-modal open=(eq openedModal "rename") body=false footer=false
+{{#bs-modal open=isRenameModalOpened body=false footer=false
     title=(t "components.groupsMenu.renameModal.title")
     id="rename-group"}}
   {{#bs-modal-body}}
@@ -70,7 +90,7 @@
 
 {{!-- LEAVE GROUP --}}
 
-{{#bs-modal open=(eq openedModal "leave") body=false footer=false
+{{#bs-modal open=isLeaveModalOpened body=false footer=false
     title=(t "components.groupsMenu.leaveModal.title")
     submitAction="submitLeaveGroup" id="leave-group"}}
   {{#bs-modal-body}}
@@ -88,7 +108,7 @@
 
 {{!-- REMOVE GROUP --}}
 
-{{#bs-modal open=(eq openedModal "remove") body=false footer=false
+{{#bs-modal open=isRemoveModalOpened body=false footer=false
     title=(t "components.groupsMenu.removeModal.title")
     submitAction="submitRemoveGroup" id="remove-group"}}
   {{#bs-modal-body}}

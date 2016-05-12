@@ -11,8 +11,9 @@
 */
 
 import Ember from 'ember';
+import PromiseLoadingMixin from '../mixins/promise-loading';
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(PromiseLoadingMixin, {
   secondaryMenu: Ember.inject.service(),
   store: Ember.inject.service(),
   notify: Ember.inject.service(),
@@ -96,6 +97,11 @@ export default Ember.Component.extend({
       this.sendAction('openSubmenuEntry', group, name);
     },
 
+    openSettingsModal(modalName, group) {
+      this.set('modalGroup', group);
+      this.set('openedModal', modalName);
+    },
+
     startCreateGroup() {
       this.set('isCreatingGroup', true);
     },
@@ -131,5 +137,41 @@ export default Ember.Component.extend({
         isSavingGroup: false
       }));
     },
+
+    submitRenameGroup() {
+      try {
+        let group = this.get('modalGroup');
+        let oldName = group.get('name');
+        let newName = this.get('renameGroupName');
+        group.set('name', this.get('renameGroupName'));
+
+        this.promiseLoading(
+          group.save()
+        ).then(
+          () => {
+            this.get('notify').info(this.get('i18n').t(
+              'components.groupsMenu.notify.renameSuccess', {
+                oldName: oldName,
+                newName: newName
+              }
+            ));
+          },
+          (error) => {
+            this.get('notify').error(this.get('i18n').t(
+              'components.groupsMenu.notify.renameFailed', {
+                oldName: oldName,
+                newName: newName
+              }
+            ) + ': ' + error.message);
+            group.rollbackAttributes();
+          }
+        );
+      } finally {
+        this.setProperties({
+          modalGroup: null,
+          openedModal: null
+        });
+      }
+    }
   }
 });

@@ -1,8 +1,10 @@
+{{!-- TODO: isLoading support is only example - it does not work because isLoading state is set somewhere in parent --}}
+
 <div class="dropdown settings-dropdown">
   <div href="#" class="dropdown-toggle" data-toggle="dropdown"
     role="button" aria-haspopup="true" aria-expanded="false">
-    <span class="item-element item-icon transparent-not-hovered settings-icon">
-      {{icon 'settings'}}
+    <span class="item-element item-icon settings-icon {{if isLoading 'non-clickable disabled' 'transparent-not-hovered clickable'}}">
+      {{icon 'settings' (if isLoading 'rotating')}}
     </span>
   </div>
   <ul class="dropdown-menu dropdown-menu-right dropdown-menu-list space-dropdown-menu dropdown-menu-settings">

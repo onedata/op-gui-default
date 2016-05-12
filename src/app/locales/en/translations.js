@@ -146,6 +146,8 @@ export default {
       notify: {
         createSuccess: 'Group "{{name}}" created successfully',
         createFailed: 'Group "{{name}}" cannot be created due to an error',
+        renameSuccess: 'Group "{{oldName}}" renamed to "{{newName}}"',
+        renameFailed: 'Group "{{oldName}}" rename to "{{newName}}" failed due to an error',
         leaveSuccess: 'Group "{{name}}" left successfully',
         leaveFailed: 'Cannot leave group "{{name}}" due to an error',
         removeSuccess: 'Group "{{name}" has been removed',

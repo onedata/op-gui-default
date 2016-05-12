@@ -98,6 +98,18 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     }
   }),
 
+  isJoinSpaceModalOpened: Ember.computed('openedModal', {
+    get() {
+      return this.get('openedModal') === 'joinSpace';
+    },
+    set(key, value) {
+      if (!value) {
+        this.set('openedModal', null);
+      }
+      return value;
+    }
+  }),
+
   registerInsecondaryMenu: function() {
     this.set('secondaryMenu.component', this);
   }.on('init'),
@@ -262,25 +274,32 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
     startJoinSpace() {
       this.set('joinSpaceToken', null);
-      this.set('isJoiningSpace', true);
     },
 
     submitJoinSpace() {
       let token = this.get('joinSpaceToken') && this.get('joinSpaceToken').trim();
-      let serverPromise = this.get('oneproviderServer').userJoinSpace(token);
-      serverPromise.then(
-        () => {
-          // TODO FIXME
-        },
-        (errorJson) => {
-          console.log(errorJson.message);
-          let message = this.get('i18n').t('components.groupSettingsDrop.notify.joinSpaceFailed', {errorDetails: errorJson.message});
-          this.get('notify').error(message);
-        }
+
+      let promise = this.promiseLoading(this.get('oneproviderServer')
+        .groupJoinSpace(this.get('modalGroup.id'), token)).then(
+          (spaceName) => {
+            let message = this.get('i18n').t('components.groupsMenu.notify.joinSpaceSuccess', {
+              groupName: this.get('modalGroup.name'),
+              spaceName: spaceName
+            });
+            this.get('notify').info(message);
+          },
+          (error) => {
+            console.log(error.message);
+            let message = this.get('i18n').t('components.groupsMenu.notify.joinSpaceSuccess', {
+              groupName: this.get('modalGroup.name'),
+            });
+            message = message + ': ' + error.message;
+            this.get('notify').info(message);
+          }
       );
-      serverPromise.finally(() => {
-        this.set('isJoiningGroupWorking', false);
-        this.set('isJoiningGroup', false);
+      promise.finally(() => {
+        this.set('isJoiningSpaceWorking', false);
+        this.set('isJoinSpaceModalOpened', false);
       });
     },
   }

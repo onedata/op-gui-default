@@ -152,7 +152,7 @@ export default Ember.Service.extend({
    * @param {String} groupId An ID of the group, which will use a newly created space
    * @param {String} token A token generated with ``this.getTokenUserJoinSpace``
    * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(token)`` when successfully fetched the token (string)
+   * - ``resolve(spaceName)`` when successfully fetched the token (string)
    * - ``reject(error)`` on failure
    */
   groupJoinSpace(groupId, token) {

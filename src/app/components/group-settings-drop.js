@@ -132,10 +132,7 @@ export default Ember.Component.extend({
     },
 
     joinSpace() {
-      this.get('commonModals').openModal('token', {
-        type: 'joinSpace',
-        funArgs: [this.get('group.id')]
-      });
+      this.sendAction('openSettingsModal', 'joinSpace', this.get('group'));
     },
   }
 });

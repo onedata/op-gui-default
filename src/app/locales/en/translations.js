@@ -107,12 +107,6 @@ export default {
       members: 'members',
       spaces: 'spaces'
     },
-    groupSettingsDrop: {
-      notify: {
-        joinSpaceFailed: 'Joining group "{{groupName}}" to space "{{spaceName}}" failed',
-        joinSpaceSuccess: 'Joining group "{{groupName}}" to space "{{spaceName}}" succeeded!'
-      }
-    },
     groupsMenu: {
       title: 'groups',
       create: 'Create',
@@ -137,6 +131,10 @@ export default {
         title: 'Join a group',
         label: 'Enter a token of a group to join:'
       },
+      joinSpaceModal: {
+        title: 'Join a space',
+        label: 'Enter a token of a space to join the group "{{groupName}}" to it:'
+      },
       renameModal: {
         title: 'Rename a group',
         label: 'Enter new group name:'
@@ -158,8 +156,8 @@ export default {
         leaveFailed: 'Cannot leave group "{{name}}" due to an error',
         removeSuccess: 'Group "{{name}" has been removed',
         removeFailed: 'Failed to remove group "{{name}}"',
-        joinSpaceSuccess: 'Successfully joined space "{{name}}"',
-        joinSpaceFailed: 'Cannot join space: "{{errorDetails}}"'
+        joinSpaceSuccess: 'Successfully joined group "{{groupName}}" to space "{{spaceName}}"',
+        joinSpaceFailed: 'Failed to join "{{groupName}} to some space'
       }
     },
     permissionsTable: {

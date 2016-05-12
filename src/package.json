@@ -1,7 +1,7 @@
 {
   "name": "op-worker-gui",
-  "version": "0.0.0",
-  "description": "Small description for op-worker-gui goes here",
+  "version": "3.0.0-beta3",
+  "description": "GUI for op-worker",
   "private": true,
   "directories": {
     "doc": "doc",
@@ -20,7 +20,9 @@
   "license": "MIT",
   "devDependencies": {
     "broccoli-asset-rev": "^2.2.0",
+    "chai": "^3.5.0",
     "ember-bootstrap": "0.6.1",
+    "ember-browserify": "^1.1.9",
     "ember-cli": "1.13.15",
     "ember-cli-app-version": "^1.0.0",
     "ember-cli-babel": "^5.1.5",
@@ -44,7 +46,9 @@
     "ember-localstorage-adapter": "0.5.5",
     "ember-notify": "^5.0.2",
     "ember-page-title": "2.0.7",
+    "ember-sinon": "0.5.0",
     "ember-truth-helpers": "1.2.0",
-    "livereload": "0.4.1"
+    "livereload": "0.4.1",
+    "sinon-chai": "^2.8.0"
   }
 }

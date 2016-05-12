@@ -6,6 +6,8 @@
     "Firefox"
   ],
   "launch_in_dev": [
-    "Firefox"
+    "Firefox",
+    "Safari",
+    "Chrome"
   ]
 }

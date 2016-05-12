@@ -29,6 +29,10 @@ export default Ember.Component.extend({
   }.property('files', 'files.[]', 'files.@each.isLoaded'),
   visibleFilesSorted: Ember.computed.sort('visibleFiles', 'filesSorting'),
 
+  dirIsEmpty: function() {
+    return !this.get('files') || this.get('files.length') === 0;
+  }.property('files.length'),
+
   isLoadingFiles: function() {
     return this.get('files').any((f) => !f.get('isLoaded'));
   }.property('files', 'files.[]', 'files.@each.isLoaded'),

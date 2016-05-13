@@ -163,7 +163,10 @@ export default {
     permissionsTable: {
       save: 'save',
       discard: 'discard',
-      inviteButton: 'Invite {{type}}',
+      inviteButton: {
+        user: 'Invite user',
+        group: 'Invite group'
+      },
       viewSpace: 'view space',
       modifySpace: 'modify space',
       setPrivileges: 'set privileges',
@@ -189,7 +192,6 @@ export default {
         saveFailedSingle: 'Cannot set permissions for "{{name}}"'
       },
       tableTitle: {
-        members: 'Members',
         users: 'Users',
         groups: 'Groups'
       }

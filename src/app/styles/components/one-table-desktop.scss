@@ -23,14 +23,6 @@ $table-font-size: 1em !default;
     min-width: $cell-width;
     text-align: center;
 
-    &:nth-child(odd) {
-      background-color: #fff;
-    }
-
-    &:nth-child(even) {
-      background-color: #f2f2f2;
-    }
-
     &.one-first {
       width: 100%;
       padding-left: 10px;
@@ -53,6 +45,7 @@ $table-font-size: 1em !default;
     clear: both;
 
     .one-th {
+      color: white;
       border-top: 1px #EEEEEE solid;
       border-bottom: 1px #EEEEEE solid;
 
@@ -70,10 +63,6 @@ $table-font-size: 1em !default;
     .one-tr {
       overflow: hidden;
       clear: both;
-
-      &:hover .one-td:nth-child(odd) {
-        background-color: #f6f6f6; // TODO color - it's slightly lighter than even
-      }
 
       .one-td {
         border-bottom: 1px #EEEEEE solid;

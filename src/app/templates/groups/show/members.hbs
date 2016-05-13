@@ -1,7 +1,5 @@
-{{permissions-table subjectType="group"
-  permissions=model.userPermissions subject=model.subject type='users'}}
-  
-{{permissions-table subjectType="group"
-  permissions=model.groupPermissions subject=model.subject type='groups'}}
-
 {{page-title (t 'groups.show.members.title')}}
+
+{{permissions-table subjectType="group" subject=model.subject
+  usersPermissions=model.userPermissions
+  groupsPermissions=model.groupPermissions}}

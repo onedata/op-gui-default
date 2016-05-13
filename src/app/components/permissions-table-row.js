@@ -1,5 +1,4 @@
 import Ember from 'ember';
-import safeElementId from '../utils/safe-element-id';
 
 /**
  * A single row in permissions table - a view for space-user-permission or space-group-permission.
@@ -13,9 +12,11 @@ export default Ember.Component.extend({
   tagName: 'div',
   classNames: ['one-tr', 'permissions-table-row'],
   classNameBindings: ['isActive:active'],
-  setElementId: Ember.on('init', function() {
-    this.set('elementId', `perm-row-${safeElementId(this.get('perm.id'))}-${this.get('type')}`);
-  }),
+
+  // TODO custom ids for rows
+  // setElementId: Ember.on('init', function() {
+  //   this.set('elementId', `perm-row-${safeElementId(this.get('perm.id'))}-${this.get('type')}`);
+  // }),
 
   /**
     Optional - if set, the type is used to generate element id

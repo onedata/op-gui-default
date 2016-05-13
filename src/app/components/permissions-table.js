@@ -43,15 +43,20 @@ export default Ember.Component.extend({
   // // should be the same as $onedata-red-discard
   // colorSpinnerDiscard: '#F14549',
 
+  permissionsSorting: ['owner'],
+
   /**
    * Collection of permissions-base model subclasses instances.
    * Each represents a sigle entity with some permissions to set.
    *
    * It must be injected into component.
    */
-  permissions: [],
-  permissionsSorting: ['owner'],
-  permissionsSorted: Ember.computed.sort('permissions', 'permissionsSorting'),
+  usersPermissions: null,
+  usersPermissionsSorted: Ember.computed.sort('usersPermissions', 'permissionsSorting'),
+
+  groupsPermissions: null,
+  groupsPermissionsSorted: Ember.computed.sort('groupsPermissions', 'permissionsSorting'),
+
 
   /**
    * For what entity permissions are? space/group
@@ -59,22 +64,9 @@ export default Ember.Component.extend({
    */
   subjectType: null,
 
-  /**
-   * What permissions table shows: users/groups
-   * Eg. a row can represent permissions for user
-   * It must be injected into component.
-   */
-  type: null,
-
   typeSingular: function() {
     let type = this.get('type');
     return (type.slice(-1) === 's') ? type.slice(0, -1) : type;
-  }.property('type'),
-
-  /** A localized title of table (based on type) */
-  title: function() {
-    return this.get('type') ?
-      this.get('i18n').t(`components.permissionsTable.tableTitle.${this.get('type')}`) : '';
   }.property('type'),
 
   inviteButton: function() {
@@ -92,11 +84,26 @@ export default Ember.Component.extend({
    *  It is true when at least one permission model in collection is modified.
    */
   isModified: function() {
-    let permisssions = this.get('permissions');
-    return permisssions ? permisssions.any(p => p.get('isModified')) : false;
-  }.property('permissions.@each.isModified'),
+    let up = this.get('usersPermissions');
+    let gp = this.get('groupsPermissions');
+    let upModified = up ? up.any(p => p.get('isModified')) : false;
+    let gpModified = gp ? gp.any(p => p.get('isModified')) : false;
+    return upModified || gpModified;
+  }.property('usersPermissions.@each.isModified', 'groupsPermissions.@each.isModified'),
+
+  isModifiedChanged: function() {
+    this.sendAction('modifiedChanged', this.get('isModified'), this.get('subjectType'));
+  }.observes('isModified'),
 
   activePermissions: null,
+
+  allPermissions: function() {
+    return [].concat(
+      this.get('usersPermissions') && this.get('usersPermissions').toArray() || []
+    ).concat(
+      this.get('groupsPermissions') && this.get('groupsPermissions').toArray() || []
+    );
+  }.property('usersPermissions', 'groupsPermissions'),
 
   actions: {
     /** Change state of single permission checkbox */
@@ -110,7 +117,7 @@ export default Ember.Component.extend({
     /** Save all permission models in table */
     saveChanges: function() {
       this.set('isLocked', true);
-      let promises = this.get('permissions').map((permission) => {
+      let promises = this.get('allPermissions').map((permission) => {
         if (permission.get('isModified')) {
           return permission.save().then(
             () => {
@@ -141,7 +148,7 @@ export default Ember.Component.extend({
 
     /** Bring back all permission models from table to state before user modification */
     discardChanges: function() {
-      this.get('permissions').forEach(function(permission) {
+      this.get('allPermissions').forEach(function(permission) {
         permission.reset();
       });
       return new Ember.RSVP.Promise((resolve) => {
@@ -149,11 +156,31 @@ export default Ember.Component.extend({
       });
     },
 
-    invite() {
-      // TODO: plural -> singular mess
-      this.get('commonModals').openModal(`token-${this.get('typeSingular')}` , {
-        type: `${this.get('typeSingular')}JoinGroup`,
-        groupId: this.get('group.id')
+    inviteUserToSpace() {
+      this.get('commonModals').openModal(`token` , {
+        type: `userJoinSpace`,
+        funArgs: [this.get('subject.id')]
+      });
+    },
+
+    inviteGroupToSpace() {
+      this.get('commonModals').openModal(`token` , {
+        type: `groupJoinSpace`,
+        funArgs: [this.get('subject.id')]
+      });
+    },
+
+    inviteUserToGroup() {
+      this.get('commonModals').openModal(`token` , {
+        type: `userJoinGroup`,
+        funArgs: [this.get('subject.id')]
+      });
+    },
+
+    inviteGroupToGroup() {
+      this.get('commonModals').openModal(`token` , {
+        type: `groupJoinGroup`,
+        funArgs: [this.get('subject.id')]
       });
     },
 

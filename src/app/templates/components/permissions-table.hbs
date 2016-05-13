@@ -1,3 +1,5 @@
+{{!-- NOTE: this file has vary high code redundancy, because the permissions view will be rewritten completely --}}
+
 {{!-- Users permissions table for single Space --}}
 <div class="row row-permissions-buttons hidden-xs hidden-sm">
   {{!-- NOTE: currently these buttons are copied in bottom of this file --}}
@@ -19,50 +21,113 @@
 </div>
 
 <div class="one-table normal {{if isLocked 'is-loading'}}">
-  <div class="one-thead">
-    <div class="one-th one-first">
-      <div class="cell-body">
-        <div class="item-element item-label">{{title}}</div>
-        <div class="item-element item-icon item-tool" {{action 'invite'}}>
-          <figure class="icon">
-            {{icon inviteButton}}
-            <figcaption>{{t 'components.permissionsTable.inviteButton' type=typeSingular}}</figcaption>
-          </figure>
+
+  {{#if usersPermissions}}
+
+    <div class="one-thead">
+      <div class="one-th one-first">
+        <div class="cell-body">
+          <div class="item-element item-label">
+            {{t 'components.permissionsTable.tableTitle.users'}}
+          </div>
+          <div class="item-element item-icon item-tool"
+            {{action (if (eq subjectType 'space') 'inviteUserToSpace' 'inviteUserToGroup')}}>
+            <figure class="icon">
+              {{icon 'user-add'}}
+              <figcaption>{{t 'components.permissionsTable.inviteButton.user'}}</figcaption>
+            </figure>
+          </div>
         </div>
       </div>
+      {{#if (eq subjectType "space")}}
+        <div class="one-th">{{t 'components.permissionsTable.viewSpace'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.modifySpace'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.removeSpace'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.inviteUser'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.removeUser'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.inviteGroup'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.removeGroup'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.inviteProvider'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.removeProvider'}}</div>
+      {{/if}}
+      {{#if (eq subjectType "group")}}
+        <div class="one-th">{{t 'components.permissionsTable.viewGroup'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.modifyGroup'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.removeGroup'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.inviteUser'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.removeUser'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.createSpace'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.joinSpace'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.leaveSpace'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.getSupport'}}</div>
+      {{/if}}
     </div>
-    {{#if (eq subjectType "space")}}
-      <div class="one-th">{{t 'components.permissionsTable.viewSpace'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.modifySpace'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.removeSpace'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.inviteUser'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.removeUser'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.inviteGroup'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.removeGroup'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.inviteProvider'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.removeProvider'}}</div>
-    {{/if}}
-    {{#if (eq subjectType "group")}}
-      <div class="one-th">{{t 'components.permissionsTable.viewGroup'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.modifyGroup'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.removeGroup'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.inviteUser'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.removeUser'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.createSpace'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.joinSpace'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.leaveSpace'}}</div>
-      <div class="one-th">{{t 'components.permissionsTable.getSupport'}}</div>
-    {{/if}}
 
-  </div>
-  <div class="one-tbody">
-    {{#each permissionsSorted as |perm|}}
-      {{permissions-table-row type=type subjectType=subjectType permissions=perm isActive=(eq activePermissions.id perm.id)
-        activatePermissions="activatePermissions" togglePermission="togglePermission"}}
-    {{/each}}
-  </div>
+    <div class="one-tbody">
+      {{#each usersPermissionsSorted as |perm|}}
+        {{permissions-table-row type='users' subjectType=subjectType
+          permissions=perm isActive=(eq activePermissions.id perm.id)
+          activatePermissions="activatePermissions" togglePermission="togglePermission"}}
+      {{/each}}
+    </div>
+
+  {{/if}}
+
+  {{#if groupsPermissions}}
+
+    <div class="one-thead">
+      <div class="one-th one-first">
+        <div class="cell-body">
+          <div class="item-element item-label">
+            {{t 'components.permissionsTable.tableTitle.groups'}}
+          </div>
+          <div class="item-element item-icon item-tool"
+            {{action (if (eq subjectType 'space') 'inviteGroupToSpace' 'inviteGroupToGroup')}}>
+            <figure class="icon">
+              {{icon 'group-invite'}}
+              <figcaption>{{t 'components.permissionsTable.inviteButton.group'}}</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+      {{#if (eq subjectType "space")}}
+        <div class="one-th">{{t 'components.permissionsTable.viewSpace'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.modifySpace'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.removeSpace'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.inviteUser'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.removeUser'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.inviteGroup'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.removeGroup'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.inviteProvider'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.removeProvider'}}</div>
+      {{/if}}
+      {{#if (eq subjectType "group")}}
+        <div class="one-th">{{t 'components.permissionsTable.viewGroup'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.modifyGroup'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.removeGroup'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.inviteUser'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.removeUser'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.createSpace'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.joinSpace'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.leaveSpace'}}</div>
+        <div class="one-th">{{t 'components.permissionsTable.getSupport'}}</div>
+      {{/if}}
+    </div>
+
+    <div class="one-tbody">
+      {{#each groupsPermissionsSorted as |perm|}}
+        {{permissions-table-row type='groups' subjectType=subjectType
+          permissions=perm isActive=(eq activePermissions.id perm.id)
+          activatePermissions="activatePermissions" togglePermission="togglePermission"}}
+      {{/each}}
+    </div>
+
+  {{/if}}
+
 </div>
 
 <div class="row row-permissions-buttons hidden-md hidden-lg">

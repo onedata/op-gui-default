@@ -320,7 +320,7 @@ export default {
     title: 'Data',
     rootDirectory: 'Root directory',
     dataSpace: {
-      title: 'Space "{{spaceName}}"',
+      title: 'Space ', // should be used as: `{{title}} "{{spaceName}}"`
       nullDir: 'This space is not supported by any providers or cannot be synchronized',
       dir: {
         title: 'File browser',

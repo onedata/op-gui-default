@@ -30,13 +30,17 @@
     title=(t "components.spacesMenu.createModal.title")
     id="create-space"}}
   {{#bs-modal-body}}
-    {{#bs-form action=(action "submitCreateSpace") model=this}}
-      {{bs-form-element controlType="text" property="newSpaceName" autofocus=true
-        label=(t 'components.spacesMenu.createModal.enterName')}}
-    {{/bs-form}}
+    <div class="control-label">
+      {{t 'components.spacesMenu.createModal.enterName'}}
+    </div>
+
+    {{input type="text" value=newSpaceName autofocus=true
+      class="form-control"
+      action=(if newSpaceName "submitCreateSpace")}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
-    {{#spin-button-onedata buttonType="submit"
+    {{#spin-button-onedata
+      action="submitCreateSpace"
       class="btn btn-primary no-outline" spinnerColor="#fff"
       inFlight=isSavingSpace disabled=(or (unless newSpaceName true) isSavingSpace)}}
       {{t "common.modal.create"}}

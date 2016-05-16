@@ -1,4 +1,9 @@
 .modal {
+  .control-label {
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+
   .modal-dialog {
     .modal-content {
       border: none;

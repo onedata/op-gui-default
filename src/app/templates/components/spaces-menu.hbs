@@ -77,7 +77,7 @@
 
 {{!-- RENAME SPACE --}}
 
-{{#bs-modal open=(eq openedModal "rename") body=false footer=false
+{{#bs-modal open=isRenameModalOpened body=false footer=false
     title=(t "components.spacesMenu.renameModal.title")
     id="rename-space"}}
   {{#bs-modal-body}}
@@ -98,7 +98,7 @@
 
 {{!-- LEAVE SPACE --}}
 
-{{#bs-modal open=(eq openedModal "leave") body=false footer=false
+{{#bs-modal open=isLeaveModalOpened body=false footer=false
     title=(t "components.spacesMenu.leaveModal.title")
     submitAction="submitLeaveSpace" id="leave-space"}}
   {{#bs-modal-body}}
@@ -116,7 +116,7 @@
 
 {{!-- REMOVE SPACE --}}
 
-{{#bs-modal open=(eq openedModal "remove") body=false footer=false
+{{#bs-modal open=isRemoveModalOpened body=false footer=false
     title=(t "components.spacesMenu.removeModal.title")
     submitAction="submitRemoveSpace" id="remove-space"}}
   {{#bs-modal-body}}

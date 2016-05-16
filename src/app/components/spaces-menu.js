@@ -57,8 +57,43 @@ export default Ember.Component.extend({
 
   spaceToRename: null,
   renameSpaceName: null,
+  isRenameModalOpened: Ember.computed('openedModal', {
+    get() {
+      return this.get('openedModal') === 'rename';
+    },
+    set(key, value) {
+      if (!value) {
+        this.set('openedModal', null);
+      }
+      return value;
+    }
+  }),
+
+  isRemoveModalOpened: Ember.computed('openedModal', {
+    get() {
+      return this.get('openedModal') === 'remove';
+    },
+    set(key, value) {
+      if (!value) {
+        this.set('openedModal', null);
+      }
+      return value;
+    }
+  }),
 
   spaceToRemove: null,
+
+  isLeaveModalOpened: Ember.computed('openedModal', {
+    get() {
+      return this.get('openedModal') === 'leave';
+    },
+    set(key, value) {
+      if (!value) {
+        this.set('openedModal', null);
+      }
+      return value;
+    }
+  }),
 
   registerInService: function() {
     this.set('service.component', this);

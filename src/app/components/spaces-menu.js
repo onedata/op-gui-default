@@ -135,7 +135,8 @@ export default Ember.Component.extend({
     },
 
     submitCreateSpace() {
-      // isSaving flag is set by spin-button on click
+      // set isSavingSpace one more time, because we can reach this action from input text
+      this.set('isSavingSpace', true);
       let name = this.get('newSpaceName');
       let s = this.get('store').createRecord('space', {
         name: name

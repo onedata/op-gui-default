@@ -157,7 +157,10 @@ export default {
         removeSuccess: 'Group "{{name}" has been removed',
         removeFailed: 'Failed to remove group "{{name}}"',
         joinSpaceSuccess: 'Successfully joined group "{{groupName}}" to space "{{spaceName}}"',
-        joinSpaceFailed: 'Failed to join "{{groupName}} to some space'
+        joinSpaceFailed: 'Failed to join "{{groupName}} to some space',
+        joinSuccess: 'Successfully joined to group',
+        joinFailed: 'Failed to join group'
+
       }
     },
     permissionsTable: {

@@ -29,6 +29,13 @@ export default Ember.Service.extend({
     });
   },
 
+  // TODO: doc
+  userJoinGroup(token) {
+    return this.get('server').privateRPC('userJoinGroup', {
+      token: token
+    });
+  },
+
   /**
    * The current user (session user) leaves a space.
    *

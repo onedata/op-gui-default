@@ -33,12 +33,11 @@ export default Ember.Component.extend({
         label: i18n.t('components.spacesMenu.drop.setHome'),
         action: 'setAsHome'
       },
-      // TODO: disabled in beta4
-      // {
-      //   icon: 'leave-space',
-      //   label: i18n.t('components.spacesMenu.drop.leave'),
-      //   action: 'leaveSpace'
-      // },
+      {
+        icon: 'leave-space',
+        label: i18n.t('components.spacesMenu.drop.leave'),
+        action: 'leaveSpace'
+      },
       {
         icon: 'rename',
         label: i18n.t('components.spacesMenu.drop.rename'),

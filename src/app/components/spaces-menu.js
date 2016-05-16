@@ -57,8 +57,43 @@ export default Ember.Component.extend({
 
   spaceToRename: null,
   renameSpaceName: null,
+  isRenameModalOpened: Ember.computed('openedModal', {
+    get() {
+      return this.get('openedModal') === 'rename';
+    },
+    set(key, value) {
+      if (!value) {
+        this.set('openedModal', null);
+      }
+      return value;
+    }
+  }),
+
+  isRemoveModalOpened: Ember.computed('openedModal', {
+    get() {
+      return this.get('openedModal') === 'remove';
+    },
+    set(key, value) {
+      if (!value) {
+        this.set('openedModal', null);
+      }
+      return value;
+    }
+  }),
 
   spaceToRemove: null,
+
+  isLeaveModalOpened: Ember.computed('openedModal', {
+    get() {
+      return this.get('openedModal') === 'leave';
+    },
+    set(key, value) {
+      if (!value) {
+        this.set('openedModal', null);
+      }
+      return value;
+    }
+  }),
 
   registerInService: function() {
     this.set('service.component', this);
@@ -101,7 +136,8 @@ export default Ember.Component.extend({
     },
 
     submitCreateSpace() {
-      // isSaving flag is set by spin-button on click
+      // set isSavingSpace one more time, because we can reach this action from input text
+      this.set('isSavingSpace', true);
       let name = this.get('newSpaceName');
       let s = this.get('store').createRecord('space', {
         name: name

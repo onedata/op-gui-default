@@ -174,7 +174,8 @@ export default {
         text: 'Distribution of file blocks among providers for file',
         providerName: 'Provider',
         dataDitribution: 'File blocks',
-        loading: 'Loading file chunks table...'
+        loading: 'Loading file chunks table...',
+        error: 'File chunks table cannot be loaded due to an error'
       },
       notify: {
         createFileFailed: 'File or directory "{{fileName}}" creation failed'
@@ -232,7 +233,7 @@ export default {
     title: 'Data',
     rootDirectory: 'Root directory',
     dataSpace: {
-      title: 'Space "{{spaceName}}"',
+      title: 'Space ', // should be used as: `{{title}} "{{spaceName}}"`
       nullDir: 'This space is not supported by any providers or cannot be synchronized',
       dir: {
         title: 'File browser',

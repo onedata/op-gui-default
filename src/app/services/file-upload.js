@@ -3,9 +3,14 @@ import Ember from 'ember';
 
 export default Ember.Service.extend({
   component: null,
+  session: Ember.inject.service(),
 
   /** Current dir for upload - global for application! */
   dir: null,
+
+  initTriggered: function() {
+
+  }.on('init'),
 
   resumable: function() {
     console.debug(`Creating new Resumable`);

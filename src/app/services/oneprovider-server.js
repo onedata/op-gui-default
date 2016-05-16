@@ -30,9 +30,10 @@ export default Ember.Service.extend({
     });
   },
 
-  fileUploadComplete(fileId) {
+  fileUploadComplete(uploadId, connectionRef) {
     return this.get('server').privateRPC('fileUploadComplete', {
-      fileId: fileId
+      uploadId: uploadId,
+      connectionRef: connectionRef,
     });
   }
 });

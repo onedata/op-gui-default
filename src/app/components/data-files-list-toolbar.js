@@ -20,6 +20,8 @@ export default Ember.Component.extend({
   fileBlocksSorting: ['provider.name'],
   fileBlocksSorted: Ember.computed.sort('fileBlocks', 'fileBlocksSorting'),
 
+  chunksModalError: null,
+
   /**
    * Holds items of toolbar. Each item is a Object with properties:
    * - icon {String}
@@ -179,13 +181,18 @@ export default Ember.Component.extend({
           this.set('fileBlocks', fbs);
         },
         (error) => {
-          console.error('Error loading file blocks: ' + error);
+          console.error('Error loading file blocks: ' + error.message);
+          this.set('chunksModalError', error.message);
         }
       );
     },
 
     chunksModalClosed() {
-      this.set('fileForChunks', null);
+      this.setProperties({
+        fileForChunks: null,
+        fileBlocks: null,
+        chunksModalError: null
+      });
     },
 
     uploadBrowse() {

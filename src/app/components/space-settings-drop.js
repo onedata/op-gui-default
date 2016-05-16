@@ -43,11 +43,12 @@ export default Ember.Component.extend({
         label: i18n.t('components.spacesMenu.drop.rename'),
         action: 'renameSpace'
       },
-      {
-        icon: 'remove',
-        label: i18n.t('components.spacesMenu.drop.remove'),
-        action: 'removeSpace'
-      },
+      // TODO: disabled in beta4
+      // {
+      //   icon: 'remove',
+      //   label: i18n.t('components.spacesMenu.drop.remove'),
+      //   action: 'removeSpace'
+      // },
       {
         icon: 'user-add',
         label: i18n.t('components.spacesMenu.drop.inviteUser'),

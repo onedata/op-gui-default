@@ -30,13 +30,17 @@
     title=(t "components.spacesMenu.createModal.title")
     id="create-space"}}
   {{#bs-modal-body}}
-    {{#bs-form action=(action "submitCreateSpace") model=this}}
-      {{bs-form-element controlType="text" property="newSpaceName" autofocus=true
-        label=(t 'components.spacesMenu.createModal.enterName')}}
-    {{/bs-form}}
+    <div class="control-label">
+      {{t 'components.spacesMenu.createModal.enterName'}}
+    </div>
+
+    {{input type="text" value=newSpaceName autofocus=true
+      class="form-control"
+      action=(if newSpaceName "submitCreateSpace")}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
-    {{#spin-button-onedata buttonType="submit"
+    {{#spin-button-onedata
+      action="submitCreateSpace"
       class="btn btn-primary no-outline" spinnerColor="#fff"
       inFlight=isSavingSpace disabled=(or (unless newSpaceName true) isSavingSpace)}}
       {{t "common.modal.create"}}
@@ -73,7 +77,7 @@
 
 {{!-- RENAME SPACE --}}
 
-{{#bs-modal open=(eq openedModal "rename") body=false footer=false
+{{#bs-modal open=isRenameModalOpened body=false footer=false
     title=(t "components.spacesMenu.renameModal.title")
     id="rename-space"}}
   {{#bs-modal-body}}
@@ -94,7 +98,7 @@
 
 {{!-- LEAVE SPACE --}}
 
-{{#bs-modal open=(eq openedModal "leave") body=false footer=false
+{{#bs-modal open=isLeaveModalOpened body=false footer=false
     title=(t "components.spacesMenu.leaveModal.title")
     submitAction="submitLeaveSpace" id="leave-space"}}
   {{#bs-modal-body}}
@@ -112,7 +116,7 @@
 
 {{!-- REMOVE SPACE --}}
 
-{{#bs-modal open=(eq openedModal "remove") body=false footer=false
+{{#bs-modal open=isRemoveModalOpened body=false footer=false
     title=(t "components.spacesMenu.removeModal.title")
     submitAction="submitRemoveSpace" id="remove-space"}}
   {{#bs-modal-body}}

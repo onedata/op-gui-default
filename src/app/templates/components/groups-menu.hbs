@@ -52,14 +52,14 @@
     id="join-group"}}
   {{#bs-modal-body}}
     {{#bs-form action=(action "submitJoinGroup") model=this}}
-      {{bs-form-element controlType="text" property="joinGroupToken" autofocus=true
+      {{bs-form-element controlType="text" property="inputToken" autofocus=true
         label=(t 'components.groupsMenu.joinModal.label')}}
     {{/bs-form}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata buttonType="submit"
       class="btn btn-primary no-outline" spinnerColor="#fff"
-      inFlight=isJoiningGroupWorking disabled=(unless joinGroupToken true)}}
+      inFlight=isJoiningGroupWorking disabled=(unless inputToken true)}}
       {{t "common.modal.join"}}
     {{/spin-button-onedata}}
   {{/bs-modal-footer}}
@@ -124,6 +124,27 @@
   {{/bs-modal-footer}}
 {{/bs-modal}}
 
+{{!-- JOIN SELECTED GROUP TO OTHER GROUP (JOIN AS SUBGROUP) --}}
+
+{{#bs-modal open=isJoinAsSubgroupModalOpened openAction='startJoinAsSubgroup'
+  body=false footer=false
+    title=(t "components.groupsMenu.joinAsSubgroupModal.title")
+    id="join-group-to-group"}}
+  {{#bs-modal-body}}
+    {{#bs-form action=(action "submitJoinAsSubgroup") model=this}}
+      {{bs-form-element controlType="text" property="inputToken" autofocus=true
+        label=(t 'components.groupsMenu.joinAsSubgroupModal.label' groupName=modalGroup.name)}}
+    {{/bs-form}}
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#spin-button-onedata buttonType="submit"
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isJoiningAsSubgroupWorking disabled=(unless inputToken true)}}
+      {{t "common.modal.join"}}
+    {{/spin-button-onedata}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}
+
 {{!-- JOIN GROUP TO SPACE --}}
 
 {{#bs-modal open=isJoinSpaceModalOpened openAction='startJoinSpace'
@@ -132,14 +153,14 @@
     id="join-group-to-space"}}
   {{#bs-modal-body}}
     {{#bs-form action=(action "submitJoinSpace") model=this}}
-      {{bs-form-element controlType="text" property="joinSpaceToken" autofocus=true
+      {{bs-form-element controlType="text" property="inputToken" autofocus=true
         label=(t 'components.groupsMenu.joinSpaceModal.label' groupName=modalGroup.name)}}
     {{/bs-form}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata buttonType="submit"
       class="btn btn-primary no-outline" spinnerColor="#fff"
-      inFlight=isJoiningSpaceWorking disabled=(unless joinSpaceToken true)}}
+      inFlight=isJoiningSpaceWorking disabled=(unless inputToken true)}}
       {{t "common.modal.join"}}
     {{/spin-button-onedata}}
   {{/bs-modal-footer}}

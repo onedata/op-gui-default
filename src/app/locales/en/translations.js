@@ -119,9 +119,9 @@ export default {
         remove: 'Remove',
         inviteUser: 'Invite user',
         inviteGroup: 'Invite group',
-        createSpace: 'Create space',
+        createSpace: 'Request space creation',
         joinSpace: 'Join space',
-        getSupport: 'Get support'
+        joinAsSubgroup: 'Join as subgroup'
       },
       createModal: {
         title: 'Create a new group',
@@ -130,6 +130,10 @@ export default {
       joinModal: {
         title: 'Join a group',
         label: 'Enter a token of a group to join:'
+      },
+      joinAsSubgroupModal: {
+        title: 'Join a group to group',
+        label: 'Enter a token of a group to make "{{groupName}}" its subgroup:'
       },
       joinSpaceModal: {
         title: 'Join a space',
@@ -156,8 +160,10 @@ export default {
         leaveFailed: 'Cannot leave group "{{name}}" due to an error',
         removeSuccess: 'Group "{{name}" has been removed',
         removeFailed: 'Failed to remove group "{{name}}"',
-        joinSpaceSuccess: 'Successfully joined group "{{groupName}}" to space "{{spaceName}}"',
-        joinSpaceFailed: 'Failed to join "{{groupName}} to some space',
+        joinSpaceSuccess: 'Successfully joined group "{{thisGroupName}}" to space "{{spaceName}}"',
+        joinSpaceFailed: 'Failed to join "{{groupName}}" to some space',
+        joinAsSubgroupSuccess: 'Successfully joined group "{{groupName}}" to group "{{spaceName}}"',
+        joinAsSubgroupFailed: 'Failed to join "{{groupName}}" to some group as a subgroup',
         joinSuccess: 'Successfully joined to group',
         joinFailed: 'Failed to join group'
 
@@ -282,7 +288,7 @@ export default {
       },
       requestSpaceCreation: {
         title: 'Request space creation for the group',
-        label: 'Pass the below token to the provider you want to create and support space for your group'
+        label: 'Pass the below token to a provider of your choice. The token can be used to create a space for your group and grant support to the space.'
       }
     },
   },

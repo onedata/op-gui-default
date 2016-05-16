@@ -29,7 +29,14 @@ export default Ember.Service.extend({
     });
   },
 
-  // TODO: doc
+  /**
+   * Use an invitation token to join a group for which the token was generated.
+   *
+   * @param {String} token A token generated with ``this.getTokenUserJoinGroup``
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve(groupName)`` when successfully joined to group
+   * - ``reject(error)`` on failure
+   */
   userJoinGroup(token) {
     return this.get('server').privateRPC('userJoinGroup', {
       token: token
@@ -164,6 +171,22 @@ export default Ember.Service.extend({
    */
   groupJoinSpace(groupId, token) {
     return this.get('server').privateRPC('groupJoinSpace', {
+      groupId: groupId,
+      token: token
+    });
+  },
+
+  /**
+   * Use an group invitation token to join a group for which the token was generated.
+   *
+   * @param {String} groupId An ID of the group which will be added as a subgroup to other group
+   * @param {String} token A token generated with ``this.getTokenUserJoinGroup``
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve(groupName)`` when successfully joined to group
+   * - ``reject(error)`` on failure
+   */
+  groupJoinGroup(groupId, token) {
+    return this.get('server').privateRPC('groupJoinGroup', {
       groupId: groupId,
       token: token
     });

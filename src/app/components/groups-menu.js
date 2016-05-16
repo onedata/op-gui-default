@@ -21,6 +21,15 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   commonModals: Ember.inject.service(),
   commonLoader: Ember.inject.service(),
 
+  /** A buffer for token that is entered by user and submitted to backend */
+  inputToken: null,
+
+  /** A buffer for Group object that is set before the modal
+    (which allows to manipulate a Group) appears. The Group is global
+    for all modals, so only one modal should be used at once!
+  */
+  modalGroup: null,
+
   groups: null,
   validGroups: function() {
     return this.get('groups').filter((s) => s.get('isLoaded'));
@@ -110,6 +119,18 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     }
   }),
 
+  isJoinAsSubgroupModalOpened: Ember.computed('openedModal', {
+    get() {
+      return this.get('openedModal') === 'joinAsSubgroup';
+    },
+    set(key, value) {
+      if (!value) {
+        this.set('openedModal', null);
+      }
+      return value;
+    }
+  }),
+
   registerInsecondaryMenu: function() {
     this.set('secondaryMenu.component', this);
   }.on('init'),
@@ -185,12 +206,14 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     },
 
     startJoinGroup() {
-      this.set('joinGroupToken', null);
-      this.set('isJoiningGroup', true);
+      this.setProperties({
+        inputToken: null,
+        isJoiningGroup: true
+      });
     },
 
     submitJoinGroup() {
-      let token = this.get('joinGroupToken') && this.get('joinGroupToken').trim();
+      let token = this.get('inputToken') && this.get('inputToken').trim();
       let serverPromise = this.get('oneproviderServer').userJoinGroup(token);
       serverPromise.then(
         (groupName) => {
@@ -203,8 +226,11 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
         }
       );
       serverPromise.finally(() => {
-        this.set('isJoiningGroupWorking', false);
-        this.set('isJoiningGroup', false);
+        this.setProperties({
+          inputToken: null,
+          isJoiningGroupWorking: false,
+          isJoiningGroup: false
+        });
       });
     },
 
@@ -273,17 +299,17 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     },
 
     startJoinSpace() {
-      this.set('joinSpaceToken', null);
+      this.set('inputToken', null);
     },
 
     submitJoinSpace() {
-      let token = this.get('joinSpaceToken') && this.get('joinSpaceToken').trim();
-
+      let token = this.get('inputToken') && this.get('inputToken').trim();
+      let group = this.get('modalGroup');
       let promise = this.promiseLoading(this.get('oneproviderServer')
         .groupJoinSpace(this.get('modalGroup.id'), token)).then(
           (spaceName) => {
             let message = this.get('i18n').t('components.groupsMenu.notify.joinSpaceSuccess', {
-              groupName: this.get('modalGroup.name'),
+              groupName: group.get('name'),
               spaceName: spaceName
             });
             this.get('notify').info(message);
@@ -291,16 +317,54 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
           (error) => {
             console.log(error.message);
             let message = this.get('i18n').t('components.groupsMenu.notify.joinSpaceSuccess', {
-              groupName: this.get('modalGroup.name'),
+              groupName: group.get('name'),
             });
             message = message + ': ' + error.message;
             this.get('notify').info(message);
           }
       );
       promise.finally(() => {
-        this.set('isJoiningSpaceWorking', false);
-        this.set('isJoinSpaceModalOpened', false);
+        this.setProperties({
+          inputToken: null,
+          isJoiningSpaceWorking: false,
+          isJoinSpaceModalOpened: false
+        });
       });
     },
-  }
+
+    startJoinAsSubgroup() {
+      this.set('inputToken', null);
+    },
+
+    submitJoinAsSubgroup() {
+      let token = this.get('inputToken') && this.get('inputToken').trim();
+      let group = this.get('modalGroup');
+      let promise = this.promiseLoading(this.get('oneproviderServer')
+        .groupJoinGroup(this.get('modalGroup.id'), token)).then(
+          (groupName) => {
+            let message = this.get('i18n').t('components.groupsMenu.notify.joinAsSubgroupSuccess', {
+              thisGroupName: group.get('name'),
+              groupName: groupName
+            });
+            this.get('notify').info(message);
+          },
+          (error) => {
+            console.log(error.message);
+            let message = this.get('i18n').t('components.groupsMenu.notify.joinAsSubgroupFailed', {
+              groupName: group.get('name'),
+            });
+            message = message + ': ' + error.message;
+            this.get('notify').error(message);
+          }
+      );
+      promise.finally(() => {
+        this.setProperties({
+          inputToken: null,
+          isJoiningSpaceWorking: false,
+          isJoinSpaceModalOpened: false
+        });
+      });
+    }
+  },
+
 });

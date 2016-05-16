@@ -61,7 +61,11 @@ export default Ember.Component.extend({
         action: 'requestSpaceCreation'
       },
       {
-        // TODO: find an icon
+        icon: 'join',
+        label: i18n.t('components.groupsMenu.drop.joinAsSubgroup'),
+        action: 'joinAsSubgroup'
+      },
+      {
         icon: 'space-join',
         label: i18n.t('components.groupsMenu.drop.joinSpace'),
         action: 'joinSpace'
@@ -133,6 +137,10 @@ export default Ember.Component.extend({
 
     joinSpace() {
       this.sendAction('openSettingsModal', 'joinSpace', this.get('group'));
+    },
+
+    joinAsSubgroup() {
+      this.sendAction('openSettingsModal', 'joinAsSubgroup', this.get('group'));
     },
   }
 });

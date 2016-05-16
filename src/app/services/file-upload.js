@@ -23,8 +23,7 @@ export default Ember.Service.extend({
       query: () => {
         console.debug(`Will upload to dir: ${this.get('dir.name')}, id: ${this.get('dir.id')}`);
         return {
-          parentId: this.get('dir.id'),
-          connectionRef: this.get('session.sessionDetails.connectionRef')
+          parentId: this.get('dir.id')
         };
       },
       generateUniqueIdentifier: function() {

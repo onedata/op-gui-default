@@ -3,9 +3,14 @@ import Ember from 'ember';
 
 export default Ember.Service.extend({
   component: null,
+  session: Ember.inject.service(),
 
   /** Current dir for upload - global for application! */
   dir: null,
+
+  initTriggered: function() {
+
+  }.on('init'),
 
   resumable: function() {
     console.debug(`Creating new Resumable`);
@@ -18,7 +23,8 @@ export default Ember.Service.extend({
       query: () => {
         console.debug(`Will upload to dir: ${this.get('dir.name')}, id: ${this.get('dir.id')}`);
         return {
-          parentId: this.get('dir.id')
+          parentId: this.get('dir.id'),
+          connectionRef: this.get('session.sessionDetails.connectionRef')
         };
       },
       generateUniqueIdentifier: function() {

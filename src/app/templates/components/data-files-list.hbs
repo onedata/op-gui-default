@@ -26,9 +26,10 @@
   <th class="hidden-xs">
     {{t 'components.dataFilesList.size'}}
   </th>
-  <th class="hidden-xs hidden-sm">
+  {{!-- TODO: disabled in beta4 --}}
+  {{!-- <th class="hidden-xs hidden-sm">
     {{t 'components.dataFilesList.permissions'}}
-  </th>
+  </th> --}}
   <th class="hidden-xs">
     {{t 'components.dataFilesList.modification'}}
   </th>
@@ -64,9 +65,10 @@
       <td class="hidden-xs file-list-col-size nowrap">
         {{file.sizeHumanReadable}}
       </td>
-      <td class="col-permissions hidden-xs hidden-sm file-list-col-permissions nowrap">
+      {{!-- TODO: disabled in beta4 --}}
+      {{!-- <td class="col-permissions hidden-xs hidden-sm file-list-col-permissions nowrap">
         {{file.permissionsHumanReadable}}
-      </td>
+      </td> --}}
       <td class="hidden-xs file-list-col-modification nowrap">
         {{file.modificationMoment}}
       </td>

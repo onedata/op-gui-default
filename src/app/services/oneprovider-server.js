@@ -15,6 +15,42 @@ import Ember from 'ember';
 export default Ember.Service.extend({
   server: Ember.inject.service('server'),
 
+  /**--------------------------------------------------------------------
+   File upload related procedures
+   -------------------------------------------------------------------- */
+  /**
+   * Notify the backend, that file upload has been completed (no more chunks to send)
+   *
+   * @param {String} uploadId An ID of file, which upload has been completed.
+   * See {@link service/file-upload} to find out more about file IDs.
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve()`` - always after completion, no reject in this method
+   */
+  fileUploadComplete(uploadId, connectionRef) {
+    return this.get('server').privateRPC('fileUploadComplete', {
+      uploadId: uploadId,
+      connectionRef: connectionRef
+    });
+  },
+
+  /**--------------------------------------------------------------------
+   Space related procedures
+   -------------------------------------------------------------------- */
+  /**
+   * Fetch an invitation to space token.
+   * Pass the token to user which wants to join the space.
+   *
+   * @param {String} spaceId An ID of the space to invite
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve(token)`` when successfully fetched the token (string)
+   * - ``reject(error)`` on failure
+   */
+  getTokenUserJoinSpace(spaceId) {
+    return this.get('server').privateRPC('getTokenUserJoinSpace', {
+      spaceId: spaceId
+    });
+  },
+
   /**
    * Use an invitation token to join a space for which the token was generated.
    *
@@ -25,20 +61,6 @@ export default Ember.Service.extend({
    */
   userJoinSpace(token) {
     return this.get('server').privateRPC('userJoinSpace', {
-      token: token
-    });
-  },
-
-  /**
-   * Use an invitation token to join a group for which the token was generated.
-   *
-   * @param {String} token A token generated with ``this.getTokenUserJoinGroup``
-   * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(groupName)`` when successfully joined to group
-   * - ``reject(error)`` on failure
-   */
-  userJoinGroup(token) {
-    return this.get('server').privateRPC('userJoinGroup', {
       token: token
     });
   },
@@ -58,105 +80,17 @@ export default Ember.Service.extend({
   },
 
   /**
-   * The current user (session user) leaves a group.
-   *
-   * @param {String} groupId An ID of the group to leave
-   * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve()`` when successfully left the space
-   * - ``reject(error)`` on failure
-   */
-  userLeaveGroup(groupId) {
-    return this.get('server').privateRPC('userLeaveGroup', {
-      groupId: groupId
-    });
-  },
-
-  /**
-   * Fetch an invitation to group token.
-   * Pass the token to user which wants to join the group.
-   *
-   * @param {String} groupId An ID of the group to invite
-   * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(token)`` when successfully fetched the token (string)
-   * - ``reject(error)`` on failure
-   */
-  getTokenUserJoinGroup(groupId) {
-    return this.get('server').privateRPC('getTokenUserJoin', {
-      groupId: groupId
-    });
-  },
-
-  /**
-   * Fetch an invitation to space token.
-   * Pass the token to user which wants to join the space.
-   *
-   * @param {String} spaceId An ID of the space to invite
-   * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(token)`` when successfully fetched the token (string)
-   * - ``reject(error)`` on failure
-   */
-  getTokenUserJoinSpace(spaceId) {
-    return this.get('server').privateRPC('getTokenUserJoin', {
-      spaceId: spaceId
-    });
-  },
-
-  /**
-   * Fetch an invitation to group token.
-   * Pass the token to group which wants to join the space.
-   *
-   * @param {String} groupId An ID of the group to invite
-   * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(token)`` when successfully fetched the token (string)
-   * - ``reject(error)`` on failure
-   */
-  getTokenGroupJoinGroup(groupId) {
-    return this.get('server').privateRPC('getTokenGroupJoin', {
-      groupId: groupId
-    });
-  },
-
-  /**
    * Fetch an invitation to space token.
    * Pass the token to group which wants to join the space.
    *
-   * @param {String} groupId An ID of the group to invite
+   * @param {String} spaceId An ID of the space to which a group is invited
    * @returns {RSVP.Promise} A backend operation completion:
    * - ``resolve(token)`` when successfully fetched the token (string)
    * - ``reject(error)`` on failure
    */
   getTokenGroupJoinSpace(spaceId) {
-    return this.get('server').privateRPC('getTokenGroupJoin', {
+    return this.get('server').privateRPC('getTokenGroupJoinSpace', {
       spaceId: spaceId
-    });
-  },
-
-  /**
-   * Fetch a token, which can be passed to a provider to support the specified space.
-   *
-   * @param {String} spaceId An ID of the space to invite
-   * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(token)`` when successfully fetched the token (string)
-   * - ``reject(error)`` on failure
-   */
-  getTokenProviderSupport(spaceId) {
-    return this.get('server').privateRPC('getTokenProviderSupport', {
-      spaceId: spaceId
-    });
-  },
-
-  /**
-   * Fetch a token, which can be passed to a provider which can support
-   * the newly created space.
-   *
-   * @param {String} groupId An ID of the group, which will use a newly created space
-   * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(token)`` when successfully fetched the token (string)
-   * - ``reject(error)`` on failure
-   */
-  getTokenRequestSpaceCreation(groupId) {
-    return this.get('server').privateRPC('getTokenRequestSpaceCreation', {
-      groupId: groupId
     });
   },
 
@@ -171,22 +105,6 @@ export default Ember.Service.extend({
    */
   groupJoinSpace(groupId, token) {
     return this.get('server').privateRPC('groupJoinSpace', {
-      groupId: groupId,
-      token: token
-    });
-  },
-
-  /**
-   * Use an group invitation token to join a group for which the token was generated.
-   *
-   * @param {String} groupId An ID of the group which will be added as a subgroup to other group
-   * @param {String} token A token generated with ``this.getTokenUserJoinGroup``
-   * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(groupName)`` when successfully joined to group
-   * - ``reject(error)`` on failure
-   */
-  groupJoinGroup(groupId, token) {
-    return this.get('server').privateRPC('groupJoinGroup', {
       groupId: groupId,
       token: token
     });
@@ -209,17 +127,124 @@ export default Ember.Service.extend({
   },
 
   /**
-   * Notify the backend, that file upload has been completed (no more chunks to send)
+   * Fetch a token, which can be passed to a provider to support the specified space.
    *
-   * @param {String} fileId An ID of file, which upload has been completed.
-   * See {@link service/file-upload} to find out more about file IDs.
+   * @param {String} spaceId An ID of the space to invite
    * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve()`` - always after completion, no reject in this method
+   * - ``resolve(token)`` when successfully fetched the token (string)
+   * - ``reject(error)`` on failure
    */
-  fileUploadComplete(uploadId, connectionRef) {
-    return this.get('server').privateRPC('fileUploadComplete', {
-      uploadId: uploadId,
-      connectionRef: connectionRef,
+  getTokenProviderSupport(spaceId) {
+    return this.get('server').privateRPC('getTokenProviderSupportSpace', {
+      spaceId: spaceId
+    });
+  },
+
+  /**--------------------------------------------------------------------
+   Group related procedures
+   -------------------------------------------------------------------- */
+  /**
+   * Fetch an invitation to group token.
+   * Pass the token to user which wants to join the group.
+   *
+   * @param {String} groupId An ID of the group to invite
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve(token)`` when successfully fetched the token (string)
+   * - ``reject(error)`` on failure
+   */
+  getTokenUserJoinGroup(groupId) {
+    return this.get('server').privateRPC('getTokenUserJoinGroup', {
+      groupId: groupId
+    });
+  },
+
+  /**
+   * Use an invitation token to join a group for which the token was generated.
+   *
+   * @param {String} token A token generated with ``this.getTokenUserJoinGroup``
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve(groupName)`` when successfully joined to group
+   * - ``reject(error)`` on failure
+   */
+  userJoinGroup(token) {
+    return this.get('server').privateRPC('userJoinGroup', {
+      token: token
+    });
+  },
+
+  /**
+   * The current user (session user) leaves a group.
+   *
+   * @param {String} groupId An ID of the group to leave
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve()`` when successfully left the space
+   * - ``reject(error)`` on failure
+   */
+  userLeaveGroup(groupId) {
+    return this.get('server').privateRPC('userLeaveGroup', {
+      groupId: groupId
+    });
+  },
+
+  /**
+   * Fetch an invitation to group token.
+   * Pass the token to group which wants to join the space.
+   *
+   * @param {String} groupId An ID of the group to invite
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve(token)`` when successfully fetched the token (string)
+   * - ``reject(error)`` on failure
+   */
+  getTokenGroupJoinGroup(groupId) {
+    return this.get('server').privateRPC('getTokenGroupJoinGroup', {
+      groupId: groupId
+    });
+  },
+
+  /**
+   * Use an group invitation token to join a group for which the token was generated.
+   *
+   * @param {String} groupId An ID of the group which will be added as a subgroup to other group
+   * @param {String} token A token generated with ``this.getTokenUserJoinGroup``
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve(groupName)`` when successfully joined to group
+   * - ``reject(error)`` on failure
+   */
+  groupJoinGroup(groupId, token) {
+    return this.get('server').privateRPC('groupJoinGroup', {
+      groupId: groupId,
+      token: token
+    });
+  },
+
+  /**
+   * Use an group invitation token to join a group for which the token was generated.
+   *
+   * @param {String} parentGroupId An ID of the group from which childGroup will be detached
+   * @param {String} childGroupId An ID of the group which should be detached from parentGroup
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve(groupName)`` when successfully joined to group
+   * - ``reject(error)`` on failure
+   */
+  groupLeaveGroup(parentGroupId, childGroupId) {
+    return this.get('server').privateRPC('groupLeaveGroup', {
+      parentGroupId: parentGroupId,
+      childGroupId: childGroupId
+    });
+  },
+
+  /**
+   * Fetch a token, which can be passed to a provider which can support
+   * the newly created space.
+   *
+   * @param {String} groupId An ID of the group, which will use a newly created space
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve(token)`` when successfully fetched the token (string)
+   * - ``reject(error)`` on failure
+   */
+  getTokenRequestSpaceCreation(groupId) {
+    return this.get('server').privateRPC('getTokenRequestSpaceCreation', {
+      groupId: groupId
     });
   }
 });

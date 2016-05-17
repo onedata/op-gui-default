@@ -202,7 +202,7 @@ export default Ember.Service.extend({
   },
 
   /**
-   * Use an group invitation token to join a group for which the token was generated.
+   * Use a group invitation token to join a group for which the token was generated.
    *
    * @param {String} groupId An ID of the group which will be added as a subgroup to other group
    * @param {String} token A token generated with ``this.getTokenUserJoinGroup``
@@ -218,12 +218,12 @@ export default Ember.Service.extend({
   },
 
   /**
-   * Use an group invitation token to join a group for which the token was generated.
+   * The chosen group leaves a group.
    *
-   * @param {String} parentGroupId An ID of the group from which childGroup will be detached
-   * @param {String} childGroupId An ID of the group which should be detached from parentGroup
+   * @param {String} parentGroupId An ID of the group from which childGroup will leave
+   * @param {String} childGroupId An ID of the group which should leave from parentGroup
    * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(groupName)`` when successfully joined to group
+   * - ``resolve(groupName)`` when successfully left to group
    * - ``reject(error)`` on failure
    */
   groupLeaveGroup(parentGroupId, childGroupId) {

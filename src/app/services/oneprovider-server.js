@@ -223,7 +223,7 @@ export default Ember.Service.extend({
    * @param {String} parentGroupId An ID of the group from which childGroup will leave
    * @param {String} childGroupId An ID of the group which should leave from parentGroup
    * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(groupName)`` when successfully left to group
+   * - ``resolve()`` when successfully left group
    * - ``reject(error)`` on failure
    */
   groupLeaveGroup(parentGroupId, childGroupId) {

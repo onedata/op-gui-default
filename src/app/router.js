@@ -48,8 +48,6 @@ Router.map(function() {
       this.route('show', {path: ':group_id'}, function() {
         // groups/:group_id/members - configure users/groups (members) permissions for space
         this.route('members');
-        // groups/:group_id/spaces - list spaces belonging to group
-        this.route('spaces');
       });
     });
 

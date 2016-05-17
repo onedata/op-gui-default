@@ -49,11 +49,14 @@ crashlytics-build.properties
 # Created by .ignore support plugin (hsz.mobi)
 
 # docker image artefact
-dockerimage.report.txt
-dockerimage.sha
+docker-build-list.json
+docker-build-report.txt
 
 # compiled app
 rel
+
+# test results
+src/tests/test-results.xml
 
 # OSX
 .DS_Store

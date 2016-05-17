@@ -23,5 +23,8 @@ doc:
 clean:
 	cd $(SRC_DIR) && rm -rf node_modules bower_components dist tmp
 
-test:
-	cd $(SRC_DIR) && ember test
+test: deps
+	cd $(SRC_DIR) && xvfb-run ember test
+
+test_xunit_output: deps
+	cd $(SRC_DIR) && xvfb-run ember test -r xunit

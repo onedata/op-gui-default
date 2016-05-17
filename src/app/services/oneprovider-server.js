@@ -216,9 +216,10 @@ export default Ember.Service.extend({
    * @returns {RSVP.Promise} A backend operation completion:
    * - ``resolve()`` - always after completion, no reject in this method
    */
-  fileUploadComplete(fileId) {
+  fileUploadComplete(uploadId, connectionRef) {
     return this.get('server').privateRPC('fileUploadComplete', {
-      fileId: fileId
+      uploadId: uploadId,
+      connectionRef: connectionRef,
     });
   }
 });

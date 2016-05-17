@@ -12,6 +12,13 @@ export default Ember.Component.extend({
   fileUploadService: Ember.inject.service('file-upload'),
   notify: Ember.inject.service(),
   oneproviderServer: Ember.inject.service(),
+  session: Ember.inject.service(),
+
+  connectionRef: function() {
+    return this.get('session.sessionDetails.connectionRef');
+  }.property('session', 'sessions.sessionDetails', 'session.sessionDetails.connectionRef'),
+
+
 
   /** Dir to put files into */
   dir: null,
@@ -59,7 +66,7 @@ export default Ember.Component.extend({
     return (file/*, message*/) => {
       $('.resumable-file-'+file.uniqueIdentifier+' .resumable-file-progress').html('(completed)');
       this.get('notify').info(`File "${file.fileName}" uploaded successfully!`);
-      this.get('oneproviderServer').fileUploadComplete(file.uniqueIdentifier);
+      this.get('oneproviderServer').fileUploadComplete(file.uniqueIdentifier, this.get('connectionRef'));
     };
   }.property(),
 

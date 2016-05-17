@@ -1,6 +1,17 @@
 .one-table {
   min-width: 100%;
 
+  // TODO: use as generic application-wide "a" style?
+  a {
+    color: inherit !important;
+    &:active, &.active {
+      color: $onedata-red !important;
+    }
+    &:hover {
+      text-decoration: underline !important;
+    }
+  }
+
   .one-th,
   .one-td {
     text-align: center;

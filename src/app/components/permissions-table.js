@@ -16,6 +16,7 @@ export default Ember.Component.extend({
   oneproviderServer: Ember.inject.service(),
   commonModals: Ember.inject.service(),
   notify: Ember.inject.service(),
+  store: Ember.inject.service(),
 
   classNames: ['permissions-table'],
 
@@ -57,6 +58,13 @@ export default Ember.Component.extend({
   groupsPermissions: null,
   groupsPermissionsSorted: Ember.computed.sort('groupsPermissions', 'permissionsSorting'),
 
+  availableGroups: function() {
+    if (this.get('groupsPermissions')) {
+      return this.get('store').findAll('group');
+    } else {
+      return null;
+    }
+  }.property('groupsPermissions'),
 
   /**
    * For what entity permissions are? space/group

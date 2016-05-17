@@ -31,6 +31,10 @@ export default Ember.Component.extend({
 
   perm: Ember.computed.alias('permissions'),
 
+  availableGroupIds: function() {
+    return this.get('availableGroups') && this.get('availableGroups').map((g) => g.get('id'));
+  }.property('availableGroups', 'availableGroups.[]', 'availableGroups.@each.id'),
+
   actions: {
     activate() {
       this.sendAction('activatePermissions', this.get('perm'));

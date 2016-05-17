@@ -122,7 +122,8 @@
       {{#each groupsPermissionsSorted as |perm|}}
         {{permissions-table-row type='groups' subjectType=subjectType
           permissions=perm isActive=(eq activePermissions.id perm.id)
-          activatePermissions="activatePermissions" togglePermission="togglePermission"}}
+          activatePermissions="activatePermissions" togglePermission="togglePermission"
+          availableGroups=availableGroups}}
       {{/each}}
     </div>
 

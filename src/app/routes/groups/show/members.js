@@ -23,7 +23,8 @@ export default Ember.Route.extend(ShowPermissionsRouteMixin, {
     return {
       subject: subject,
       userPermissions: subject.get('userPermissions'),
-      groupPermissions: subject.get('groupPermissions')
+      groupPermissions: subject.get('groupPermissions'),
+      availableGroups: this.modelFor('groups')
     };
   },
 

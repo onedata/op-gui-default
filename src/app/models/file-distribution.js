@@ -8,7 +8,7 @@ import DS from 'ember-data';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend({
-  provider: DS.belongsTo('provider', {async: true}),
+  provider: DS.belongsTo('system-provider', {async: true}),
 
   /**
     Array of integers. Number of elements should be even.

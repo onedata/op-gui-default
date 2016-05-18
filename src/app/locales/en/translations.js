@@ -203,6 +203,10 @@ export default {
       tableTitle: {
         users: 'Users',
         groups: 'Groups'
+      },
+      noGroups: {
+        group: 'This group has no subgroups',
+        space: 'This space does not belong to any group'
       }
     },
     // data

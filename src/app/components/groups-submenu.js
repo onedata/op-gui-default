@@ -15,7 +15,7 @@ export default Ember.Component.extend({
   classNames: ['submenu'],
 
   secondaryMenu: Ember.inject.service(),
-  activeGroup: Ember.computed.alias('secondaryMenu.activeItem'),
+  activeGroup: Ember.computed.alias('secondaryMenu.activeGroup'),
 
   isGroupActive: function() {
     return this.get('group.id') === this.get('activeGroup.id');

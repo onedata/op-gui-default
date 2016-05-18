@@ -7,11 +7,11 @@
  */
 
 import OnedataAdapter from './application-onedata';
-import InMemoryAdapter from './application-in-memory';
+import LSAdapter from './application-localstorage';
 
 import ENV from '../config/environment';
 
 let ApplicationAdapter =
-  (ENV.environment === 'test' ? InMemoryAdapter : OnedataAdapter);
+  (ENV.environment === 'test' ? LSAdapter : OnedataAdapter);
 
 export default ApplicationAdapter;

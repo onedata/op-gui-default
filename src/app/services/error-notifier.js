@@ -1,5 +1,13 @@
 import Ember from 'ember';
 
+/**
+ * FIXME: doc
+ * @module services/error-notifier
+ * @author Jakub Liput
+ * @author Łukasz Opioła
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Service.extend({
   notify: Ember.inject.service('notify'),
   i18n: Ember.inject.service('i18n'),

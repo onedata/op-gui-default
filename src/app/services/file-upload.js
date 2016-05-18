@@ -1,6 +1,13 @@
 import Ember from 'ember';
 /* globals Resumable */
 
+/**
+ * FIXME: doc
+ * @module services/file-upload
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Service.extend({
   component: null,
   session: Ember.inject.service(),

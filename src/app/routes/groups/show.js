@@ -9,16 +9,14 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Route.extend({
+  secondaryMenu: Ember.inject.service(),
+
   model(params) {
     return this.store.find('group', params.group_id);
   },
 
-  activate() {
-    console.debug(`groups.show.index activate`);
-  },
-
-  deactivate() {
-    console.debug(`groups.show.index ! deactivate`);
+  afterModel(group) {
+    this.set('secondaryMenu.activeItem', group);
   },
 
   actions: {

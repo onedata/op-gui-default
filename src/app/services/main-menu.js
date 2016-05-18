@@ -1,13 +1,13 @@
 /**
- * Allows manipulation of main-menu.
- * Delegates actions to main-menu component.
+ * A global state of main menu (sidebar with "pages").
  *
- * Delegated API methods:
- * - selectItem(itemName)
- * - deselectItem(itemName)
- * - clearSelection
+ * The most important property of this service is "currentItem", which stores
+ * name of currently selected item.
  *
- * @see {@link components/main-menu} for the API implementation
+ * Each main route should be mixed with main-route-mixin, which sets currentItem
+ * of the global state on activation.
+ *
+ * @see {@link components/main-menu} for the component which uses this service
  * @module services/main-menu
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH

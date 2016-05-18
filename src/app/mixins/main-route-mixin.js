@@ -14,9 +14,10 @@ export default Ember.Mixin.create({
   mainRouteName: null,
 
   onActivate: Ember.on('activate', function() {
-    Ember.run.scheduleOnce('afterRender', this, function() {
-      this.set('mainMenu.currentItem', this.get('mainRouteName'));
-      this.set('mainMenu.isVisible', true);
+    console.debug(`activate menu: ${this.get('mainRouteName')}`);
+    this.setProperties({
+      'mainMenu.currentItem': this.get('mainRouteName'),
+      'mainMenu.isVisible': true
     });
   }),
 

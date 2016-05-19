@@ -8,9 +8,8 @@
  */
 
 import Ember from 'ember';
-import MainRouteMixin from '../mixins/main-route-mixin';
 
-export default Ember.Route.extend(MainRouteMixin, {
+export default Ember.Route.extend({
   fileSystemTree: Ember.inject.service('file-system-tree'),
 
   mainRouteName: 'data',

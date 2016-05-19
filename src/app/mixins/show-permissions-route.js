@@ -40,6 +40,7 @@ export default Ember.Mixin.create({
   }.on('activate'),
 
   onDeactivate: function() {
+    // TODO: use properties bind
     Ember.run.scheduleOnce('afterRender', this, function() {
       $('nav.secondary-sidebar').addClass('visible');
     });

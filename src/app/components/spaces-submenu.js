@@ -15,7 +15,7 @@ export default Ember.Component.extend({
   classNames: ['submenu'],
 
   secondaryMenu: Ember.inject.service(),
-  activeSpace: Ember.computed.alias('secondaryMenu.activeItem'),
+  activeSpace: Ember.computed.alias('secondaryMenu.activeSpace'),
 
   isSpaceActive: function() {
     return this.get('space.id') === this.get('activeSpace.id');

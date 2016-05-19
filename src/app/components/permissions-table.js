@@ -20,7 +20,10 @@ export default Ember.Component.extend({
 
   classNames: ['permissions-table'],
 
-  /** An object with permissions property (which is a perm. collection) */
+  /**
+    An object which owns the permissions property - this can be a User or Group.
+    It is used to identify the subject of table action, eg. invite user.
+  */
   subject: null,
 
   /** Temporary for backward compat. */

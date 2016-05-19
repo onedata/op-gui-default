@@ -26,6 +26,40 @@ export default Ember.Service.extend({
   activeItem: null,
   activeOption: null,
 
+  itemType: function() {
+    let item = this.get('activeItem');
+    if (item) {
+      console.debug(`item type: ${item.constructor.toString()}`);
+    }
+    return item && (
+      item.constructor.toString().match(/model:((\w|-)+)/)[1] ||
+      item.constructor.toString() ||
+      undefined
+    );
+  }.property('activeItem'),
+
+  /// specific item getters - this is a "syntatic sugar" to pass the itemType check
+
+  activeSpace: Ember.computed('activeItem', 'itemType', {
+    get() {
+      return this.get('itemType') === 'space' ?
+        this.get('activeItem') : null;
+    },
+    set(key, value) {
+      this.set('activeItem', value);
+    }
+  }),
+  activeGroup: Ember.computed('activeItem', 'itemType', {
+    get() {
+      return this.get('itemType') === 'group' ?
+        this.get('activeItem') : null;
+    },
+    set(key, value) {
+      this.set('activeItem', value);
+    }
+  }),
+
+
   clear: function() {
     this.setProperties({
       component: null,

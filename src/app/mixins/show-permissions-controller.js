@@ -15,9 +15,10 @@ export default Ember.Mixin.create({
   changeMenuActiveOption() {
     this.set('secondaryMenu.activeOption', this.get('permissionsType'));
 
-    Ember.run.scheduleOnce('afterRender', this, function() {
-      $('nav.secondary-sidebar').removeClass('visible');
-    });
+    // TODO: control visible class of secondary sidebar with bound property
+    // Ember.run.scheduleOnce('afterRender', this, function() {
+    //   $('nav.secondary-sidebar').removeClass('visible');
+    // });
   },
 
   onModelChange: function() {

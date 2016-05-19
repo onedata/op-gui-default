@@ -6,7 +6,12 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-export { default } from './application-onedata';
+import OnedataAdapter from './application-onedata';
+import LSAdapter from './application-localstorage';
 
-// TODO: testing code - to use in memory, uncomment
-// export { default } from './application-in-memory';
+import ENV from '../config/environment';
+
+let ApplicationAdapter =
+  (ENV.environment === 'test' ? LSAdapter : OnedataAdapter);
+
+export default ApplicationAdapter;

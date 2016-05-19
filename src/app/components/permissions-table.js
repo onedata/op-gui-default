@@ -26,9 +26,6 @@ export default Ember.Component.extend({
   */
   subject: null,
 
-  /** Temporary for backward compat. */
-  space: Ember.computed.alias('property'),
-
   /** If true, then table will has is-loading class */
   isLocked: false,
 

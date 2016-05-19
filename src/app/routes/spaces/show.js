@@ -13,6 +13,10 @@ export default Ember.Route.extend({
     return this.store.find('space', params.space_id);
   },
 
+  activate() {
+    this.controllerFor(this.routeName).changeMenuActiveItem();
+  },
+
   actions: {
     /**
       Capture goToSpace event, because if we are already there,

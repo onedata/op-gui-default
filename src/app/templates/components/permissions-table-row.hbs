@@ -1,8 +1,9 @@
 {{!-- This code is not refactored, because probably other permissions widget will be made --}}
 
+{{!-- The subgroup can be linked to group in Groups collection --}}
 {{#if (and (eq type 'groups') (array-contains availableGroupIds perm.owner.id))}}
 <div class="one-td one-first hidden-xs hidden-sm" {{action 'activate'}}>
-  {{#link-to 'groups.show' perm.owner class="full-size"}}
+  {{#link-to 'groups.show' perm.owner.id class="full-size"}}
       {{trim-string perm.owner.name 14}}
   {{/link-to}}
 </div>

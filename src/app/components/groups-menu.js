@@ -135,10 +135,6 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     this.set('secondaryMenu.component', this);
   }.on('init'),
 
-  clearsecondaryMenu: function() {
-    this.get('secondaryMenu').clear();
-  }.on('willDestroyElement'),
-
   activeGroupDidChange: function() {
     if (this.get('activeGroup')) {
 

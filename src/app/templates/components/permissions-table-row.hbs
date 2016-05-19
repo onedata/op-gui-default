@@ -207,4 +207,31 @@
     </div>
   </div>
 
+  <div class="one-td clickable" {{action 'togglePermission' perm 'InviteGroup'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.inviteGroup'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permInviteGroup perm.modInviteGroup}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'RemoveSubgroup'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.removeSubgroup'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permRemoveSubgroup perm.modRemoveSubgroup}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'GroupJoinGroup'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.groupJoinGroup'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permGroupJoinGroup perm.modGroupJoinGroup}}
+      </span>
+    </div>
+  </div>
+
 {{/if}}

@@ -19,15 +19,33 @@ export default Ember.Service.extend({
    File upload related procedures
    -------------------------------------------------------------------- */
   /**
-   * Notify the backend, that file upload has been completed (no more chunks to send)
+   * Notify the backend, that file upload has been completed
+   * successfully (no more chunks to send)
    *
    * @param {String} uploadId An ID of file, which upload has been completed.
    * See {@link service/file-upload} to find out more about file IDs.
+   * @param {String} connectionRef An ID session
    * @returns {RSVP.Promise} A backend operation completion:
    * - ``resolve()`` - always after completion, no reject in this method
    */
-  fileUploadComplete(uploadId, connectionRef) {
-    return this.get('server').privateRPC('fileUploadComplete', {
+  fileUploadSuccess(uploadId, connectionRef) {
+    return this.get('server').privateRPC('fileUploadSuccess', {
+      uploadId: uploadId,
+      connectionRef: connectionRef
+    });
+  },
+
+  /**
+   * Notify the backend, that file upload failed (no more chunks will be sent)
+   *
+   * @param {String} uploadId An ID of file, which upload has been completed.
+   * See {@link service/file-upload} to find out more about file IDs.
+   * @param {String} connectionRef An ID session
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve()`` - always after completion, no reject in this method
+   */
+  fileUploadFailure(uploadId, connectionRef) {
+    return this.get('server').privateRPC('fileUploadFailure', {
       uploadId: uploadId,
       connectionRef: connectionRef
     });

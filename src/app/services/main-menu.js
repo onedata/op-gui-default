@@ -18,10 +18,18 @@ import Ember from 'ember';
 
 export default Ember.Service.extend({
   component: null,
-  currentItem: null,
-  isVisible: false,
+  isVisible: true,
+
+  /** Current route injected by application controller on currentPath change */
+  currentPath: null,
+
+  /** Parses currentPath (a route path) and sets currentItem */
+  currentItem: function() {
+    let itemName = this.get('currentPath').match(/lang\.((\w|-)+)\.?.*/);
+    return itemName && itemName[1];
+  }.property('currentPath'),
 
   clearSelection() {
     this.set('currentItem', null);
-  }
+  },
 });

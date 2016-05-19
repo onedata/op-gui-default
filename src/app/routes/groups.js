@@ -1,8 +1,7 @@
 import Ember from 'ember';
-import MainRouteMixin from '../mixins/main-route-mixin';
 
 // TODO: doc
-export default Ember.Route.extend(MainRouteMixin, {
+export default Ember.Route.extend({
   mainRouteName: 'groups',
 
   model() {

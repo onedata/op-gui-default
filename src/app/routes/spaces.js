@@ -9,9 +9,8 @@
  */
 
 import Ember from 'ember';
-import MainRouteMixin from '../mixins/main-route-mixin';
 
-export default Ember.Route.extend(MainRouteMixin, {
+export default Ember.Route.extend({
   mainRouteName: 'spaces',
 
   model() {

@@ -25,7 +25,7 @@ export default Ember.Component.extend({
   spacesSorting: ['isDefault:desc', 'name'],
   validSpacesSorted: Ember.computed.sort('validSpaces', 'spacesSorting'),
 
-  activeSpace: Ember.computed.alias('secondaryMenu.activeItem'),
+  activeSpace: Ember.computed.alias('secondaryMenu.activeSpace'),
 
   isLoading: function() {
     return !this.get('spaces.length') || this.get('spaces').any((s) => !s.get('name'));

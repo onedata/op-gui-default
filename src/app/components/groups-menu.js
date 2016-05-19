@@ -37,7 +37,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   groupsSorting: ['isDefault:desc', 'name'],
   validGroupsSorted: Ember.computed.sort('validGroups', 'groupsSorting'),
 
-  activeGroup: Ember.computed.alias('secondaryMenu.activeItem'),
+  activeGroup: Ember.computed.alias('secondaryMenu.activeGroup'),
 
   isLoading: function() {
     return !this.get('groups.length') || this.get('groups').any((s) => !s.get('name'));

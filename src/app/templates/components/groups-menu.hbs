@@ -174,7 +174,6 @@
     title=(t "components.groupsMenu.leaveParentGroupModal.title")
     id="leave-parent-group"}}
   {{#bs-modal-body}}
-    Currently selected: {{parentGroupToLeave}}
     {{#bs-form action=(action "submitLeaveParentGroup") model=this}}
       {{bs-form-element controlType="select" choices=modalGroup.parentGroups
         choiceLabelProperty="name"

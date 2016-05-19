@@ -375,7 +375,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     },
 
     startLeaveParentGroup() {
-      // TODO?
+      this.set('parentGroupToLeave', this.get('modalGroup.parentGroups').objectAt(0));
     },
 
     submitLeaveParentGroup() {

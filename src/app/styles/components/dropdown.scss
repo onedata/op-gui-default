@@ -123,6 +123,12 @@ $dropdown-bg: #2B3037;
         font-size: 9pt !important;
         text-transform: uppercase;
       }
+
+      &.menu-group-name {
+        margin: 10px 0 5px 0;
+        color: rgba(255,255,255,0.75);
+        pointer-events: none;
+      }
     }
   }
 

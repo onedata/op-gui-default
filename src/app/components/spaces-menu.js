@@ -98,10 +98,6 @@ export default Ember.Component.extend({
     this.set('secondaryMenu.component', this);
   }.on('init'),
 
-  clearSecondaryMenu: function() {
-    this.get('secondaryMenu').clear();
-  }.on('willDestroyElement'),
-
   activeSpaceDidChange: function() {
     if (this.get('activeSpace')) {
       this.sendAction('goToSpace', this.get('activeSpace'));

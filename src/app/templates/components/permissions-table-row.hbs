@@ -1,8 +1,9 @@
 {{!-- This code is not refactored, because probably other permissions widget will be made --}}
 
+{{!-- The subgroup can be linked to group in Groups collection --}}
 {{#if (and (eq type 'groups') (array-contains availableGroupIds perm.owner.id))}}
 <div class="one-td one-first hidden-xs hidden-sm" {{action 'activate'}}>
-  {{#link-to 'groups.show' perm.owner class="full-size"}}
+  {{#link-to 'groups.show' perm.owner.id class="full-size"}}
       {{trim-string perm.owner.name 14}}
   {{/link-to}}
 </div>
@@ -202,6 +203,33 @@
     <div class="one-table-checkbox">
       <span>
         {{bool-option perm.permGetSupport perm.modGetSupport}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'InviteGroup'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.inviteGroup'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permInviteGroup perm.modInviteGroup}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'RemoveSubgroup'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.removeSubgroup'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permRemoveSubgroup perm.modRemoveSubgroup}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'GroupJoinGroup'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.groupJoinGroup'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permGroupJoinGroup perm.modGroupJoinGroup}}
       </span>
     </div>
   </div>

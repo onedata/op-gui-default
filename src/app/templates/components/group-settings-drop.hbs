@@ -8,7 +8,23 @@
     </span>
   </div>
   <ul class="dropdown-menu dropdown-menu-right dropdown-menu-list space-dropdown-menu dropdown-menu-settings">
-    {{#each menuItems as |item|}}
+    {{#each menuItemsCurrentUser as |item|}}
+      <li {{action item.action space}} class="clickable">
+        <span class="item-icon">
+          {{icon item.icon}}
+        </span>
+        <span class="item-label">
+          {{item.label}}
+        </span>
+      </li>
+    {{/each}}
+    <li class="menu-group-name">
+      <span class="item-label">
+        {{!-- not translated, because temporary... --}}
+        "{{trim-string group.name 16}}" actions:
+      </span>
+    </li>
+    {{#each menuItemsGroup as |item|}}
       <li {{action item.action space}} class="clickable">
         <span class="item-icon">
           {{icon item.icon}}

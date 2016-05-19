@@ -131,13 +131,21 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     }
   }),
 
+  isLeaveParentGroupModalOpened: Ember.computed('openedModal', {
+    get() {
+      return this.get('openedModal') === 'leaveParentGroup';
+    },
+    set(key, value) {
+      if (!value) {
+        this.set('openedModal', null);
+      }
+      return value;
+    }
+  }),
+
   registerInsecondaryMenu: function() {
     this.set('secondaryMenu.component', this);
   }.on('init'),
-
-  clearsecondaryMenu: function() {
-    this.get('secondaryMenu').clear();
-  }.on('willDestroyElement'),
 
   activeGroupDidChange: function() {
     if (this.get('activeGroup')) {
@@ -364,7 +372,45 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
           isJoinSpaceModalOpened: false
         });
       });
-    }
+    },
+
+    startLeaveParentGroup() {
+      // TODO?
+    },
+
+    submitLeaveParentGroup() {
+      try {
+        let parentGroup = this.get('parentGroupToLeave');
+        let subgroup = this.get('modalGroup');
+        this.promiseLoading(this.get('oneproviderServer')
+          .groupLeaveGroup(parentGroup.get('id'), subgroup.get('id')),
+            "isLeaveParentGroupWorking")
+          .then(
+            () => {
+              let message = this.get('i18n').t('components.groupsMenu.notify.leaveParentGroupSuccess', {
+                subgroupName: subgroup.get('name'),
+                parentGroupName: parentGroup.get('name')
+
+              });
+              this.get('notify').info(message);
+            },
+            (error) => {
+              let message = this.get('i18n').t('components.groupsMenu.notify.leaveParentGroupFailed', {
+                subgroupName: subgroup.get('name'),
+                parentGroupName: parentGroup.get('name')
+              });
+              message = message + ': ' + error.message;
+              this.get('notify').error(message);
+            }
+        );
+      } finally {
+        this.setProperties({
+          modelGroup: null,
+          openedModal: null,
+          parentGroupToLeave: null,
+        });
+      }
+    },
   },
 
 });

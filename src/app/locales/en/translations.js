@@ -18,6 +18,7 @@ export default {
       close: 'Close',
       create: 'Create',
       join: 'Join',
+      leave: 'Leave',
       fetchingToken: 'Fetching token...',
       fetchingTokenError: 'Fetching token failed!',
     },
@@ -114,7 +115,8 @@ export default {
       drop: {
         moveUp: 'Move up',
         moveDown: 'Move down',
-        leave: 'Leave group',
+        leave: 'Leave this group',
+        leaveParentGroup: 'Leave parent group...',
         rename: 'Rename',
         remove: 'Remove',
         inviteUser: 'Invite user',
@@ -144,8 +146,12 @@ export default {
         label: 'Enter new group name:'
       },
       leaveModal: {
-        title: 'Leave a group',
+        title: 'Leave the group',
         label: 'Are you sure you want to leave group "{{groupName}}"?'
+      },
+      leaveParentGroupModal: {
+        title: 'Leave a parent group...',
+        label: 'Choose a group, that "{{subgroupName}}" should leave:'
       },
       removeModal: {
         title: 'Remove a group',
@@ -158,6 +164,8 @@ export default {
         renameFailed: 'Group "{{oldName}}" rename to "{{newName}}" failed due to an error',
         leaveSuccess: 'Group "{{name}}" left successfully',
         leaveFailed: 'Cannot leave group "{{name}}" due to an error',
+        leaveParentGroupSuccess: 'Group "{{parentGroupName}}" left successfully by "{{subgroupName}}"',
+        leaveParentGroupFailed: 'Group "{{subgroupName}}" cannot leave parent group "{{parentGroupName}}" due to an error',
         removeSuccess: 'Group "{{name}" has been removed',
         removeFailed: 'Failed to remove group "{{name}}"',
         joinSpaceSuccess: 'Successfully joined group "{{thisGroupName}}" to space "{{spaceName}}"',
@@ -192,6 +200,8 @@ export default {
       joinSpace: 'join space',
       leaveSpace: 'leave space',
       getSupport: 'get support',
+      removeSubgroup: 'remove subgroup',
+      groupJoinGroup: 'join group',
       inviteModal: {
         title: 'Invite {{type}} to space',
         label: 'Pass the below token to the {{type}} you want to invite'

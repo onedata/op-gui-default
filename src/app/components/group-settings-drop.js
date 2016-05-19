@@ -25,7 +25,7 @@ export default Ember.Component.extend({
     }
     ```
   */
-  menuItems: function() {
+  menuItemsCurrentUser: function() {
     let i18n = this.get('i18n');
     return [
       {
@@ -35,15 +35,16 @@ export default Ember.Component.extend({
         label: i18n.t('components.groupsMenu.drop.leave'),
         action: 'leaveGroup'
       },
+    ].filter((item) => !item.disabled);
+  }.property(),
+
+  menuItemsGroup: function() {
+    let i18n = this.get('i18n');
+    return [
       {
         icon: 'rename',
         label: i18n.t('components.groupsMenu.drop.rename'),
         action: 'renameGroup'
-      },
-      {
-        icon: 'remove',
-        label: i18n.t('components.groupsMenu.drop.remove'),
-        action: 'removeGroup'
       },
       {
         icon: 'user-add',
@@ -56,22 +57,35 @@ export default Ember.Component.extend({
         action: 'inviteGroup'
       },
       {
-        icon: 'space-add',
-        label: i18n.t('components.groupsMenu.drop.createSpace'),
-        action: 'requestSpaceCreation'
-      },
-      {
         icon: 'join',
         label: i18n.t('components.groupsMenu.drop.joinAsSubgroup'),
         action: 'joinAsSubgroup'
       },
       {
+        // the same icon as in leave-group,
+        // TODO: this icons should be named "leave" in oneicons
+        icon: 'leave-space',
+        label: i18n.t('components.groupsMenu.drop.leaveParentGroup'),
+        action: 'leaveParentGroup',
+        disabled: (!this.get('group.parentGroups') || this.get('group.parentGroups.length') === 0)
+      },
+      {
         icon: 'space-join',
         label: i18n.t('components.groupsMenu.drop.joinSpace'),
         action: 'joinSpace'
-      }
-    ];
-  }.property(),
+      },
+      {
+        icon: 'space-add',
+        label: i18n.t('components.groupsMenu.drop.createSpace'),
+        action: 'requestSpaceCreation'
+      },
+      {
+        icon: 'remove',
+        label: i18n.t('components.groupsMenu.drop.remove'),
+        action: 'removeGroup'
+      },
+    ].filter((item) => !item.disabled);
+  }.property('group', 'group.parentGroups', 'group.parentGroups.length'),
 
   // TODO: deregister event from sidebar on willDestroyElement
   // maybe use: this.on('willDestroyElement', () => { sidebar.off(...) } ) etc.
@@ -97,6 +111,10 @@ export default Ember.Component.extend({
   actions: {
     leaveGroup() {
       this.sendAction('openSettingsModal', 'leave', this.get('group'));
+    },
+
+    leaveParentGroup() {
+      this.sendAction('openSettingsModal', 'leaveParentGroup', this.get('group'));
     },
 
     renameGroup() {

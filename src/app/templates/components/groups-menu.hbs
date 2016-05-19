@@ -165,3 +165,35 @@
     {{/spin-button-onedata}}
   {{/bs-modal-footer}}
 {{/bs-modal}}
+
+{{!-- LEAVE PARENT GROUP --}}
+{{!-- TODO: refactor - this should be a separate component --}}
+
+{{#bs-modal open=isLeaveParentGroupModalOpened openAction='startLeaveParentGroup'
+  body=false footer=false
+    title=(t "components.groupsMenu.leaveParentGroupModal.title")
+    id="leave-parent-group"}}
+  {{#bs-modal-body}}
+    Currently selected: {{parentGroupToLeave}}
+    {{#bs-form action=(action "submitLeaveParentGroup") model=this}}
+      {{bs-form-element controlType="select" choices=modalGroup.parentGroups
+        choiceLabelProperty="name"
+        choiceValueProperty="id"
+        property="parentGroupToLeave"
+        autofocus=true
+        label=(t 'components.groupsMenu.leaveParentGroupModal.label' subgroupName=modalGroup.name)
+      }}
+    {{/bs-form}}
+  {{/bs-modal-body}}
+  {{!-- TODO: disabled --}}
+  {{#bs-modal-footer as |footer|}}
+    {{#spin-button-onedata buttonType="submit"
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isLeaveParentGroupWorking disabled=false}}
+      {{t "common.modal.ok"}}
+    {{/spin-button-onedata}}
+    {{#bs-button action=(action "close" target=footer) type="default"}}
+      {{t "common.modal.cancel"}}
+    {{/bs-button}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}

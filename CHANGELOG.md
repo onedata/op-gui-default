@@ -4,6 +4,26 @@
 CHANGELOG
 ---------
 
+### 3.0.0-beta3
+
+* VFS-1939: PromiseLoading mixin and its usage
+* VFS-1939: Added loader utils into deps/gui
+* VFS-1770 move inject-gui script to gui dep
+* VFS-1770 add better error handling in gui_ws_handler
+* VFS-1768: Added fonts styles; added OpenSans Bold
+* VFS-1770 add pushing functions for processes other than gui_async
+* VFS-1734 allow non-gui processes to ues g_ctx and g_session
+* VFS-1734 add error handling on websocket level
+* VFS-1734 add session service with no use of ember-simple-auth
+* VFS-1638 rename data_backend to gui_async
+* VFS-1638 add support for push messages from server over websocket
+* VFS-1638 reorganize callbacks into rpc calls, add session rpc handler
+* VFS-1638 update data backend behaviour
+* VFS-1638 allow sessionless websocket connections
+* VFS-1638 allow pages without .html extension to server index.html
+* VFS-1638 backend now depend on user session
+
+
 ### 1.0.3
 
 * VFS-1522 Update ctool

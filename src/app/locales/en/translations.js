@@ -201,7 +201,7 @@ export default {
       leaveSpace: 'leave space',
       getSupport: 'get support',
       removeSubgroup: 'remove subgroup',
-      groupJoinGroup: 'join group',
+      joinGroup: 'join group',
       inviteModal: {
         title: 'Invite {{type}} to space',
         label: 'Pass the below token to the {{type}} you want to invite'

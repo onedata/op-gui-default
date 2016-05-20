@@ -29,7 +29,7 @@ export default Ember.Mixin.create(PermissionsModelMixin, {
   permGetSupport: DS.attr('boolean', {defaultValue: false}),
   permInviteGroup: DS.attr('boolean', {defaultValue: false}),
   permRemoveSubgroup: DS.attr('boolean', {defaultValue: false}),
-  permGroupJoinGroup: DS.attr('boolean', {defaultValue: false}),
+  permJoinGroup: DS.attr('boolean', {defaultValue: false}),
 
   /* Modification flags (not persisted) - if true, the corresponding perm*
    * attribte was modified in view but not saved.
@@ -49,7 +49,7 @@ export default Ember.Mixin.create(PermissionsModelMixin, {
   modGetSupport: false,
   modInviteGroup: false,
   modRemoveSubgroup: false,
-  modGroupJoinGroup: false,
+  modJoinGroup: false,
 
   /** A collection of permissions and modified flags suffixes,
    *  used mainly to iterate over these flags */
@@ -66,7 +66,7 @@ export default Ember.Mixin.create(PermissionsModelMixin, {
     'GetSupport',
     'InviteGroup',
     'RemoveSubgroup',
-    'GroupJoinGroup'
+    'JoinGroup'
   ],
 
   // Checks if Permission is modified using mod* flags
@@ -88,6 +88,6 @@ export default Ember.Mixin.create(PermissionsModelMixin, {
     'modGetSupport',
     'modInviteGroup',
     'modRemoveSubgroup',
-    'modGroupJoinGroup'
+    'modJoinGroup'
   ),
 });

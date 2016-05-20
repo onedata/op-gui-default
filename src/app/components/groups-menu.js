@@ -368,8 +368,8 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
       promise.finally(() => {
         this.setProperties({
           inputToken: null,
-          isJoiningSpaceWorking: false,
-          isJoinSpaceModalOpened: false
+          isJoiningAsSubgroupWorking: false,
+          isJoinAsSubgroupModalOpened: false
         });
       });
     },

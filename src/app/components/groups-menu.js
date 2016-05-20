@@ -324,7 +324,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
           },
           (error) => {
             console.log(error.message);
-            let message = this.get('i18n').t('components.groupsMenu.notify.joinSpaceSuccess', {
+            let message = this.get('i18n').t('components.groupsMenu.notify.joinSpaceFailed', {
               groupName: group.get('name'),
             });
             message = message + ': ' + error.message;

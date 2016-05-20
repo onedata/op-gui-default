@@ -168,7 +168,7 @@ export default {
         leaveParentGroupFailed: 'Group "{{subgroupName}}" cannot leave parent group "{{parentGroupName}}" due to an error',
         removeSuccess: 'Group "{{name}" has been removed',
         removeFailed: 'Failed to remove group "{{name}}"',
-        joinSpaceSuccess: 'Successfully joined group "{{thisGroupName}}" to space "{{spaceName}}"',
+        joinSpaceSuccess: 'Successfully joined group "{{groupName}}" to space "{{spaceName}}"',
         joinSpaceFailed: 'Failed to join "{{groupName}}" to some space',
         joinAsSubgroupSuccess: 'Successfully joined group "{{thisGroupName}}" to group "{{groupName}}"',
         joinAsSubgroupFailed: 'Failed to join "{{groupName}}" to some group as a subgroup',

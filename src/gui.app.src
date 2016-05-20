@@ -21,5 +21,10 @@
         cowboy
     ]},
     {env, [
+        %% This defines maximum time of not sending any response when processing
+        %% a batch request from ember client. For example if a batch of 100 find
+        %% requests come, and first 20 take all this time, response will be sent
+        %% for the 20 requests and then the other requests will be processed.
+        {gui_batch_processing_interval, 1000}
     ]}
 ]}.

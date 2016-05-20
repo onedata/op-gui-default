@@ -21,7 +21,8 @@ export default DS.Model.extend({
   // TODO: this property is currently not supported in backend
   spaces: DS.hasMany('space', {async: true}),
 
-  parentGroups: DS.hasMany('group', {async: true, inverse: null}),
+  parentGroups: DS.hasMany('group', {async: true, inverse: 'childGroups'}),
+  childGroups: DS.hasMany('group', {async: true, inverse: 'parentGroups'}),
 
   // TODO: currently not used - use list Order in templates
   /** An absolute position on list */

@@ -23,7 +23,7 @@ let WS_ENDPOINT = '/ws/';
 // Flush timeout of batch requests - they are accumulated and if no new request
 // from ember store comes within this time, the batch is sent to the server.
 // Expressed in milliseconds.
-let FLUSH_TIMEOUT = 2000;
+let FLUSH_TIMEOUT = 20;
 
 // All out-coming JSONs have the following structure (opt = optional field)
 // {
@@ -372,13 +372,13 @@ export default DS.RESTAdapter.extend({
       onOpen();
     }
     // Flush messages waiting for connection open
-    this.flushMessageBuffer();
+    this.debounce(this.flushMessageBuffer, FLUSH_TIMEOUT)();
   },
 
   /** Used to send a message (JSON) through WebSocket.  */
   send(payload) {
     this.messageBuffer.push(payload);
-    this.flushMessageBuffer();
+    this.debounce(this.flushMessageBuffer, FLUSH_TIMEOUT)();
   },
 
   /** Flushes a whole batch of messages that has been accumulated. Makes sure
@@ -386,6 +386,7 @@ export default DS.RESTAdapter.extend({
    * If the WS is not established yet, it will wait in the buffer until
    * the connection is on. */
   flushMessageBuffer() {
+    console.log('flush' + this);
     let adapter = this;
     if (this.socket.readyState === 1) {
       if (adapter.messageBuffer.length > 0) {
@@ -394,10 +395,26 @@ export default DS.RESTAdapter.extend({
           batch.batch.push(payload);
         });
         adapter.messageBuffer = [];
-        console.log('batch: ' + JSON.stringify(batch));
         adapter.socket.send(JSON.stringify(batch));
       }
     }
+  },
+
+  /** Applies a function after a timeout, but the timer is
+   * reset every time the function is called within it's countdown. */
+  debounce(func, wait, immediate) {
+    var timeout;
+    return () => {
+      var context = this, args = arguments;
+      var later = function () {
+        timeout = null;
+        if (!immediate) func.apply(context, args);
+      };
+      var callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
+    };
   },
 
   /** WebSocket onmessage callback, resolves promises with received replies. */

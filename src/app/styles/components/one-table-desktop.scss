@@ -1,5 +1,6 @@
-$cell-width: 95px !default;
-$table-font-size: 1em !default;
+// NOTE: these defaults are for destkop-small
+$cell-width: 66px !default;
+$table-font-size: 0.75em !default;
 
 // emulate HTML table
 .one-table    { display: table }

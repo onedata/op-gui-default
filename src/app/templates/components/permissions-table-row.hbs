@@ -4,17 +4,23 @@
 {{#if (and (eq type 'groups') (array-contains availableGroupIds perm.owner.id))}}
 <div class="one-td one-first hidden-xs hidden-sm" {{action 'activate'}}>
   {{#link-to 'groups.show' perm.owner.id class="full-size"}}
-      {{trim-string perm.owner.name 14}}
+    {{#truncated-string parentSelector=".one-first" shrinkBy=20}}
+      {{perm.owner.name}}
+    {{/truncated-string}}
   {{/link-to}}
 </div>
 {{else}}
   <div class="one-td one-first hidden-xs hidden-sm" {{action 'activate'}}>
-    {{trim-string perm.owner.name 14}}
+    {{#truncated-string parentSelector=".one-first" shrinkBy=20}}
+      {{perm.owner.name}}
+    {{/truncated-string}}
   </div>
 {{/if}}
 
 <div class="one-td one-first hidden-md hidden-lg" {{action 'activate'}}>
-  {{trim-string perm.owner.name 14}}
+  {{#truncated-string parentSelector=".one-first" shrinkBy=20}}
+    {{perm.owner.name}}
+  {{/truncated-string}}
 </div>
 
 {{!-- ................ --}}

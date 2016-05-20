@@ -53,8 +53,8 @@ export default Ember.Component.extend({
         throw `GetToken function not found in oneProviderServer for type: ${type}`;
       }
       tokenFun.apply(this.get('oneproviderServer'), this.get('funArgs')).then(
-        (token) => {
-          this.set('inviteToken', token);
+        (data) => {
+          this.set('inviteToken', data.token);
         },
         (error) => {
           this.set('errorMessage', error.message || this.get('i18n').t('common.unknownError'));

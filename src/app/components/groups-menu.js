@@ -224,8 +224,8 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
       let token = this.get('inputToken') && this.get('inputToken').trim();
       let serverPromise = this.get('oneproviderServer').userJoinGroup(token);
       serverPromise.then(
-        (groupName) => {
-          this.groupActionMessage('info', 'joinSuccess', groupName);
+        (data) => {
+          this.groupActionMessage('info', 'joinSuccess', data.groupName);
         },
         (errorJson) => {
           console.log(errorJson.message);
@@ -315,10 +315,10 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
       let group = this.get('modalGroup');
       let promise = this.promiseLoading(this.get('oneproviderServer')
         .groupJoinSpace(this.get('modalGroup.id'), token)).then(
-          (spaceName) => {
+          (data) => {
             let message = this.get('i18n').t('components.groupsMenu.notify.joinSpaceSuccess', {
               groupName: group.get('name'),
-              spaceName: spaceName
+              spaceName: data.spaceName
             });
             this.get('notify').info(message);
           },
@@ -349,10 +349,10 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
       let group = this.get('modalGroup');
       let promise = this.promiseLoading(this.get('oneproviderServer')
         .groupJoinGroup(this.get('modalGroup.id'), token)).then(
-          (groupName) => {
+          (data) => {
             let message = this.get('i18n').t('components.groupsMenu.notify.joinAsSubgroupSuccess', {
               thisGroupName: group.get('name'),
-              groupName: groupName
+              groupName: data.groupName
             });
             this.get('notify').info(message);
           },

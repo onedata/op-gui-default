@@ -169,8 +169,8 @@ export default Ember.Component.extend({
       let token = this.get('joinSpaceToken') && this.get('joinSpaceToken').trim();
       let serverPromise = this.get('oneproviderServer').userJoinSpace(token);
       serverPromise.then(
-        (spaceName) => {
-          this.spaceActionMessage('info', 'joinSuccess', spaceName);
+        (data) => {
+          this.spaceActionMessage('info', 'joinSuccess', data.spaceName);
         },
         (errorJson) => {
           console.log(errorJson.message);

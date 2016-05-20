@@ -60,8 +60,9 @@ export default Ember.Service.extend({
    *
    * @param {String} spaceId An ID of the space to invite
    * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(token)`` when successfully fetched the token (string)
-   * - ``reject(error)`` on failure
+   * - ``resolve(object: data)`` when successfully fetched the token
+   *   - ``data.token`` (string) - a token
+   * - ``reject(object: error)`` on failure
    */
   getTokenUserJoinSpace(spaceId) {
     return this.get('server').privateRPC('getTokenUserJoinSpace', {
@@ -74,8 +75,9 @@ export default Ember.Service.extend({
    *
    * @param {String} token A token generated with ``this.getTokenUserJoinSpace``
    * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(spaceName)`` when successfully joined to space
-   * - ``reject(error)`` on failure
+   * - ``resolve(object: data)`` when successfully joined to space
+   *   - ``data.spaceName`` - name of space that user joined to
+   * - ``reject(object: error)`` on failure
    */
   userJoinSpace(token) {
     return this.get('server').privateRPC('userJoinSpace', {
@@ -89,7 +91,7 @@ export default Ember.Service.extend({
    * @param {String} spaceId An ID of the space to leave
    * @returns {RSVP.Promise} A backend operation completion:
    * - ``resolve()`` when successfully left the space
-   * - ``reject(error)`` on failure
+   * - ``reject(object: error)`` on failure
    */
   userLeaveSpace(spaceId) {
     return this.get('server').privateRPC('userLeaveSpace', {
@@ -103,8 +105,9 @@ export default Ember.Service.extend({
    *
    * @param {String} spaceId An ID of the space to which a group is invited
    * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(token)`` when successfully fetched the token (string)
-   * - ``reject(error)`` on failure
+   * - ``resolve(object: data)`` when successfully fetched the token
+   *   - ``data.token`` a token
+   * - ``reject(object: error)`` on failure
    */
   getTokenGroupJoinSpace(spaceId) {
     return this.get('server').privateRPC('getTokenGroupJoinSpace', {
@@ -118,8 +121,9 @@ export default Ember.Service.extend({
    * @param {String} groupId An ID of the group, which will use a newly created space
    * @param {String} token A token generated with ``this.getTokenUserJoinSpace``
    * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(spaceName)`` when successfully fetched the token (string)
-   * - ``reject(error)`` on failure
+   * - ``resolve(object: data)`` when successfully fetched the token
+   *   - ``data.spaceName`` - a name of space that group joined to
+   * - ``reject(object: error)`` on failure
    */
   groupJoinSpace(groupId, token) {
     return this.get('server').privateRPC('groupJoinSpace', {
@@ -135,7 +139,7 @@ export default Ember.Service.extend({
    * @param {String} spaceId An ID of the space to leave
    * @returns {RSVP.Promise} A backend operation completion:
    * - ``resolve()`` on success
-   * - ``reject(error)`` on failure
+   * - ``reject(object: error)`` on failure
    */
   groupLeaveSpace(groupId, spaceId) {
     return this.get('server').privateRPC('groupLeaveSpace', {
@@ -149,8 +153,9 @@ export default Ember.Service.extend({
    *
    * @param {String} spaceId An ID of the space to invite
    * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(token)`` when successfully fetched the token (string)
-   * - ``reject(error)`` on failure
+   * - ``resolve(object: data)`` when successfully fetched the token
+   *   - ``data.token`` a token
+   * - ``reject(object: error)`` on failure
    */
   getTokenProviderSupport(spaceId) {
     return this.get('server').privateRPC('getTokenProviderSupportSpace', {
@@ -167,8 +172,9 @@ export default Ember.Service.extend({
    *
    * @param {String} groupId An ID of the group to invite
    * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(token)`` when successfully fetched the token (string)
-   * - ``reject(error)`` on failure
+   * - ``resolve(object: data)`` when successfully fetched the token
+   *   - ``data.token`` a token
+   * - ``reject(object: error)`` on failure
    */
   getTokenUserJoinGroup(groupId) {
     return this.get('server').privateRPC('getTokenUserJoinGroup', {
@@ -181,8 +187,9 @@ export default Ember.Service.extend({
    *
    * @param {String} token A token generated with ``this.getTokenUserJoinGroup``
    * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(groupName)`` when successfully joined to group
-   * - ``reject(error)`` on failure
+   * - ``resolve(object: data)`` when successfully joined to group
+   *   - ``data.groupName`` - a name of group that user joined to
+   * - ``reject(object: error)`` on failure
    */
   userJoinGroup(token) {
     return this.get('server').privateRPC('userJoinGroup', {
@@ -196,7 +203,7 @@ export default Ember.Service.extend({
    * @param {String} groupId An ID of the group to leave
    * @returns {RSVP.Promise} A backend operation completion:
    * - ``resolve()`` when successfully left the space
-   * - ``reject(error)`` on failure
+   * - ``reject(object: error)`` on failure
    */
   userLeaveGroup(groupId) {
     return this.get('server').privateRPC('userLeaveGroup', {
@@ -210,8 +217,9 @@ export default Ember.Service.extend({
    *
    * @param {String} groupId An ID of the group to invite
    * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(token)`` when successfully fetched the token (string)
-   * - ``reject(error)`` on failure
+   * - ``resolve(object: data)`` when successfully fetched the token
+   *   - ``data.token`` a token
+   * - ``reject(object: error)`` on failure
    */
   getTokenGroupJoinGroup(groupId) {
     return this.get('server').privateRPC('getTokenGroupJoinGroup', {
@@ -225,8 +233,9 @@ export default Ember.Service.extend({
    * @param {String} groupId An ID of the group which will be added as a subgroup to other group
    * @param {String} token A token generated with ``this.getTokenUserJoinGroup``
    * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(groupName)`` when successfully joined to group
-   * - ``reject(error)`` on failure
+   * - ``resolve(object: data)`` when successfully fetched the token
+   *   - ``data.groupName`` a token
+   * - ``reject(object: error)`` on failure
    */
   groupJoinGroup(groupId, token) {
     return this.get('server').privateRPC('groupJoinGroup', {
@@ -242,7 +251,7 @@ export default Ember.Service.extend({
    * @param {String} childGroupId An ID of the group which should leave from parentGroup
    * @returns {RSVP.Promise} A backend operation completion:
    * - ``resolve()`` when successfully left group
-   * - ``reject(error)`` on failure
+   * - ``reject(object: error)`` on failure
    */
   groupLeaveGroup(parentGroupId, childGroupId) {
     return this.get('server').privateRPC('groupLeaveGroup', {
@@ -257,8 +266,9 @@ export default Ember.Service.extend({
    *
    * @param {String} groupId An ID of the group, which will use a newly created space
    * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(token)`` when successfully fetched the token (string)
-   * - ``reject(error)`` on failure
+   * - ``resolve(object: data)`` when successfully fetched the token
+   *   - ``data.token`` a token
+   * - ``reject(object: error)`` on failure
    */
   getTokenRequestSpaceCreation(groupId) {
     return this.get('server').privateRPC('getTokenRequestSpaceCreation', {

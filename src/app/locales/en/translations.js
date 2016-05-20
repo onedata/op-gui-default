@@ -170,7 +170,7 @@ export default {
         removeFailed: 'Failed to remove group "{{name}}"',
         joinSpaceSuccess: 'Successfully joined group "{{thisGroupName}}" to space "{{spaceName}}"',
         joinSpaceFailed: 'Failed to join "{{groupName}}" to some space',
-        joinAsSubgroupSuccess: 'Successfully joined group "{{groupName}}" to group "{{spaceName}}"',
+        joinAsSubgroupSuccess: 'Successfully joined group "{{thisGroupName}}" to group "{{groupName}}"',
         joinAsSubgroupFailed: 'Failed to join "{{groupName}}" to some group as a subgroup',
         joinSuccess: 'Successfully joined to group',
         joinFailed: 'Failed to join group'

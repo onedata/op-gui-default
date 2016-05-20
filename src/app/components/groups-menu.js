@@ -382,26 +382,27 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
       try {
         let parentGroup = this.get('parentGroupToLeave');
         let subgroup = this.get('modalGroup');
-        this.promiseLoading(this.get('oneproviderServer')
-          .groupLeaveGroup(parentGroup.get('id'), subgroup.get('id')),
-            "isLeaveParentGroupWorking")
-          .then(
-            () => {
-              let message = this.get('i18n').t('components.groupsMenu.notify.leaveParentGroupSuccess', {
-                subgroupName: subgroup.get('name'),
-                parentGroupName: parentGroup.get('name')
+        this.promiseLoading(
+          this.get('oneproviderServer').groupLeaveGroup(parentGroup.get('id'), subgroup.get('id')),
+          () => this.set('isLeaveParentGroupWorking', true),
+          () => this.set('isLeaveParentGroupWorking', false)
+        ).then(
+          () => {
+            let message = this.get('i18n').t('components.groupsMenu.notify.leaveParentGroupSuccess', {
+              subgroupName: subgroup.get('name'),
+              parentGroupName: parentGroup.get('name')
 
-              });
-              this.get('notify').info(message);
-            },
-            (error) => {
-              let message = this.get('i18n').t('components.groupsMenu.notify.leaveParentGroupFailed', {
-                subgroupName: subgroup.get('name'),
-                parentGroupName: parentGroup.get('name')
-              });
-              message = message + ': ' + error.message;
-              this.get('notify').error(message);
-            }
+            });
+            this.get('notify').info(message);
+          },
+          (error) => {
+            let message = this.get('i18n').t('components.groupsMenu.notify.leaveParentGroupFailed', {
+              subgroupName: subgroup.get('name'),
+              parentGroupName: parentGroup.get('name')
+            });
+            message = message + ': ' + error.message;
+            this.get('notify').error(message);
+          }
         );
       } finally {
         this.setProperties({

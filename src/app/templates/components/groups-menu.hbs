@@ -26,13 +26,17 @@
     title=(t "components.groupsMenu.createModal.title")
     id="create-group"}}
   {{#bs-modal-body}}
-    {{#bs-form action=(action "submitCreateGroup") model=this}}
-      {{bs-form-element controlType="text" property="newGroupName" autofocus=true
-        label=(t 'components.groupsMenu.createModal.enterName')}}
-    {{/bs-form}}
+    <div class="control-label">
+      {{t 'components.groupsMenu.createModal.enterName'}}
+    </div>
+
+    {{input type="text" value=newGroupName autofocus=true
+      class="form-control"
+      action=(if newGroupName "submitCreateGroup")}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
-    {{#spin-button-onedata buttonType="submit"
+    {{#spin-button-onedata
+      action="submitCreateGroup"
       class="btn btn-primary no-outline" spinnerColor="#fff"
       inFlight=isSavingGroup disabled=(or (unless newGroupName true) isSavingGroup)}}
       {{t "common.modal.create"}}

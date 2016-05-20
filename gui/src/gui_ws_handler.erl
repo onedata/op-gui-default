@@ -24,11 +24,6 @@
 -export([websocket_info/3]).
 -export([websocket_terminate/3]).
 
-%% State of the connection. Remembers which data backends were already
-%% initialized during current connection.
--record(state, {
-    data_backends = maps:new() :: #{}
-}).
 
 %% Interface between WebSocket Adapter client and server. Corresponding
 %% interface is located in ws_adapter.js.
@@ -107,7 +102,7 @@ init({_, http}, _Req, _Opts) ->
 
 %%--------------------------------------------------------------------
 %% @doc
-%% Initializes the webscoket state for current connection.
+%% Initializes the WebSocket state for current connection.
 %% Accepts only connections from .html pages.
 %% @end
 %%--------------------------------------------------------------------
@@ -118,7 +113,7 @@ init({_, http}, _Req, _Opts) ->
     TransportName :: tcp | ssl | atom(),
     Req :: cowboy_req:req(),
     Opts :: any(),
-    State :: #state{},
+    State :: no_state,
     Timeout :: timeout().
 websocket_init(_TransportName, Req, _Opts) ->
     % @todo geneneric error handling + reporting on client side
@@ -139,7 +134,7 @@ websocket_init(_TransportName, Req, _Opts) ->
             end,
             case Result of
                 ok ->
-                    {ok, Req, #state{}};
+                    {ok, Req, no_state};
                 error ->
                     % The client is not allowed to connect to WS,
                     % send 403 Forbidden.
@@ -168,37 +163,27 @@ websocket_init(_TransportName, Req, _Opts) ->
     {shutdown, Req, State} when
     InFrame :: {text | binary | ping | pong, binary()},
     Req :: cowboy_req:req(),
-    State :: #state{},
+    State :: no_state,
     OutFrame :: cowboy_websocket:frame().
 websocket_handle({text, MsgJSON}, Req, State) ->
     % Try to decode message
-    Props = try
+    DecodedMsg = try
         json_utils:decode(MsgJSON)
     catch
         _:_ -> undefined
     end,
-    case Props of
-        undefined ->
+    ResponseProps = case DecodedMsg of
+        % Accept only batch messages
+        [{<<"batch">>, Messages}] ->
+            % Message was decoded, try to process all the requests.
+            process_messages(Messages);
+        _ ->
             % Message could not be decoded, reply with an error
             {_, ErrorMsg} = gui_error:cannot_decode_message(),
-            {reply, {text, json_utils:encode(ErrorMsg)}, Req, State};
-        _ ->
-            try
-                % Message was decoded, try to process the request
-                {RespProps, NewState} = handle_decoded_message(Props, State),
-                % Encode the reply and send it
-                RespJSON = json_utils:encode(RespProps),
-                {reply, {text, RespJSON}, Req, NewState}
-            catch
-                T:M ->
-                    % There was an error processing the request, reply with
-                    % an error.
-                    ?error_stacktrace("Error while handling websocket message "
-                    "- ~p:~p", [T, M]),
-                    {_, ErrorMsg} = gui_error:internal_server_error(),
-                    {reply, {text, json_utils:encode(ErrorMsg)}, Req, State}
-            end
-    end;
+            ErrorMsg
+    end,
+    ResponseJSON = json_utils:encode([{<<"batch">>, ResponseProps}]),
+    {reply, {text, ResponseJSON}, Req, State};
 
 
 websocket_handle(_Data, Req, State) ->
@@ -219,29 +204,47 @@ websocket_handle(_Data, Req, State) ->
     {shutdown, Req, State} when
     Info :: any(),
     Req :: cowboy_req:req(),
-    State :: #state{},
+    State :: no_state,
     OutFrame :: cowboy_websocket:frame().
+websocket_info({process_messages, Messages}, Req, State) ->
+    Msg = [
+        {<<"batch">>, process_messages(Messages)}
+    ],
+    {reply, {text, json_utils:encode(Msg)}, Req, State};
+
 websocket_info({push_created, ResourceType, Data}, Req, State) ->
     Msg = [
-        {?KEY_MSG_TYPE, ?TYPE_MODEL_CRT_PUSH},
-        {?KEY_RESOURCE_TYPE, ResourceType},
-        {?KEY_DATA, Data}
+        {<<"batch">>, [
+            [
+                {?KEY_MSG_TYPE, ?TYPE_MODEL_CRT_PUSH},
+                {?KEY_RESOURCE_TYPE, ResourceType},
+                {?KEY_DATA, Data}
+            ]
+        ]}
     ],
     {reply, {text, json_utils:encode(Msg)}, Req, State};
 
 websocket_info({push_updated, ResourceType, Data}, Req, State) ->
     Msg = [
-        {?KEY_MSG_TYPE, ?TYPE_MODEL_UPT_PUSH},
-        {?KEY_RESOURCE_TYPE, ResourceType},
-        {?KEY_DATA, Data}
+        {<<"batch">>, [
+            [
+                {?KEY_MSG_TYPE, ?TYPE_MODEL_UPT_PUSH},
+                {?KEY_RESOURCE_TYPE, ResourceType},
+                {?KEY_DATA, Data}
+            ]
+        ]}
     ],
     {reply, {text, json_utils:encode(Msg)}, Req, State};
 
 websocket_info({push_deleted, ResourceType, Ids}, Req, State) ->
     Msg = [
-        {?KEY_MSG_TYPE, ?TYPE_MODEL_DLT_PUSH},
-        {?KEY_RESOURCE_TYPE, ResourceType},
-        {?KEY_DATA, Ids}
+        {<<"batch">>, [
+            [
+                {?KEY_MSG_TYPE, ?TYPE_MODEL_DLT_PUSH},
+                {?KEY_RESOURCE_TYPE, ResourceType},
+                {?KEY_DATA, Ids}
+            ]
+        ]}
     ],
     {reply, {text, json_utils:encode(Msg)}, Req, State};
 
@@ -259,7 +262,7 @@ websocket_info(_Info, Req, State) ->
     {remote, cowboy_websocket:close_code(), binary()} |
     {error, badencoding | badframe | closed | atom()},
     Req :: cowboy_req:req(),
-    State :: #state{}.
+    State :: no_state.
 websocket_terminate(_Reason, _Req, _State) ->
     gui_async:kill_async_processes(),
     ok.
@@ -276,20 +279,19 @@ websocket_terminate(_Reason, _Req, _State) ->
 %% of requested resource, decides which handler module should be called.
 %% @end
 %%--------------------------------------------------------------------
-handle_decoded_message(Props, State) ->
+handle_decoded_message(Props) ->
     MsgType = proplists:get_value(?KEY_MSG_TYPE, Props),
     MsgUUID = proplists:get_value(?KEY_UUID, Props, null),
     % Choose handling module depending on message type
-    {Result, ReplyType, NewState} = case MsgType of
+    {Result, ReplyType} = case MsgType of
         ?TYPE_MODEL_REQ ->
-            #state{data_backends = DtBackends} = State,
             RsrcType = proplists:get_value(?KEY_RESOURCE_TYPE, Props),
-            {Handler, NewDtBackends} = get_data_backend(RsrcType, DtBackends),
+            Handler = get_data_backend(RsrcType),
             Res = handle_model_req(Props, Handler),
-            {Res, ?TYPE_MODEL_RESP, State#state{data_backends = NewDtBackends}};
+            {Res, ?TYPE_MODEL_RESP};
         ?TYPE_RPC_REQ ->
             Res = handle_RPC_req(Props),
-            {Res, ?TYPE_RPC_RESP, State}
+            {Res, ?TYPE_RPC_RESP}
     end,
     % Resolve returned values
     {RespResult, RespData} = case Result of
@@ -300,13 +302,12 @@ handle_decoded_message(Props, State) ->
         {error_result, Data} ->
             {?RESULT_ERROR, Data}
     end,
-    Resp = [
+    [
         {?KEY_MSG_TYPE, ReplyType},
         {?KEY_UUID, MsgUUID},
         {?KEY_RESULT, RespResult},
         {?KEY_DATA, RespData}
-    ],
-    {Resp, NewState}.
+    ].
 
 
 %%--------------------------------------------------------------------
@@ -317,18 +318,18 @@ handle_decoded_message(Props, State) ->
 %% track which backends are already initialized.
 %% @end
 %%--------------------------------------------------------------------
--spec get_data_backend(ResourceType :: binary(), DataBackends :: #{}) ->
-    {Handler :: atom(), NewBackends :: #{}}.
-get_data_backend(ResourceType, DataBackends) ->
-    case maps:find(ResourceType, DataBackends) of
-        {ok, Handler} ->
-            {Handler, DataBackends};
-        _ ->
+-spec get_data_backend(ResourceType :: binary()) -> Handler :: atom().
+get_data_backend(ResourceType) ->
+    % Initialized data backends are cached in process dictionary.
+    case get({data_backend, ResourceType}) of
+        undefined ->
             HasSession = g_session:is_logged_in(),
             Handler = ?GUI_ROUTE_PLUGIN:data_backend(HasSession, ResourceType),
             ok = Handler:init(),
-            NewBackends = maps:put(ResourceType, Handler, DataBackends),
-            {Handler, NewBackends}
+            put({data_backend, ResourceType}, Handler),
+            Handler;
+        Handler ->
+            Handler
     end.
 
 
@@ -350,9 +351,25 @@ handle_model_req(Props, Handler) ->
     try
         case proplists:get_value(?KEY_OPERATION, Props) of
             ?OP_FIND ->
-                erlang:apply(Handler, find, [RsrcType, [EntityIdOrIds]]);
-            ?OP_FIND_MANY ->
                 erlang:apply(Handler, find, [RsrcType, EntityIdOrIds]);
+            ?OP_FIND_MANY ->
+                % Will return list of found entities only if all finds succeed.
+                Res = lists:foldl(
+                    fun(EntityId, Acc) ->
+                        case Acc of
+                            List when is_list(List) ->
+                                case erlang:apply(Handler, find,
+                                    [RsrcType, EntityId]) of
+                                    {ok, Data} ->
+                                        [Data | Acc];
+                                    Error ->
+                                        Error
+                                end;
+                            Error ->
+                                Error
+                        end
+                    end, [], EntityIdOrIds),
+                {ok, Res};
             ?OP_FIND_ALL ->
                 erlang:apply(Handler, find_all, [RsrcType]);
             ?OP_FIND_QUERY ->
@@ -464,3 +481,45 @@ handle_session_RPC() ->
             ]
     end,
     {ok, Data}.
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% @private
+%% Processes a batch of requests. If processing takes more than configurable
+%% interval, partial response is sent and the process continues.
+%% @end
+%%--------------------------------------------------------------------
+-spec process_messages(Messages :: [proplists:proplist()]) ->
+    [proplists:proplist()].
+process_messages(Messages) ->
+    % Consider batch processing interval and send back some
+    % responses after it has passed.
+    SystemTime = erlang:system_time(milli_seconds),
+    {ok, BatchInterval} = application:get_env(
+        gui, gui_batch_processing_interval),
+    process_messages(Messages, [], SystemTime + BatchInterval).
+
+process_messages([], Results, _) ->
+    Results;
+process_messages(Messages, Results, ReportBackTime) ->
+    try
+        SystemTime = erlang:system_time(milli_seconds),
+        case SystemTime > ReportBackTime of
+            true ->
+                self() ! {process_messages, Messages},
+                Results;
+            false ->
+                [Props | Tail] = Messages,
+                Result = handle_decoded_message(Props),
+                process_messages(Tail, [Result | Results], ReportBackTime)
+        end
+    catch
+        T:M ->
+            % There was an error processing the request, reply with
+            % an error.
+            ?error_stacktrace("Error while handling websocket message "
+            "- ~p:~p", [T, M]),
+            {_, ErrorMsg} = gui_error:internal_server_error(),
+            ErrorMsg
+    end.

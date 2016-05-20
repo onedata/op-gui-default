@@ -12,8 +12,10 @@ import Ember from 'ember';
  */
 export default Ember.Mixin.create({
   /**
-    Example usage:
-    ```
+    By default, sets 'isLoading' property to true, and registers setting
+    'isLoading' to false on promise resolve/reject.
+    However, custom callback can be set to override this behaviour.
+    @example
     this.promiseLoading(
       this.get('onezoneServer').getConnectAccountEndpoint(providerName)
     ).then(
@@ -24,13 +26,33 @@ export default Ember.Mixin.create({
         console.error(error.message);
       }
     });
-    ```
+
     @param {RSVP.Promise} promise A promise to bind loading set/unset
+    @param {promiseLoadingBeforeCallback} [callbackBefore] A callback to invoke
+      in this method
+    @param {promiseLoadingAfterCallback} [callbackAfter] A callback to invoke
+      on promise reolve and reject
     @returns {RSVP.Promise} Passed promise
   */
-  promiseLoading(promise) {
-    this.set('isLoading', true);
-    promise.finally(() => this.set('isLoading', false));
+  promiseLoading(promise, callbackBefore, callbackAfter) {
+    if (!callbackBefore) {
+      callbackBefore = () => this.set('isLoading', true);
+    }
+
+    if (!callbackAfter) {
+      callbackAfter = () => this.set('isLoading', false);
+    }
+
+    callbackBefore();
+    promise.finally(callbackAfter);
     return promise;
   }
 });
+
+/**
+ * @callback promiseLoadingBeforeCallback
+ */
+
+ /**
+  * @callback promiseLoadingAfterCallback
+  */

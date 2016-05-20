@@ -12,7 +12,7 @@
 
 {application, gui, [
     {description, "Common GUI lib for onedata project"},
-    {vsn, "1.0.3"},
+    {vsn, "3.0.0-beta3"},
     {registered, []},
     {applications, [
         kernel,

@@ -32,7 +32,7 @@
 
     {{input type="text" value=newGroupName autofocus=true
       class="form-control"
-      action=(if newGroupName "submitCreateGroup")}}
+      enter=(if newGroupName "submitCreateGroup")}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata

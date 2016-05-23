@@ -39,9 +39,13 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
   activeGroup: Ember.computed.alias('secondaryMenu.activeGroup'),
 
+  /**
+   * The groups menu is loading if the groups property is null/undefined or
+   * any of the groups in group array is not loaded (isLoaded property).
+   */
   isLoading: function() {
-    return !this.get('groups.length') || this.get('groups').any((s) => !s.get('name'));
-  }.property('groups', 'groups.length', 'groups.@each.name'),
+    return !this.get('groups') || this.get('groups').any((s) => !s.get('isLoaded'));
+  }.property('groups', 'groups.@each.isLoaded'),
 
   // TODO: what is loading?
   isLoadingChanged: function() {

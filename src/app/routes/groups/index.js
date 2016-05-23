@@ -14,6 +14,6 @@ export default Ember.Route.extend({
   },
 
   activate() {
-    this.controllerFor(this.routeName).goToDefaultGroup();
+    this.controllerFor(this.routeName).goToFirstGroup();
   },
 });

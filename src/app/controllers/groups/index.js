@@ -10,17 +10,17 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Controller.extend({
-  goToDefaultGroup() {
+  goToFirstGroup() {
     console.debug(`groups.index: Will try to go to default group`);
     let groups = this.get('model');
-    if (groups) {
+    if (groups && groups.get('length') > 0) {
       // TODO: which group should be loaded as default?
-      let defaultGroup = groups.toArray()[0];
-      if (defaultGroup) {
-        console.debug(`groups.index: Transition to default group ${defaultGroup.get('id')}`);
-        this.transitionToRoute('groups.show', defaultGroup);
+      let firstGroup = groups.filter(g => g.get('id') && g.get('id') != 'null').toArray()[0];
+      if (firstGroup) {
+        console.debug(`groups.index: Transition to default group ${firstGroup.get('id')}`);
+        this.transitionToRoute('groups.show', firstGroup);
       } else {
-        console.debug('groups.index: No default group found yet');
+        console.debug('groups.index: No first group found yet');
       }
     }
   },
@@ -31,6 +31,6 @@ export default Ember.Controller.extend({
     This is a workaround for afterModel, which does not recieve ready groups list.
   */
   onModelChange: function() {
-    this.goToDefaultGroup();
+    this.goToFirstGroup();
   }.observes('model.[]')
 });

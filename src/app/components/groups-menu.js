@@ -335,7 +335,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
               groupName: group.get('name'),
             });
             message = message + ': ' + error.message;
-            this.get('notify').info(message);
+            this.get('notify').error(message);
           }
       );
       promise.finally(() => {

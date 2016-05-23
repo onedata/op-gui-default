@@ -19,6 +19,10 @@ export default Ember.Route.extend({
     controller.set('model', model);
   },
 
+  activate() {
+    this.controllerFor(this.routeName).changeMenuActiveItem();
+  },
+
   actions: {
     /**
       Capture goToGroup event, because if we are already there,

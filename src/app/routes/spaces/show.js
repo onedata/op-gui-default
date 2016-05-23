@@ -17,6 +17,10 @@ export default Ember.Route.extend({
     controller.set('model', model);
   },
 
+  activate() {
+    this.controllerFor(this.routeName).changeMenuActiveItem();
+  },
+
   actions: {
     /**
       Capture goToSpace event, because if we are already there,

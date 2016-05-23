@@ -36,7 +36,7 @@
 
     {{input type="text" value=newSpaceName autofocus=true
       class="form-control"
-      action=(if newSpaceName "submitCreateSpace")}}
+      enter=(if newSpaceName "submitCreateSpace")}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata

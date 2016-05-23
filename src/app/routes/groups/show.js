@@ -15,8 +15,8 @@ export default Ember.Route.extend({
     return this.store.find('group', params.group_id);
   },
 
-  activate() {
-    this.controllerFor(this.routeName).changeMenuActiveItem();
+  setupController(controller, model) {
+    controller.set('model', model);
   },
 
   actions: {

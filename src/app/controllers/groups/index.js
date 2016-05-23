@@ -32,5 +32,5 @@ export default Ember.Controller.extend({
   */
   onModelChange: function() {
     this.goToFirstGroup();
-  }.observes('model.[]')
+  }.observes('model.[]', 'model.@each.id')
 });

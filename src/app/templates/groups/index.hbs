@@ -1,0 +1,9 @@
+{{#if (gt model.length 0)}}
+  {{outlet}}
+{{else}}
+{{!-- TODO: translate --}}
+<div class="inner-content content-error">
+  No groups available. Use the <span class="inline-button">{{icon 'group-add'}}</span> button in left sidebar to create one.
+</div>
+<div class="content-error-icon glyphicon glyphicon-ban-circle"></div>
+{{/if}}

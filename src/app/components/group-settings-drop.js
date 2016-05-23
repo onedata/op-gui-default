@@ -63,8 +63,7 @@ export default Ember.Component.extend({
       },
       {
         // the same icon as in leave-group,
-        // TODO: this icons should be named "leave" in oneicons
-        icon: 'leave-space',
+        icon: 'group-leave-group',
         label: i18n.t('components.groupsMenu.drop.leaveParentGroup'),
         action: 'leaveParentGroup',
         disabled: (!this.get('group.parentGroups') || this.get('group.parentGroups.length') === 0)

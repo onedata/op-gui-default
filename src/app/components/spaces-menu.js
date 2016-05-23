@@ -11,7 +11,7 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  service: Ember.inject.service('spaces-menu'),
+  secondaryMenu: Ember.inject.service(),
   store: Ember.inject.service(),
   notify: Ember.inject.service(),
   oneproviderServer: Ember.inject.service(),
@@ -25,7 +25,7 @@ export default Ember.Component.extend({
   spacesSorting: ['isDefault:desc', 'name'],
   validSpacesSorted: Ember.computed.sort('validSpaces', 'spacesSorting'),
 
-  activeSpace: Ember.computed.alias('service.activeSpace'),
+  activeSpace: Ember.computed.alias('secondaryMenu.activeSpace'),
 
   isLoading: function() {
     return !this.get('spaces.length') || this.get('spaces').any((s) => !s.get('name'));
@@ -69,6 +69,7 @@ export default Ember.Component.extend({
     }
   }),
 
+  spaceToRemove: null,
   isRemoveModalOpened: Ember.computed('openedModal', {
     get() {
       return this.get('openedModal') === 'remove';
@@ -80,8 +81,6 @@ export default Ember.Component.extend({
       return value;
     }
   }),
-
-  spaceToRemove: null,
 
   isLeaveModalOpened: Ember.computed('openedModal', {
     get() {
@@ -95,13 +94,9 @@ export default Ember.Component.extend({
     }
   }),
 
-  registerInService: function() {
-    this.set('service.component', this);
+  registerInSecondaryMenu: function() {
+    this.set('secondaryMenu.component', this);
   }.on('init'),
-
-  clearService: function() {
-    this.get('service').clear();
-  }.on('willDestroyElement'),
 
   activeSpaceDidChange: function() {
     if (this.get('activeSpace')) {
@@ -172,10 +167,10 @@ export default Ember.Component.extend({
     submitJoinSpace() {
       this.set('isJoiningSpaceWorking', true);
       let token = this.get('joinSpaceToken') && this.get('joinSpaceToken').trim();
-      let serverPromise = this.get('oneproviderServer').joinSpace(token);
+      let serverPromise = this.get('oneproviderServer').userJoinSpace(token);
       serverPromise.then(
-        (spaceName) => {
-          this.spaceActionMessage('info', 'joinSuccess', spaceName);
+        (data) => {
+          this.spaceActionMessage('info', 'joinSuccess', data.spaceName);
         },
         (errorJson) => {
           console.log(errorJson.message);
@@ -268,7 +263,7 @@ export default Ember.Component.extend({
       try {
         let space = this.get('modalSpace');
         let spaceName = space.get('name');
-        this.get('oneproviderServer').leaveSpace(space).then(
+        this.get('oneproviderServer').userLeaveSpace(space.get('id')).then(
           () => {
             this.spaceActionMessage('info', 'leaveSuccess', spaceName);
           },

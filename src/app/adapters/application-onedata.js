@@ -1,0 +1,1 @@
+../../../gui/common_assets/js/adapters/ws-adapter-1.0.2.js

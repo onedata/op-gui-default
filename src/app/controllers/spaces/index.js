@@ -31,5 +31,5 @@ export default Ember.Controller.extend({
   */
   onModelChange: function() {
     this.goToDefaultSpace();
-  }.observes('model.[]')
+  }.observes('model.[]', 'model.@each.id')
 });

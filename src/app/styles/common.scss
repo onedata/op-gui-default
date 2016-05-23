@@ -30,6 +30,11 @@ $transition-time: 0.25s !default;
 // TODO: should be used with Bootstrap SASS
 $font-family-sans-serif: 'Open Sans';
 
+// routes-specific styles
+
+@import 'data';
+@import 'groups';
+
 html, body {
   font-family: $font-family-sans-serif !important;
 }
@@ -171,9 +176,12 @@ html, body {
           font-size: 40px;
         }
 
-        &.active a,
-        a:hover {
+        &.active a {
           background-color: $sidebar-item-hover-color;
+        }
+
+        a:hover {
+          background-color: rgba($sidebar-item-hover-color, 0.55);
         }
 
         a {
@@ -246,7 +254,7 @@ html, body {
           padding-left: 33px * $responsive-multiplier; // SPACES is moved right slightly
           padding-bottom: 16px;
           padding-right: 27px * $responsive-multiplier;
-          font-size: 11pt;
+          font-size: $secondary-sidebar-font-size;
         }
 
         figure {
@@ -401,6 +409,7 @@ html, body {
     // TODO: assuming, that this content is always on secondary-sidebar right
     // other content-scroll types should be made
     #content-scroll {
+      position: relative;
       float: none;
       overflow-y: auto;
       overflow-x: hidden; // TODO: it's probably some hack
@@ -576,5 +585,122 @@ html, body {
   position: relative !important;
 }
 
-// TODO: temporary
-@import 'data';
+.oneicon {
+  position: relative;
+  display: inline-block;
+}
+
+/* Safari and Chrome */
+@-webkit-keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+.rotating {
+  display: inline-block;
+  -webkit-animation: rotating 2s linear infinite;
+  -moz-animation: rotating 2s linear infinite;
+  -ms-animation: rotating 2s linear infinite;
+  -o-animation: rotating 2s linear infinite;
+  animation: rotating 2s linear infinite;
+}
+
+.full-size {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+// for debugging
+.service-debugger {
+  position: fixed;
+  width: 400px;
+  height: 150px;
+  bottom: 0;
+  right: 0;
+  border: 1px solid black;
+  background-color: white;
+  padding: 10px;
+
+  .inner-scroll {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+}
+
+// handling empty collections
+
+.empty-model {
+  position: absolute;
+  // below drop-zone
+  z-index: 99;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding: 20px;
+  background-color: white; // rgba(white, 0.75);
+
+  .empty-model-container {
+    padding-top: 40px;
+
+    .empty-model-image {
+      width: 100%;
+      height: 128px;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+
+    .empty-model-message {
+      position: relative;
+      width: 100%;
+      margin-top: 20px;
+      font-size: 32px;
+      text-align: center;
+
+      &.secondary {
+        position: relative;
+        margin-top: 10px;
+        font-size: 24px;
+      }
+    }
+  }
+}
+
+
+.inline-button {
+  position: relative;
+  top: 12px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 2em;
+}

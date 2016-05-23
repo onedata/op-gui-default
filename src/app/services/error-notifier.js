@@ -1,5 +1,14 @@
 import Ember from 'ember';
 
+/**
+ * A convenient (but limited) API to handle backend error objects.
+ * An alternative to use the 'notify' service.
+ * @module services/error-notifier
+ * @author Jakub Liput
+ * @author Łukasz Opioła
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Service.extend({
   notify: Ember.inject.service('notify'),
   i18n: Ember.inject.service('i18n'),

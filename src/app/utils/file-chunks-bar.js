@@ -37,10 +37,12 @@ FileChunksBar.prototype.draw = function (data) {
   }
 };
 FileChunksBar.prototype.drawBlock = function (start, end, fileSize) {
-  this.context.fillStyle = this.fillColor;
-  var rectStart = canvasWidth * start / fileSize;
-  var rectEnd = canvasWidth * (end + 1) / fileSize;
-  this.context.fillRect(rectStart, 0, rectEnd - rectStart, canvasHeight);
+  if (start !== end) {
+    this.context.fillStyle = this.fillColor;
+    var rectStart = canvasWidth * start / fileSize;
+    var rectEnd = canvasWidth * end / fileSize;
+    this.context.fillRect(rectStart, 0, rectEnd - rectStart, canvasHeight);
+  }
 };
 
 export default FileChunksBar;

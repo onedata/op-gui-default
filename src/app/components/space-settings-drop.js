@@ -112,20 +112,23 @@ export default Ember.Component.extend({
     },
 
     inviteGroup() {
-      this.get('commonModals').openModal('token-group', {
-        space: this.get('space')
+      this.get('commonModals').openModal('token', {
+        type: 'groupJoinSpace',
+        funArgs: [this.get('space.id')],
       });
     },
 
     inviteUser() {
-      this.get('commonModals').openModal('token-user', {
-        space: this.get('space')
+      this.get('commonModals').openModal('token', {
+        funArgs: [this.get('space.id')],
+        type: 'userJoinSpace'
       });
     },
 
     getSupport() {
-      this.get('commonModals').openModal('token-support', {
-        space: this.get('space')
+      this.get('commonModals').openModal('token', {
+        funArgs: [this.get('space.id')],
+        type: 'providerSupport'
       });
     }
   }

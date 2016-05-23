@@ -9,16 +9,20 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Controller.extend({
-  spacesMenu: Ember.inject.service(),
+  secondaryMenu: Ember.inject.service(),
+
+  changeMenuActiveItem() {
+    this.set('secondaryMenu.activeItem', this.get('model'));
+
+    // TODO: use property binding
+    Ember.run.scheduleOnce('afterRender', this, function() {
+      $('nav.secondary-sidebar').addClass('visible');
+    });
+  },
 
   onSpaceChange: function() {
     if (this.get('model')) {
-      Ember.run.scheduleOnce('afterRender', this, function() {
-        console.debug(`controller.spaces: space changed: ${this.get('model.id')}`);
-        this.set('spacesMenu.activeSpace', this.get('model'));
-
-        $('nav.secondary-sidebar').addClass('visible');
-      });
+      this.changeMenuActiveItem();
     }
   }.observes('model'),
 });

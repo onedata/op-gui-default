@@ -1,6 +1,6 @@
 import Ember from 'ember';
 
-import ShowPermissionsBase from './show-permissions-base';
+import ShowPermissionsControllerMixin from '../../../mixins/show-permissions-controller';
 
 /**
  * See controllers/spaces/show-permission-base for details.
@@ -9,6 +9,6 @@ import ShowPermissionsBase from './show-permissions-base';
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default Ember.Controller.extend(ShowPermissionsBase, {
+export default Ember.Controller.extend(ShowPermissionsControllerMixin, {
   permissionsType: 'groups',
 });

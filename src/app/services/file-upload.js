@@ -1,16 +1,21 @@
 import Ember from 'ember';
 /* globals Resumable */
 
+/**
+ * Enables global usage of file upload.
+ * Uses ResumableJS and exposes its object.
+ * Exposes jquery assign methods to bind file browser drop and upload button events.
+ * @module services/file-upload
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Service.extend({
   component: null,
   session: Ember.inject.service(),
 
   /** Current dir for upload - global for application! */
   dir: null,
-
-  initTriggered: function() {
-
-  }.on('init'),
 
   resumable: function() {
     console.debug(`Creating new Resumable`);
@@ -23,7 +28,8 @@ export default Ember.Service.extend({
       query: () => {
         console.debug(`Will upload to dir: ${this.get('dir.name')}, id: ${this.get('dir.id')}`);
         return {
-          parentId: this.get('dir.id')
+          parentId: this.get('dir.id'),
+          connectionRef: this.get('session.sessionDetails.connectionRef')
         };
       },
       generateUniqueIdentifier: function() {

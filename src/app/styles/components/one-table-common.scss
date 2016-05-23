@@ -1,6 +1,17 @@
 .one-table {
   min-width: 100%;
 
+  // TODO: use as generic application-wide "a" style?
+  a {
+    color: inherit !important;
+    &:active, &.active {
+      color: $onedata-red !important;
+    }
+    &:hover {
+      text-decoration: underline !important;
+    }
+  }
+
   .one-th,
   .one-td {
     text-align: center;
@@ -14,14 +25,11 @@
   .one-thead {
     .one-th {
       text-transform: uppercase;
-      color: #4D5664;
       font-weight: normal;
       height: 80px;
       vertical-align: middle;
 
-      &:nth-child(odd) {
-        background-color: #fff;
-      }
+      background-color: #2F323A;
     }
   }
 
@@ -29,9 +37,8 @@
 
     .one-tr {
 
-      // TODO!
-      &:hover {
-        background-color: #dddddd !important;
+      &:nth-child(even) {
+        background-color: #F5F6F7;
       }
 
       .one-td {
@@ -67,5 +74,15 @@
         }
       }
     }
+
+    // some additional styles
+    .one-tr .one-td {
+      &.info-cell {
+        text-align: left;
+        padding-left: 10px;
+        font-style: italic;
+      }
+    }
+
   }
 }

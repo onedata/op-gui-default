@@ -8,10 +8,14 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-import ShowPermissionsBase from './show-permissions-base';
+import Ember from 'ember';
+import ShowPermissionsRouteMixin from '../../../mixins/show-permissions-route';
 
-export default ShowPermissionsBase.extend({
+export default Ember.Route.extend(ShowPermissionsRouteMixin, {
+  oneproviderServer: Ember.inject.service(),
+
   permissionsType: 'users',
+  routeType: 'spaces',
 
   actions: {
     inviteItem() {

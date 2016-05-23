@@ -12,11 +12,8 @@ export default Ember.Component.extend({
   oneproviderServer: Ember.inject.service(),
   notify: Ember.inject.service(),
 
-  /** Current space that modals will use to act */
-  space: null,
-
-  /** Allowed: user, group, support */
-  type: null,
+  /** Options passed into  */
+  options: null,
 
   inviteToken: null,
 
@@ -50,12 +47,17 @@ export default Ember.Component.extend({
   actions: {
     getToken() {
       let type = this.get('type');
-      this.get('oneproviderServer').getToken(type, this.get('space.id')).then(
-        (token) => {
-          this.set('inviteToken', token);
+      let tokenFun = this.get('oneproviderServer')[`getToken${type.capitalize()}`];
+      // TODO: handle in GUI?
+      if (!tokenFun) {
+        throw `GetToken function not found in oneProviderServer for type: ${type}`;
+      }
+      tokenFun.apply(this.get('oneproviderServer'), this.get('funArgs')).then(
+        (data) => {
+          this.set('inviteToken', data.token);
         },
         (error) => {
-          this.set('errorMessage', error || this.get('i18n').t('common.unknownError'));
+          this.set('errorMessage', error.message || this.get('i18n').t('common.unknownError'));
           console.error(`Token ${type} fetch failed: ` + JSON.stringify(error));
         }
       );

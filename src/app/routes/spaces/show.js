@@ -9,18 +9,16 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Route.extend({
-  spacesMenuService: Ember.inject.service('spaces-menu'),
-
   model(params) {
     return this.store.find('space', params.space_id);
   },
 
-  activate() {
-    console.debug(`spaces.show.index activate`);
+  setupController(controller, model) {
+    controller.set('model', model);
   },
 
-  deactivate() {
-    console.debug(`spaces.show.index ! deactivate`);
+  activate() {
+    this.controllerFor(this.routeName).changeMenuActiveItem();
   },
 
   actions: {

@@ -1,15 +1,19 @@
 import Ember from 'ember';
 
+/**
+ * Created just to try to redirect to default space using controller.
+ * See controllers/spaces/index for details.
+ * @module routes/groups/index
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Route.extend({
-  commonModals: Ember.inject.service(),
-  i18n: Ember.inject.service(),
+  model() {
+    return this.modelFor('groups');
+  },
 
-  beforeModel(transition) {
-    let i18n = this.get('i18n');
-    this.get('commonModals').openInfoModal(
-      i18n.t('common.featureNotSupportedShort'),
-      i18n.t('common.featureNotSupportedLong')
-    );
-    transition.abort();
-  }
+  activate() {
+    this.controllerFor(this.routeName).goToFirstGroup();
+  },
 });

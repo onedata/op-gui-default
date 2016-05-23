@@ -261,50 +261,6 @@
 
 }
 
-
-.empty-dir {
-  position: absolute;
-  // below drop-zone
-  z-index: 99;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  padding: 20px;
-  background-color: white; // rgba(white, 0.75);
-
-  .empty-dir-container {
-    padding-top: 40px;
-
-    .empty-dir-image {
-      width: 100%;
-      height: 128px;
-      background-image: url("/assets/images/empty-dir.svg");
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: contain;
-    }
-
-    .empty-dir-message {
-      position: relative;
-      width: 100%;
-      margin-top: 20px;
-      font-size: 32px;
-      text-align: center;
-
-      &.secondary {
-        position: relative;
-        margin-top: 10px;
-        font-size: 24px;
-      }
-
-      .inline-button {
-        position: relative;
-        top: 12px;
-        padding-left: 10px;
-        padding-right: 10px;
-        font-size: 2em;
-      }
-    }
-  }
+.empty-dir-image {
+  background-image: url("/assets/images/empty-dir.svg");
 }

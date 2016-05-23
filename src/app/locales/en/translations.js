@@ -18,6 +18,7 @@ export default {
       close: 'Close',
       create: 'Create',
       join: 'Join',
+      leave: 'Leave',
       fetchingToken: 'Fetching token...',
       fetchingTokenError: 'Fetching token failed!',
     },
@@ -32,6 +33,7 @@ export default {
     commonLoader: {
       defaultMessage: 'Loading...',
       synchronizingSpaces: 'Synchronizing user spaces...',
+      synchronizingGroups: 'Synchronizing groups...',
       firstLogin: 'This might take a while if this is the first login to this provider'
     },
     topBar: {
@@ -102,10 +104,86 @@ export default {
       groups: 'groups',
       providers: 'providers'
     },
+    groupsSubmenu: {
+      members: 'members',
+      spaces: 'spaces'
+    },
+    groupsMenu: {
+      title: 'groups',
+      create: 'Create',
+      join: 'Join',
+      drop: {
+        moveUp: 'Move up',
+        moveDown: 'Move down',
+        leave: 'Leave this group',
+        leaveParentGroup: 'Leave parent group...',
+        rename: 'Rename',
+        remove: 'Remove',
+        inviteUser: 'Invite user',
+        inviteGroup: 'Invite group',
+        createSpace: 'Request space creation',
+        joinSpace: 'Join space',
+        joinAsSubgroup: 'Join as subgroup'
+      },
+      createModal: {
+        title: 'Create a new group',
+        enterName: 'Enter new group name:'
+      },
+      joinModal: {
+        title: 'Join a group',
+        label: 'Enter a token of a group to join:'
+      },
+      joinAsSubgroupModal: {
+        title: 'Join a group to group',
+        label: 'Enter a token of a group to make "{{groupName}}" its subgroup:'
+      },
+      joinSpaceModal: {
+        title: 'Join a space',
+        label: 'Enter a token of a space to join the group "{{groupName}}" to it:'
+      },
+      renameModal: {
+        title: 'Rename a group',
+        label: 'Enter new group name:'
+      },
+      leaveModal: {
+        title: 'Leave the group',
+        label: 'Are you sure you want to leave group "{{groupName}}"?'
+      },
+      leaveParentGroupModal: {
+        title: 'Leave a parent group...',
+        label: 'Choose a group, that "{{subgroupName}}" should leave:'
+      },
+      removeModal: {
+        title: 'Remove a group',
+        label: 'Are you sure you want to remove the "{{groupName}}" group?'
+      },
+      notify: {
+        createSuccess: 'Group "{{name}}" created successfully',
+        createFailed: 'Group "{{name}}" cannot be created due to an error',
+        renameSuccess: 'Group "{{oldName}}" renamed to "{{newName}}"',
+        renameFailed: 'Group "{{oldName}}" rename to "{{newName}}" failed due to an error',
+        leaveSuccess: 'Group "{{name}}" left successfully',
+        leaveFailed: 'Cannot leave group "{{name}}" due to an error',
+        leaveParentGroupSuccess: 'Group "{{parentGroupName}}" left successfully by "{{subgroupName}}"',
+        leaveParentGroupFailed: 'Group "{{subgroupName}}" cannot leave parent group "{{parentGroupName}}" due to an error',
+        removeSuccess: 'Group "{{name}" has been removed',
+        removeFailed: 'Failed to remove group "{{name}}"',
+        joinSpaceSuccess: 'Successfully joined group "{{groupName}}" to space "{{spaceName}}"',
+        joinSpaceFailed: 'Failed to join "{{groupName}}" to some space',
+        joinAsSubgroupSuccess: 'Successfully joined group "{{thisGroupName}}" to group "{{groupName}}"',
+        joinAsSubgroupFailed: 'Failed to join "{{groupName}}" to some group as a subgroup',
+        joinSuccess: 'Successfully joined to group "{{groupName}}"',
+        joinFailed: 'Failed to join group'
+
+      }
+    },
     permissionsTable: {
       save: 'save',
       discard: 'discard',
-      inviteButton: 'Invite {{type}}',
+      inviteButton: {
+        user: 'Invite user',
+        group: 'Invite group'
+      },
       viewSpace: 'view space',
       modifySpace: 'modify space',
       setPrivileges: 'set privileges',
@@ -116,6 +194,14 @@ export default {
       removeGroup: 'remove group',
       inviteProvider: 'invite provider',
       removeProvider: 'remove provider',
+      viewGroup: 'view group',
+      modifyGroup: 'modify group',
+      createSpace: 'create space',
+      joinSpace: 'join space',
+      leaveSpace: 'leave space',
+      getSupport: 'get support',
+      removeSubgroup: 'remove subgroup',
+      joinGroup: 'join group',
       inviteModal: {
         title: 'Invite {{type}} to space',
         label: 'Pass the below token to the {{type}} you want to invite'
@@ -123,6 +209,14 @@ export default {
       notify: {
         saveFailedAny: 'Some of permissions saving failed',
         saveFailedSingle: 'Cannot set permissions for "{{name}}"'
+      },
+      tableTitle: {
+        users: 'Users',
+        groups: 'Groups'
+      },
+      noGroups: {
+        group: 'This group has no subgroups',
+        space: 'This space does not belong to any group'
       }
     },
     // data
@@ -186,22 +280,41 @@ export default {
       cancelAll: 'Cancel all',
     },
     tokenModals: {
-      user: {
+      userJoinSpace: {
         title: 'Invite user to the space',
-        label: 'Pass the below token to the user you want to invite'
+        label: 'Pass the below token to the user you want to invite to space'
       },
-      group: {
+      groupJoinSpace: {
         title: 'Invite group to the space',
-        label: 'Pass the below token to the group you want to invite'
+        label: 'Pass the below token to the group you want to invite to space'
       },
-      support: {
+      providerSupport: {
         title: 'Get support for the space',
         label: 'Pass the below token to the provider you want to request support from'
+      },
+      userJoinGroup: {
+        title: 'Invite user to the group',
+        label: 'Pass the below token to the user you want to invite to group'
+      },
+      groupJoinGroup: {
+        title: 'Invite group to the group',
+        label: 'Pass the below token to the group you want to invite to group'
+      },
+      requestSpaceCreation: {
+        title: 'Request space creation for the group',
+        label: 'Pass the below token to a provider of your choice. The token can be used to create a space for your group and grant support to the space.'
       }
     },
   },
   groups: {
-    title: 'Groups'
+    title: 'Groups',
+    show: {
+      title: 'Group settings',
+      members: {
+        title: 'Members permissions'
+      },
+      spaces: "Spaces"
+    }
   },
   collection: {
     title: 'Collection'
@@ -220,12 +333,10 @@ export default {
     show: {
       title: 'Space settings',
       users: {
-        title: 'Users permissions',
-        tableTitle: 'users'
+        title: 'Users permissions'
       },
       groups: {
-        title: 'Groups permissions',
-        tableTitle: 'groups'
+        title: 'Groups permissions'
       },
     }
   },

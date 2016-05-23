@@ -1,7 +1,8 @@
 import Ember from 'ember';
 
 /**
- * FIXME: doc
+ * A convenient (but limited) API to handle backend error objects.
+ * An alternative to use the 'notify' service.
  * @module services/error-notifier
  * @author Jakub Liput
  * @author Łukasz Opioła

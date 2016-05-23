@@ -2,7 +2,8 @@ import Ember from 'ember';
 
 
 /**
- * FIXME: doc
+ * A global (one instance for application) component for common-loader service.
+ * It allows to show loading information with spinner and two lines of text.
  * @module components/common-loader
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH

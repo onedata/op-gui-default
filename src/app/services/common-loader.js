@@ -1,7 +1,9 @@
 import Ember from 'ember';
 
 /**
- * FIXME: doc
+ * Allows to globally control the singleton of common-loader component.
+ * - Set 'isLoading' property to toggle loader.
+ * - Set 'message' and (optional) 'messageSecondary' properties to set a message.
  * @module services/common-loader
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH

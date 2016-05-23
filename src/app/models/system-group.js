@@ -1,9 +1,10 @@
 import DS from 'ember-data';
 
-// FIXME: documentation do not explain what is difference between group and system-group
-
 /**
  * A single Onedata group representation.
+ * This can be any group that exists in Onedata no matter it is accessible by
+ * current user. See also models/group
+ *
  * @module models/system-group
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH

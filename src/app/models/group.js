@@ -1,9 +1,9 @@
 import DS from 'ember-data';
 
-// FIXME: documentation do not explain what is difference between group and system-group
-
 /**
  * A group in system - model for groups/ routes.
+ * This must be a group that is accessible for current user.
+ * See also models/system-group
  *
  * @module models/group
  * @author Jakub Liput

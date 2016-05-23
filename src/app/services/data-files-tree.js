@@ -1,9 +1,8 @@
 import Ember from 'ember';
 
-// TODO: jsdoc, this is a public api to access data files tree (e.g. to change model)
-// api methods: expandDir(fileId)
 /**
- * FIXME: doc
+ * A global state of loaded data files tree.
+ * - TODO: documenation of API
  * @module services/data-files-tree
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH

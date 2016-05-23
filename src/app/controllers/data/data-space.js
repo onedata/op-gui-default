@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 /**
- * FIXME: doc
+ * Main purpose is to watch a model (selected space) for change.
  * @module controllers/data/data-space
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH

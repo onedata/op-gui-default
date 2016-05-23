@@ -1,7 +1,8 @@
 import Ember from 'ember';
 
 /**
- * FIXME: doc
+ * Watch a data-spaces lodaded into model and try to go to default space when
+ * available.
  * @module controllers/data/index
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH

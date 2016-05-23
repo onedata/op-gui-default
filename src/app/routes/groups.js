@@ -11,8 +11,11 @@ export default Ember.Route.extend({
   actions: {
     /** Show submenu for Group */
     goToGroup(group) {
-
-      this.transitionTo('groups.show', group);
+      if (group) {
+        this.transitionTo('groups.show', group);
+      } else {
+        this.transitionTo('groups');
+      }
     },
 
     /** Show users/groups/etc. permissions table using route */

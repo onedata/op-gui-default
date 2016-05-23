@@ -294,6 +294,9 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
                 name: groupName
               });
               this.get('notify').info(message);
+              if (group.get('id') === this.get('activeGroup.id')) {
+                this.sendAction('goToGroup', null);
+              }
             },
             (error) => {
               console.log(`Leave group ${groupName} failed ${error.message}`);

@@ -18,9 +18,10 @@ export default Ember.Component.extend({
     let parentSelector = this.get('parentSelector');
     let parent = parentSelector ? this.$().closest(parentSelector) : this.$().parent();
     let shrinkBy = this.get('shrinkBy') || 0;
+    let $element = this.$();
     let changeMaxWidth = (/*event*/) => {
       let maxWidth = parent.width();
-      this.$().css({
+      $element.css({
         maxWidth: (parseInt(maxWidth) - shrinkBy)
       });
     };

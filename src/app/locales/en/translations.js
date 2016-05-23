@@ -172,7 +172,7 @@ export default {
         joinSpaceFailed: 'Failed to join "{{groupName}}" to some space',
         joinAsSubgroupSuccess: 'Successfully joined group "{{thisGroupName}}" to group "{{groupName}}"',
         joinAsSubgroupFailed: 'Failed to join "{{groupName}}" to some group as a subgroup',
-        joinSuccess: 'Successfully joined to group',
+        joinSuccess: 'Successfully joined to group "{{groupName}}"',
         joinFailed: 'Failed to join group'
 
       }

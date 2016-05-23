@@ -30,6 +30,11 @@ $transition-time: 0.25s !default;
 // TODO: should be used with Bootstrap SASS
 $font-family-sans-serif: 'Open Sans';
 
+// routes-specific styles
+
+@import 'data';
+@import 'groups';
+
 html, body {
   font-family: $font-family-sans-serif !important;
 }
@@ -404,6 +409,7 @@ html, body {
     // TODO: assuming, that this content is always on secondary-sidebar right
     // other content-scroll types should be made
     #content-scroll {
+      position: relative;
       float: none;
       overflow-y: auto;
       overflow-x: hidden; // TODO: it's probably some hack
@@ -632,9 +638,6 @@ html, body {
   height: 100%;
 }
 
-// TODO: temporary
-@import 'data';
-
 // for debugging
 .service-debugger {
   position: fixed;
@@ -651,4 +654,53 @@ html, body {
     height: 100%;
     overflow: auto;
   }
+}
+
+// handling empty collections
+
+.empty-model {
+  position: absolute;
+  // below drop-zone
+  z-index: 99;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding: 20px;
+  background-color: white; // rgba(white, 0.75);
+
+  .empty-model-container {
+    padding-top: 40px;
+
+    .empty-model-image {
+      width: 100%;
+      height: 128px;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+
+    .empty-model-message {
+      position: relative;
+      width: 100%;
+      margin-top: 20px;
+      font-size: 32px;
+      text-align: center;
+
+      &.secondary {
+        position: relative;
+        margin-top: 10px;
+        font-size: 24px;
+      }
+    }
+  }
+}
+
+
+.inline-button {
+  position: relative;
+  top: 12px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 2em;
 }

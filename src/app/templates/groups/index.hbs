@@ -2,10 +2,19 @@
   {{outlet}}
 {{else}}
 {{!-- TODO: translate --}}
-<div class="inner-content content-error">
-  You do not belong to any group.
-  <br>
-  <br>
-  Use the buttons in the left sidebar to create <span class="inline-button">{{icon 'group-add'}}</span> a new group or join <span class="inline-button">{{icon 'join'}}</span> an existing group.
+
+<div class="empty-model">
+  <div class="empty-model-container">
+    <div class="empty-model-image empty-groups-image"></div>
+    <div class="empty-model-message">
+      You do not belong to any group.
+    </div>
+    <div class="empty-model-message secondary">
+      Use the buttons in the left sidebar to create
+      <span class="inline-button">{{icon 'group-add'}}</span>
+      a new group or join <span class="inline-button">{{icon 'join'}}</span>
+      an existing group.
+    </div>
+  </div>
 </div>
 {{/if}}

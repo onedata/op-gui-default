@@ -52,6 +52,12 @@ export default {
       token: 'tokens',
       providers: 'providers'
     },
+    modals: {
+      renameModal: {
+        renameSuccess: 'Element "{{oldName}}" renamed to "{{newName}}"',
+        renameFailed: 'Element "{{oldName}}" rename to "{{newName}}" failed due to an error',
+      }
+    },
     spacesMenu: {
       title: 'spaces',
       create: 'Create',
@@ -161,8 +167,6 @@ export default {
       notify: {
         createSuccess: 'Group "{{name}}" created successfully',
         createFailed: 'Group "{{name}}" cannot be created due to an error',
-        renameSuccess: 'Group "{{oldName}}" renamed to "{{newName}}"',
-        renameFailed: 'Group "{{oldName}}" rename to "{{newName}}" failed due to an error',
         leaveSuccess: 'Group "{{name}}" left successfully',
         leaveFailed: 'Cannot leave group "{{name}}" due to an error',
         leaveParentGroupSuccess: 'Group "{{parentGroupName}}" left successfully by "{{subgroupName}}"',

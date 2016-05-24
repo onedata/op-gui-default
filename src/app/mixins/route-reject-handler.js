@@ -1,0 +1,47 @@
+import Ember from 'ember';
+
+export default Ember.Mixin.create({
+  notify: Ember.inject.service(),
+  i18n: Ember.inject.service(),
+
+  /**
+   * Specify the route to go when model promise rejects. E.g. 'spaces.index'.
+   * @abstract
+   */
+  fallbackRoute: 'index',
+
+  /**
+   * Optional custom message on rejection handled with 'handleReject' displayed
+   * with 'notify'.
+   * @param {object} error
+   * @param {string} error.message
+   */
+  rejectMessage(error) {
+    return this.get('i18n').t('common.cannotLoadResource') +
+      (error ? (': ' + error.message) : '');
+  },
+
+  // FIXME: doc
+  actionOnReject(err) {
+    this.get('notify').error(this.rejectMessage(err));
+    this.transitionTo(this.get('fallbackRoute'));
+  },
+
+  /**
+   * Adds a rejection handler for any promise, returning to the specified by
+   * 'fallbackRoute' property route.
+   * @param {RSVP.Promise} promise - A promise (e.g. returned from route's model())
+   * @returns {RSVP.Promise} An original promise with error handler
+   */
+  handleReject(promise) {
+    return promise.catch((err) => this.actionOnReject(err));
+  },
+
+  // FIXME: doc
+  // TODO: maybe specific error messages
+  handleAfterModelErrors(model) {
+    if (!model || model.get('isDeleted')) {
+      this.actionOnReject();
+    }
+  }
+});

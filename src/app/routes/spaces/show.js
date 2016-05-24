@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import RouteRejectHandler from '../../mixins/route-reject-handler';
 
 /**
  * Single space Route - loads Space data before actions/resources for a single
@@ -8,9 +9,15 @@ import Ember from 'ember';
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default Ember.Route.extend({
+export default Ember.Route.extend(RouteRejectHandler, {
+  fallbackRoute: 'spaces.index',
+
   model(params) {
-    return this.store.find('space', params.space_id);
+    return this.handleReject(this.store.find('space', params.space_id));
+  },
+
+  afterModel(model) {
+    this.handleAfterModelErrors(model);
   },
 
   setupController(controller, model) {

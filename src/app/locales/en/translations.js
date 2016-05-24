@@ -28,6 +28,7 @@ export default {
     },
     featureNotSupportedShort: 'Feature not supported',
     featureNotSupportedLong: 'Sorry, this feature is not supported yet.',
+    cannotLoadResource: 'Cannot load requested resource'
   },
   components: {
     commonLoader: {

@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import RouteRejectHandler from '../../mixins/route-reject-handler';
 
 /**
  * Load model for space - to be able to browse it's root dir.
@@ -8,9 +9,13 @@ import Ember from 'ember';
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default Ember.Route.extend({
+export default Ember.Route.extend(RouteRejectHandler, {
+  // FIXME: rejection of model causes a file tree component to be broken
+  // (url resolves correct)
+  fallbackRoute: 'data.index',
+
   model(params) {
-    return this.store.findRecord('data-space', params.data_space_id);
+    return this.handleReject(this.store.findRecord('data-space', params.data_space_id));
   },
 
   afterModel(dataSpace) {

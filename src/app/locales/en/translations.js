@@ -307,6 +307,9 @@ export default {
       }
     },
   },
+  notFound: {
+    notifyMessage: 'Requested path not found'
+  },
   groups: {
     title: 'Groups',
     show: {

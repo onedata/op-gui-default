@@ -1,5 +1,7 @@
 import Ember from 'ember';
 
+// TODO: after multiple files add to add these files to resumable, the GUI should be locked
+
 /**
  * A file upload status container. When no file is uploaded, it is hidden.
  * It requires a file-upload-service to run, which hosts a ResumableJS instance.

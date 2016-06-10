@@ -1,6 +1,8 @@
 import Ember from 'ember';
 /* globals Resumable */
 
+const filesParentDirs = {};
+
 /**
  * Enables global usage of file upload.
  * Uses ResumableJS and exposes its object.
@@ -17,18 +19,27 @@ export default Ember.Service.extend({
   /** Current dir for upload - global for application! */
   dir: null,
 
+  addFileToUpload(file, parentId) {
+    parentId = parentId || this.get('dir.id');
+    filesParentDirs[file.uniqueIdentifier] = parentId;
+  },
+
+  fileUploadCompleted(file) {
+    delete filesParentDirs[file.uniqueIdentifier];
+  },
+
   resumable: function() {
     console.debug(`Creating new Resumable`);
-    return new Resumable({
+    const r = new Resumable({
       target: '/upload',
       chunkSize: 1*1024*1024,
       simultaneousUploads: 4,
       testChunks: false,
       throttleProgressCallbacks: 1,
-      query: () => {
-        console.debug(`Will upload to dir: ${this.get('dir.name')}, id: ${this.get('dir.id')}`);
+      query: (file) => {
+        console.debug(`Will upload file ${file} to dir id: ${filesParentDirs[file.uniqueIdentifier]}`);
         return {
-          parentId: this.get('dir.id'),
+          parentId: filesParentDirs[file.uniqueIdentifier],
           connectionRef: this.get('session.sessionDetails.connectionRef')
         };
       },
@@ -42,6 +53,11 @@ export default Ember.Service.extend({
           });
       }
     });
+    r.on('fileAdded', (file) => this.addFileToUpload(file));
+    r.on('fileSuccess', (file) => this.fileUploadCompleted(file));
+    r.on('fileError', (file) => this.fileUploadCompleted(file));
+
+    return r;
   }.property(),
 
   assignDrop(jqDropElement) {

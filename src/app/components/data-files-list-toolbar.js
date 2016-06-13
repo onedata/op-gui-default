@@ -63,6 +63,7 @@ export default Ember.Component.extend({
         id: 'upload-file-tool',
         icon: 'upload',
         action: 'uploadBrowse',
+        disabled: this.get('fileUpload.locked'),
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.uploadFile')
       },
       {
@@ -114,7 +115,7 @@ export default Ember.Component.extend({
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.chunks')
       },
     ];
-  }.property('dir.isSomeFileSelected', 'dir.singleSelectedFile'),
+  }.property('dir.isSomeFileSelected', 'dir.singleSelectedFile', 'fileUpload.locked'),
 
   makeTooltips: function() {
     Ember.run.scheduleOnce('afterRender', this, function() {

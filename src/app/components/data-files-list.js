@@ -33,9 +33,13 @@ export default Ember.Component.extend({
     return !this.get('files') || this.get('files.length') === 0;
   }.property('files.length'),
 
+  /**
+   * A file browser loading state. Not only checks if files model is loaded
+   * but also checks if fileUpload is locked.
+   */
   isLoadingFiles: function() {
-    return this.get('files').any((f) => !f.get('isLoaded'));
-  }.property('files', 'files.[]', 'files.@each.isLoaded'),
+    return this.get('fileUpload.locked') || this.get('files').any((f) => !f.get('isLoaded'));
+  }.property('files', 'files.[]', 'files.@each.isLoaded', 'fileUpload.locked'),
 
   didInsertElement() {
     this.dirChanged();

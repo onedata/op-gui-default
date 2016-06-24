@@ -5,6 +5,7 @@
  * using a websocket connection.
  * @module adapters/application
  * @author Łukasz Opioła
+ * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
@@ -70,9 +71,27 @@ export default DS.RESTAdapter.extend({
   initialized: false,
   onOpenCallback: null,
   onErrorCallback: null,
+  onCloseCallback: null,
 
-  // Promises that will be resolved when response comes
+  //
+  /**
+   * Map of promises that will be resolved when response for message with
+   * specified uuid comes.
+   * Adding of values to this map is done in ``sendAndRegisterPromise``.
+   * The handling of responses is done in ``processMessage``.
+   *
+   * Maps ``uuid -> PromiseSpec``
+   * where PromiseSpec is an object with properties:
+   *
+   * - ``success``: a function that will be executed on receive of message with the uuid
+   *   and success result (see processMessage)
+   * - ``error``: a function that will be executed on receive of message with the uuid
+   *   and error result (see processMessage)
+   * - ``type``: a string indicating message type - see TYPE_* constants in this file
+   * - ``operation``: a string indicating model operation type - see OP_* constants
+   */
   promises: new Map(),
+
   // The WebSocket
   socket: null,
   // Queue of messages. They are accumulated if requests from store come
@@ -83,19 +102,17 @@ export default DS.RESTAdapter.extend({
    * WebSocket initialization
    * ------------------------------------------------------------------- */
 
-  /** Called automatically on adapter init. */
-  init() {
-    this.initWebSocket();
-  },
-
   /** Initializes the WebSocket */
-  initWebSocket(onOpen, onError) {
+  initWebSocket(onOpen, onError, onClose) {
     // Register callbacks even if WebSocket is already being initialized.
     if (onOpen) {
       this.set('onOpenCallback', onOpen);
     }
     if (onError) {
       this.set('onErrorCallback', onError);
+    }
+    if (onClose) {
+      this.set('onCloseCallback', onClose);
     }
     if (this.get('initialized') === false) {
       this.set('initialized', true);
@@ -106,19 +123,29 @@ export default DS.RESTAdapter.extend({
       let port = window.location.port;
 
       let url = protocol + host + (port === '' ? '' : ':' + port) + WS_ENDPOINT;
-      console.log('Connecting: ' + url);
+      console.debug('Connecting: ' + url);
 
       if (adapter.socket === null) {
-        adapter.socket = new WebSocket(url);
-        adapter.socket.onopen = function (event) {
-          adapter.open.apply(adapter, [event]);
-        };
-        adapter.socket.onmessage = function (event) {
-          adapter.receive.apply(adapter, [event]);
-        };
-        adapter.socket.onerror = function (event) {
-          adapter.error.apply(adapter, [event]);
-        };
+        try {
+          adapter.socket = new WebSocket(url);
+          adapter.socket.onopen = function (event) {
+            adapter.open.apply(adapter, [event]);
+          };
+          adapter.socket.onmessage = function (event) {
+            adapter.receive.apply(adapter, [event]);
+          };
+          adapter.socket.onerror = function (event) {
+            adapter.error.apply(adapter, [event]);
+          };
+          adapter.socket.onclose = function (event) {
+            adapter.close.apply(adapter, [event]);
+          };
+        } catch (error) {
+          console.error(`WebSocket initializtion exception: ${error}`);
+          // invoke provided handler, it should idicate error to user
+          onClose();
+          throw error;
+        }
       }
     }
   },
@@ -142,13 +169,13 @@ export default DS.RESTAdapter.extend({
 
   /** Developer function - for logging/debugging */
   logToConsole(fun_name, fun_params) {
-    console.log(fun_name + '(');
+    console.debug(fun_name + '(');
     if (fun_params) {
       for (let i = 0; i < fun_params.length; i++) {
-        console.log('    ' + String(fun_params[i]));
+        console.debug('    ' + String(fun_params[i]));
       }
     }
-    console.log(')');
+    console.debug(')');
   },
 
   /** Called when ember store wants to find a record */
@@ -277,6 +304,8 @@ export default DS.RESTAdapter.extend({
    * Sends a payload (JSON) via WebSocket, previously adding a randomly
    * generated UUID to it and registers a promise
    * (which can later be retrieved by the UUID).
+   *
+   * TODO: document type of "payload" (Message without uuid?)
    */
   sendAndRegisterPromise(operation, type, payload) {
     // Add UUID to payload so we can later connect the response with a promise
@@ -297,7 +326,9 @@ export default DS.RESTAdapter.extend({
         type: type,
         operation: operation
       });
-      console.log('registerPromise: ' + JSON.stringify(payload));
+      console.debug('registerPromise: ' + JSON.stringify(payload));
+      // FIXME: if WS will be closed when we try to send (on flush), promise should reject
+      // e.g. with error = {message: 'WebSocket closed'}
       adapter.send(payload);
     });
   },
@@ -366,10 +397,10 @@ export default DS.RESTAdapter.extend({
   },
 
   /** WebSocket onopen callback */
-  open() {
-    let onOpen = this.get('onOpenCallback');
+  open(event) {
+    const onOpen = this.get('onOpenCallback');
     if (onOpen) {
-      onOpen();
+      onOpen(event);
     }
     // Flush messages waiting for connection open
     this.debounce(this.flushMessageBuffer, FLUSH_TIMEOUT)();
@@ -386,16 +417,25 @@ export default DS.RESTAdapter.extend({
    * If the WS is not established yet, it will wait in the buffer until
    * the connection is on. */
   flushMessageBuffer() {
-    console.log('flush' + this);
-    let adapter = this;
-    if (this.socket.readyState === 1) {
-      if (adapter.messageBuffer.length > 0) {
+    console.debug('flush' + this);
+    const adapter = this;
+    if (adapter.messageBuffer.length > 0) {
+      if (this.socket.readyState === 1) {
         let batch = {batch: []};
         adapter.messageBuffer.forEach(function (payload) {
           batch.batch.push(payload);
         });
         adapter.messageBuffer = [];
         adapter.socket.send(JSON.stringify(batch));
+
+      // readyState > 1 means that WS is closing/closed, so we reject promises
+      // to avoid indefinitely wait for WS to be opened again (maybe TODO)
+      } if (this.socket.readyState > 1) {
+        adapter.messageBuffer.forEach((message) => {
+          const promise_spec = adapter.promises.get(message.uuid);
+          // FIXME: simulate error response more fields
+          promise_spec.error({message: 'Cannot send message - WebSocket closed'});
+        });
       }
     }
   },
@@ -429,53 +469,56 @@ export default DS.RESTAdapter.extend({
         this.processMessage(message);
       }
     } else {
-      console.log('Warning: dropping message: ' + JSON.stringify(json));
+      console.debug('Warning: dropping message: ' + JSON.stringify(json));
     }
   },
 
+  // TODO: document message object: data, uuid, result
   processMessage(message) {
     let adapter = this;
     let promise;
-    console.log('received: ' + JSON.stringify(message.data));
+    console.debug('received: ' + JSON.stringify(message.data));
     if (message.msgType === TYPE_MODEL_RESP) {
       // Received a response to data fetch
       promise = adapter.promises.get(message.uuid);
       if (message.result === RESULT_OK) {
         let transformed_data = adapter.transformResponse(message.data,
             promise.type, promise.operation);
-        console.log('FETCH_RESP success: ' + JSON.stringify(transformed_data));
+        console.debug('FETCH_RESP success: ' + JSON.stringify(transformed_data));
 
         promise.success(transformed_data);
       } else if (message.result === RESULT_ERROR) {
-        console.log('FETCH_RESP error: ' + JSON.stringify(message.data));
+        console.debug('FETCH_RESP error: ' + JSON.stringify(message.data));
         promise.error(message.data);
       } else {
-        console.log('Unknown operation result: ' + message.result);
+        console.warn(`Received model response (uuid=${message.uuid}) with unknown result: ${message.result}`);
+        promise.error(message.data);
       }
     } else if (message.msgType === TYPE_RPC_RESP) {
       // Received a response to RPC call
       promise = adapter.promises.get(message.uuid);
       if (message.result === RESULT_OK) {
-        console.log('RPC_RESP success: ' + JSON.stringify(message.data));
+        console.debug('RPC_RESP success: ' + JSON.stringify(message.data));
         promise.success(message.data);
       } else if (message.result === RESULT_ERROR) {
-        console.log('RPC_RESP error: ' + JSON.stringify(message.data));
+        console.debug('RPC_RESP error: ' + JSON.stringify(message.data));
         promise.error(message.data);
       } else {
-        console.log('Unknown operation result: ' + message.result);
+        console.warn(`Received RPC response (uuid=${message.uuid}) with unknown result: ${message.result}`);
+        promise.error(message.data);
       }
     }
     else if (message.msgType === TYPE_MODEL_CRT_PUSH ||
         message.msgType === TYPE_MODEL_UPT_PUSH) {
       // Received a push message that something was created
-      console.log(message.msgType + ': ' + JSON.stringify(message));
+      console.debug(message.msgType + ': ' + JSON.stringify(message));
       let payload = {};
       payload[message.resourceType] = message.data;
       this.get('store').pushPayload(payload);
     } else if (message.msgType === TYPE_MODEL_DLT_PUSH) {
       let store = this.get('store');
       // Received a push message that something was deleted
-      console.log('Delete:' + JSON.stringify(message));
+      console.debug('Delete:' + JSON.stringify(message));
       // data field contains a list of ids to delete
       message.data.forEach(function (id) {
         store.findRecord(message.resourceType, id).then(
@@ -492,11 +535,21 @@ export default DS.RESTAdapter.extend({
   /** WebSocket onerror callback */
   error(event) {
     // TODO @todo better error handling, maybe reconnection attempts?
-    console.error(`WebSocket connection error, event data: ` + event.data);
+    console.error(`WebSocket connection error, event: ` + JSON.stringify(event));
 
-    let onError = this.get('onErrorCallback');
+    const onError = this.get('onErrorCallback');
     if (onError) {
-      onError();
+      onError(event);
+    }
+  },
+
+  /** WebSocket onclose callback */
+  close(event) {
+    console.error(`WebSocket connection closed, event: ` + JSON.stringify(event));
+
+    const onClose = this.get('onCloseCallback');
+    if (onClose) {
+      onClose(event);
     }
   }
 });

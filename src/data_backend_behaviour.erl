@@ -52,7 +52,7 @@
 %% @end
 %%--------------------------------------------------------------------
 -callback find_all(ResourceType :: binary()) ->
-    {ok, proplists:proplist()} | gui_error:error_result().
+    {ok, [proplists:proplist()]} | gui_error:error_result().
 
 
 %%--------------------------------------------------------------------

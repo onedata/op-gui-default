@@ -46,12 +46,12 @@ export default Ember.Service.extend({
       // could not be established
       let initRejectFunction = this.get('sessionInitReject');
       if (initRejectFunction) {
-        console.log("SESSION INIT REJECTED");
+        console.debug("SESSION INIT REJECTED");
         initRejectFunction();
       }
       let restoreRejectFunction = this.get('sessionRestoreReject');
       if (restoreRejectFunction) {
-        console.log("SESSION RESTORE REJECTED");
+        console.debug("SESSION RESTORE REJECTED");
         restoreRejectFunction();
       }
       this.set('sessionInitResolve', null);
@@ -70,11 +70,11 @@ export default Ember.Service.extend({
    * client session when WebSocket is established and it has send session
    * details. */
   resolveSession: function () {
-    console.log('session.resolveSession');
+    console.debug('session.resolveSession');
     // Request session data
     this.get('server').sessionRPC().then((data) => {
-      console.log("RESOLVE SESSION REQ");
-      console.log('data: ' + JSON.stringify(data));
+      console.debug("RESOLVE SESSION REQ");
+      console.debug('data: ' + JSON.stringify(data));
       this.set('sessionValid', data.sessionValid);
       if (this.get('sessionValid') === true) {
         this.set('sessionDetails', data.sessionDetails);

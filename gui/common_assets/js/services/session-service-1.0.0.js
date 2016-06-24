@@ -18,17 +18,82 @@ import SessionService from 'ember-simple-auth/services/session';
 export default SessionService.extend({
   server: Ember.inject.service('server'),
 
+  /**
+   * @type {function}
+   * A resolve function bound in initSession or tryToRestoreSession.
+   * It will resolve the promise returned in initSession or tryToRestoreSession.
+   *
+   * - Value of this properties are set in initSession or tryToRestoreSession
+   * - Value is nulled in resolveSession and onWebsocketError
+   */
   sessionInitResolve: null,
+
+  /**
+   * @type {function}
+   * A reject function bound in initSession or tryToRestoreSession.
+   * It will reject the promise returned in initSession or tryToRestoreSession.
+   *
+   * - Value of this properties are set in initSession or tryToRestoreSession
+   * - Value is nulled in resolveSession and onWebsocketError
+   */
   sessionInitReject: null,
   sessionRestoreResolve: null,
   sessionRestoreReject: null,
 
-  // This flag indicates if the client has active session. Null when
-  // the session validity hasn't been resolved yet.
+  /**
+   * This flag indicates if the client has active session. Null when
+   * the session validity hasn't been resolved yet.
+   */
   sessionValid: null,
-  // Generic session details (object) returned from the server, containing
-  // user name etc.
+
+  /**
+   * Generic session details (object) returned from the server, containing
+   * user name etc.
+   */
   sessionDetails: null,
+
+  /**
+   * Returns a function that shout be bound to websocket onopen event.
+   */
+  onWebSocketOpen: function() {
+    // Ask the server for session details when the WebSocket connection
+    // is established
+    return (/*event*/) => {
+      this.resolveSession();
+    };
+  }.property(),
+
+  /**
+   * Returns a function that shout be bound to websocket onerror event.
+   */
+  onWebSocketError: function() {
+    return (/*event*/) => {
+      // Reject session restoration if WebSocket connection
+      // could not be established
+      const initRejectFunction = this.get('sessionInitReject');
+      if (initRejectFunction) {
+        console.debug("SESSION INIT REJECTED");
+        initRejectFunction();
+      }
+      const restoreRejectFunction = this.get('sessionRestoreReject');
+      if (restoreRejectFunction) {
+        console.debug("SESSION RESTORE REJECTED");
+        restoreRejectFunction();
+      }
+      this.setProperties({
+        sessionInitResolve: null,
+        sessionInitReject: null,
+        sessionRestoreResolve: null,
+        sessionRestoreReject: null
+      });
+    };
+  }.property(),
+
+  /**
+   * @abstract
+   * Should return a function that shout be bound to websocket onclose event.
+   */
+  onWebSocketClose: null,
 
   /** Returns a promise that will be resolved when the client has resolved
    * its session using WebSocket.
@@ -36,36 +101,19 @@ export default SessionService.extend({
    * If this is called, session data from WebSocket will resolve session
    * restoration rather than run authenticate. */
   initSession: function () {
-    let session = this;
-    let onOpen = () => {
-      // Ask the server for session details when the WebSocket connection
-      // is established
-      session.resolveSession();
-    };
-    let onError = () => {
-      // Reject session restoration if WebSocket connection
-      // could not be established
-      let initRejectFunction = this.get('sessionInitReject');
-      if (initRejectFunction) {
-        console.log("SESSION INIT REJECTED");
-        initRejectFunction();
-      }
-      let restoreRejectFunction = this.get('sessionRestoreReject');
-      if (restoreRejectFunction) {
-        console.log("SESSION RESTORE REJECTED");
-        restoreRejectFunction();
-      }
-      this.set('sessionInitResolve', null);
-      this.set('sessionInitReject', null);
-      this.set('sessionRestoreResolve', null);
-      this.set('sessionRestoreReject', null);
-    };
-    this.get('server').initWebSocket(onOpen, onError);
+    // bind session service websocket event handlers
+    this.get('server').initWebSocket(
+      this.get('onWebSocketOpen'),
+      this.get('onWebSocketError'),
+      this.get('onWebSocketClose')
+    );
     return new Ember.RSVP.Promise((resolve, reject) => {
       // This promise will be resolved when WS connection is established
       // and session details are sent via WS.
-      this.set('sessionInitResolve', resolve);
-      this.set('sessionInitReject', reject);
+      this.setProperties({
+        sessionInitResolve: resolve,
+        sessionInitReject: reject
+      });
     });
   },
 
@@ -73,14 +121,16 @@ export default SessionService.extend({
    * restoration rather than run authenticate. */
   tryToRestoreSession: function () {
     return new Ember.RSVP.Promise((resolve, reject) => {
-      console.log('tryToRestoreSession, sessionValid = ', this.get('sessionValid'));
+      console.debug('tryToRestoreSession, sessionValid = ', this.get('sessionValid'));
       if (this.get('sessionValid') === true) {
         resolve();
       } else {
         // This promise will be resolved when WS connection is established
         // and session details are sent via WS.
-        this.set('sessionRestoreResolve', resolve);
-        this.set('sessionRestoreReject', reject);
+        this.setProperties({
+          sessionInitResolve: resolve,
+          sessionInitReject: reject
+        });
       }
     });
   },
@@ -89,35 +139,37 @@ export default SessionService.extend({
    * client session when WebSocket is established and it has send session
    * details. */
   resolveSession: function () {
-    console.log('session.resolveSession');
+    console.debug('session.resolveSession');
     // Request session data
     this.get('server').sessionRPC().then((data) => {
-      console.log("RESOLVE SESSION REQ");
-      console.log('data: ' + JSON.stringify(data));
+      console.debug("RESOLVE SESSION REQ");
+      console.debug('data: ' + JSON.stringify(data));
       if (data.sessionValid === true) {
         this.set('sessionDetails', data.sessionDetails);
-        let sessionRestoreResolveFun = this.get('sessionRestoreResolve');
+        const sessionRestoreResolveFun = this.get('sessionRestoreResolve');
         if (sessionRestoreResolveFun) {
-          console.log("SESSION VALID, RESTORED");
+          console.debug("SESSION VALID, RESTORED");
           sessionRestoreResolveFun();
         } else {
-          console.log("SESSION VALID, AUTHENTICATED");
+          console.debug("SESSION VALID, AUTHENTICATED");
           this.get('session').authenticate('authenticator:basic');
         }
       } else {
-        console.log("SESSION INVALID");
-        let sessionRestoreRejectFun = this.get('sessionRestoreReject');
+        console.debug("SESSION INVALID");
+        const sessionRestoreRejectFun = this.get('sessionRestoreReject');
         if (sessionRestoreRejectFun) {
-          console.log("RESTORE REJECTED");
+          console.debug("RESTORE REJECTED");
           sessionRestoreRejectFun();
         }
       }
-      let resolveFunction = this.get('sessionInitResolve');
+      const resolveFunction = this.get('sessionInitResolve');
       resolveFunction();
-      this.set('sessionInitResolve', null);
-      this.set('sessionInitReject', null);
-      this.set('sessionRestoreResolve', null);
-      this.set('sessionRestoreReject', null);
+      this.setProperties({
+        sessionInitResolve: null,
+        sessionInitReject: null,
+        sessionRestoreResolve: null,
+        sessionRestoreReject: null
+      });
     });
   }
 });

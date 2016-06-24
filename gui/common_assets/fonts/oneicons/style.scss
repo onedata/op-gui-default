@@ -2,10 +2,11 @@
 
 @font-face {
     font-family: 'oneicons';
-    src:
-        url('#{$icomoon-font-path}/oneicons.ttf?iepkhb') format('truetype'),
-        url('#{$icomoon-font-path}/oneicons.woff?iepkhb') format('woff'),
-        url('#{$icomoon-font-path}/oneicons.svg?iepkhb#oneicons') format('svg');
+    src:    url('#{$icomoon-font-path}/oneicons.eot?aany2y');
+    src:    url('#{$icomoon-font-path}/oneicons.eot?aany2y#iefix') format('embedded-opentype'),
+        url('#{$icomoon-font-path}/oneicons.ttf?aany2y') format('truetype'),
+        url('#{$icomoon-font-path}/oneicons.woff?aany2y') format('woff'),
+        url('#{$icomoon-font-path}/oneicons.svg?aany2y#oneicons') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -25,6 +26,16 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+.oneicon-social-indigo {
+    &:before {
+        content: $oneicon-social-indigo;
+    }
+}
+.oneicon-key {
+    &:before {
+        content: $oneicon-key;
+    }
+}
 .oneicon-add {
     &:before {
         content: $oneicon-add;
@@ -198,6 +209,11 @@
 .oneicon-move-up {
     &:before {
         content: $oneicon-move-up;
+    }
+}
+.oneicon-password-change {
+    &:before {
+        content: $oneicon-password-change;
     }
 }
 .oneicon-provider-add {

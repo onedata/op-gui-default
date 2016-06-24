@@ -28,7 +28,25 @@ export default {
     },
     featureNotSupportedShort: 'Feature not supported',
     featureNotSupportedLong: 'Sorry, this feature is not supported yet.',
-    cannotLoadResource: 'Cannot load requested resource'
+    cannotLoadResource: 'Cannot load requested resource',
+    serverError: 'Server error',
+    fatalApplicationErrorResources: "A fatal error occured loading application's resources"
+  },
+  services: {
+    session: {
+      connectionClosed: {
+        title: 'WebSocket connection error',
+        message: 'WebSocket connection has been closed',
+        reconnectWait: 'Will try to reconnect in {{secs}} seconds...',
+        reconnecting: 'Reconnecting...',
+        reasons: {
+          // code: 1006
+          abnormal: 'closed unexpectedly, please try refreshing browser page',
+          // all other codes
+          unknown: 'unhandled error, see browser logs for details'
+        }
+      }
+    }
   },
   components: {
     commonLoader: {

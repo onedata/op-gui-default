@@ -1,0 +1,1 @@
+../../../gui/common_assets/js/services/message-box.js

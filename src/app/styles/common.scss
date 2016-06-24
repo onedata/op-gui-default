@@ -704,3 +704,33 @@ html, body {
   padding-right: 10px;
   font-size: 2em;
 }
+
+// FIXME: a common style?
+.spinner-container {
+  position: relative;
+
+  &.spinner-64 {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+.fixed-center {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+// FIXME: common styles
+
+.v-center-parent {
+  position: relative;
+}
+
+.v-center-child {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(50%) translateY(50%);
+}

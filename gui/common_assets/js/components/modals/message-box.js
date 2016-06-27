@@ -23,20 +23,7 @@ export default Ember.Component.extend({
   type: Ember.computed.alias('messageBox.type'),
 
   iconClass: function() {
-    let cls = this.get('type') + ' glyphicon glyphicon-';
-
-    switch (this.get('type')) {
-      case 'info':
-        cls += 'info-sign';
-        break;
-      case 'warning':
-        cls += 'alert';
-        break;
-      case 'error':
-        cls += 'exclamation-sign';
-        break;
-    }
-    return cls;
+    return this.get('type') + ' oneicon oneicon-sign-' + this.get('type');
   }.property('type'),
 
   actions: {

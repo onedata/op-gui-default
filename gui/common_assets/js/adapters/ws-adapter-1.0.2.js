@@ -419,7 +419,7 @@ export default DS.RESTAdapter.extend({
   flushMessageBuffer() {
     console.debug('flush' + this);
     const adapter = this;
-    if (adapter.messageBuffer.length > 0) {
+    if (adapter.messageBuffer.length > 0 && this.socket) {
       if (this.socket.readyState === 1) {
         let batch = {batch: []};
         adapter.messageBuffer.forEach(function (payload) {
@@ -464,11 +464,12 @@ export default DS.RESTAdapter.extend({
   /** WebSocket onmessage callback, resolves promises with received replies. */
   receive(event) {
     let json = JSON.parse(event.data);
-    if (json.batch) {
+    if (Array.isArray(json.batch)) {
       for (let message of json.batch) {
         this.processMessage(message);
       }
     } else {
+      console.warn('A json.batch message was dropped because is not an Array, see debug logs for details');
       console.debug('Warning: dropping message: ' + JSON.stringify(json));
     }
   },
@@ -484,11 +485,11 @@ export default DS.RESTAdapter.extend({
       if (message.result === RESULT_OK) {
         let transformed_data = adapter.transformResponse(message.data,
             promise.type, promise.operation);
-        console.debug('FETCH_RESP success: ' + JSON.stringify(transformed_data));
+        console.debug(`FETCH_RESP success, (uuid=${message.uuid}): ${JSON.stringify(transformed_data)}`);
 
         promise.success(transformed_data);
       } else if (message.result === RESULT_ERROR) {
-        console.debug('FETCH_RESP error: ' + JSON.stringify(message.data));
+        console.debug(`FETCH_RESP error, (uuid=${message.uuid}): ${JSON.stringify(message.data)}`);
         promise.error(message.data);
       } else {
         console.warn(`Received model response (uuid=${message.uuid}) with unknown result: ${message.result}`);
@@ -498,10 +499,10 @@ export default DS.RESTAdapter.extend({
       // Received a response to RPC call
       promise = adapter.promises.get(message.uuid);
       if (message.result === RESULT_OK) {
-        console.debug('RPC_RESP success: ' + JSON.stringify(message.data));
+        console.debug(`RPC_RESP success, (uuid=${message.uuid}): ${JSON.stringify(message.data)}`);
         promise.success(message.data);
       } else if (message.result === RESULT_ERROR) {
-        console.debug('RPC_RESP error: ' + JSON.stringify(message.data));
+        console.debug(`RPC_RESP error, (uuid=${message.uuid}): ${JSON.stringify(message.data)}`);
         promise.error(message.data);
       } else {
         console.warn(`Received RPC response (uuid=${message.uuid}) with unknown result: ${message.result}`);
@@ -545,7 +546,8 @@ export default DS.RESTAdapter.extend({
 
   /** WebSocket onclose callback */
   close(event) {
-    console.error(`WebSocket connection closed, event: ` + JSON.stringify(event));
+    console.error(`WebSocket connection closed, event: ` +
+      `code: ${event.code}, reason: ${event.reason}, wasClean: ${event.wasClean}`);
 
     const onClose = this.get('onCloseCallback');
     if (onClose) {

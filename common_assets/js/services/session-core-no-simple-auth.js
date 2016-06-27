@@ -1,9 +1,9 @@
 // jshint esnext: true
 
 /**
- * Provides a session abstraction using ember-simple-auth. The session validity
+ * Provides a session abstraction. The session validity
  * is resolved via WebSocket.
- * @module services/server
+ * @module services/session
  * @author Lukasz Opiola
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH

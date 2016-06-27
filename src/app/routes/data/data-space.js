@@ -10,8 +10,8 @@ import RouteRejectHandler from '../../mixins/route-reject-handler';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Route.extend(RouteRejectHandler, {
-  // FIXME: rejection of model causes a file tree component to be broken
-  // (url resolves correct)
+  // TODO: rejection of model causes a file tree component to be broken
+  // url resolves correct - this is a common problem with routing in data spaces
   fallbackRoute: 'data.index',
 
   model(params) {

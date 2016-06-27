@@ -1,5 +1,21 @@
 import Ember from 'ember';
 
+/**
+ * Provides methods to facilitate handling rejection of route.
+ * E.g. user can type address to resource that does not exits.
+ * In Routes using this mixin, it should do it like this:
+ * ```
+ * fallbackRoute: 'data.index',
+ * model(params) {
+ *   return this.handleReject(this.store.findRecord('data-space', params.data_space_id));
+ * },
+ * ```
+ * On model reject, the application will redirect to route specified by ``fallbackRoute`` property
+ * @module mixins/route-reject-handler
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Mixin.create({
   notify: Ember.inject.service(),
   i18n: Ember.inject.service(),
@@ -21,7 +37,6 @@ export default Ember.Mixin.create({
       (error ? (': ' + error.message) : '');
   },
 
-  // FIXME: doc
   actionOnReject(err) {
     this.get('notify').error(this.rejectMessage(err));
     this.transitionTo(this.get('fallbackRoute'));
@@ -37,7 +52,6 @@ export default Ember.Mixin.create({
     return promise.catch((err) => this.actionOnReject(err));
   },
 
-  // FIXME: doc
   // TODO: maybe specific error messages
   handleAfterModelErrors(model) {
     if (!model || model.get('isDeleted')) {

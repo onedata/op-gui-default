@@ -327,8 +327,6 @@ export default DS.RESTAdapter.extend({
         operation: operation
       });
       console.debug('registerPromise: ' + JSON.stringify(payload));
-      // FIXME: if WS will be closed when we try to send (on flush), promise should reject
-      // e.g. with error = {message: 'WebSocket closed'}
       adapter.send(payload);
     });
   },
@@ -433,7 +431,6 @@ export default DS.RESTAdapter.extend({
       } if (this.socket.readyState > 1) {
         adapter.messageBuffer.forEach((message) => {
           const promise_spec = adapter.promises.get(message.uuid);
-          // FIXME: simulate error response more fields
           promise_spec.error({message: 'Cannot send message - WebSocket closed'});
         });
       }

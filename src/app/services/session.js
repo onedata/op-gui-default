@@ -9,6 +9,7 @@ const FIRST_RECONNECT_INTERVAL = 5*1000;
 export default BaseSession.extend({
   messageBox: Ember.inject.service(),
   i18n: Ember.inject.service(),
+  browser: Ember.inject.service(),
 
   /**
    * Produce a localized description message when WebSocket conntection is closed
@@ -34,8 +35,19 @@ export default BaseSession.extend({
    */
   onWebSocketClose: function() {
     return (event) => {
+      let automaticReconnect = true;
       let message = this.get('i18n').t('services.session.connectionClosed.message');
-      message += ': ' + this.wsCloseMessage(event);
+
+
+      // 1006 code on Safari is probably a certificate error
+      if (event.code === 1006 &&
+        this.get('browser.browser.browserCode') === 'safari') {
+          automaticReconnect = false;
+          message += ': ' + this.get('i18n').t('services.session.connectionClosed.reasons.safariCert');
+        } else {
+          message += ': ' + this.wsCloseMessage(event);
+        }
+
       this.get('messageBox').open({
         title: this.get('i18n').t('services.session.connectionClosed.title'),
         type: 'error',
@@ -43,8 +55,10 @@ export default BaseSession.extend({
         message: message
       });
 
-      // Wait 5 seconds before starting reconnect modal
-      setTimeout(() => this.startWebSocketReconnector(), 5*1000);
+      if (automaticReconnect) {
+        // Wait 5 seconds before starting reconnect modal
+        setTimeout(() => this.startWebSocketReconnector(), 5*1000);
+      }
     };
   }.property(),
 

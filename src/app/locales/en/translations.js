@@ -43,7 +43,12 @@ export default {
           // code: 1006
           abnormal: 'closed unexpectedly, please try refreshing browser page',
           // all other codes
-          unknown: 'unhandled error, see browser logs for details'
+          unknown: 'unhandled error, see browser logs for details',
+          // Safari code 1006 - it means, that probably we have bad cert
+          safariCert: 'Safari browser closed the connection. ' +
+            'If the SSL certificate is not valid (e.g. is self signed), ' +
+            'the application cannot be loaded in Safari due to security reasons. ' +
+            'Please try to use another web browser.'
         }
       }
     }

@@ -128,8 +128,8 @@ export default SessionService.extend({
         // This promise will be resolved when WS connection is established
         // and session details are sent via WS.
         this.setProperties({
-          sessionInitResolve: resolve,
-          sessionInitReject: reject
+          sessionRestoreResolve: resolve,
+          sessionRestoreReject: reject
         });
       }
     });

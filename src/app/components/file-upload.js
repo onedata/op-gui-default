@@ -18,11 +18,6 @@ export default Ember.Component.extend({
     return this.get('session.sessionDetails.connectionRef');
   }.property('session', 'sessions.sessionDetails', 'session.sessionDetails.connectionRef'),
 
-
-
-  /** Dir to put files into */
-  dir: null,
-
   uploadAddress: '/upload',
 
   resumable: function() {
@@ -122,12 +117,6 @@ export default Ember.Component.extend({
     r.on('fileProgress', this.get('onFileProgress'));
     r.on('cancel', this.get('onCancel'));
     r.on('uploadStart', this.get('onUploadStart'));
-  },
-
-  willDestroyElement() {
-    // a hack to reset all events bound previously
-    // NOTE that it will destroy all events, even bound in another code!
-    this.get('resumable').events = [];
   },
 
   registerComponentInService: function() {

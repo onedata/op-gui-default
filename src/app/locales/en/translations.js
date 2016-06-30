@@ -1,3 +1,5 @@
+import sessionLocales from './session';
+
 /**
  * English translation of GUI strings.
  * Translations dictionary is organized as in routes dir.
@@ -33,25 +35,7 @@ export default {
     fatalApplicationErrorResources: "A fatal error occured loading application's resources"
   },
   services: {
-    session: {
-      connectionClosed: {
-        title: 'WebSocket connection error',
-        message: 'WebSocket connection has been closed',
-        reconnectWait: 'Will try to reconnect in {{secs}} seconds...',
-        reconnecting: 'Reconnecting...',
-        reasons: {
-          // code: 1006
-          abnormal: 'closed unexpectedly, please try refreshing browser page',
-          // all other codes
-          unknown: 'unhandled error, see browser logs for details',
-          // Safari code 1006 - it means, that probably we have bad cert
-          safariCert: 'Safari browser closed the connection. ' +
-            'If the SSL certificate is not valid (e.g. is self signed), ' +
-            'the application cannot be loaded in Safari due to security reasons. ' +
-            'Please try to use another web browser.'
-        }
-      }
-    }
+    session: sessionLocales
   },
   components: {
     commonLoader: {

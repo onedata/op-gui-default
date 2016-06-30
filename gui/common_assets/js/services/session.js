@@ -20,6 +20,8 @@ export default SessionCore.extend({
   i18n: Ember.inject.service(),
   browser: Ember.inject.service(),
 
+  websocketWasOpened: false,
+
   /**
    * Produce a localized description message when WebSocket conntection is closed
    *
@@ -45,7 +47,7 @@ export default SessionCore.extend({
   onWebSocketClose: function() {
     return (event) => {
       let automaticReconnect = true;
-      let message = this.get('i18n').t('services.session.connectionClosed.message');
+      let message;
 
       if (!this.get('websocketWasOpened')) {
         automaticReconnect = false;
@@ -54,6 +56,7 @@ export default SessionCore.extend({
           message += ': ' + this.get('i18n').t('services.session.connectionClosed.reasons.safariCert');
         }
       } else {
+        message = this.get('i18n').t('services.session.connectionClosed.message');
         message += ': ' + this.wsCloseMessage(event);
       }
 

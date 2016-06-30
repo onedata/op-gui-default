@@ -28,20 +28,9 @@ export default Ember.Service.extend({
   sessionDetails: null,
 
   /**
-   * Returns a function that shout be bound to websocket onopen event.
-   */
-  onWebSocketOpen: function() {
-    // Ask the server for session details when the WebSocket connection
-    // is established
-    return (/*event*/) => {
-      this.resolveSession();
-    };
-  }.property(),
-
-  /**
    * Returns a function that shout be bound to websocket onerror event.
    */
-  onWebSocketError: function() {    
+  onWebSocketError: function() {
     return (/*event*/) => {
       // Reject session restoration if WebSocket connection
       // could not be established
@@ -68,49 +57,66 @@ export default Ember.Service.extend({
    */
   onWebSocketClose: null,
 
+
+    /**
+     * Returns a function that shout be bound to websocket onopen event.
+     */
+    onWebSocketOpen: function() {
+      // Ask the server for session details when the WebSocket connection
+      // is established
+      return (/*event*/) => {
+        this.set('websocketWasOpened', true);
+        this.resolveSession();
+      };
+    }.property(),
+
+    /**
+     * Returns a function that shout be bound to websocket onerror event.
+     */
+    onWebSocketError: function() {
+      return (/*event*/) => {
+        // Reject session restoration if WebSocket connection
+        // could not be established
+        const initRejectFunction = this.get('sessionInitReject');
+        if (initRejectFunction) {
+          console.debug("SESSION INIT REJECTED");
+          initRejectFunction();
+        }
+        const restoreRejectFunction = this.get('sessionRestoreReject');
+        if (restoreRejectFunction) {
+          console.debug("SESSION RESTORE REJECTED");
+          restoreRejectFunction();
+        }
+        this.setProperties({
+          sessionInitResolve: null,
+          sessionInitReject: null,
+          sessionRestoreResolve: null,
+          sessionRestoreReject: null
+        });
+      };
+    }.property(),
+
   /** Returns a promise that will be resolved when the client has resolved
    * its session using WebSocket.
    * NOTE: This requires server service and WebSocket adapter.
    * If this is called, session data from WebSocket will resolve session
    * restoration rather than run authenticate. */
   initSession: function () {
-    let session = this;
     // Initialize the WebSocket and, when it is done, resolve simple-auth
     // session.
-    let onOpen = () => {
-      // Ask the server for session details when the WebSocket connection
-      // is established
-      session.resolveSession();
-    };
-    let onError = () => {
-      // Reject session restoration if WebSocket connection
-      // could not be established
-      let initRejectFunction = this.get('sessionInitReject');
-      if (initRejectFunction) {
-        console.debug("SESSION INIT REJECTED");
-        initRejectFunction();
-      }
-      let restoreRejectFunction = this.get('sessionRestoreReject');
-      if (restoreRejectFunction) {
-        console.debug("SESSION RESTORE REJECTED");
-        restoreRejectFunction();
-      }
-      this.set('sessionInitResolve', null);
-      this.set('sessionInitReject', null);
-    };
-
     this.get('server').initWebSocket(
       this.get('onWebSocketOpen'),
       this.get('onWebSocketError'),
       this.get('onWebSocketClose')
     );
 
-    this.get('server').initWebSocket(onOpen, onError);
     return new Ember.RSVP.Promise((resolve, reject) => {
       // This promise will be resolved when WS connection is established
       // and session details are sent via WS.
-      this.set('sessionInitResolve', resolve);
-      this.set('sessionInitReject', reject);
+      this.setProperties({
+        sessionInitResolve: resolve,
+        sessionInitReject: reject
+      });
     });
   },
 

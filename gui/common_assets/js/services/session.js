@@ -47,15 +47,15 @@ export default SessionCore.extend({
       let automaticReconnect = true;
       let message = this.get('i18n').t('services.session.connectionClosed.message');
 
-
-      // 1006 code on Safari is probably a certificate error
-      if (event.code === 1006 &&
-        this.get('browser.browser.browserCode') === 'safari') {
-          automaticReconnect = false;
+      if (!this.get('websocketWasOpened')) {
+        automaticReconnect = false;
+        message = this.get('i18n').t('services.session.connectionClosed.messageNotOpened');
+        if (this.get('browser.browser.browserCode') === 'safari') {
           message += ': ' + this.get('i18n').t('services.session.connectionClosed.reasons.safariCert');
-        } else {
-          message += ': ' + this.wsCloseMessage(event);
         }
+      } else {
+        message += ': ' + this.wsCloseMessage(event);
+      }
 
       this.get('messageBox').open({
         title: this.get('i18n').t('services.session.connectionClosed.title'),

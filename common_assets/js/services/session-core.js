@@ -52,6 +52,8 @@ export default SessionService.extend({
    */
   sessionDetails: null,
 
+  websocketWasOpened: false,
+
   /**
    * Returns a function that shout be bound to websocket onopen event.
    */
@@ -59,6 +61,7 @@ export default SessionService.extend({
     // Ask the server for session details when the WebSocket connection
     // is established
     return (/*event*/) => {
+      this.set('websocketWasOpened', true);
       this.resolveSession();
     };
   }.property(),

@@ -1,0 +1,46 @@
+{{#bs-modal open=open body=false footer=false
+    id="edit-permissions"
+    title=(t 'components.modals.filePermissions.title')
+    openAction="open"
+    openedAction="opened"
+    keyboard=(not isBusy)
+    autoClose=(not isBusy)
+    backdropClose=(not isBusy)
+    closeButton=false
+  }}
+  {{#bs-modal-body}}
+  {{!-- FIXME: grey lines in modal rows --}}
+    <div class="modal-row large-space">
+      {{!-- FIXME a layout --}}
+      {{t 'components.modals.filePermissions.title'}}
+
+      {{#radio-button value="p" groupValue=permissionsType class="radio-inline"}}
+        {{t 'components.modals.filePermissions.types.posix'}}
+      {{/radio-button}}
+      {{#radio-button value="a" groupValue=permissionsType class="radio-inline"}}
+        {{t 'components.modals.filePermissions.types.acl'}}
+      {{/radio-button}}
+    </div>
+
+    {{#if (eq permissionsType 'p')}}
+      {{modals/file-permissions/posix permissions=file.permissions}}
+    {{else if (eq permissionsType 'a')}}
+      {{modals/file-permissions/acl acl=file.acl}}
+    {{/if}}
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#spin-button-onedata buttonType="submit"
+      action=(action "submit")
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isSubmitting
+      disabled=isBusy
+    }}
+      {{t "common.modal.ok"}}
+    {{/spin-button-onedata}}
+    {{#bs-button action=(action "close" target=footer) type="default"
+      disabled=isBusy
+    }}
+      {{t "common.modal.cancel"}}
+    {{/bs-button}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}

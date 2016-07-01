@@ -63,6 +63,14 @@ export default {
       renameModal: {
         renameSuccess: 'Element "{{oldName}}" renamed to "{{newName}}"',
         renameFailed: 'Element "{{oldName}}" rename to "{{newName}}" failed due to an error',
+      },
+      filePermissions: {
+        title: 'Edit permissions',
+        permissionsType: 'Permissions type',
+        types: {
+          posix: 'POSIX',
+          acl: 'ACL'
+        }
       }
     },
     spacesMenu: {
@@ -271,8 +279,8 @@ export default {
         title: 'Remove files',
         text: 'Do you want to remove selected files?'
       },
+      // TODO: to remove
       editPermissionsModal: {
-        title: 'Edit permissions',
         text: 'Enter new file permissions code:'
       },
       fileChunksModal: {

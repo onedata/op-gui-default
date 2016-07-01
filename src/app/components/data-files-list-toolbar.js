@@ -252,12 +252,5 @@ export default Ember.Component.extend({
       }
     },
 
-    submitEditPermissions() {
-      try {
-        this.get('dir').setSelectedFilesPermissions(this.get('newPermissions'));
-      } finally {
-        this.set('isEditingPermissions', false);
-      }
-    },
   }
 });

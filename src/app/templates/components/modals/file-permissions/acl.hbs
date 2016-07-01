@@ -1,0 +1,10 @@
+<div class="container-fluid">
+  {{!-- FIXME collapsible ACL elements (rows) --}}
+  <div class="modal-row large-space">
+    <select onchange={{action (mut vehicle) value="acl."}}>
+      {{#each vehicles as |vehicleChoice|}}
+        <option value={{vehicleChoice}} selected={{eq vehicle vehicleChoice}}>{{vehicleChoice}}</option>
+      {{/each}}
+    </select>
+  </div>
+</div>

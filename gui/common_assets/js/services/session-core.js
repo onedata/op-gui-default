@@ -61,7 +61,10 @@ export default SessionService.extend({
     // Ask the server for session details when the WebSocket connection
     // is established
     return (/*event*/) => {
-      this.set('websocketWasOpened', true);
+      this.setProperties({
+        websocketWasOpened: true,
+        websocketOpen: true
+      });
       this.resolveSession();
     };
   }.property(),
@@ -166,7 +169,12 @@ export default SessionService.extend({
         }
       }
       const resolveFunction = this.get('sessionInitResolve');
-      resolveFunction();
+      // the resoleFunction can be undefined/null only if we (re)open WebSocket
+      // only, without reinitializing session
+      if (resolveFunction) {
+        resolveFunction();
+      }
+
       this.setProperties({
         sessionInitResolve: null,
         sessionInitReject: null,

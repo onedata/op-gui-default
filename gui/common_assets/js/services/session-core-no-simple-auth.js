@@ -57,44 +57,20 @@ export default Ember.Service.extend({
    */
   onWebSocketClose: null,
 
-
-    /**
-     * Returns a function that shout be bound to websocket onopen event.
-     */
-    onWebSocketOpen: function() {
-      // Ask the server for session details when the WebSocket connection
-      // is established
-      return (/*event*/) => {
-        this.set('websocketWasOpened', true);
-        this.resolveSession();
-      };
-    }.property(),
-
-    /**
-     * Returns a function that shout be bound to websocket onerror event.
-     */
-    onWebSocketError: function() {
-      return (/*event*/) => {
-        // Reject session restoration if WebSocket connection
-        // could not be established
-        const initRejectFunction = this.get('sessionInitReject');
-        if (initRejectFunction) {
-          console.debug("SESSION INIT REJECTED");
-          initRejectFunction();
-        }
-        const restoreRejectFunction = this.get('sessionRestoreReject');
-        if (restoreRejectFunction) {
-          console.debug("SESSION RESTORE REJECTED");
-          restoreRejectFunction();
-        }
-        this.setProperties({
-          sessionInitResolve: null,
-          sessionInitReject: null,
-          sessionRestoreResolve: null,
-          sessionRestoreReject: null
-        });
-      };
-    }.property(),
+  /**
+   * Returns a function that shout be bound to websocket onopen event.
+   */
+  onWebSocketOpen: function() {
+    // Ask the server for session details when the WebSocket connection
+    // is established
+    return (/*event*/) => {
+      this.setProperties({
+        websocketWasOpened: true,
+        websocketOpen: true
+      });
+      this.resolveSession();
+    };
+  }.property(),
 
   /** Returns a promise that will be resolved when the client has resolved
    * its session using WebSocket.
@@ -134,7 +110,11 @@ export default Ember.Service.extend({
         this.set('sessionDetails', data.sessionDetails);
       }
       let resolveFunction = this.get('sessionInitResolve');
-      resolveFunction();
+      // the resoleFunction can be undefined/null only if we (re)open WebSocket
+      // only, without reinitializing session
+      if (resolveFunction) {
+        resolveFunction();
+      }
       this.set('sessionInitResolve', null);
       this.set('sessionInitReject', null);
     });

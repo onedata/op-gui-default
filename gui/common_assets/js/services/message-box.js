@@ -34,6 +34,12 @@ export default Ember.Service.extend({
   allowClose: true,
 
   /**
+   * Sometimes we need to store additional data for opened modal.
+   * E.g. to disitinguish modal types.
+   */
+  metadata: null,
+
+  /**
    * String, indicates type of message box
    * One of: info, warning, error
    */
@@ -51,6 +57,7 @@ export default Ember.Service.extend({
   open(properties) {
     this.setProperties({
       isOpened: true,
+      metadata: properties.metadata || null,
       title: properties.title || null,
       message: properties.message || null,
       allowClose: ('allowClose' in properties) ? properties.allowClose : DEFAULT_ALLOW_CLOSE,
@@ -60,6 +67,7 @@ export default Ember.Service.extend({
 
   _resetProperties() {
     this.setProperties({
+      metadata: null,
       isOpened: false,
       title: null,
       message: null,

@@ -1,0 +1,32 @@
+{{#bs-modal open=open body=false footer=false
+    title=title
+    id='message-box'
+    closedAction='closed'
+    keyboard=allowClose
+    autoClose=allowClose
+    backdropClose=allowClose
+    closeButton=false
+  }}
+  {{#bs-modal-body}}
+    <div class="one-row">
+      {{#if (eq type 'loading')}}
+        <div class="spinner-container spinner-64">
+          {{spin-spinner scale=0.5 lines=12 length=20 width=10}}
+        </div>
+      {{else}}
+        <div class="message-icon {{iconClass}}"></div>
+      {{/if}}
+      <div class="message-text">
+        {{message}}
+        {{yield}}
+      </div>
+    </div>
+  {{/bs-modal-body}}
+  {{#if allowClose}}
+    {{#bs-modal-footer as |footer|}}
+      {{#bs-button action=(action "close" target=footer) type="primary"}}
+        {{t "common.modal.ok"}}
+      {{/bs-button}}
+    {{/bs-modal-footer}}
+  {{/if}}
+{{/bs-modal}}

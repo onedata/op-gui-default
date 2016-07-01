@@ -1,15 +1,9 @@
 /**
- * Handles all paths not handled by Router.
+ * Handles all paths not handled by natively Router.
  *
- * It's main purpose is to handle paths without ``lang`` segment whose have
- * multiple segments, eg. ``/spaces/1/groups``. For handling single-segment
- * invalid paths, see ``lang`` route handler.
- *
- * When a first segment of handled path is a ``lang`` id, it redirects to ``not-found``,
- * because it means, that ``lang`` route did not handled the path.
- *
- * Otherwise, it redirects to path prefixed by a default ``lang`` id - it should
- * handled by ``lang`` route.
+ * It has two major purposes:
+ * - set i18n language, if lang segment (e.g. "/en/spaces") has been found
+ * - redirect to index and show "404" notify on not found routes
  *
  * @module routes/wildcard
  * @author Jakub Liput
@@ -17,22 +11,32 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-
-import ENV from '../config/environment';
 import Ember from 'ember';
-import langDetect from '../utils/lang-detect';
+import RouteRejectHandler from '../mixins/route-reject-handler';
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(RouteRejectHandler, {
+  fallbackRoute: 'index',
+
+  rejectMessage(path) {
+    return this.get('i18n').t('notFound.notifyMessage') +
+      `: "${path}"`;
+  },
+
   model(parameters) {
     let path = parameters.path;
     // example of regexp match: ['spaces/1/users', 'spaces', '/1/users']
     let pathMatch = /.*?([\w-\.]+)(.*)/.exec(path);
     let head = pathMatch[1];
-    if (head && !this.get('i18n.locales').contains(head)) {
-      let userLang = langDetect() || ENV.i18n.defaultLocale;
-      this.transitionTo(`/${userLang}/${path}`);
+    let tail = pathMatch[2];
+    if (head && this.get('i18n.locales').contains(head)) {
+      // TODO: allow real locale select with below code
+      // this.set('i18n.locale', head);
+      // TODO: in 3.0.0-beta we force English language, beacause other languages
+      // are incomplete
+      this.set('i18n.locale', 'en');
+      this.transitionTo(tail);
     } else {
-      this.transitionTo('not-found');
+      this.actionOnReject(path);
     }
   }
 });

@@ -55,8 +55,6 @@ export default Ember.Component.extend({
   isJoiningSpace: false,
   joinSpaceToken: null,
 
-  spaceToRename: null,
-  renameSpaceName: null,
   isRenameModalOpened: Ember.computed('openedModal', {
     get() {
       return this.get('openedModal') === 'rename';
@@ -271,18 +269,6 @@ export default Ember.Component.extend({
             this.spaceActionMessage('error', 'leaveFailed', spaceName);
           }
         );
-      } finally {
-        this.set('modalSpace', null);
-        this.set('openedModal', null);
-      }
-    },
-
-    submitRenameSpace() {
-      try {
-        let space = this.get('modalSpace');
-        space.set('name', this.get('renameSpaceName'));
-        // TODO: save notification
-        space.save();
       } finally {
         this.set('modalSpace', null);
         this.set('openedModal', null);

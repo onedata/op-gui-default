@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import RouteRejectHandler from '../../mixins/route-reject-handler';
 
 /**
  * Single group Route - loads Group data before actions/resources for a single
@@ -8,11 +9,17 @@ import Ember from 'ember';
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default Ember.Route.extend({
+export default Ember.Route.extend(RouteRejectHandler, {
   secondaryMenu: Ember.inject.service(),
 
+  fallbackRoute: 'groups.index',
+
   model(params) {
-    return this.store.find('group', params.group_id);
+    return this.handleReject(this.store.find('group', params.group_id));
+  },
+
+  afterModel(model) {
+    this.handleAfterModelErrors(model);
   },
 
   setupController(controller, model) {

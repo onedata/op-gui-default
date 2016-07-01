@@ -26,7 +26,12 @@
     <span class='message'>{{message.text}}</span>
   {{/ember-notify}}
 
+  {{modals/message-box}}
   {{common-modals}}
+
+  <div class="file-upload">
+    {{file-upload dir=model}}
+  </div>
 
   {{!-- A component for debug purposes - uncomment if needed --}}
   {{!-- {{service-debugger}} --}}

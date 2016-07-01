@@ -1,3 +1,5 @@
+import sessionLocales from './session';
+
 /**
  * English translation of GUI strings.
  * Translations dictionary is organized as in routes dir.
@@ -28,6 +30,12 @@ export default {
     },
     featureNotSupportedShort: 'Feature not supported',
     featureNotSupportedLong: 'Sorry, this feature is not supported yet.',
+    cannotLoadResource: 'Cannot load requested resource',
+    serverError: 'Server error',
+    fatalApplicationErrorResources: "A fatal error occured loading application's resources"
+  },
+  services: {
+    session: sessionLocales
   },
   components: {
     commonLoader: {
@@ -50,6 +58,12 @@ export default {
       groups: 'groups',
       token: 'tokens',
       providers: 'providers'
+    },
+    modals: {
+      renameModal: {
+        renameSuccess: 'Element "{{oldName}}" renamed to "{{newName}}"',
+        renameFailed: 'Element "{{oldName}}" rename to "{{newName}}" failed due to an error',
+      }
     },
     spacesMenu: {
       title: 'spaces',
@@ -160,8 +174,6 @@ export default {
       notify: {
         createSuccess: 'Group "{{name}}" created successfully',
         createFailed: 'Group "{{name}}" cannot be created due to an error',
-        renameSuccess: 'Group "{{oldName}}" renamed to "{{newName}}"',
-        renameFailed: 'Group "{{oldName}}" rename to "{{newName}}" failed due to an error',
         leaveSuccess: 'Group "{{name}}" left successfully',
         leaveFailed: 'Cannot leave group "{{name}}" due to an error',
         leaveParentGroupSuccess: 'Group "{{parentGroupName}}" left successfully by "{{subgroupName}}"',
@@ -305,6 +317,9 @@ export default {
         label: 'Pass the below token to a provider of your choice. The token can be used to create a space for your group and grant support to the space.'
       }
     },
+  },
+  notFound: {
+    notifyMessage: 'Requested path not found'
   },
   groups: {
     title: 'Groups',

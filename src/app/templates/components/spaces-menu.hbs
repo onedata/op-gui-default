@@ -77,24 +77,9 @@
 
 {{!-- RENAME SPACE --}}
 
-{{#bs-modal open=isRenameModalOpened body=false footer=false
-    title=(t "components.spacesMenu.renameModal.title")
-    id="rename-space"}}
-  {{#bs-modal-body}}
-    {{#bs-form action=(action "submitRenameSpace") model=this}}
-      {{bs-form-element controlType="text" property="renameSpaceName" autofocus=true
-        label=(t 'components.spacesMenu.renameModal.label')}}
-    {{/bs-form}}
-  {{/bs-modal-body}}
-  {{#bs-modal-footer as |footer|}}
-    {{#bs-button buttonType="submit" type="primary"}}
-      {{t "common.modal.ok"}}
-    {{/bs-button}}
-    {{#bs-button action=(action "close" target=footer) type="default"}}
-      {{t "common.modal.cancel"}}
-    {{/bs-button}}
-  {{/bs-modal-footer}}
-{{/bs-modal}}
+{{modals/rename-modal model=modalSpace open=isRenameModalOpened modalId="rename-space"
+  title=(t "components.spacesMenu.renameModal.title")
+  label=(t 'components.spacesMenu.renameModal.label')}}
 
 {{!-- LEAVE SPACE --}}
 

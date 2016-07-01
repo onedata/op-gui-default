@@ -107,6 +107,35 @@ $icomoon-font-path: 'fonts/oneicons';
   left: auto;
 }
 
+
+.spinner-container {
+  position: relative;
+
+  &.spinner-64 {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+.fixed-center {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.v-center-parent {
+  position: relative;
+}
+
+.v-center-child {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+
 // Bootstrap extensions
 
 .table-no-border>thead>tr>th,

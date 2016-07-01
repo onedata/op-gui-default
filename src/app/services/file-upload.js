@@ -91,6 +91,7 @@ export default Ember.Service.extend({
       simultaneousUploads: 4,
       testChunks: false,
       throttleProgressCallbacks: 1,
+      permanentErrors: [400, 404, 405, 415, 500, 501],
       query: (file) => {
         return {
           parentId: filesParentDirs[file.uniqueIdentifier],

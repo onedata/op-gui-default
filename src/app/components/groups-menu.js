@@ -72,8 +72,6 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   isJoiningGroup: false,
   joinGroupToken: null,
 
-  groupToRename: null,
-  renameGroupName: null,
   isRenameModalOpened: Ember.computed('openedModal', {
     get() {
       return this.get('openedModal') === 'rename';
@@ -225,6 +223,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     },
 
     submitJoinGroup() {
+      this.set('isJoiningGroupWorking', true);
       let token = this.get('inputToken') && this.get('inputToken').trim();
       let serverPromise = this.get('oneproviderServer').userJoinGroup(token);
       serverPromise.then(
@@ -244,42 +243,6 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
           isJoiningGroup: false
         });
       });
-    },
-
-    submitRenameGroup() {
-      try {
-        let group = this.get('modalGroup');
-        let oldName = group.get('name');
-        let newName = this.get('renameGroupName');
-        group.set('name', this.get('renameGroupName'));
-
-        this.promiseLoading(
-          group.save()
-        ).then(
-          () => {
-            this.get('notify').info(this.get('i18n').t(
-              'components.groupsMenu.notify.renameSuccess', {
-                oldName: oldName,
-                newName: newName
-              }
-            ));
-          },
-          (error) => {
-            this.get('notify').error(this.get('i18n').t(
-              'components.groupsMenu.notify.renameFailed', {
-                oldName: oldName,
-                newName: newName
-              }
-            ) + ': ' + error.message);
-            group.rollbackAttributes();
-          }
-        );
-      } finally {
-        this.setProperties({
-          modalGroup: null,
-          openedModal: null
-        });
-      }
     },
 
     submitLeaveGroup() {
@@ -308,8 +271,10 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
             }
         );
       } finally {
-        this.set('modalGroup', null);
-        this.set('openedModal', null);
+        this.setProperties({
+          modalGroup: null,
+          openedModel: null
+        });
       }
     },
 

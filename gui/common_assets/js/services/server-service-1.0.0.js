@@ -21,11 +21,23 @@ export default Ember.Service.extend({
 
   /**
    * Forces the WebSocket adapter to initialize a WebSocket connection.
-   * Can register onOpen, onError callbacks that will be called after
-   * the connection is established or refused.
+   * Can register onOpen, onError, onClose callbacks that will be called after
+   * the connection is established, refused or closed.
+   *
+   * onOpen, onError and onClose arguments are event handlers for WebSocket events
+   *
+   * See WebSocket events on: https://developer.mozilla.org/en-US/docs/Web/Events
    */
-  initWebSocket: function (onOpen, onError) {
-    this.get('adapter').initWebSocket(onOpen, onError);
+  initWebSocket: function (onOpen, onError, onClose) {
+    this.get('adapter').initWebSocket(onOpen, onError, onClose);
+  },
+
+  clearWebsocket() {
+    this.get('adapter').clearWebsocket();
+  },
+
+  closeWebsocket() {
+    this.get('adapter').closeWebsocket();
   },
 
   /**

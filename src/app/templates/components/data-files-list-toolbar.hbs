@@ -51,7 +51,7 @@
     title=(t "components.dataFilesListToolbar.createDirModal.title")
     id="create-dir"}}
   {{#bs-modal-body}}
-    {{#bs-form action=(action "submitCreateFile" "dir") model=this}}
+    {{#bs-form action=(if createFileName (action "submitCreateFile" "dir")) model=this}}
       {{bs-form-element controlType="text" property="createFileName" autofocus=true
         label=(t 'components.dataFilesListToolbar.createDirModal.enterName')}}
     {{/bs-form}}
@@ -74,7 +74,7 @@
     title=(t "components.dataFilesListToolbar.createFileModal.title")
     id="create-file"}}
   {{#bs-modal-body}}
-    {{#bs-form action=(action "submitCreateFile" "file") model=this}}
+    {{#bs-form action=(if createFileName (action "submitCreateFile" "file")) model=this}}
       {{bs-form-element controlType="text" property="createFileName" autofocus=true
         label=(t 'components.dataFilesListToolbar.createFileModal.enterName')}}
     {{/bs-form}}

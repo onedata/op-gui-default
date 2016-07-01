@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import RouteRejectHandler from '../../../mixins/route-reject-handler';
 
 /**
  * Load a single dir (File model) and show a file browser for it (passed as route name).
@@ -7,14 +8,16 @@ import Ember from 'ember';
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default Ember.Route.extend({
+export default Ember.Route.extend(RouteRejectHandler, {
   fileSystemTree: Ember.inject.service(),
   dataFilesTree: Ember.inject.service(),
   notify: Ember.inject.service(),
 
+  fallbackRoute: 'data.data-space.index',
+
   model(params) {
     // TODO: check if loaded dir belongs to loaded space (data/data-space model)?
-    return this.store.findRecord('file', params.dir_id);
+    return this.handleReject(this.store.findRecord('file', params.dir_id));
   },
 
   afterModel(file/*, transition*/) {

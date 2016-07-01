@@ -99,7 +99,7 @@ export default DS.RESTAdapter.extend({
   messageBuffer: [],
 
   /** -------------------------------------------------------------------
-   * WebSocket initialization
+   * WebSocket operations
    * ------------------------------------------------------------------- */
 
   /** Initializes the WebSocket */
@@ -148,6 +148,20 @@ export default DS.RESTAdapter.extend({
         }
       }
     }
+  },
+
+  closeWebsocket() {
+    if (this.socket) {
+      this.socket.close();
+    }
+  },
+
+  clearWebsocket() {
+    this.closeWebsocket();
+    this.setProperties({
+      socket: null,
+      initialized: false
+    });
   },
 
   /** -------------------------------------------------------------------

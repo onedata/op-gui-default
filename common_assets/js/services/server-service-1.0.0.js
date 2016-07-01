@@ -32,6 +32,14 @@ export default Ember.Service.extend({
     this.get('adapter').initWebSocket(onOpen, onError, onClose);
   },
 
+  clearWebsocket() {
+    this.get('adapter').clearWebsocket();
+  },
+
+  closeWebsocket() {
+    this.get('adapter').closeWebsocket();
+  },
+
   /**
    * Sends a RPC call via WebSocket asking for session data, i.e. if the session
    * is valid and session details such as user name.

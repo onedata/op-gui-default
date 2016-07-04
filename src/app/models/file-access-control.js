@@ -9,32 +9,39 @@ import DS from 'ember-data';
  */
 
 const MASKS = {
-  read_object: 1,
-  list_container: 1,
-  write_object: 2,
-  add_object: 2,
-  append_data: 4,
-  add_subcontainer: 4,
-  read_metadata: 8,
-  write_metadata: 10,
-  execute: 20,
-  traverse_container: 20,
-  delete_object: 40,
-  delete_subcontainer: 40,
-  read_attributes: 80,
-  write_attributes: 100,
-  delete: 10000,
-  read_acl: 20000,
-  write_acl: 40000,
-  write_owner: 80000,
+  read_object:          0x00000001,
+  list_container:       0x00000001,
+  write_object:         0x00000002,
+  add_object:           0x00000002,
+  append_data:          0x00000004,
+  add_subcontainer:     0x00000004,
+  read_metadata:        0x00000008,
+  write_metadata:       0x00000010,
+  execute:              0x00000020,
+  traverse_container:   0x00000020,
+  delete_object:        0x00000040,
+  delete_subcontainer:  0x00000040,
+  read_attributes:      0x00000080,
+  write_attributes:     0x00000100,
+  delete:               0x00010000,
+  read_acl:             0x00020000,
+  write_acl:            0x00040000,
+  write_owner:          0x00080000,
 };
 
 export default DS.Model.extend({
-  /*
-   * Allowed values: allow, deny, audit
+  /**
+   * Possible values:
+   * - ``a`` - allow
+   * - ``d`` - deny
+   * - ``t`` - audit
+   * @type string
    */
   type: DS.attr('string'),
 
+  /**
+   * A file for which permissions is this AC about
+   */
   file: DS.belongsTo('file', {inverse: 'acl', async: true}),
 
   /**
@@ -51,11 +58,20 @@ export default DS.Model.extend({
   user: DS.belongsTo('system-user', {inverse: null, async: true}),
   group: DS.belongsTo('system-user', {inverse: null, async: true}),
 
-  permissionsCode: DS.attr('number'),
+  permissionsCode: DS.attr('number', {defaultValue: 0}),
 
-  // TODO: move to utils and write tests
   hasPermission(type) {
     const mask = MASKS[type];
-    return (this.permissionsCode & mask) === mask;
+    return (this.get('permissionsCode') & mask) === mask;
+  },
+
+  setPermission(type) {
+    const mask = MASKS[type];
+    this.set('permissionsCode', (this.get('permissionsCode') | mask));
+  },
+
+  unsetPermission(type) {
+    const mask = MASKS[type];
+    this.set('permissionsCode', (this.get('permissionsCode') & ~mask));
   }
 });

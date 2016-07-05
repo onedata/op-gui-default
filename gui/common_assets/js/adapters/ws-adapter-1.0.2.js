@@ -363,7 +363,7 @@ export default DS.RESTAdapter.extend({
   transformRequest(json, type, operation) {
     switch (operation) {
       case OP_CREATE_RECORD:
-        return json[type];
+        return json[type] || json[type.camelize()];
 
       case OP_FIND_QUERY:
         // In case of find_query, json is in form

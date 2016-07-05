@@ -23,9 +23,9 @@
     </div>
 
     {{#if (eq permissionsType 'p')}}
-      {{modals/file-permissions/posix permissions=file.permissions}}
+      {{file-permissions/posix permissions=file.permissions}}
     {{else if (eq permissionsType 'a')}}
-      {{modals/file-permissions/acl acl=file.acl}}
+      {{file-permissions/acl file=file}}
     {{/if}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}

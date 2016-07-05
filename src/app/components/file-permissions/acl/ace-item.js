@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   /**
-   * @type FileAccessList[]
+   * @type AccessControlEntity
    */
-  acl: Ember.computed.alias('file.acl'),
+  ace: null,
 });

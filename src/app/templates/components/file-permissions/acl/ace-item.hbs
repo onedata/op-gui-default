@@ -1,0 +1,40 @@
+<div class="modal-row large-space">
+  <div class="row">
+    <div class="col-xs-3">
+      {{!-- TODO: subject selector --}}
+      {{ace.subject}}
+    </div>
+    <div class="col-xs-3">
+      {{!-- TODO: user/group selector --}}
+      {{!-- TODO: resolve user/group model --}}
+      {{#if ace.user}}
+        ace.user
+      {{else if ace.group}}
+        ace.group
+      {{/if}}
+    </div>
+    <div class="col-xs-4">
+      {{!-- TODO additional checkboxes --}}
+    </div>
+    <div class="col-xs-1">
+      {{!-- TODO trash --}}
+    </div>
+    <div class="col-xs-1">
+      {{!-- TODO future move up down --}}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-3">
+      {{!-- TODO translate, label --}}
+      Type
+    </div>
+    <div class="col-xs-9">
+      {{!-- TODO: type selector --}}
+      {{ace.type}}
+    </div>
+  </div>
+  <li>type:
+
+  </li>
+  <li>permissions: {{ace.permissions}}</li>
+</div>

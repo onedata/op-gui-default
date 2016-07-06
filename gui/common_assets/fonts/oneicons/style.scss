@@ -2,11 +2,11 @@
 
 @font-face {
     font-family: 'oneicons';
-    src:    url('#{$icomoon-font-path}/oneicons.eot?rnv5w0');
-    src:    url('#{$icomoon-font-path}/oneicons.eot?rnv5w0#iefix') format('embedded-opentype'),
-        url('#{$icomoon-font-path}/oneicons.ttf?rnv5w0') format('truetype'),
-        url('#{$icomoon-font-path}/oneicons.woff?rnv5w0') format('woff'),
-        url('#{$icomoon-font-path}/oneicons.svg?rnv5w0#oneicons') format('svg');
+    src:    url('#{$icomoon-font-path}/oneicons.eot?azyzke');
+    src:    url('#{$icomoon-font-path}/oneicons.eot?azyzke#iefix') format('embedded-opentype'),
+        url('#{$icomoon-font-path}/oneicons.ttf?azyzke') format('truetype'),
+        url('#{$icomoon-font-path}/oneicons.woff?azyzke') format('woff'),
+        url('#{$icomoon-font-path}/oneicons.svg?azyzke#oneicons') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -26,6 +26,11 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+.oneicon-add-filled {
+    &:before {
+        content: $oneicon-add-filled;
+    }
+}
 .oneicon-add {
     &:before {
         content: $oneicon-add;
@@ -49,6 +54,21 @@
 .oneicon-checkbox-check {
     &:before {
         content: $oneicon-checkbox-check;
+    }
+}
+.oneicon-checkbox-empty {
+    &:before {
+        content: $oneicon-checkbox-empty;
+    }
+}
+.oneicon-checkbox-filled {
+    &:before {
+        content: $oneicon-checkbox-filled;
+    }
+}
+.oneicon-checkbox-option {
+    &:before {
+        content: $oneicon-checkbox-option;
     }
 }
 .oneicon-checkbox-x {

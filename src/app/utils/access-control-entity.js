@@ -1,35 +1,20 @@
 import Ember from 'ember';
+import { MASKS, setAclFlag, getAclFlag } from './acl-utils';
 
-const MASKS = {
-  read_object:          0x00000001,
-  list_container:       0x00000001,
-  write_object:         0x00000002,
-  add_object:           0x00000002,
-  append_data:          0x00000004,
-  add_subcontainer:     0x00000004,
-  read_metadata:        0x00000008,
-  write_metadata:       0x00000010,
-  execute:              0x00000020,
-  traverse_container:   0x00000020,
-  delete_object:        0x00000040,
-  delete_subcontainer:  0x00000040,
-  read_attributes:      0x00000080,
-  write_attributes:     0x00000100,
-  delete:               0x00010000,
-  read_acl:             0x00020000,
-  write_acl:            0x00040000,
-  write_owner:          0x00080000,
-};
-
-let ace = Ember.Object.extend({
-  MASKS: function() {
-    return MASKS;
-  }.property('').readOnly(),
-
+export default Ember.Object.extend({
   init() {
     this._super();
 
-    Object.keys(this.get('MASKS')).forEach((maskName) => {
+    if (this.get('permissions') == null) {
+      let defaultPerms = 0;
+      ['read_object', 'write_object', 'read_acl', 'write_acl'].forEach((perm) => {
+        defaultPerms = setAclFlag(defaultPerms, perm, true);
+      });
+      this.set('permissions', defaultPerms);
+    }
+
+    // Create computed properties for each mask in form: perm_<mask_name>, eg. perm_read_object
+    Object.keys(MASKS).forEach((maskName) => {
       this['perm_' + maskName] = Ember.computed({
         get(/*key*/) {
           return this.hasPermission(maskName);
@@ -49,7 +34,7 @@ let ace = Ember.Object.extend({
    * and ``set/unsetPermission`` methods.
    * @type Number
    */
-  permissions: 0,
+  permissions: null,
 
   /**
    * Possible values:
@@ -65,12 +50,13 @@ let ace = Ember.Object.extend({
   /**
    * @type Number
    */
+  // FIXME: mock
   user: null,
 
   /**
    * @type Number
    */
-  group: null,
+  group: 'group1',
 
   /**
    * About "what" the permissions are about.
@@ -81,7 +67,7 @@ let ace = Ember.Object.extend({
    * - ``everyone`` (everyone in the space, where the file is)
    * @type string
    */
-  subject: 'user',
+  subject: 'group',
 
   toJSON() {
     return {
@@ -94,16 +80,12 @@ let ace = Ember.Object.extend({
   },
 
   hasPermission(type) {
-    const mask = this.get('MASKS')[type];
-    return (this.get('permissions') & mask) === mask;
+    return (getAclFlag(this.get('permissions'), type));
   },
 
   setPermission(type, value) {
     value = (value === undefined ? true : value);
-    const mask = this.get('MASKS')[type];
-    const newPermissions = value ?
-      (this.get('permissions') | mask) : (this.get('permissions') & ~mask);
-
+    const newPermissions = setAclFlag(this.get('permissions'), type, value);
     this.set('permissions', newPermissions);
   },
 
@@ -111,5 +93,3 @@ let ace = Ember.Object.extend({
     this.setPermission(type, false);
   }
 });
-
-export default ace;

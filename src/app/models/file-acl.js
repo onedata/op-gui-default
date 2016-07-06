@@ -11,7 +11,7 @@ export default DS.Model.extend({
   /**
    * A file for which permissions is this AC about
    */
-  file: DS.belongsTo('file', {inverse: null, async: true}),
+  file: DS.belongsTo('file', {inverse: 'fileAcl', async: true}),
 
   /**
    * @type AccessControlEntity[]

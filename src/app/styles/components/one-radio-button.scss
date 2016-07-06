@@ -1,0 +1,14 @@
+.one-radio-button {
+  display: table;
+
+  .radio-icon {
+    display: table-cell;
+    width: 28px;
+    height: 28px;
+    font-size: 26px;
+  }
+  .radio-label {
+    display: table-cell;
+    line-height: 26px;
+  }
+}

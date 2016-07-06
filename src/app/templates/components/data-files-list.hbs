@@ -1,3 +1,28 @@
+{{icon 'checkbox-empty'}}
+{{icon 'checkbox-option'}}
+{{icon 'checkbox-filled'}}
+
+{{#one-radio-group groupValue="two" as |groupValue|}}
+  {{one-radio-button
+    label="One"
+    value="one"
+    groupValue=groupValue
+  }}
+
+  {{one-radio-button
+    label="Two"
+    value="two"
+    groupValue=groupValue
+  }}
+
+  {{one-radio-button
+    label="Three"
+    value="three"
+    groupValue=groupValue
+  }}
+{{/one-radio-group}}
+
+
 <table class="table table-strips files-table relative {{if isLoadingFiles 'is-loading'}}">
   <div class="drop-area">
     {{icon 'upload'}}

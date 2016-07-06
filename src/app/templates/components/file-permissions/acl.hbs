@@ -1,14 +1,17 @@
 <div class="container-fluid">
   {{!-- FIXME collapsible ACL elements (rows) --}}
   <div class="modal-row large-space">
-    File: {{file}} {{file.id}} {{file.name}}
-    ACL: {{acl}}
-    {{#each acl as |ace|}}
-      {{file-permissions/acl/ace-item ace=ace}}
+    <h1>ACL: {{acl.acl}}</h1>
+    {{#each acl.acl as |ace|}}
+      <h2>ACE</h2>
+      {{file-permissions/acl/ace-item ace=ace
+        systemUsers=systemUsers
+        systemGroups=systemGroups
+      }}
     {{/each}}
+    su: {{systemUsers.length}}
+    sg: {{systemGroups.length}}
   </div>
-
-
   <div class="modal-row large-space">
     {{#bs-button action='addAc'}}
       Add AC

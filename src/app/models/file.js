@@ -29,6 +29,7 @@ export default DS.Model.extend({
   modificationTime: DS.attr('number'),
   size: DS.attr('number'),
   permissions: DS.attr('number'),
+  fileAcl: DS.belongsTo('file-acl', {inverse: 'file', async: true}),
 
   isExpanded: false,
   isSelected: false,

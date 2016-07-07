@@ -14,18 +14,20 @@
       {{!-- FIXME a layout --}}
       {{t 'components.modals.filePermissions.title'}}
 
-      {{#radio-button value="p" groupValue=permissionsType class="radio-inline"}}
-        {{t 'components.modals.filePermissions.types.posix'}}
-      {{/radio-button}}
-      {{#radio-button value="a" groupValue=permissionsType class="radio-inline"}}
-        {{t 'components.modals.filePermissions.types.acl'}}
-      {{/radio-button}}
+      {{#one-radio-group groupValue=null}}
+        {{one-radio-button value="p" groupValue=permissionsType
+          label=(t 'components.modals.filePermissions.types.posix')
+        }}
+        {{one-radio-button value="a" groupValue=permissionsType
+          label=(t 'components.modals.filePermissions.types.acl')
+        }}
+      {{/one-radio-group}}
     </div>
 
     {{#if (eq permissionsType 'p')}}
       {{file-permissions/posix permissions=file.permissions}}
     {{else if (eq permissionsType 'a')}}
-      {{file-permissions/acl file=file}}
+      {{file-permissions/acl file=file acl=aclCache}}
     {{/if}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}

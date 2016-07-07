@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import ACL from '../../utils/access-control-entity';
+import ACE from '../../utils/access-control-entity';
 
 export default Ember.Component.extend({
   store: Ember.inject.service(),
@@ -9,16 +9,37 @@ export default Ember.Component.extend({
 
   /**
    * Should be injected.
-   * @type FileAccessList[]
+   * @type FileAcl
    */
-  // acl: Ember.computed.alias('file.fileAcl'),
+  acl: null,
 
-  // acl: null,
+  // FIXME: move convertion to ace-item and convert each ACE/object separately?
+  /**
+   * Convert FileAcl.acl plain objects list <-> list of AccessControlEntity.
+   * Stores object[] in acl.acl (attribute of target model).
+   * - get converts: object[] -> AccessControlEntity[]
+   * - set converts: AccessControlEntity[] -> object[]
+   */
+  aclItems: Ember.computed('acl.acl', {
+    get(/*key*/) {
+      return Ember.A(this.get('acl.acl').map(aceObject => ACE.create(aceObject)));
+    },
+
+    set(key, value) {
+      return this.set('acl.acl', value.map(ace => ace.toJSON()));
+    }
+  }),
+
+  aclTmp: function() {
+    return JSON.stringify(this.get('acl.acl'));
+  }.property('acl.acl'),
 
   // TODO: change to be better synchronized with current file
   dataSpace: Ember.computed.alias('fileSystemTree.selectedSpace'),
 
-  fetchSystemUsersModel: function() {
+  // -- we need these for displaying users/groups list for set permissions
+
+  fetchSystemUsersModel() {
     this.get('dataSpace.space.userPermissions').then(ups => {
       const suPromises = ups.map(up => up.get('systemUser'));
       const allSuPromise = Ember.RSVP.Promise.all(suPromises);
@@ -32,13 +53,7 @@ export default Ember.Component.extend({
     });
   },
 
-  usersPermissionsChanged: function() {
-    this.fetchSystemUsersModel();
-  }.observes('dataSpace.space.userPermissions.@each.name'),
-  // }.observes('dataSpace', 'dataSpace.space', 'dataSpace.space.userPermissions',
-    // 'dataSpace.space.userPermissions.[]', 'dataSpace.space.userPermissions.@each.name'),
-
-  fetchSystemGroupsModel: function() {
+  fetchSystemGroupsModel() {
     this.get('dataSpace.space.groupPermissions').then(gps => {
       const sgPromises = gps.map(gp => gp.get('systemGroup'));
       const allSgPromise = Ember.RSVP.Promise.all(sgPromises);
@@ -52,20 +67,23 @@ export default Ember.Component.extend({
     });
   },
 
-  groupsPermissionsChanged: function() {
+  // -- observe system users/groups to update selectors when needed
+
+  systemUsersChanged: function() {
+    this.fetchSystemUsersModel();
+  }.observes('dataSpace.space.userPermissions.@each.systemUser'),
+
+  systemGroupsChanged: function() {
     this.fetchSystemGroupsModel();
-  }.observes('dataSpace.space.groupPermissions.@each.name'),
-  // }.observes('dataSpace', 'dataSpace.space', 'dataSpace.space.groupPermissions',
-  //   'dataSpace.space.groupPermissions.[]', 'dataSpace.space.groupPermissions.@each.name'),
+  }.observes('dataSpace.space.groupPermissions.@each.systemGroup'),
+
+  // -- convert systemUsers/Groups RecordArrays to selectors elements
 
   systemUsers: function() {
-    const sum = this.get('systemUsersModel');
-    if (sum) {
-      return sum.map(su => {
-        return {
-          id: su.get('id'),
-          text: su.get('name')
-        };
+    const models = this.get('systemUsersModel');
+    if (models && models.every(m => m && m.get('isLoaded'))) {
+      return models.map(m => {
+        return { id: m.get('id'), text: m.get('name') };
       });
     } else {
       return [];
@@ -73,30 +91,15 @@ export default Ember.Component.extend({
   }.property('systemUsersModel'),
 
   systemGroups: function() {
-    const sum = this.get('systemGroupsModel');
-    if (sum) {
-      return sum.map(su => {
-        return {
-          id: su.get('id'),
-          text: su.get('name')
-        };
+    const models = this.get('systemGroupsModel');
+    if (models && models.every(m => m && m.get('isLoaded'))) {
+      return models.map(m => {
+        return { id: m.get('id'), text: m.get('name') };
       });
     } else {
       return [];
     }
   }.property('systemGroupsModel'),
-
-  initTriggered: function() {
-    this.get('store').find('file-acl', this.get('file.id')).then(
-      (acl) => {
-        // debugger;
-        this.set('acl', acl);
-      },
-      (error) => {
-        console.warn('ACL for file cannot be fetched: ' + error.message);
-      }
-    );
-  }.on('init'),
 
   didInsertElement() {
     this.fetchSystemUsersModel();
@@ -122,16 +125,16 @@ export default Ember.Component.extend({
 
   actions: {
     // TODO: just for tests
-    addAc() {
-      const r = this.get('store').createRecord('fileAcl', {
-        file: this.get('file'),
-        acl: [
-          ACL.create().toJSON()
-        ]
-      });
-      r.save().catch(() => {
-        // debugger;
-      });
-    }
+    // addAc() {
+    //   const r = this.get('store').createRecord('fileAcl', {
+    //     file: this.get('file'),
+    //     acl: [
+    //       ACL.create().toJSON()
+    //     ]
+    //   });
+    //   r.save().catch(() => {
+    //     // debugger;
+    //   });
+    // }
   }
 });

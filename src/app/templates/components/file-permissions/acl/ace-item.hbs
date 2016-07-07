@@ -3,27 +3,35 @@
   <div class="row">
     <div class="col-xs-3">
       {{!-- TODO: subject selector --}}
-      {{ace.subject}}
+      ace: {{ace}}
+      acesubj: {{ace.subject}}
+      {{select-2
+        content=subjectItems
+        value=ace.subject
+        optionValuePath="id"
+        placeholder="Subject"
+        allowClear=false
+      }}
     </div>
     <div class="col-xs-3">
       {{!-- TODO: user/group selector --}}
       {{!-- TODO: resolve user/group model --}}
-      {{select-2
-        content=systemUsers
-        value=ace.user
-        placeholder="Choose a user"
-        allowClear=false
-      }}
-      {{select-2
-        content=systemGroups
-        value=ace.group
-        placeholder="Choose a group"
-        allowClear=false
-      }}
       {{#if (eq ace.subject 'user')}}
-        user: {{ace.user}}
+        {{select-2
+          content=systemUsers
+          value=ace.user
+          optionValuePath="id"
+          placeholder="User"
+          allowClear=false
+        }}
       {{else if (eq ace.subject 'group')}}
-        group: {{ace.group}}
+        {{select-2
+          content=systemGroups
+          value=ace.group
+          optionValuePath="id"
+          placeholder="Group"
+          allowClear=false
+        }}
       {{/if}}
     </div>
     <div class="col-xs-4">

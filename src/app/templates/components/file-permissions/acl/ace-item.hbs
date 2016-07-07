@@ -53,13 +53,15 @@
       Type:
     </div>
     <div class="col-xs-9">
-      {{select-2
-        content=typeItems
-        value=ace.type
-        optionValuePath="id"
-        placeholder="Type"
-        allowClear=false
-      }}
+      {{#one-radio-group groupValue=ace.type as |enabledType|}}
+        {{#each types as |type|}}
+          {{one-radio-button
+            label=type
+            value=type
+            groupValue=enabledType
+            }}
+        {{/each}}
+      {{/one-radio-group}}
     </div>
   </div>
   <div class="row">
@@ -67,14 +69,17 @@
       Permissions:
     </div>
     <div class="col-xs-9">
-      {{input value=ace.permissions type='number'}}
+      {{!-- {{input value=ace.permissions type='number'}} --}}
 
-      {{#each permissionKeys as |permissionType|}}
-        {{file-permissions/acl/permission-checkbox
-          name=permissionType
-          ace=ace
+      {{#one-checkbox-group groupValues=ace as |enabledPermissions|}}
+        {{#each permissionKeys as |permissionType|}}
+          {{file-permissions/acl/permission-checkbox
+            name=permissionType
+            ace=ace
+            groupValues=enabledPermissions
           }}
-      {{/each}}
+        {{/each}}
+      {{/one-checkbox-group}}
     </div>
   </div>
 </div>

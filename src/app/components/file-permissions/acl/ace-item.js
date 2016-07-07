@@ -24,12 +24,7 @@ export default Ember.Component.extend({
     // { id: 'everyone', text: 'Everyone'},
   ],
 
-  // FIXME: translate
-  typeItems: [
-    {id: 'allow', text: 'Allow'},
-    {id: 'deny', text: 'Deny'},
-    {id: 'audit', text: 'Audit'}
-  ],
+  types: ['allow', 'deny', 'audit'],
 
   // TODO: these actions can be probably invoked as: (action 'moveUp' ace) in view
   actions: {
@@ -46,36 +41,42 @@ export default Ember.Component.extend({
     }
   },
 
+  /**
+   * Permissions listed here will be presented to change for directory.
+   */
   filePermissionKeys: [
-    'read_object',
-    'write_object',
-    'append_data',
-    'read_metadata',
-    'write_metadata',
-    'execute',
-    'delete_object',
-    'read_attributes',
-    'write_attributes',
-    'delete',
-    'read_acl',
-    'write_acl',
-    'write_owner'
+    'perm_read_object',
+    'perm_write_object',
+    'perm_append_data',
+    'perm_read_metadata',
+    'perm_write_metadata',
+    'perm_execute',
+    'perm_delete_object',
+    'perm_read_attributes',
+    'perm_write_attributes',
+    'perm_delete',
+    'perm_read_acl',
+    'perm_write_acl',
+    'perm_write_owner'
   ],
 
+  /**
+   * Permissions listed here will be presented to change for directory.
+   */
   dirPermissionKeys: [
-    'list_container',
-    'add_object',
-    'add_subcontainer',
-    'read_metadata',
-    'write_metadata',
-    'traverse_container',
-    'delete_subcontainer',
-    'read_attributes',
-    'write_attributes',
-    'delete',
-    'read_acl',
-    'write_acl',
-    'write_owner'
+    'perm_list_container',
+    'perm_add_object',
+    'perm_add_subcontainer',
+    'perm_read_metadata',
+    'perm_write_metadata',
+    'perm_traverse_container',
+    'perm_delete_subcontainer',
+    'perm_read_attributes',
+    'perm_write_attributes',
+    'perm_delete',
+    'perm_read_acl',
+    'perm_write_acl',
+    'perm_write_owner'
   ],
 
   permissionKeys: function() {

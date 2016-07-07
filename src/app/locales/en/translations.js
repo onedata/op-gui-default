@@ -1,4 +1,5 @@
 import sessionLocales from './session';
+import filePermissions from './file-permissions';
 
 /**
  * English translation of GUI strings.
@@ -38,6 +39,13 @@ export default {
     session: sessionLocales
   },
   components: {
+    filePermissions: {
+      acl: {
+        aceItem: {
+          permissions: filePermissions
+        }
+      }
+    },
     commonLoader: {
       defaultMessage: 'Loading...',
       synchronizingSpaces: 'Synchronizing user spaces...',

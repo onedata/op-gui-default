@@ -1,6 +1,8 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
+  i18n: Ember.inject.service(),
+
   init() {
     this._super();
 
@@ -8,7 +10,12 @@ export default Ember.Component.extend({
     this.checked = Ember.computed.alias(perm);
   },
 
-  label: Ember.computed.alias('name'),
+  label: function() {
+    return this.get('i18n').t(
+      'components.filePermissions.acl.aceItem.permissions.' +
+      this.get('name')
+    );
+  }.property('name'),
 
   // to inject
   name: null,

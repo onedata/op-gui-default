@@ -2,10 +2,12 @@
 
 <div class="container-fluid">
   {{!-- FIXME: grey lines in modal rows --}}
+  {{!-- FIXME submit on enter press --}}
   <div class="modal-row large-space">
     {{#bs-form action="submit" model=this}}
       {{bs-form-element controlType="number" property="permissions" autofocus=true
-        label=(t 'components.dataFilesListToolbar.editPermissionsModal.text')}}
+        label=(t 'components.dataFilesListToolbar.editPermissionsModal.text')
+        enter="submit"}}
     {{/bs-form}}
   </div>
 </div>

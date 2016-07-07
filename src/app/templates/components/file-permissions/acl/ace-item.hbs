@@ -1,10 +1,6 @@
-<h1>ACE ITEM</h1>
 <div class="modal-row large-space">
   <div class="row">
     <div class="col-xs-3">
-      {{!-- TODO: subject selector --}}
-      ace: {{ace}}
-      acesubj: {{ace.subject}}
       {{select-2
         content=subjectItems
         value=ace.subject
@@ -14,8 +10,6 @@
       }}
     </div>
     <div class="col-xs-3">
-      {{!-- TODO: user/group selector --}}
-      {{!-- TODO: resolve user/group model --}}
       {{#if (eq ace.subject 'user')}}
         {{select-2
           content=systemUsers
@@ -33,29 +27,54 @@
           allowClear=false
         }}
       {{/if}}
+      {{!-- else: this field should be empty --}}
     </div>
-    <div class="col-xs-4">
+    <div class="col-xs-3">
       {{!-- TODO additional checkboxes --}}
     </div>
     <div class="col-xs-1">
       {{!-- TODO trash --}}
+      <a {{action 'removeSelf'}}>
+        {{icon 'remove'}}
+      </a>
     </div>
-    <div class="col-xs-1">
+    <div class="col-xs-2">
       {{!-- TODO future move up down --}}
+      <a {{action 'moveUp'}}>
+        {{icon 'move-up'}}
+      </a>
+      <a {{action 'moveDown'}}>
+        {{icon 'move-down'}}
+      </a>
     </div>
   </div>
   <div class="row">
     <div class="col-xs-3">
-      {{!-- TODO translate, label --}}
-      Type
+      Type:
     </div>
     <div class="col-xs-9">
-      {{!-- TODO: type selector --}}
-      {{ace.type}}
+      {{select-2
+        content=typeItems
+        value=ace.type
+        optionValuePath="id"
+        placeholder="Type"
+        allowClear=false
+      }}
     </div>
   </div>
-  <li>type:
+  <div class="row">
+    <div class="col-xs-3">
+      Permissions:
+    </div>
+    <div class="col-xs-9">
+      {{input value=ace.permissions type='number'}}
 
-  </li>
-  <li>permissions: {{ace.permissions}}</li>
+      {{#each permissionKeys as |permissionType|}}
+        {{file-permissions/acl/permission-checkbox
+          name=permissionType
+          ace=ace
+          }}
+      {{/each}}
+    </div>
+  </div>
 </div>

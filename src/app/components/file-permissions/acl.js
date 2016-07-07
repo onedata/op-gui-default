@@ -11,71 +11,53 @@ export default Ember.Component.extend({
    * Should be injected.
    * @type FileAcl
    */
-  acl: null,
-
-  // FIXME: move convertion to ace-item and convert each ACE/object separately?
-  /**
-   * Convert FileAcl.acl plain objects list <-> list of AccessControlEntity.
-   * Stores object[] in acl.acl (attribute of target model).
-   * - get converts: object[] -> AccessControlEntity[]
-   * - set converts: AccessControlEntity[] -> object[]
-   */
-  aclItems: Ember.computed('acl.acl', {
-    get(/*key*/) {
-      return Ember.A(this.get('acl.acl').map(aceObject => ACE.create(aceObject)));
-    },
-
-    set(key, value) {
-      return this.set('acl.acl', value.map(ace => ace.toJSON()));
-    }
-  }),
+  fileAcl: null,
 
   aclTmp: function() {
-    return JSON.stringify(this.get('acl.acl'));
-  }.property('acl.acl'),
+    return JSON.stringify(this.get('fileAcl.acl'));
+  }.property('fileAcl.acl.@each.subject'),
 
   // TODO: change to be better synchronized with current file
   dataSpace: Ember.computed.alias('fileSystemTree.selectedSpace'),
 
   // -- we need these for displaying users/groups list for set permissions
 
-  fetchSystemUsersModel() {
-    this.get('dataSpace.space.userPermissions').then(ups => {
-      const suPromises = ups.map(up => up.get('systemUser'));
-      const allSuPromise = Ember.RSVP.Promise.all(suPromises);
-      allSuPromise.then(suList => {
-        this.set('systemUsersModel', suList);
-      });
-      allSuPromise.catch(error => {
-        console.warn(`Error on getting systemUsers for ACL: ${error}`);
-        this.set('systemUsersModel', []);
-      });
-    });
+  /**
+   * @param {String} type - one of: user, group
+   */
+  fetchSystemModel(type) {
+    const permModel = `${type}Permissions`;
+    const systemModel = `system${type.capitalize()}`;
+    const thisModel = `system${type.capitalize()}sModel`;
+
+    if (this.get('dataSpace')) {
+      this.get('dataSpace.space')
+        .then(space => {
+          space.get(permModel).then(ups => {
+            const suPromises = ups.map(up => up.get(systemModel));
+            const allSuPromise = Ember.RSVP.Promise.all(suPromises);
+            allSuPromise.then(suList => {
+              this.set(thisModel, suList);
+            });
+            allSuPromise.catch(error => {
+              console.warn(`Error on getting system ${type}s for ACL: ${error.message}`);
+              this.set('systemUsersModel', null);
+            });
+          });
+        })
+        .catch(error => {
+          console.warn(`Error on getting space for ACL: ${error.message}`);
+          this.set('systemUsersModel', null);
+        });
+    }
   },
 
-  fetchSystemGroupsModel() {
-    this.get('dataSpace.space.groupPermissions').then(gps => {
-      const sgPromises = gps.map(gp => gp.get('systemGroup'));
-      const allSgPromise = Ember.RSVP.Promise.all(sgPromises);
-      allSgPromise.then(sgList => {
-        this.set('systemGroupsModel', sgList);
-      });
-      allSgPromise.catch(error => {
-        console.warn(`Error on getting systemGroups for ACL: ${error}`);
-        this.set('systemGroupsModel', []);
-      });
-    });
-  },
+  // -- try to fetch system users/groups list for selector
 
-  // -- observe system users/groups to update selectors when needed
-
-  systemUsersChanged: function() {
-    this.fetchSystemUsersModel();
-  }.observes('dataSpace.space.userPermissions.@each.systemUser'),
-
-  systemGroupsChanged: function() {
-    this.fetchSystemGroupsModel();
-  }.observes('dataSpace.space.groupPermissions.@each.systemGroup'),
+  dataSpaceChanged: function() {
+    this.fetchSystemModel('user');
+    this.fetchSystemModel('group');
+  }.observes('dataSpace').on('init'),
 
   // -- convert systemUsers/Groups RecordArrays to selectors elements
 
@@ -101,40 +83,34 @@ export default Ember.Component.extend({
     }
   }.property('systemGroupsModel'),
 
-  didInsertElement() {
-    this.fetchSystemUsersModel();
-    this.fetchSystemGroupsModel();
-  },
-
-  // FIXME: test code, using fake ACL
-  // acl: this.get('store').createRecord('fileAcl', {
-  //   file: this.get('file'),
-  //   acl: [
-  //     ACL.create({
-  //       type: 'deny',
-  //       subject: 'everyone',
-  //       permissions: 2
-  //     }),
-  //     ACL.create({
-  //       type: 'allow',
-  //       subject: 'owner',
-  //       permissions: 4
-  //     }),
-  //   ]
-  // }),
-
   actions: {
-    // TODO: just for tests
-    // addAc() {
-    //   const r = this.get('store').createRecord('fileAcl', {
-    //     file: this.get('file'),
-    //     acl: [
-    //       ACL.create().toJSON()
-    //     ]
-    //   });
-    //   r.save().catch(() => {
-    //     // debugger;
-    //   });
-    // }
+    removeAceItem(ace) {
+      const acl = this.get('fileAcl.acl');
+      acl.removeObject(ace);
+    },
+
+    moveUp(ace) {
+      const acl = this.get('fileAcl.acl');
+      const index = acl.indexOf(ace);
+      if (index > 0) {
+        const tmp = acl.objectAt(index-1);
+        acl.replace(index-1, 1, acl.objectAt(index));
+        acl.replace(index, 1, tmp);
+      }
+    },
+
+    moveDown(ace) {
+      const acl = this.get('fileAcl.acl');
+      const index = acl.indexOf(ace);
+      if (index < acl.length-1) {
+        const tmp = acl.objectAt(index+1);
+        acl.replace(index+1, 1, acl.objectAt(index));
+        acl.replace(index, 1, tmp);
+      }
+    },
+
+    createAce() {
+      this.get('fileAcl.acl').pushObject(ACE.create());
+    }
   }
 });

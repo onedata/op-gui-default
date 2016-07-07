@@ -3,6 +3,7 @@
     title=(t 'components.modals.filePermissions.title')
     openAction="open"
     openedAction="opened"
+    closedAction="closed"
     keyboard=(not isBusy)
     autoClose=(not isBusy)
     backdropClose=(not isBusy)
@@ -25,9 +26,9 @@
     </div>
 
     {{#if (eq permissionsType 'p')}}
-      {{file-permissions/posix permissions=file.permissions}}
+      {{file-permissions/posix permissions=posixCache}}
     {{else if (eq permissionsType 'a')}}
-      {{file-permissions/acl file=file acl=aclCache}}
+      {{file-permissions/acl file=file fileAcl=aclCache}}
     {{/if}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}

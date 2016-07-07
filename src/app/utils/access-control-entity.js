@@ -2,6 +2,7 @@ import Ember from 'ember';
 import { MASKS, setAclFlag, getAclFlag } from './acl-utils';
 
 export default Ember.Object.extend({
+  // FIXME: use class reopen, because it does many things at object creation!
   init() {
     this._super();
 
@@ -56,7 +57,7 @@ export default Ember.Object.extend({
   /**
    * @type Number
    */
-  group: 'group1',
+  group: null,
 
   /**
    * About "what" the permissions are about.
@@ -67,7 +68,7 @@ export default Ember.Object.extend({
    * - ``everyone`` (everyone in the space, where the file is)
    * @type string
    */
-  subject: 'group',
+  subject: 'user',
 
   toJSON() {
     return {

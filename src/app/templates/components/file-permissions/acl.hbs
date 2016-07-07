@@ -1,19 +1,21 @@
 <div class="container-fluid">
   {{!-- FIXME collapsible ACL elements (rows) --}}
   <div class="modal-row large-space">
-    <h1>ACL: {{acl.acl}}</h1>
-        FILE: {{file}} {{file.id}} {{file.name}}
-    {{#each aclItems as |ace|}}
-      {{file-permissions/acl/ace-item ace=ace
+    {{#each fileAcl.acl as |ace|}}
+      {{file-permissions/acl/ace-item
+        file=file
+        ace=ace
         systemUsers=systemUsers
         systemGroups=systemGroups
+        removeAceItemAction='removeAceItem'
+        moveUpAction='moveUp'
+        moveDownAction='moveDown'
       }}
     {{/each}}
-    acl tmp: {{aclTmp}}
   </div>
   <div class="modal-row large-space">
-    {{!-- {{#bs-button action='addAc'}}
-      Add AC
-    {{/bs-button}} --}}
+    {{#bs-button action="createAce"}}
+      Add
+    {{/bs-button}}
   </div>
 </div>

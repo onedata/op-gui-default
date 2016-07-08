@@ -1,14 +1,65 @@
-.one-radio-button {
-  display: table;
+// .one-radio-button {
+//   .radio-button-container {
+//     display: table;
+//     max-width: 100%;
+//     cursor: hand; cursor: pointer;
+//
+//     &:hover {
+//       color: $color-button-primary;
+//     }
+//
+//     .radio-icon {
+//       display: table-cell;
+//       vertical-align: middle;
+//       width: 28px;
+//       height: 28px;
+//       font-size: 26px;
+//       color: $color-button-primary;
+//       // a HACK to align icon vertically with text, because icons seems to be pulled up for some reason...
+//       transform: translateY(4px);
+//     }
+//     .radio-label {
+//       display: table-cell;
+//       vertical-align: middle;
+//       padding-left: 8px;
+//     }
+//   }
+// }
 
-  .radio-icon {
-    display: table-cell;
-    width: 28px;
-    height: 28px;
-    font-size: 26px;
+
+
+.one-radio-button {
+  .radio-button-container {
+    position: relative;
+    width: 100%;
+    // for max. 2 lines text
+    height: 38px;
+    margin: 5px 5px 5px 0;
+    cursor: hand; cursor: pointer;
+
+    &:hover {
+      color: $color-button-primary;
+    }
+
+    .radio-icon {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%) translateY(5px);
+      font-size: 26px;
+      color: $color-button-primary;
+    }
+
+    .radio-label {
+      position: relative;
+      display: block;
+      margin-left: 36px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
   }
-  .radio-label {
-    display: table-cell;
-    line-height: 26px;
-  }
+}
+
+.radio-button-line {
+  height: 48px;
+  line-height: 48px;
 }

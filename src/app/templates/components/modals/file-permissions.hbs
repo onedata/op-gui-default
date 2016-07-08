@@ -9,20 +9,24 @@
     backdropClose=(not isBusy)
     closeButton=false
   }}
-  {{#bs-modal-body}}
+  {{#bs-modal-body class='file-permissions-modal'}}
   {{!-- FIXME: grey lines in modal rows --}}
-    <div class="modal-row large-space">
-      {{!-- FIXME a layout --}}
-      {{t 'components.modals.filePermissions.title'}}
-
-      {{#one-radio-group groupValue=null}}
-        {{one-radio-button value="p" groupValue=permissionsType
-          label=(t 'components.modals.filePermissions.types.posix')
-        }}
-        {{one-radio-button value="a" groupValue=permissionsType
-          label=(t 'components.modals.filePermissions.types.acl')
-        }}
-      {{/one-radio-group}}
+    <div class="modal-row modal-row-main heading">
+      <div class="row">
+        <div class="col-xs-4">
+          <h1>{{t 'components.modals.filePermissions.permissionsType'}}</h1>
+        </div>
+        <div class="col-xs-8 col-permission-types-checkboxes">
+          {{#one-radio-group groupValue=null}}
+            {{one-radio-button value="p" groupValue=permissionsType
+              label=(t 'components.modals.filePermissions.types.posix')
+            }}
+            {{one-radio-button value="a" groupValue=permissionsType
+              label=(t 'components.modals.filePermissions.types.acl')
+            }}
+          {{/one-radio-group}}
+        </div>
+      </div>
     </div>
 
     {{#if (eq permissionsType 'p')}}

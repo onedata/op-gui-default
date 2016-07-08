@@ -1,7 +1,7 @@
-<div class="container-fluid">
-  {{!-- FIXME collapsible ACL elements (rows) --}}
-  <div class="modal-row large-space">
-    {{#each fileAcl.acl as |ace|}}
+{{!-- FIXME collapsible ACL elements (rows) --}}
+<div class="ace-items">
+  {{#each fileAcl.acl as |ace|}}
+    <div class="modal-row modal-row-main">
       {{file-permissions/acl/ace-item
         file=file
         ace=ace
@@ -11,11 +11,11 @@
         moveUpAction='moveUp'
         moveDownAction='moveDown'
       }}
-    {{/each}}
-  </div>
-  <div class="modal-row large-space">
-    {{#bs-button action="createAce"}}
-      Add
-    {{/bs-button}}
+    </div>
+  {{/each}}
+  <div class="modal-row modal-row-main">
+    <a {{action "createAce"}} class="add-ace clickable">
+      {{icon 'add'}} <span class="link-label">Add</span>
+    </a>
   </div>
 </div>

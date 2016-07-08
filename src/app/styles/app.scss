@@ -123,3 +123,142 @@ $screen-lg-min: $min-width-desktop-medium;
 @import 'components/modal-types';
 @import 'components/one-radio-button';
 @import 'components/one-radio-group';
+
+
+
+// FIXME temporary styles
+
+.modal-body.file-permissions-modal {
+  padding: 0;
+
+  .modal-row.modal-row-main {
+    padding: 25px 30px;
+    margin-top: 0;
+    margin-bottom: 0;
+
+    &:not(:last-child) {
+      border-bottom: solid 1px #D8D8D7;
+    }
+
+    &.heading {
+      background-color: #F7F7F7;
+
+      h1 {
+        line-height: 18px;
+        font-size: 18px;
+        margin: 10px 0;
+      }
+    }
+  }
+
+  .one-radio-button {
+    .radio-button-container {
+      .radio-label {
+        // text-transform: capitalize;
+      }
+    }
+  }
+}
+
+.row-permission-type {
+  margin-bottom: 10px;
+}
+
+
+.select-picker {
+  .btn-default {
+    padding: 0;
+
+    color: inherit !important;
+    background-color: transparent !important;
+
+    &:hover {
+      background-color: transparent !important;
+    }
+
+    &[disabled],
+    &.disabled,
+    &.disabled:hover,
+    &.disabled:focus,
+    &.disabled.focus,
+    &[disabled]:hover,
+    &[disabled]:focus,
+    &[disabled].focus {
+      background-color: transparent !important;
+    }
+
+    &:active:focus, &:active:hover, &:focus, &:active {
+      background-color: transparent !important;
+    }
+  }
+
+  .dropdown-menu {
+    background-color: white;
+
+    .search-filter {
+      border-color: #E6E6E6;
+      margin-bottom: 15px;
+    }
+  }
+}
+
+.col-permission-tool {
+  position: relative;
+  .permission-tools {
+    position: relative;
+    right: -38px;
+  }
+}
+
+.permission-tool-icon {
+  color: inherit;
+  font-size: 28px;
+
+  &.move-up {
+    margin-right: -12px;
+  }
+
+  &:hover {
+    color: $color-button-primary;
+    text-decoration: none;
+    cursor: hand; cursor: pointer;
+  }
+}
+
+.ace-items {
+  max-height: 260px;
+  overflow-y: auto;
+
+  .modal-row-main {
+    &:nth-child(even) {
+      background-color: #F7F7F7;
+    }
+  }
+
+  .add-ace {
+    display: table;
+    color: inherit !important;
+
+    &:hover {
+      color: $color-button-primary !important;
+      text-decoration: none;
+    }
+
+    .oneicon {
+      display: table-cell;
+      vertical-align: middle;
+      font-size: 32px;
+    }
+
+    .link-label {
+      display: table-cell;
+      vertical-align: middle;
+      padding-left: 8px;
+    }
+  }
+}
+
+// HACK FIXME
+.col-permission-types-checkboxes {
+  margin-top: -6px;
+}

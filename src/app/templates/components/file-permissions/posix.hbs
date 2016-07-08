@@ -1,13 +1,10 @@
 {{!-- FIXME: this should be a view like on design - table etc. --}}
 
-<div class="container-fluid">
-  {{!-- FIXME: grey lines in modal rows --}}
-  {{!-- FIXME submit on enter press --}}
-  <div class="modal-row large-space">
-    {{#bs-form action="submit" model=this}}
-      {{bs-form-element controlType="number" property="permissions" autofocus=true
-        label=(t 'components.dataFilesListToolbar.editPermissionsModal.text')
-        enter="submit"}}
-    {{/bs-form}}
-  </div>
+{{!-- FIXME submit on enter press --}}
+<div class="modal-row modal-row-main large-space">
+  {{#bs-form action="submit" model=this}}
+    {{bs-form-element controlType="number" property="permissions" autofocus=true
+      label=(t 'components.dataFilesListToolbar.editPermissionsModal.text')
+      enter="submit"}}
+  {{/bs-form}}
 </div>

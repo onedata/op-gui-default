@@ -42,7 +42,12 @@ export default {
     filePermissions: {
       acl: {
         aceItem: {
-          permissions: filePermissions
+          permissions: filePermissions,
+          types: {
+            allow: 'Allow',
+            deny: 'Deny',
+            audit: 'Audit'
+          }
         }
       }
     },

@@ -262,3 +262,17 @@ $screen-lg-min: $min-width-desktop-medium;
 .col-permission-types-checkboxes {
   margin-top: -6px;
 }
+
+.modal .modal-dialog .modal-content .file-permissions-modal {
+  .select2-container.form-control {
+    border: none;
+    width: 100%;
+    padding: 0;
+    box-shadow: none;
+    background-color: transparent;
+
+    input {
+      width: 100%;
+    }
+  }
+}

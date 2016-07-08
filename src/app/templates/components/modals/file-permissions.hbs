@@ -40,12 +40,10 @@
       action=(action "submit")
       class="btn btn-primary no-outline" spinnerColor="#fff"
       inFlight=isSubmitting
-      disabled=isBusy
     }}
       {{t "common.modal.ok"}}
     {{/spin-button-onedata}}
     {{#bs-button action=(action "close" target=footer) type="default"
-      disabled=isBusy
     }}
       {{t "common.modal.cancel"}}
     {{/bs-button}}

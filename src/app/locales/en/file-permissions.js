@@ -15,6 +15,6 @@ export default {
   perm_list_container: 'List files',
   perm_add_object: 'Add files',
   perm_add_subcontainer: 'Add subdirectory',
-  perm_traverse_container: 'Enter directory',
+  perm_traverse_container: 'Traverse directory',
   perm_delete_subcontainer: 'Delete subdirectory',
 };

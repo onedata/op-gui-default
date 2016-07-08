@@ -17,13 +17,14 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   file: null,
   acl: null,
 
-  /**
-   * If true, all controls inside modal should be disabled.
-   * It indicates, that some action is pending and it's dangerous to make other actions.
-   */
-  isBusy: function() {
-    return this.get('isSubmitting') || this.get('isLoadingType');
-  }.property('isSubmitting', 'isLoadingType'),
+  // FIXME causes problems
+  // /**
+  //  * If true, all controls inside modal should be disabled.
+  //  * It indicates, that some action is pending and it's dangerous to make other actions.
+  //  */
+  // isBusy: function() {
+  //   return this.get('isSubmitting') || this.get('isLoadingType');
+  // }.property('isSubmitting', 'isLoadingType'),
 
   /**
    * Indicates that ``submit`` action is pending.

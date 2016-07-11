@@ -2,11 +2,11 @@
 
 @font-face {
     font-family: 'oneicons';
-    src:    url('#{$icomoon-font-path}/oneicons.eot?azyzke');
-    src:    url('#{$icomoon-font-path}/oneicons.eot?azyzke#iefix') format('embedded-opentype'),
-        url('#{$icomoon-font-path}/oneicons.ttf?azyzke') format('truetype'),
-        url('#{$icomoon-font-path}/oneicons.woff?azyzke') format('woff'),
-        url('#{$icomoon-font-path}/oneicons.svg?azyzke#oneicons') format('svg');
+    src:    url('#{$icomoon-font-path}/oneicons.eot?rxp4qr');
+    src:    url('#{$icomoon-font-path}/oneicons.eot?rxp4qr#iefix') format('embedded-opentype'),
+        url('#{$icomoon-font-path}/oneicons.ttf?rxp4qr') format('truetype'),
+        url('#{$icomoon-font-path}/oneicons.woff?rxp4qr') format('woff'),
+        url('#{$icomoon-font-path}/oneicons.svg?rxp4qr#oneicons') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -74,6 +74,11 @@
 .oneicon-checkbox-x {
     &:before {
         content: $oneicon-checkbox-x;
+    }
+}
+.oneicon-checkbox {
+    &:before {
+        content: $oneicon-checkbox;
     }
 }
 .oneicon-close {

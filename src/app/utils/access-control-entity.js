@@ -41,7 +41,6 @@ export default Ember.Object.extend({
    * Possible values:
    * - ``allow``
    * - ``deny``
-   * - ``audit``
    * @type string
    */
   type: 'allow',

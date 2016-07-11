@@ -45,8 +45,7 @@ export default {
           permissions: filePermissions,
           types: {
             allow: 'Allow',
-            deny: 'Deny',
-            audit: 'Audit'
+            deny: 'Deny'
           }
         }
       }

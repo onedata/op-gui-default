@@ -24,7 +24,7 @@ export default Ember.Component.extend({
     // { id: 'everyone', text: 'Everyone'},
   ],
 
-  types: ['allow', 'deny', 'audit'],
+  types: ['allow', 'deny'],
 
   // TODO: these actions can be probably invoked as: (action 'moveUp' ace) in view
   actions: {

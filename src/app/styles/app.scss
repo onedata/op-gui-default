@@ -314,3 +314,58 @@ $screen-lg-min: $min-width-desktop-medium;
     }
   }
 }
+
+.permission-subject-select2 {
+  .oneicon {
+    font-size: 32px;
+    position: absolute;
+    top: -2px;
+  }
+  .select2-result-label {
+    position: relative;
+    height: 32px;
+    padding: 0;
+
+    .oneicon {
+      top: 0;
+      left: 3px;
+    }
+  }
+}
+
+.modal .modal-dialog .modal-content {
+  .permission-subject-select2 {
+    &.select2-container.form-control {
+      width: auto;
+      margin-right: 8px;
+    }
+
+    .select2-choice {
+      width: 48px;
+      padding-left: 0;
+    }
+
+    .select2-chosen {
+      height: 26px;
+    }
+  }
+}
+
+.col-permission-subject-selectors {
+  display: table;
+
+  .col-permission-subject-type-select, .col-permission-subject-select {
+    display: table-cell;
+  }
+
+  .col-permission-subject-type-select {
+    width: 56px;
+  }
+
+  .col-permission-subject-select {
+    .select2-choice {
+      position: absolute;
+      width: 100%;
+    }
+  }
+}

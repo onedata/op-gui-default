@@ -17,8 +17,8 @@ export default Ember.Component.extend({
   // FIXME: translate
   // FIXME: icon
   subjectItems: [
-    {id: 'user', text: 'User'},
-    {id: 'group', text: 'Group'},
+    {id: 'user', text: new Ember.Handlebars.SafeString('<span class="oneicon oneicon-user"></span>')},
+    {id: 'group', text: new Ember.Handlebars.SafeString('<span class="oneicon oneicon-group"></span>')},
     // Not implemented yet in backend
     // { id: 'owner', text: 'Owner'},
     // { id: 'everyone', text: 'Everyone'},

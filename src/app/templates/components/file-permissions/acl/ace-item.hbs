@@ -1,36 +1,37 @@
 <div class="row">
-  <div class="col-xs-3">
-      {{select-2
-        content=subjectItems
-        value=ace.subject
-        optionValuePath="id"
-        placeholder="Subject"
-        allowClear=false
-      }}
-  </div>
-  <div class="col-xs-3">
-    {{#if (eq ace.subject 'user')}}
+  <div class="col-xs-9 col-permission-subject-selectors">
+      <div class="col-permission-subject-type-select">
         {{select-2
-          content=systemUsers
-          value=ace.user
+          content=subjectItems
+          value=ace.subject
           optionValuePath="id"
-          placeholder="User"
           allowClear=false
+          searchEnabled=false
+          cssClass="permission-subject-select2"
         }}
-    {{else if (eq ace.subject 'group')}}
-        {{select-2
-          content=systemGroups
-          value=ace.group
-          optionValuePath="id"
-          placeholder="Group"
-          allowClear=false
-        }}
-    {{/if}}
-    {{!-- else: this field should be empty --}}
+      </div>
+      <div class="col-permission-subject-select">
+        {{!-- FIXME: translations --}}
+        {{#if (eq ace.subject 'user')}}
+            {{select-2
+              content=systemUsers
+              value=ace.user
+              optionValuePath="id"
+              placeholder="Select a user"
+              allowClear=false
+            }}
+        {{else if (eq ace.subject 'group')}}
+            {{select-2
+              content=systemGroups
+              value=ace.group
+              optionValuePath="id"
+              placeholder="Select a group"
+              allowClear=false
+            }}
+        {{/if}}
+      </div>
   </div>
-  <div class="col-xs-3">
-    {{!-- TODO additional checkboxes --}}
-  </div>
+  {{!-- TODO additional checkboxes --}}
   <div class="col-xs-3 col-permission-tool">
     <div class="permission-tools">
       <a {{action 'removeSelf'}} class="permission-tool-icon remove">

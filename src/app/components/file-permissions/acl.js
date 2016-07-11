@@ -83,6 +83,22 @@ export default Ember.Component.extend({
     }
   }.property('systemGroupsModel'),
 
+  setMaxHeightFun: function() {
+    return () => {
+      $('#edit-permissions-modal .modal-dialog .modal-content .ace-items')
+        .css('max-height', $(window).height() - 300);
+    };
+  }.property().readOnly(),
+
+  didInsertElement() {
+    this.get('setMaxHeightFun')();
+    $(window).on('resize', this.get('setMaxHeightFun'));
+  },
+
+  willDestroyElement() {
+    $(window).off('resize', this.get('setMaxHeightFun'));
+  },
+
   actions: {
     removeAceItem(ace) {
       const acl = this.get('fileAcl.acl');

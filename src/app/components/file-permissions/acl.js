@@ -5,6 +5,27 @@ export default Ember.Component.extend({
   store: Ember.inject.service(),
   fileSystemTree: Ember.inject.service(),
 
+  init() {
+    this._super();
+    this.set('modal.aclComponent', this);
+
+    if (!this.get('fileAcl')) {
+      // FIXME: translate
+      this.set('error', 'File ACL could not be loaded from server');
+    }
+  },
+
+  didInsertElement() {
+    this.get('setMaxHeightFun')();
+    $(window).on('resize', this.get('setMaxHeightFun'));
+  },
+
+  willDestroyElement() {
+    this._super();
+    $(window).off('resize', this.get('setMaxHeightFun'));
+    this.set('modal.aclComponent', null);
+  },
+
   file: null,
 
   /**
@@ -12,6 +33,9 @@ export default Ember.Component.extend({
    * @type FileAcl
    */
   fileAcl: null,
+
+  error: null,
+  isLoadingModel: true,
 
   aclTmp: function() {
     return JSON.stringify(this.get('fileAcl.acl'));
@@ -30,33 +54,45 @@ export default Ember.Component.extend({
     const systemModel = `system${type.capitalize()}`;
     const thisModel = `system${type.capitalize()}sModel`;
 
-    if (this.get('dataSpace')) {
-      this.get('dataSpace.space')
-        .then(space => {
-          space.get(permModel).then(ups => {
-            const suPromises = ups.map(up => up.get(systemModel));
-            const allSuPromise = Ember.RSVP.Promise.all(suPromises);
-            allSuPromise.then(suList => {
-              this.set(thisModel, suList);
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      if (this.get('dataSpace')) {
+        this.get('dataSpace.space')
+          .then(space => {
+            space.get(permModel).then(ups => {
+              const suPromises = ups.map(up => up.get(systemModel));
+              const allSuPromise = Ember.RSVP.Promise.all(suPromises);
+              allSuPromise.then(suList => {
+                this.set(thisModel, suList);
+                resolve();
+              });
+              allSuPromise.catch(error => {
+                console.warn(`Error on getting system ${type}s for ACL: ${error.message}`);
+                this.set(thisModel, null);
+                reject();
+              });
             });
-            allSuPromise.catch(error => {
-              console.warn(`Error on getting system ${type}s for ACL: ${error.message}`);
-              this.set('systemUsersModel', null);
-            });
+          })
+          .catch(error => {
+            console.error(`Error on getting space for ACL: ${error.message}`);
+            this.set(thisModel, null);
+            reject();
           });
-        })
-        .catch(error => {
-          console.warn(`Error on getting space for ACL: ${error.message}`);
-          this.set('systemUsersModel', null);
-        });
-    }
+      }
+    });
   },
 
   // -- try to fetch system users/groups list for selector
 
   dataSpaceChanged: function() {
-    this.fetchSystemModel('user');
-    this.fetchSystemModel('group');
+    this.set('isLoadingModel', true);
+    const promises = [
+      this.fetchSystemModel('user'),
+      this.fetchSystemModel('group')
+    ];
+    Ember.RSVP.Promise.all(promises)
+      .then(() => this.set('isLoadingModel', false))
+      // TODO: translate
+      .catch(() => this.set('error', 'Users or groups data could not be loaded'));
   }.observes('dataSpace').on('init'),
 
   // -- convert systemUsers/Groups RecordArrays to selectors elements
@@ -90,14 +126,9 @@ export default Ember.Component.extend({
     };
   }.property().readOnly(),
 
-  didInsertElement() {
-    this.get('setMaxHeightFun')();
-    $(window).on('resize', this.get('setMaxHeightFun'));
-  },
-
-  willDestroyElement() {
-    $(window).off('resize', this.get('setMaxHeightFun'));
-  },
+  isReadyToSubmit: function() {
+    return !this.get('error') && !this.get('isLoadingModel');
+  }.property('error', 'isLoadingModel'),
 
   actions: {
     removeAceItem(ace) {

@@ -78,17 +78,34 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
         console.debug(`No ACL found for file ${this.get('file.id')} - new record will be created locally`);
         const newAcl = this.get('store').createRecord('file-acl', {
           file: this.get('file'),
-          acl: Ember.A([ACE.create()])
+          acl: Ember.A()
         });
         this.set('aclCache', newAcl);
         this.set('permissionsType', 'p');
       } else {
-        console.debug(`ACL for file ${this.get('file.id')} cannot be fetched due to an error: ${error.message}`);
-        // FIXME: lock possibility to edit ACL with message
+        // other errors means that the ACL exists, but it cannot be read
+        // so open ACL tab to show a error message to user
+        this.set('permissionsType', 'a');
+        console.error(`ACL for file ${this.get('file.id')} cannot be fetched due to an error: ${error.message}`);
       }
     });
     findPromise.finally(() => this.set('isLoadingType', false));
   },
+
+  isReadyToSubmit: function() {
+    switch (this.get('permissionsType')) {
+      case 'p':
+        return this.get('posixComponent.isReadyToSubmit');
+      case 'a':
+        return this.get('aclComponent.isReadyToSubmit');
+      default:
+        return false;
+    }
+  }.property(
+    'permissionsType',
+    'posixComponent.isReadyToSubmit',
+    'aclComponent.isReadyToSubmit'
+  ).readOnly(),
 
   fileChanged: function() {
     if (this.get('open') && this.get('file')) {

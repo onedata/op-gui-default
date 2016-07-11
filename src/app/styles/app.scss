@@ -232,6 +232,14 @@ $screen-lg-min: $min-width-desktop-medium;
     &:nth-child(even) {
       background-color: #F7F7F7;
     }
+
+    // styles for error messages
+    .message-icon {
+      padding-left: 15px;
+    }
+    .message-text {
+      padding-right: 15px;
+    }
   }
 
   .add-ace {
@@ -366,5 +374,11 @@ $screen-lg-min: $min-width-desktop-medium;
       position: absolute;
       width: 100%;
     }
+  }
+}
+
+.file-permissions-modal {
+  .spinner-container {
+    height: 160px;
   }
 }

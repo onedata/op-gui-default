@@ -363,10 +363,18 @@ $screen-lg-min: $min-width-desktop-medium;
 
   .col-permission-subject-type-select, .col-permission-subject-select {
     display: table-cell;
+    vertical-align: middle;
   }
 
   .col-permission-subject-type-select {
     width: 56px;
+
+    // for icons that are not in select
+    .oneicon.no-select {
+      font-size: 32px;
+      top: 2px;
+      left: -6px;
+    }
   }
 
   .col-permission-subject-select {

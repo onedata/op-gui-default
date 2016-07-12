@@ -1,8 +1,7 @@
 import Ember from 'ember';
 import { MASKS, setAclFlag, getAclFlag } from './acl-utils';
 
-export default Ember.Object.extend({
-  // FIXME: use class reopen, because it does many things at object creation!
+const ACE = Ember.Object.extend({
   init() {
     this._super();
 
@@ -13,21 +12,15 @@ export default Ember.Object.extend({
       });
       this.set('permissions', defaultPerms);
     }
-
-    // Create computed properties for each mask in form: perm_<mask_name>, eg. perm_read_object
-    Object.keys(MASKS).forEach((maskName) => {
-      this['perm_' + maskName] = Ember.computed({
-        get(/*key*/) {
-          return this.hasPermission(maskName);
-        },
-        set(key, value) {
-          this.setPermission(maskName, value);
-          return value;
-        }
-      });
-    });
   },
 
+  /**
+   * If true, the ACE is considered as a new entry, thus it should be allowed to
+   * change its subject in GUI.
+   * Remember to set this flag to true when creating new ACE in GUI, because
+   * by default it is false.
+   */
+  isNew: false,
 
   /**
    * A value containing data about permissions.
@@ -50,7 +43,6 @@ export default Ember.Object.extend({
   /**
    * @type Number
    */
-  // FIXME: mock
   user: null,
 
   /**
@@ -69,6 +61,16 @@ export default Ember.Object.extend({
    */
   subject: 'user',
 
+  /**
+   * Return a JSON representation, that is used when serializing object to
+   * FileAcl.acl array element. Values of object are get from this Ember.Object.
+   * @returns {object} backend ACL element containg attributes:
+   *  - type
+   *  - subject
+   *  - permissions
+   *  - user
+   *  - group
+   */
   toJSON() {
     return {
       type: this.get('type'),
@@ -79,17 +81,60 @@ export default Ember.Object.extend({
     };
   },
 
+  /**
+   * Checks value of specified permissions flag in ``permissions`` value has a specified
+   * Flag names can be found in ``utils/acl-utils`` ``MASKS` object.
+   * @param {string} type - name of permission flag to check
+   * @returns {boolean} true if this object got a specified permission flag
+   */
   hasPermission(type) {
     return (getAclFlag(this.get('permissions'), type));
   },
 
+  /**
+   * Modifies a ``permissions`` value to set a permission flag.
+   * Flag names can be found in ``utils/acl-utils`` ``MASKS` object.
+   * @param {string} type - name of permission flag to set
+   * @param {boolean} [value=true] - if true set flag, if false - unset
+   */
   setPermission(type, value) {
     value = (value === undefined ? true : value);
     const newPermissions = setAclFlag(this.get('permissions'), type, value);
     this.set('permissions', newPermissions);
   },
 
+  /**
+   * Unset a permissions flag - only an alias to ``this.setPermission(type, false)``
+   */
   unsetPermission(type) {
     this.setPermission(type, false);
-  }
+  },
+
+  /**
+   * True if this ACL item can be submitted to backend.
+   */
+  isValid: function() {
+    const ps = this.getProperties('subject', 'user', 'group');
+    return (ps.subject === 'user' && ps.user) ||
+      (ps.subject === 'group' && ps.group);
+  }.property('subject', 'user', 'group')
 });
+
+let computedPermissions = {};
+
+// Create computed properties for each mask in form: perm_<mask_name>, eg. perm_read_object
+Object.keys(MASKS).forEach(function(maskName) {
+  computedPermissions['perm_' + maskName] = Ember.computed({
+    get(/*key*/) {
+      return this.hasPermission(maskName);
+    },
+    set(key, value) {
+      this.setPermission(maskName, value);
+      return value;
+    }
+  });
+});
+
+ACE.reopen(computedPermissions);
+
+export default ACE;

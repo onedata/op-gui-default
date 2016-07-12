@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import { iconHTML } from '../../../helpers/icon';
 
 export default Ember.Component.extend({
   store: Ember.inject.service(),
@@ -10,19 +11,53 @@ export default Ember.Component.extend({
 
   file: null,
 
-  // To inject:
-  // systemUsers: null,
-  // systemGroups: null,
+  /**
+   * @type Array of {id: user_id, text: <displayed name>}
+   */
+  systemUsers: null,
 
-  // FIXME: translate
-  // FIXME: icon
-  subjectItems: [
-    {id: 'user', text: new Ember.Handlebars.SafeString('<span class="oneicon oneicon-user"></span>')},
-    {id: 'group', text: new Ember.Handlebars.SafeString('<span class="oneicon oneicon-group"></span>')},
-    // Not implemented yet in backend
-    // { id: 'owner', text: 'Owner'},
-    // { id: 'everyone', text: 'Everyone'},
-  ],
+  /**
+   * @type Array of {id: group_id, text: <displayed name>}
+   */
+  systemGroups: null,
+
+  subjectName: function() {
+    let subjectsListProperty;
+    let subjectIdProperty;
+    switch (this.get('ace.subject')) {
+      case 'user':
+        subjectsListProperty = 'systemUsers';
+        subjectIdProperty = 'ace.user';
+        break;
+      case 'group':
+        subjectsListProperty = 'systemGroups';
+        subjectIdProperty = 'ace.group';
+        break;
+      default:
+        return null;
+    }
+    const subjectInfo = (this.get(subjectsListProperty) || [])
+      .find(e => e.id === this.get(subjectIdProperty));
+    return subjectInfo && subjectInfo.text;
+  }.property('ace.subject', 'ace.user', 'ace.group'),
+
+  /**
+   * This should resolve subject type icon name for ace.type.
+   * Currently icon names are the same as type name.
+   */
+  subjectTypeIcon: function() {
+    return this.get('ace.subject');
+  }.property('ace.subject'),
+
+  subjectItems: function() {
+    return [
+      {id: 'user', text: iconHTML(['user'])},
+      {id: 'group', text: iconHTML(['group'])},
+      // Not implemented yet in backend
+      // {id: 'owner', text: this.generateSubjectIconHtml('owner')},
+      // {id: 'everyone', text: this.generateSubjectIconHtml('everyone')},
+    ];
+  }.property().readOnly(),
 
   types: ['allow', 'deny'],
 

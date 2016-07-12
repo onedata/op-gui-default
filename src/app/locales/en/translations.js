@@ -41,6 +41,8 @@ export default {
   components: {
     filePermissions: {
       acl: {
+        errorPrefix: 'An error occured on loading ACL settings:',
+        errorCannotLoadACL: 'File ACL could not be loaded from server',
         aceItem: {
           permissions: filePermissions,
           types: {

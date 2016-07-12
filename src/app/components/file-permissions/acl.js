@@ -9,9 +9,15 @@ export default Ember.Component.extend({
     this._super();
     this.set('modal.aclComponent', this);
 
+    // injected ACL items should be considered as non-new
+    const acl = this.get('fileAcl.acl');
+    acl.forEach(ace => ace.set('isNew', false));
+
     if (!this.get('fileAcl')) {
-      // FIXME: translate
-      this.set('error', 'File ACL could not be loaded from server');
+      this.set(
+        'error',
+        this.get('i18n').t('components.filePermissions.acl.errorCannotLoadACL')
+      );
     }
   },
 
@@ -34,12 +40,18 @@ export default Ember.Component.extend({
    */
   fileAcl: null,
 
+  /**
+   * An alias to ACE items list
+   * @type AccessControlEntity[]
+   */
+  acl: Ember.computed.alias('fileAcl.acl'),
+
   error: null,
   isLoadingModel: true,
 
   aclTmp: function() {
-    return JSON.stringify(this.get('fileAcl.acl'));
-  }.property('fileAcl.acl.@each.subject'),
+    return JSON.stringify(this.get('acl'));
+  }.property('acl.@each.subject'),
 
   // TODO: change to be better synchronized with current file
   dataSpace: Ember.computed.alias('fileSystemTree.selectedSpace'),
@@ -126,18 +138,26 @@ export default Ember.Component.extend({
     };
   }.property().readOnly(),
 
+  /**
+   * ACL is valid if all of its elements are valid.
+   */
+  isValid: function() {
+    return this.get('acl').every(ace => ace.get('isValid'));
+  }.property('acl.@each.isValid'),
+
   isReadyToSubmit: function() {
-    return !this.get('error') && !this.get('isLoadingModel');
-  }.property('error', 'isLoadingModel'),
+    return !this.get('error') && !this.get('isLoadingModel') &&
+      this.get('isValid');
+  }.property('error', 'isLoadingModel', 'isValid'),
 
   actions: {
     removeAceItem(ace) {
-      const acl = this.get('fileAcl.acl');
+      const acl = this.get('acl');
       acl.removeObject(ace);
     },
 
     moveUp(ace) {
-      const acl = this.get('fileAcl.acl');
+      const acl = this.get('acl');
       const index = acl.indexOf(ace);
       if (index > 0) {
         const tmp = acl.objectAt(index-1);
@@ -147,7 +167,7 @@ export default Ember.Component.extend({
     },
 
     moveDown(ace) {
-      const acl = this.get('fileAcl.acl');
+      const acl = this.get('acl');
       const index = acl.indexOf(ace);
       if (index < acl.length-1) {
         const tmp = acl.objectAt(index+1);
@@ -157,7 +177,9 @@ export default Ember.Component.extend({
     },
 
     createAce() {
-      this.get('fileAcl.acl').pushObject(ACE.create());
+      this.get('acl').pushObject(ACE.create({
+        isNew: true
+      }));
     }
   }
 });

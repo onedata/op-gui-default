@@ -1,33 +1,42 @@
 <div class="row">
   <div class="col-xs-9 col-permission-subject-selectors">
       <div class="col-permission-subject-type-select">
-        {{select-2
-          content=subjectItems
-          value=ace.subject
-          optionValuePath="id"
-          allowClear=false
-          searchEnabled=false
-          cssClass="permission-subject-select2"
-        }}
+        {{!-- new items should have a selector for subject --}}
+        {{#if ace.isNew}}
+          {{select-2
+            content=subjectItems
+            value=ace.subject
+            optionValuePath="id"
+            allowClear=false
+            searchEnabled=false
+            cssClass="permission-subject-select2"
+          }}
+        {{else}}
+          {{icon subjectTypeIcon "no-select"}}
+        {{/if}}
       </div>
       <div class="col-permission-subject-select">
         {{!-- FIXME: translations --}}
-        {{#if (eq ace.subject 'user')}}
-            {{select-2
-              content=systemUsers
-              value=ace.user
-              optionValuePath="id"
-              placeholder="Select a user"
-              allowClear=false
-            }}
-        {{else if (eq ace.subject 'group')}}
-            {{select-2
-              content=systemGroups
-              value=ace.group
-              optionValuePath="id"
-              placeholder="Select a group"
-              allowClear=false
-            }}
+        {{#if ace.isNew}}
+          {{#if (eq ace.subject 'user')}}
+              {{select-2
+                content=systemUsers
+                value=ace.user
+                optionValuePath="id"
+                placeholder="Select a user"
+                allowClear=false
+              }}
+          {{else if (eq ace.subject 'group')}}
+              {{select-2
+                content=systemGroups
+                value=ace.group
+                optionValuePath="id"
+                placeholder="Select a group"
+                allowClear=false
+              }}
+          {{/if}}
+        {{else}}
+          {{subjectName}}
         {{/if}}
       </div>
   </div>

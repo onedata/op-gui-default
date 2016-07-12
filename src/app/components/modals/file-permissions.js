@@ -136,9 +136,9 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
         let aclId = aclCache.get('id');
         // ACL is currently saved - so push delete
         if (aclCache.get('id')) {
-          aclCache.save().then(
-            () => {
-            },
+          let destroyAclPromise = aclCache.save();
+          promises.push(destroyAclPromise);
+          aclCache.save().catch(
             () => {
               // FIXME: notify error
               console.error(`Removing ACL record ${aclId} failed!`);
@@ -151,8 +151,10 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
         const aclPromise = this.get('aclCache').save();
         promises.push(aclPromise);
         aclPromise.catch(error => {
-          console.error(`Saving ACL for file ${this.get('aclCache.file.id')} failed: ${error.message}`);
-          // FIXME: error notify
+          // FIXME: translate
+          let msg = `Saving ACL for file ${this.get('aclCache.file.id')} failed: ${error.message}`;
+          this.get('notify').error(msg);
+          console.error(msg);
         });
       }
 
@@ -163,20 +165,23 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
       completePromise.then(() => {
         // FIXME: translate
+        this.set('open', false);
         this.get('notify').info(`New permissions for file "${this.get('file.name')}" has been set`);
       });
 
       completePromise.catch(() => {
+        // TODO: maybe this should be displayed in modal as an alert panel
         // FIXME: translate
-        this.get('notify').error(`Setting new permissions for file "${this.get('file.name')}" failed!`);
+        let msg = `Setting new permissions for file "${this.get('file.name')}" failed!`;
+        this.get('notify').error(msg);
+        console.error(msg);
       });
 
       // FIXME: success notify
       // FIXME: do not close window on failure!
       completePromise.finally(() => {
         this.setProperties({
-          isSubmitting: false,
-          open: false
+          isSubmitting: false
         });
       });
     },

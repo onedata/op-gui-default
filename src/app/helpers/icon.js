@@ -14,10 +14,21 @@ import Ember from 'ember';
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
 */
-export default Ember.Helper.helper(function(params) {
+
+/**
+ * Returns a HTML code that will insert a Onedata icon
+ *
+ * @param {String[]} params - arguments for helper
+ * @param {String} params[0] - name of an icon
+ * @param {String} params[1] - classes string
+ * @returns {Ember.Handlebars.SafeString} a HTML code
+ */
+export function iconHTML(params) {
   let name = params[0];
   let classes = params[1] || '';
 
   var html = '<span class="oneicon oneicon-'+name+' '+classes+'"></span>';
   return new Ember.Handlebars.SafeString(html);
-});
+}
+
+export default Ember.Helper.helper(iconHTML);

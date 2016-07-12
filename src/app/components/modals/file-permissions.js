@@ -1,6 +1,5 @@
 import Ember from 'ember';
 import PromiseLoadingMixin from '../../mixins/promise-loading';
-import ACE from '../../utils/access-control-entity';
 
 export default Ember.Component.extend(PromiseLoadingMixin, {
   notify: Ember.inject.service(),
@@ -16,15 +15,6 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
   file: null,
   acl: null,
-
-  // FIXME causes problems
-  // /**
-  //  * If true, all controls inside modal should be disabled.
-  //  * It indicates, that some action is pending and it's dangerous to make other actions.
-  //  */
-  // isBusy: function() {
-  //   return this.get('isSubmitting') || this.get('isLoadingType');
-  // }.property('isSubmitting', 'isLoadingType'),
 
   /**
    * Indicates that ``submit`` action is pending.
@@ -172,10 +162,12 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
       const completePromise = Ember.RSVP.Promise.all(promises);
 
       completePromise.then(() => {
+        // FIXME: translate
         this.get('notify').info(`New permissions for file "${this.get('file.name')}" has been set`);
       });
 
       completePromise.catch(() => {
+        // FIXME: translate
         this.get('notify').error(`Setting new permissions for file "${this.get('file.name')}" failed!`);
       });
 

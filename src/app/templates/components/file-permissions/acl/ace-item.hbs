@@ -20,7 +20,7 @@
         {{#if ace.isCreatedItem}}
           {{#if (eq ace.subject 'user')}}
               {{select-2
-                content=systemUsers
+                content=(sort-by "text" systemUsers)
                 value=ace.user
                 optionValuePath="id"
                 placeholder="Select a user"
@@ -28,7 +28,7 @@
               }}
           {{else if (eq ace.subject 'group')}}
               {{select-2
-                content=systemGroups
+                content=(sort-by "text" systemGroups)
                 value=ace.group
                 optionValuePath="id"
                 placeholder="Select a group"

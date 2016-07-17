@@ -111,7 +111,8 @@
 
 {{!-- EDIT PERMISSIONS --}}
 
-{{modals/file-permissions open=isEditingPermissions file=dir.singleSelectedFile}}
+{{modals/file-permissions open=isEditingPermissions files=dir.selectedFiles
+  filesType=dir.selectedFilesType}}
 
 {{!-- FILE CHUNKS --}}
 

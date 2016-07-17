@@ -1,10 +1,27 @@
 {{!-- FIXME: this should be a view like on design - table etc. --}}
 
+
+
 {{!-- FIXME submit on enter press --}}
 <div class="modal-row modal-row-main large-space">
-  {{#bs-form action="submit" model=this}}
-    {{bs-form-element controlType="number" property="permissions" autofocus=true
+
+  {{#if (eq status "different")}}
+    {{!-- FIXME translate --}}
+    <div class="modal-row">
+      Selected files have different permissions - you can reset them to common value
+    </div>
+    <div class="modal-row">
+      {{#bs-button action="resetPermissions"}}
+        {{!-- FIXME translate --}}
+        Set new permissions for all files
+      {{/bs-button}}
+    </div>
+  {{else}}
+    {{#bs-form action="submit" model=this}}
+      {{bs-form-element controlType="number" property="permissions" autofocus=true
       label=(t 'components.dataFilesListToolbar.editPermissionsModal.text')
       enter="submit"}}
-  {{/bs-form}}
+    {{/bs-form}}
+  {{/if}}
+
 </div>

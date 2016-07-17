@@ -2,7 +2,7 @@
   <div class="col-xs-9 col-permission-subject-selectors">
       <div class="col-permission-subject-type-select">
         {{!-- new items should have a selector for subject --}}
-        {{#if ace.isNew}}
+        {{#if ace.isCreatedItem}}
           {{select-2
             content=subjectItems
             value=ace.subject
@@ -17,7 +17,7 @@
       </div>
       <div class="col-permission-subject-select">
         {{!-- FIXME: translations --}}
-        {{#if ace.isNew}}
+        {{#if ace.isCreatedItem}}
           {{#if (eq ace.subject 'user')}}
               {{select-2
                 content=systemUsers
@@ -76,8 +76,6 @@
     Permissions
   </div>
   <div class="col-xs-9">
-    {{!-- {{input value=ace.permissions type='number'}} --}}
-
     {{#one-checkbox-group groupValues=ace as |enabledPermissions|}}
       {{#each permissionKeys as |permissionType|}}
         {{file-permissions/acl/permission-checkbox

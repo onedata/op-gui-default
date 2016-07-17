@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import { MASKS, setAclFlag, getAclFlag } from './acl-utils';
 
-const ACE = Ember.Object.extend({
+const ACE = Ember.Object.extend(Ember.Comparable, {
   init() {
     this._super();
 
@@ -20,7 +20,7 @@ const ACE = Ember.Object.extend({
    * Remember to set this flag to true when creating new ACE in GUI, because
    * by default it is false.
    */
-  isNew: false,
+  isCreatedItem: false,
 
   /**
    * A value containing data about permissions.
@@ -79,6 +79,11 @@ const ACE = Ember.Object.extend({
       user: this.get('user'),
       group: this.get('group')
     };
+  },
+
+  compare(other) {
+    return other &&
+      (this === other || JSON.stringify(this.toJSON()) === JSON.stringify(other.toJSON()));
   },
 
   /**

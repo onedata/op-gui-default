@@ -33,4 +33,19 @@ function getAclFlag(permissions, flagName) {
   return (permissions & mask) === mask;
 }
 
-export { MASKS, setAclFlag, getAclFlag };
+/**
+ * Merges multiple ACLs to one making a sum without duplicate elements.
+ * @param {AccessControlEntity[][]} acls
+ * @returns {AccessControlEntity[]}
+ */
+function mergeAcls(acls) {
+  // merge lists, remove duplicate elements and remove nulls
+  return [].concat.apply([], acls).reduce((newAcl, ace) => {
+    if (ace && newAcl.every(e => !ace.compare(e))) {
+      newAcl.push(ace);
+    }
+    return newAcl;
+  }, []);
+}
+
+export { MASKS, setAclFlag, getAclFlag, mergeAcls };

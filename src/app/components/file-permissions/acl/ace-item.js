@@ -115,7 +115,7 @@ export default Ember.Component.extend({
   ],
 
   permissionKeys: function() {
-    switch (this.get('file.type')) {
+    switch (this.get('fileType')) {
       case 'file':
         return this.get('filePermissionKeys');
       case 'dir':

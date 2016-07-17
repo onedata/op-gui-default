@@ -10,14 +10,15 @@ export default Ember.Component.extend({
     this.set('modal.aclComponent', this);
 
     // injected ACL items should be considered as non-new
-    const acl = this.get('fileAcl.acl');
-    acl.forEach(ace => ace.set('isNew', false));
+    const acl = this.get('acl');
 
-    if (!this.get('fileAcl')) {
+    if (!acl) {
       this.set(
         'error',
         this.get('i18n').t('components.filePermissions.acl.errorCannotLoadACL')
       );
+    } else {
+      acl.forEach(ace => ace.set('isCreatedItem', false));
     }
   },
 
@@ -36,15 +37,9 @@ export default Ember.Component.extend({
 
   /**
    * Should be injected.
-   * @type FileAcl
-   */
-  fileAcl: null,
-
-  /**
-   * An alias to ACE items list
    * @type AccessControlEntity[]
    */
-  acl: Ember.computed.alias('fileAcl.acl'),
+  acl: null,
 
   error: null,
   isLoadingModel: true,
@@ -178,7 +173,7 @@ export default Ember.Component.extend({
 
     createAce() {
       this.get('acl').pushObject(ACE.create({
-        isNew: true
+        isCreatedItem: true
       }));
     }
   }

@@ -74,4 +74,50 @@ describe('accessControlEntity', function() {
 
     expect(ace.get('perm_write_owner')).to.be.true;
   });
+
+  it('should support compare to other ACE with same properties', function() {
+    const ace1 = AccessControlEntity.create({
+      type: 'allow',
+      subject: 'user',
+      permissions: 1,
+      user: 'user1',
+      group: null
+    });
+
+    const ace2 = AccessControlEntity.create({
+      type: 'allow',
+      subject: 'user',
+      permissions: 1,
+      user: 'user1',
+      group: null
+    });
+
+    expect(ace1 === ace2).to.be.false;
+
+    expect(ace1.compare(ace2)).to.be.true;
+    expect(ace2.compare(ace1)).to.be.true;
+  });
+
+  it('should support compare to other ACE with different properties', function() {
+    const ace1 = AccessControlEntity.create({
+      type: 'allow',
+      subject: 'group',
+      permissions: 1,
+      user: null,
+      group: 'group1'
+    });
+
+    const ace2 = AccessControlEntity.create({
+      type: 'allow',
+      subject: 'user',
+      permissions: 1,
+      user: 'user1',
+      group: null
+    });
+
+    expect(ace1 === ace2).to.be.false;
+
+    expect(ace1.compare(ace2)).to.be.false;
+    expect(ace2.compare(ace1)).to.be.false;
+  });
 });

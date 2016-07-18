@@ -41,7 +41,7 @@ export default Ember.Service.extend({
 
   /**
    * String, indicates type of message box
-   * One of: info, warning, error
+   * One of: info, warning, error, loading
    */
   type: DEFAULT_TYPE,
 

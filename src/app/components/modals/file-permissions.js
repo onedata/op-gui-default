@@ -73,12 +73,10 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
    */
   model: null,
 
-  // -> set aclCache - this should be merged
-  // -> permissionsType - this should be set to
-  // -> isInconsitent -> this should be set is some are posix and some are acls
-
-  // refactor -> resolve(acl/null) - there is acl or there is no acl
-  // refactor -> reject() - you have no permissions
+  /**
+   * If true, ACL was constructed from mixed content.
+   */
+  mixedAcl: false,
 
   init() {
     this._super();
@@ -118,7 +116,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   },
 
   isReadyToSubmit: function() {
-    if (this.get('error')) {
+    if (this.get('statusBlocked')) {
       return false;
     } else {
       switch (this.get('permissionsType')) {
@@ -188,7 +186,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
         // there is no ACL at all, set editor mode to POSIX
         this.set('permissionsType', 'p');
       } else {
-        // some files have POSIX and some have ACLs, we will not continue
+        // some files have POSIX and some have ACLs
         this.set('permissionsType', 'm');
       }
     } else {
@@ -197,15 +195,36 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     }
 
     // create aclCache from available ACLs to show something in ACL editor
-    this.set('aclCache', mergeAcls(acls));
+    const mergedAcls = mergeAcls(acls);
+
+    // not very efficient...
+    const mixedAcl = mergedAcls && mergedAcls.length > 0 &&
+      (JSON.stringify(mergedAcls) !== JSON.stringify(acls[0]));
+
+    this.setProperties({
+      aclCache: mergedAcls,
+      mixedAcl: mixedAcl
+    });
   },
 
-  doNotSupportMixedPermissionsType: Ember.observer('permissionsType', function() {
+  doNotSupportMixedPermissionsType: Ember.observer('permissionsType', 'mixedLock', function() {
     if (this.get('permissionsType') === 'm') {
-      this.set('error',
+      this.setProperties({
+        statusMeta: 'mixedLock',
+        statusBlocked: true,
+        statusType: 'warning',
         // FIXME: translate
-        'Selected files have mixed permission types (POSIX/ACL), and cannot be edited.'
-      );
+        statusMessage: 'Selected files have mixed permission types (POSIX/ACL). ' +
+          'Please select new permissions type in top of this modal if tou want to set all permissions to common value.'
+      });
+    } else if (this.get('statusMeta') === 'mixedLock') {
+      // changing permissionsType from mixed to posix/acl
+      this.setProperties({
+        statusMeta: null,
+        statusBlocked: false,
+        statusType: null,
+        statusMessage: null
+      });
     }
   }),
 

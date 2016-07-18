@@ -72,12 +72,12 @@ describeComponent(
       expect(component.get('permissionsType')).to.be.equal('m');
     });
 
-    it('sets error state when changed permissionsType to mixed', function() {
+    it('sets statusBlocked to true when changed permissionsType to mixed', function() {
       const component = this.subject();
 
       component.set('permissionsType', 'm');
 
-      expect(component.get('error')).to.be.not.null;
+      expect(component.get('statusBlocked')).to.true;
     });
 
     it('sets all files permissions to posixCache in submitPosix method', function() {

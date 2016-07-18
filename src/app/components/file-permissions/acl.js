@@ -33,6 +33,23 @@ export default Ember.Component.extend({
     this.set('modal.aclComponent', null);
   },
 
+  /**
+   * If true, loaded ACL is a sum of file ACLs.
+   */
+  mixedAcl: false,
+
+  mixedAclChanged: Ember.on('init', Ember.observer('mixedAcl', function() {
+    if (this.get('mixedAcl')) {
+      this.setProperties({
+        statusBlocked: false,
+        // TODO: translate
+        statusMessage: 'A presented ACL is constructed from many file ACLs. ' +
+          'Please note that on submitting, all ACL of selected files will be replaced with ACL below.',
+        statusType: 'warning'
+      });
+    }
+  })),
+
   file: null,
 
   /**
@@ -98,8 +115,12 @@ export default Ember.Component.extend({
     ];
     Ember.RSVP.Promise.all(promises)
       .then(() => this.set('isLoadingModel', false))
-      // TODO: translate
-      .catch(() => this.set('error', 'Users or groups data could not be loaded'));
+      .catch(() => this.setProperties({
+        statusBlocked: true,
+        // TODO: translate
+        statusMessage: 'List of available users or groups could not be loaded',
+        statusType: 'error'
+      }));
   }.observes('dataSpace').on('init'),
 
   // -- convert systemUsers/Groups RecordArrays to selectors elements

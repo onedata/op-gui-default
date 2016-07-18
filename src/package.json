@@ -56,6 +56,7 @@
     "ember-spin-spinner": "0.3.0",
     "ember-truth-helpers": "1.2.0",
     "livereload": "0.4.1",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0",
+    "chai-jquery": "2.0.0"
   }
 }

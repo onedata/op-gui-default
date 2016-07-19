@@ -41,10 +41,17 @@ export default {
   components: {
     filePermissions: {
       error: 'An error occured when loading permissions data:',
+      posix: {
+        differentPermissionsMessage:
+          'Selected files have different POSIX permissions - you can reset them to common value',
+        resetPermissions: 'Set new permissions for all files'
+      },
       acl: {
         errorPrefix: 'An error occured on loading ACL settings:',
         errorCannotLoadACL: 'File ACL could not be loaded from server',
         aceItem: {
+          selectUser: 'Select a user',
+          selectGroup: 'Select a group',
           permissions: filePermissions,
           types: {
             allow: 'Allow',
@@ -82,6 +89,10 @@ export default {
       filePermissions: {
         title: 'Edit permissions',
         permissionsType: 'Permissions type',
+        mixedPermissionsMessage: 'Selected files have mixed permission types (POSIX/ACL). ' +
+          'Please select new permissions type in top of this modal if tou want to set all permissions to common value.',
+        submitSuccess: 'New permissions for selected files have been set',
+        submitFailed: 'Setting new permissions for selected files failed!',
         types: {
           posix: 'POSIX',
           acl: 'ACL'

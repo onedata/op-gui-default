@@ -16,14 +16,13 @@
         {{/if}}
       </div>
       <div class="col-permission-subject-select">
-        {{!-- FIXME: translations --}}
         {{#if ace.isCreatedItem}}
           {{#if (eq ace.subject 'user')}}
               {{select-2
                 content=(sort-by "text" systemUsers)
                 value=ace.user
                 optionValuePath="id"
-                placeholder="Select a user"
+                placeholder=(t 'components.filePermissions.acl.aceItem.selectUser')
                 allowClear=false
               }}
           {{else if (eq ace.subject 'group')}}
@@ -31,7 +30,7 @@
                 content=(sort-by "text" systemGroups)
                 value=ace.group
                 optionValuePath="id"
-                placeholder="Select a group"
+                placeholder=(t 'components.filePermissions.acl.aceItem.selectGroup')
                 allowClear=false
               }}
           {{/if}}

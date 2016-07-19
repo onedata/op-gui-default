@@ -213,9 +213,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
         statusMeta: 'mixedLock',
         statusBlocked: true,
         statusType: 'warning',
-        // FIXME: translate
-        statusMessage: 'Selected files have mixed permission types (POSIX/ACL). ' +
-          'Please select new permissions type in top of this modal if tou want to set all permissions to common value.'
+        statusMessage: this.get('i18n').t('components.modals.filePermissions.mixedPermissionsMessage')
       });
     } else if (this.get('statusMeta') === 'mixedLock') {
       // changing permissionsType from mixed to posix/acl
@@ -368,15 +366,14 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   },
 
   submitSucceed() {
-    // FIXME: translate
     this.set('open', false);
-    this.get('notify').info(`Set new permissions for selected files`);
+    const msg = this.get('i18n').t('components.filePermissions.submitSuccess');
+    this.get('notify').info(msg);
   },
 
   submitFailed() {
     // TODO: maybe this should be displayed in modal as an alert panel
-    // FIXME: translate
-    let msg = `Setting new permissions for selected file failed!`;
+    const msg = this.get('i18n').t('components.filePermissions.submitFailed');
     this.get('notify').error(msg);
     console.error(msg);
   },

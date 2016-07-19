@@ -15,11 +15,13 @@
       {{/bs-button}}
     </div>
   {{else}}
-    {{#bs-form action="submit" model=this}}
-      {{bs-form-element controlType="number" property="permissions" autofocus=true
-      label=(t 'components.dataFilesListToolbar.editPermissionsModal.text')
-      enter="submit"}}
-    {{/bs-form}}
+    <div class="control-label">
+      {{t 'components.dataFilesListToolbar.editPermissionsModal.text'}}
+    </div>
+
+    {{input type="number" value=permissions autofocus=true
+      class="form-control"
+      enter=(if arePermissionsValid "submit")}}
   {{/if}}
 
 </div>

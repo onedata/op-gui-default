@@ -13,6 +13,7 @@ const removeAclError = function(fileName) {
 export default Ember.Component.extend(PromiseLoadingMixin, {
   notify: Ember.inject.service(),
   store: Ember.inject.service(),
+  i18n: Ember.inject.service(),
 
   /** @abstract */
   modalId: null,

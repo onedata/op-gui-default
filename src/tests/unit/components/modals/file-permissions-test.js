@@ -16,13 +16,18 @@ import { resolvePromise, rejectPromise } from '../../../test-helper';
 
 import { POSIX_SPECIAL_DIFFERENT } from '../../../../components/file-permissions/posix';
 
+import { mockI18n } from 'ember-i18n-test-helpers';
+
 describeComponent(
   'modals/file-permissions',
   'ModalsFilePermissionsComponent',
   {
     // Specify the other units that are required for this test
-    // needs: [],
-    unit: true
+    needs: ['service:i18n'],
+    unit: true,
+    setup() {
+      mockI18n().withDefault('text');
+    }
   },
   function() {
     it('sets permissionsType to ACL and sets aclCache when every ACL is non-empty using handleResolvedAcls', function() {

@@ -31,10 +31,11 @@ export default Ember.Component.extend({
    * - tooltip {String} - message in tooltip (on hover)
    */
   items: function() {
-    let i18n = this.get('i18n');
-    let isSingleFileSelected = this.get('dir.singleSelectedFile');
-    let isSingleSelectedFileAFile = isSingleFileSelected && !this.get('dir.singleSelectedFile.isDir');
-    let isSomeFileSelected = this.get('dir.isSomeFileSelected');
+    const i18n = this.get('i18n');
+    const isSingleFileSelected = this.get('dir.singleSelectedFile');
+    const isSingleSelectedFileAFile = isSingleFileSelected && !this.get('dir.singleSelectedFile.isDir');
+    const isSomeFileSelected = this.get('dir.isSomeFileSelected');
+    const isMixedTypesSelected = (this.get('dir.selectedFilesType') === 'mixed');
     return [
       {
         id: 'create-dir-tool',
@@ -79,7 +80,7 @@ export default Ember.Component.extend({
         id: 'lock-file-tool',
         icon: 'lock',
         action: 'editPermissions',
-        disabled: !isSomeFileSelected,
+        disabled: !isSomeFileSelected || isMixedTypesSelected,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.permissions')
       },
       {
@@ -252,12 +253,5 @@ export default Ember.Component.extend({
       }
     },
 
-    submitEditPermissions() {
-      try {
-        this.get('dir').setSelectedFilesPermissions(this.get('newPermissions'));
-      } finally {
-        this.set('isEditingPermissions', false);
-      }
-    },
   }
 });

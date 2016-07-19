@@ -1,4 +1,5 @@
 import sessionLocales from './session';
+import filePermissions from './file-permissions';
 
 /**
  * English translation of GUI strings.
@@ -38,6 +39,27 @@ export default {
     session: sessionLocales
   },
   components: {
+    filePermissions: {
+      error: 'An error occured when loading permissions data:',
+      posix: {
+        differentPermissionsMessage:
+          'Selected files have different POSIX permissions - you can reset them to common value',
+        resetPermissions: 'Set new permissions for all files'
+      },
+      acl: {
+        errorPrefix: 'An error occured on loading ACL settings:',
+        errorCannotLoadACL: 'File ACL could not be loaded from server',
+        aceItem: {
+          selectUser: 'Select a user',
+          selectGroup: 'Select a group',
+          permissions: filePermissions,
+          types: {
+            allow: 'Allow',
+            deny: 'Deny'
+          }
+        }
+      }
+    },
     commonLoader: {
       defaultMessage: 'Loading...',
       synchronizingSpaces: 'Synchronizing user spaces...',
@@ -63,6 +85,18 @@ export default {
       renameModal: {
         renameSuccess: 'Element "{{oldName}}" renamed to "{{newName}}"',
         renameFailed: 'Element "{{oldName}}" rename to "{{newName}}" failed due to an error',
+      },
+      filePermissions: {
+        title: 'Edit permissions',
+        permissionsType: 'Permissions type',
+        mixedPermissionsMessage: 'Selected files have mixed permission types (POSIX/ACL). ' +
+          'Please select new permissions type in top of this modal if tou want to set all permissions to common value.',
+        submitSuccess: 'New permissions for selected files have been set',
+        submitFailed: 'Setting new permissions for selected files failed!',
+        types: {
+          posix: 'POSIX',
+          acl: 'ACL'
+        }
       }
     },
     spacesMenu: {
@@ -271,8 +305,8 @@ export default {
         title: 'Remove files',
         text: 'Do you want to remove selected files?'
       },
+      // TODO: to remove
       editPermissionsModal: {
-        title: 'Edit permissions',
         text: 'Enter new file permissions code:'
       },
       fileChunksModal: {

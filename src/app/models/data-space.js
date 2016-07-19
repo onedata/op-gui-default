@@ -15,6 +15,8 @@ export default DS.Model.extend({
   /** A root directory with space files. It must be a "dir" file! */
   rootDir: DS.belongsTo('file', {async: true}),
 
+  space: DS.belongsTo('space', {async: true}),
+
   // // TODO this does not work because does not loads rootDir...
   // validateRootDir: function() {
   //   let rootDir = this.get('rootDir');

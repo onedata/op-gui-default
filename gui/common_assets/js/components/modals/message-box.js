@@ -22,10 +22,6 @@ export default Ember.Component.extend({
    */
   type: Ember.computed.alias('messageBox.type'),
 
-  iconClass: function() {
-    return this.get('type') + ' oneicon oneicon-sign-' + this.get('type');
-  }.property('type'),
-
   actions: {
     closed() {
       this.get('messageBox')._resetProperties();

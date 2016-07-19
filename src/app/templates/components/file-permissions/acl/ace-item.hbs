@@ -1,0 +1,88 @@
+<div class="row">
+  <div class="col-xs-9 col-permission-subject-selectors">
+      <div class="col-permission-subject-type-select">
+        {{!-- new items should have a selector for subject --}}
+        {{#if ace.isCreatedItem}}
+          {{select-2
+            content=subjectItems
+            value=ace.subject
+            optionValuePath="id"
+            allowClear=false
+            searchEnabled=false
+            cssClass="permission-subject-select2"
+          }}
+        {{else}}
+          {{icon subjectTypeIcon "no-select"}}
+        {{/if}}
+      </div>
+      <div class="col-permission-subject-select">
+        {{#if ace.isCreatedItem}}
+          {{#if (eq ace.subject 'user')}}
+              {{select-2
+                content=(sort-by "text" systemUsers)
+                value=ace.user
+                optionValuePath="id"
+                placeholder=(t 'components.filePermissions.acl.aceItem.selectUser')
+                allowClear=false
+              }}
+          {{else if (eq ace.subject 'group')}}
+              {{select-2
+                content=(sort-by "text" systemGroups)
+                value=ace.group
+                optionValuePath="id"
+                placeholder=(t 'components.filePermissions.acl.aceItem.selectGroup')
+                allowClear=false
+              }}
+          {{/if}}
+        {{else}}
+          {{subjectName}}
+        {{/if}}
+      </div>
+  </div>
+  {{!-- TODO additional checkboxes --}}
+  <div class="col-xs-3 col-permission-tool">
+    <div class="permission-tools">
+      <a {{action 'removeSelf'}} class="permission-tool-icon remove">
+        {{icon 'remove'}}
+      </a>
+      <a {{action 'moveUp'}} class="permission-tool-icon move-up">
+        {{icon 'move-up'}}
+      </a>
+      <a {{action 'moveDown'}} class="permission-tool-icon move-down">
+        {{icon 'move-down'}}
+      </a>
+    </div>
+  </div>
+</div>
+<div class="row row-permissions-types">
+  <div class="col-xs-3 one-option-button-line">
+    Type
+  </div>
+  <div class="col-xs-9">
+    {{#one-radio-group groupValue=ace.type as |enabledType|}}
+      {{#each types as |type|}}
+        {{one-radio-button
+          label=(t (concat 'components.filePermissions.acl.aceItem.types.' type))
+          value=type
+          groupValue=enabledType
+          }}
+      {{/each}}
+    {{/one-radio-group}}
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-3 one-option-button-line">
+    Permissions
+  </div>
+  <div class="col-xs-9">
+    {{#one-checkbox-group groupValues=ace as |enabledPermissions|}}
+      {{#each permissionKeys as |permissionType|}}
+        {{file-permissions/acl/permission-checkbox
+          name=permissionType
+          ace=ace
+          groupValues=enabledPermissions
+        }}
+      {{/each}}
+    {{/one-checkbox-group}}
+  </div>
+</div>

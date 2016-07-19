@@ -1,6 +1,8 @@
 {{#if (or message messagePrefix)}}
   <div class="alert {{alertClass}}">
-    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    {{#if closeButton}}
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    {{/if}}
     {{#if messagePrefix}}
       <strong>{{messagePrefix}}</strong>
     {{/if}}

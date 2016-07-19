@@ -80,3 +80,24 @@
     transform: translateY(-50%) !important;
   }
 }
+
+/// full width rows with padding
+.modal-row.modal-row-main {
+  padding: 25px 30px;
+  margin-top: 0;
+  margin-bottom: 0;
+
+  &:not(:last-child) {
+    border-bottom: solid 1px #D8D8D7;
+  }
+
+  &.heading {
+    background-color: #F7F7F7;
+
+    h1 {
+      line-height: 18px;
+      font-size: 18px;
+      margin: 10px 0;
+    }
+  }
+}

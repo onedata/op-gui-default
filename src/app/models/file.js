@@ -184,6 +184,15 @@ export default DS.Model.extend({
     }
   }.property('children.@each.isSelected'),
 
+  selectedFilesType: function() {
+    const sf = this.get('selectedFiles');
+    if (sf.length > 0 && sf.every(f => f.get('type') === sf[0].get('type'))) {
+      return sf[0].get('type');
+    } else {
+      return 'mixed';
+    }
+  }.property('selectedFiles.@each.type'),
+
   singleSelectedFile: function() {
     if (this.get('isDir')) {
       let selected = this.get('selectedFiles');

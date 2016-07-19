@@ -1,0 +1,27 @@
+{{!-- TODO: this should be a view like on design - table etc. (VFS-2298) --}}
+
+
+
+{{!-- FIXME submit on enter press --}}
+<div class="modal-row modal-row-main large-space">
+
+  {{#if (eq status "different")}}
+    <div class="modal-row">
+      {{t 'components.filePermissions.posix.differentPermissionsMessage'}}
+    </div>
+    <div class="modal-row">
+      {{#bs-button action="resetPermissions"}}
+        {{t 'components.filePermissions.posix.resetPermissions'}}
+      {{/bs-button}}
+    </div>
+  {{else}}
+    <div class="control-label">
+      {{t 'components.dataFilesListToolbar.editPermissionsModal.text'}}
+    </div>
+
+    {{input type="number" value=permissions autofocus=true
+      class="form-control"
+      enter=(if arePermissionsValid "submit")}}
+  {{/if}}
+
+</div>

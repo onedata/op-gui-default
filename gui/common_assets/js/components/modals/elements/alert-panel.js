@@ -29,6 +29,13 @@ export default Ember.Component.extend(ModalMixin, {
    */
   messageType: null,
 
+  /**
+   * If true, it renders a close button which allows to dismiss the message.
+   * @type boolean
+   * @default true
+   */
+  closeButton: true,
+
   /** CSS class for Bootstrap alert panel which is displayed after request complete */
   alertClass: function() {
     return `alert-${this.get('messageType')}`;

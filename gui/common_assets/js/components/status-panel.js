@@ -1,5 +1,16 @@
 import Ember from 'ember';
 
+/**
+ * A container for a content, that can be set to display:
+ * - **blocking message** - only message is visible, content is hidden
+ * - **non-blocking message** - a message is displayed on top of content (both are visible)
+ * - **no message** - only content is displayed
+ *
+ * @module components/status-panel
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
   /**
    * Indicate if status should be only content of this widget.

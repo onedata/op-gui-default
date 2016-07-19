@@ -1,6 +1,14 @@
 import Ember from 'ember';
 import { iconHTML } from '../../../helpers/icon';
 
+/**
+ * A graphical representation of single ``AccessControlEntity``.
+ *
+ * @module components/ace-item
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
   store: Ember.inject.service(),
 

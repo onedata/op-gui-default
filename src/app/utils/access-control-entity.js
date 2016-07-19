@@ -1,6 +1,18 @@
 import Ember from 'ember';
 import { MASKS, setAclFlag, getAclFlag } from './acl-utils';
 
+/**
+ * Exports a class that represents an item of a ACL.
+ *
+ * Beside properties and functions described in class jsdoc, it has ``perm_*`` properties
+ * which internally uses ``permissions`` property by reading/writing flags of number.
+ *
+ * @module utils/access-control-entity
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 const ACE = Ember.Object.extend(Ember.Comparable, {
   init() {
     this._super();
@@ -81,8 +93,13 @@ const ACE = Ember.Object.extend(Ember.Comparable, {
     };
   },
 
+  /**
+   * Performs comparison of two ACE elements using properties from JSON representation.
+   * @param other Instance of ``AccessControlEntity`` to compare with this
+   * @returns {boolean}
+   */
   compare(other) {
-    return other &&
+    return !!other &&
       (this === other || JSON.stringify(this.toJSON()) === JSON.stringify(other.toJSON()));
   },
 

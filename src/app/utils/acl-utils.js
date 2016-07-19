@@ -1,3 +1,12 @@
+/**
+ * Contains utils for manipulating ACLs and ACL items (ACE).
+ *
+ * @module utils/acl-utils
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 const MASKS = {
   read_object:          0x00000001,
   list_container:       0x00000001,
@@ -19,6 +28,13 @@ const MASKS = {
   write_owner:          0x00080000,
 };
 
+/**
+ * Change single flag of ACE.
+ * @param {number} permissions Initial permissions to change representation
+ * @param {string} flagName One of flag names defined in ``MASKS``
+ * @param {boolean} [value=true] A new value of specified flag in permissions
+ * @returns {number} a new permissions number values
+ */
 function setAclFlag(permissions, flagName, value) {
   if (value === undefined) {
     value = true;
@@ -28,6 +44,12 @@ function setAclFlag(permissions, flagName, value) {
     (permissions | mask) : (permissions & ~mask);
 }
 
+/**
+ * Get value of single flag of ACE.
+ * @param {number} permissions Number representation of ACE perms
+ * @param {string} flagName Name of permission mask to get (``MASKS``)
+ * @returns {boolean} Value of specific permission
+ */
 function getAclFlag(permissions, flagName) {
   const mask = MASKS[flagName];
   return (permissions & mask) === mask;

@@ -1,3 +1,13 @@
+// TODO: box-shadow none?
+.btn {
+  border: none !important;
+  padding: 10px 40px;
+
+  .oneicon {
+    font-size: 40px;
+  }
+}
+
 @mixin button-background-colors($fg-color, $base-bg-color) {
   color: $fg-color !important;
   background-color: $base-bg-color;
@@ -19,16 +29,6 @@
 
   &:active:focus, &:active:hover, &:focus, &:active {
     background-color: darken($base-bg-color, 10%);
-  }
-}
-
-// TODO: box-shadow none?
-.btn {
-  border: none !important;
-  padding: 10px 40px;
-
-  .oneicon {
-    font-size: 40px;
   }
 }
 

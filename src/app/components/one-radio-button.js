@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  classNames: ['one-radio-button', 'col-xs-4'],
+  classNames: ['one-option-button', 'col-xs-4'],
 
   checked: function() {
     return this.get('groupValue') === this.get('value');

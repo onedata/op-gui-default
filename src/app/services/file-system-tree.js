@@ -8,11 +8,23 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Service.extend(Ember.Evented, {
-  store: Ember.inject.service('store'),
+  store: Ember.inject.service(),
 
   spaces: null,
   selectedSpace: null,
   prevSelectedSpace: null,
+
+
+  /**
+   * Stores ids of dirs that cannot be opened (eg. were rejected on request to backend).
+   * @type Set<String>
+   */
+  failedDirs: null,
+
+  init() {
+    this._super();
+    this.set('failedDirs', new Set());
+  },
 
   rootSpaces: function() {
     let rootSpaces = {};

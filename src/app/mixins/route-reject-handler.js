@@ -37,8 +37,17 @@ export default Ember.Mixin.create({
       (error ? (': ' + error.message) : '');
   },
 
-  actionOnReject(err) {
-    this.get('notify').error(this.rejectMessage(err));
+
+  /**
+   * actionOnReject - Default implementation of reject handler - redirects to
+   * route defined by ``fallbackRoute`` property.
+   *
+   * @param  {type} err     object passed from promise reject
+   * @param  {type} [data] additional data that is passed from ``handleReject``
+   *  It's not used in this default implementation, but can be used in custom impl.
+   */
+  actionOnReject(err/*, data*/) {
+    this.get('notify').error(this.rejectMessage(err && (err.message || err)));
     this.transitionTo(this.get('fallbackRoute'));
   },
 
@@ -46,10 +55,11 @@ export default Ember.Mixin.create({
    * Adds a rejection handler for any promise, returning to the specified by
    * 'fallbackRoute' property route.
    * @param {RSVP.Promise} promise - A promise (e.g. returned from route's model())
+   * @param {*} [data] - Additional data that will be passed to ``handleReject``
    * @returns {RSVP.Promise} An original promise with error handler
    */
-  handleReject(promise) {
-    return promise.catch((err) => this.actionOnReject(err));
+  handleReject(promise, data) {
+    return promise.catch((err) => this.actionOnReject(err, data));
   },
 
   // TODO: maybe specific error messages

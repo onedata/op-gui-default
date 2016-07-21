@@ -15,7 +15,7 @@ export default Ember.Controller.extend({
     return `${this.get('i18n').t('data.dataSpace.title')} "${this.get('model.name')}"`;
   }.property('model.name'),
 
-  onDataSpaceChange: function() {
+  setSelectedSpace: function() {
     if (this.get('model')) {
       this.set('fileSystemTree.selectedSpace', this.get('model'));
     }

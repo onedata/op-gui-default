@@ -125,12 +125,21 @@ export default Ember.Component.extend({
     },
 
     createSpaceModalOpened() {
-      this.set('newSpaceName', null);
+      this.setProperties({
+        newSpaceName: null,
+        isSavingSpace: false
+      });
     },
 
     submitCreateSpace() {
+      if (this.get('isCreatingSpace')) {
+        this.set('isSavingSpace', true);
+        this.send('_submitCreateSpace');
+      }
+    },
+
+    _submitCreateSpace() {
       // set isSavingSpace one more time, because we can reach this action from input text
-      this.set('isSavingSpace', true);
       let name = this.get('newSpaceName');
       let s = this.get('store').createRecord('space', {
         name: name

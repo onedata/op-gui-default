@@ -184,11 +184,20 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     },
 
     createGroupModalOpened() {
-      this.set('newGroupName', null);
+      this.setProperties({
+        newGroupName: null,
+        isSavingGroup: false
+      });
     },
 
     submitCreateGroup() {
-      // isSaving flag is set by spin-button on click
+      if (this.get('isCreatingGroup')) {
+        this.set('isSavingGroup', true);
+        this.send('_submitCreateGroup');
+      }
+    },
+
+    _submitCreateGroup() {
       let name = this.get('newGroupName');
       let s = this.get('store').createRecord('group', {
         name: name
@@ -209,10 +218,13 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
           s.deleteRecord();
         }
       );
-      savePromise.finally(() => this.setProperties({
-        isCreatingGroup: false,
-        isSavingGroup: false
-      }));
+      savePromise.finally(() => {
+        this.setProperties({
+          isCreatingGroup: false,
+          isSavingGroup: false,
+        });
+        console.error('finally saved');
+      });
     },
 
     startJoinGroup() {
@@ -249,27 +261,32 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
       try {
         let group = this.get('modalGroup');
         let groupName = group.get('name');
-        this.promiseLoading(this.get('oneproviderServer').userLeaveGroup(group.get('id')))
-          .then(
-            () => {
-              group.deleteRecord();
-              let message = this.get('i18n').t('components.groupsMenu.notify.leaveSuccess', {
-                name: groupName
-              });
-              this.get('notify').info(message);
-              if (group.get('id') === this.get('activeGroup.id')) {
-                this.sendAction('goToGroup', null);
-              }
-            },
-            (error) => {
-              console.log(`Leave group ${groupName} failed ${error.message}`);
-              let message = this.get('i18n').t('components.groupsMenu.notify.leaveFailed', {
-                name: groupName
-              });
-              message = message + ': ' + error.message;
-              this.get('notify').error(message);
+        const p = this.promiseLoading(this.get('oneproviderServer').userLeaveGroup(group.get('id')));
+        p.then(
+          () => {
+            group.deleteRecord();
+            let message = this.get('i18n').t('components.groupsMenu.notify.leaveSuccess', {
+              name: groupName
+            });
+            this.get('notify').info(message);
+            if (group.get('id') === this.get('activeGroup.id')) {
+              this.sendAction('goToGroup', null);
             }
+          },
+          (error) => {
+            console.log(`Leave group ${groupName} failed ${error.message}`);
+            let message = this.get('i18n').t('components.groupsMenu.notify.leaveFailed', {
+              name: groupName
+            });
+            message = message + ': ' + error.message;
+            this.get('notify').error(message);
+          }
         );
+        p.finally(() => this.setProperties({
+          modalGroup: null,
+          openedModel: null,
+          isLeaveModalOpened: false
+        }));
       } finally {
         this.setProperties({
           modalGroup: null,

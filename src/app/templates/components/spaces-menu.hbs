@@ -36,11 +36,11 @@
 
     {{input type="text" value=newSpaceName autofocus=true
       class="form-control"
-      enter=(if newSpaceName "submitCreateSpace")}}
+      enter=(if (and newSpaceName (not isSavingSpace)) "submitCreateSpace")}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata
-      action="submitCreateSpace"
+      action=(unless isSavingSpace "submitCreateSpace")
       class="btn btn-primary no-outline" spinnerColor="#fff"
       inFlight=isSavingSpace disabled=(or (unless newSpaceName true) isSavingSpace)}}
       {{t "common.modal.create"}}

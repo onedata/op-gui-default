@@ -32,11 +32,11 @@
 
     {{input type="text" value=newGroupName autofocus=true
       class="form-control"
-      enter=(if newGroupName "submitCreateGroup")}}
+      enter=(if (and newGroupName (not isSavingGroup)) "submitCreateGroup")}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata
-      action="submitCreateGroup"
+      action=(unless isSavingGroup "submitCreateGroup")
       class="btn btn-primary no-outline" spinnerColor="#fff"
       inFlight=isSavingGroup disabled=(or (unless newGroupName true) isSavingGroup)}}
       {{t "common.modal.create"}}

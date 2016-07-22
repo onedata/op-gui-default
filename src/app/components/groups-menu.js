@@ -184,11 +184,20 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     },
 
     createGroupModalOpened() {
-      this.set('newGroupName', null);
+      this.setProperties({
+        newGroupName: null,
+        isSavingGroup: false
+      });
     },
 
     submitCreateGroup() {
-      this.set('isSavingGroup', true);
+      if (this.get('isCreatingGroup')) {
+        this.set('isSavingGroup', true);
+        this.send('_submitCreateGroup');
+      }
+    },
+
+    _submitCreateGroup() {
       let name = this.get('newGroupName');
       let s = this.get('store').createRecord('group', {
         name: name
@@ -209,10 +218,13 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
           s.deleteRecord();
         }
       );
-      savePromise.finally(() => this.setProperties({
-        isCreatingGroup: false,
-        isSavingGroup: false
-      }));
+      savePromise.finally(() => {
+        this.setProperties({
+          isCreatingGroup: false,
+          isSavingGroup: false,
+        });
+        console.error('finally saved');
+      });
     },
 
     startJoinGroup() {

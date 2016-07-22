@@ -73,5 +73,17 @@ export default Ember.Route.extend(RouteRejectHandler, {
         outlet: 'dir'
       });
     }
+  },
+
+
+  /**
+   * actionOnReject - Adds a failed dir to set of failed dirs in fileSystemTree
+   *
+   * @param {String} data An ID of dir that failed to load
+   */
+  actionOnReject(err, data) {
+    this.get('fileSystemTree.failedDirs').add(data);
+
+    this._super();
   }
 });

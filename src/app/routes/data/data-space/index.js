@@ -8,16 +8,43 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Route.extend({
-  /** Transit to root dir of current DataSpace */
-  afterModel() {
-    let dataSpace = this.modelFor('data.data-space');
-    let rootDir = dataSpace.get('rootDir');
+  fileSystemTree: Ember.inject.service(),
 
-    if (rootDir && rootDir.get('id')) {
-      console.debug(`Redirecting to root dir "${rootDir.get('id')}" of space "${dataSpace.get('id')}"`);
-      this.transitionTo('data.data-space.dir', rootDir.get('id'));
+  model() {
+    return this.modelFor('data.data-space');
+  },
+
+  /** Transit to root dir of current DataSpace */
+  afterModel(dataSpace) {
+    let rootDir = dataSpace.get('rootDir');
+    const rootDirId = rootDir.get('id');
+
+    if (rootDir && rootDirId) {
+      if (this.isDirOnFailedList(rootDirId)) {
+        this.set('invalidRootDir', true);
+      } else {
+        this.set('invalidRootDir', false);
+        console.debug(`Redirecting to root dir "${rootDir.get('id')}" of space "${dataSpace.get('id')}"`);
+        this.transitionTo('data.data-space.dir', rootDir.get('id'));
+      }
     } else {
       console.warn(`Data space "${dataSpace.get('id')}" has no rootDir!`);
     }
   },
+
+  isDirOnFailedList(dirId) {
+    const failList = this.get('fileSystemTree.failedDirs');
+    return failList ? failList.has(dirId) : false;
+  },
+
+  renderTemplate() {
+    if (this.get('invalidRootDir')) {
+      this.render('data.dataSpace.dir.error', {
+        into: 'data',
+        outlet: 'dir'
+      });
+    } else {
+      this._super();
+    }
+  }
 });

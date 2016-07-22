@@ -28,22 +28,6 @@
     }
   }
 
-  &.main-content {
-    left: $sidebar-width;
-    top: $top-bar-height;
-  }
-
-  &.secondary-sidebar {
-    left: $sidebar-width;
-    width: $secondary-sidebar-width;
-    top: $top-bar-height;
-  }
-
-  &.content {
-    left: $sidebar-width + $secondary-sidebar-width;
-    top: $top-bar-height;
-  }
-
   &.semi-transparent {
     background-color: rgba($onedata-light-gray, 0.75);
   }

@@ -63,7 +63,7 @@ $screen-lg-min: $min-width-desktop-medium;
     @import 'components/one-table-common';
     @import 'components/one-table-desktop';
     @import 'components/dropdown';
-    @import 'components/common-loader';
+    @import 'components/common-loader-op';
 }
 
 @media screen
@@ -76,7 +76,7 @@ $screen-lg-min: $min-width-desktop-medium;
     @import 'components/one-table-common';
     @import 'components/one-table-desktop';
     @import 'components/dropdown';
-    @import 'components/common-loader';
+    @import 'components/common-loader-op';
 }
 
 @media screen
@@ -89,7 +89,7 @@ $screen-lg-min: $min-width-desktop-medium;
     @import 'components/one-table-common';
     @import 'components/one-table-desktop';
     @import 'components/dropdown';
-    @import 'components/common-loader';
+    @import 'components/common-loader-op';
 }
 
 @media screen
@@ -126,4 +126,5 @@ $screen-lg-min: $min-width-desktop-medium;
 @import 'components/one-option-button';
 @import 'components/file-permissions';
 @import 'components/select2';
-@import 'components/message-box-modal'
+@import 'components/message-box-modal';
+@import 'components/common-loader';

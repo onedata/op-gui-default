@@ -12,12 +12,30 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   commonLoader: Ember.inject.service(),
 
-  classNames: ['common-loader'],
-  classNameBindings: ['isLoading::hidden'],
+  classNames: ['common-loader', 'semi-transparent'],
+  classNameBindings: ['isLoading::hidden', 'area'],
 
+  area: Ember.computed.alias('commonLoader.area'),
+  type: Ember.computed.alias('commonLoader.type'),
   isLoading: Ember.computed.alias('commonLoader.isLoading'),
   message: Ember.computed.alias('commonLoader.message'),
   messageSecondary: Ember.computed.alias('commonLoader.messageSecondary'),
+
+  // if we turn off loader, reset all properties
+  isLoadingChanged: Ember.observer('isLoading', function() {
+    if (!this.get('isLoading')) {
+      this.resetProperties();
+    }
+  }),
+
+  resetProperties() {
+    this.setProperties({
+      message: null,
+      messageSecondary: null,
+      area: null,
+      type: null,
+    });
+  },
 
   registerInService: function() {
     this.set('commonLoader.component', this);

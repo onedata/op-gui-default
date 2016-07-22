@@ -15,6 +15,8 @@ export default Ember.Component.extend({
   fileBrowser: Ember.inject.service(),
   notify: Ember.inject.service(),
   fileUpload: Ember.inject.service(),
+  commonLoader: Ember.inject.service(),
+  i18n: Ember.inject.service(),
 
   classNames: ['data-files-list'],
 
@@ -38,8 +40,27 @@ export default Ember.Component.extend({
    * but also checks if fileUpload is locked.
    */
   isLoadingFiles: function() {
-    return this.get('fileUpload.locked') || this.get('files').any((f) => !f.get('isLoaded'));
-  }.property('files', 'files.[]', 'files.@each.isLoaded', 'fileUpload.locked'),
+    return this.get('fileUpload.locked') ||
+      !!this.get('files').any((f) => !f.get('isLoaded')) ||
+      this.get('files.isUpdating');
+  }.property('files.isUpdating', 'files', 'files.[]', 'files.@each.isLoaded', 'fileUpload.locked'),
+
+  toggleLoader: Ember.on('init', Ember.observer('isLoadingFiles', 'commonLoader.isLoading', 'commonLoader.type', function() {
+    if (this.get('isLoadingFiles')) {
+      // prevent loader stealing
+      if (!this.get('commonLoader.isLoading')) {
+        this.get('commonLoader').setProperties({
+          isLoading: true,
+          message: this.get('i18n').t('components.dataFilesList.updatingMessage'),
+          area: 'content',
+          type: 'filesUpdate'
+        });
+      }
+    // prevent closing other types of loader
+    } else if (this.get('commonLoader.type') === 'filesUpdate') {
+      this.set('commonLoader.isLoading', false);
+    }
+  })),
 
   didInsertElement() {
     this.dirChanged();

@@ -274,7 +274,8 @@ export default {
       size: 'size',
       modification: 'modification',
       permissions: 'permissions',
-      fileIsBroken: 'This file is not synced yet'
+      fileIsBroken: 'This file is not synced yet',
+      updatingMessage: 'Updating files list...'
     },
     dataFilesListToolbar: {
       tooltip: {
@@ -399,7 +400,8 @@ export default {
         title: 'File browser',
         file: {
           title: 'File details'
-        }
+        },
+        loaderMessage: 'Loading file browser...'
       }
     }
   }

@@ -15,4 +15,11 @@ export default Ember.Service.extend({
   isLoading: false,
   message: null,
   messageSecondary: null,
+
+  /**
+   * Where fixed loader should be placed.
+   * One of: main-content, secondary-sidebar, content
+   * @type string
+   */
+  area: 'main-content',
 });

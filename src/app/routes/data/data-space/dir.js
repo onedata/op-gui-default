@@ -12,12 +12,15 @@ export default Ember.Route.extend(RouteRejectHandler, {
   fileSystemTree: Ember.inject.service(),
   dataFilesTree: Ember.inject.service(),
   notify: Ember.inject.service(),
+  commonLoader: Ember.inject.service(),
 
   fallbackRoute: 'data.data-space.index',
 
   model(params) {
     // TODO: check if loaded dir belongs to loaded space (data/data-space model)?
-    return this.handleReject(this.store.findRecord('file', params.dir_id));
+    const p = this.handleReject(this.store.findRecord('file', params.dir_id));
+    p.finally(() => this.set('commonLoader.isLoading', false));
+    return p;
   },
 
   afterModel(file/*, transition*/) {
@@ -58,7 +61,12 @@ export default Ember.Route.extend(RouteRejectHandler, {
     Render it in "data" template, because it's a master view of a data browser.
   */
   renderTemplate() {
-    if (!this.get('invalid')) {
+    if (this.get('invalid')) {
+      this.render('data.dataSpace.dir.error', {
+        into: 'data',
+        outlet: 'dir'
+      });
+    } else {
       this.render('data.dataSpace.dir.dirToolbar', {
         into: 'application',
         outlet: 'toolbar'
@@ -67,14 +75,8 @@ export default Ember.Route.extend(RouteRejectHandler, {
         into: 'data',
         outlet: 'dir'
       });
-    } else {
-      this.render('data.dataSpace.dir.error', {
-        into: 'data',
-        outlet: 'dir'
-      });
     }
   },
-
 
   /**
    * actionOnReject - Adds a failed dir to set of failed dirs in fileSystemTree
@@ -85,5 +87,15 @@ export default Ember.Route.extend(RouteRejectHandler, {
     this.get('fileSystemTree.failedDirs').add(data);
 
     this._super();
+  },
+
+  actions: {
+    loading() {
+      this.get('commonLoader').setProperties({
+        isLoading: true,
+        message: this.get('i18n').t('data.dataSpace.dir.loaderMessage'),
+        area: 'content'
+      });
+    }
   }
 });

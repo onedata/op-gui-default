@@ -14,6 +14,7 @@ export default Ember.Service.extend(Ember.Evented, {
   selectedSpace: null,
   prevSelectedSpace: null,
 
+  isLoading: null,
 
   /**
    * Stores ids of dirs that cannot be opened (eg. were rejected on request to backend).

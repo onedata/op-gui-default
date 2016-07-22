@@ -18,17 +18,8 @@ export default Ember.Route.extend(RouteRejectHandler, {
     return this.handleReject(this.store.findRecord('data-space', params.data_space_id));
   },
 
-  afterModel(dataSpace) {
-    if (dataSpace) {
-      Ember.run.scheduleOnce('afterRender', this, function() {
-        console.debug('selected data-space: ' + dataSpace.get('id'));
-        // TODO: this should use data-spaces-select service or something...
-      });
-    }
-  },
-
   activate() {
-    this.controllerFor(this.routeName).onDataSpaceChange();
+    this.controllerFor(this.routeName).setSelectedSpace();
   },
 
   renderTemplate() {

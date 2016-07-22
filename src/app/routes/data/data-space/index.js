@@ -25,10 +25,13 @@ export default Ember.Route.extend({
       } else {
         this.set('invalidRootDir', false);
         console.debug(`Redirecting to root dir "${rootDir.get('id')}" of space "${dataSpace.get('id')}"`);
-        this.transitionTo('data.data-space.dir', rootDir.get('id'));
+        Ember.run.scheduleOnce('afterRender', this, function() {
+          this.transitionTo('data.data-space.dir', rootDir.get('id'));
+        });
       }
     } else {
       console.warn(`Data space "${dataSpace.get('id')}" has no rootDir!`);
+      this.set('invalidRootDir', true);
     }
   },
 

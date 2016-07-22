@@ -20,6 +20,7 @@ export default Ember.Controller.extend({
     }
   },
 
+  // TODO: this code can cause problems when changing default space
   onDataSpacesChange: function() {
     this.goToDefaultDataSpace();
   }.observes('model.[]'),

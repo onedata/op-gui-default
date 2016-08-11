@@ -1,7 +1,8 @@
 <ul>
   {{#each visibleSubdirsSorted as |file|}}
     <li class="{{levelClass}}">
-      <div id="tree-dir-{{file.id}}" class="secondary-sidebar-item dir-item single-selectable onedata-red">
+      <div id="tree-dir-{{file.id}}"
+        class="secondary-sidebar-item dir-item single-selectable onedata-red {{if (eq file.id fileBrowser.dir.id) 'active'}}">
         <span class="item-element item-icon" {{action 'toggleDir' file}}>
           {{#if file.isExpanded}}
             {{icon "folder-open" "color-directory"}}

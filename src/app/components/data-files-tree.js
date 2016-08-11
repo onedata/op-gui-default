@@ -11,14 +11,15 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
+  fileBrowser: Ember.inject.service(),
   fileSystemTreeService: Ember.inject.service('fileSystemTree'),
 
   classNames: ['data-files-tree'],
 
   /**
-    Reference to File - root of the filesystem showed in tree.
-    Note, that only chilren of this File will be showed in tree (root will be hidden).
-  */
+   * Reference to File - root of the filesystem showed in tree.
+   * @type File
+   */
   rootDir: null,
 
   /*** Bind with main-menu service, TODO: use mixin or something? ***/

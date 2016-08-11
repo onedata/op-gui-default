@@ -69,7 +69,12 @@ export default Ember.Component.extend({
   },
 
   dirChanged: function() {
-    this.set('fileUpload.dir', this.get('dir'));
+    const dir = this.get('dir');
+    this.setProperties({
+      'fileUpload.dir': dir,
+      'fileBrowser.dir': dir
+    });
+    this.get('fileSystemTree').expandDir(dir);
   }.observes('dir'),
 
   actions: {

@@ -1,7 +1,7 @@
 <ul>
   <li>
     <div id="tree-dir-{{rootDir.id}}"
-      class="secondary-sidebar-item root-item dir-item single-selectable onedata-red">
+      class="secondary-sidebar-item root-item dir-item single-selectable onedata-red {{if (eq rootDir.id fileBrowser.dir.id) 'active' ''}}">
       <div class="item-element item-click-area" {{action 'openDirInBrowser' rootDir}}>
         <span class="item-element item-icon">
           {{icon "folder-open" "color-directory"}}

@@ -11,6 +11,13 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
+  fileBrowser: Ember.inject.service(),
+  
+  /**
+   * To inject - a dir which this node represents
+   */
+  rootDir: null,
+
   /**
     Level of subdirectory in tree.
     Currently only 6 levels are diplayed correctly!

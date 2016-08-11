@@ -46,14 +46,6 @@ export default Ember.Route.extend(RouteRejectHandler, {
     //  console.error('Space of loaded dir (file) is not a space loaded in data-space route');
     //  transition.abort();
     //}
-
-    Ember.run.scheduleOnce('afterRender', this, function() {
-      this.get('fileSystemTree').expandDir(file).then(() => {
-        let elementId = `#tree-dir-${file.id}`;
-        $('.dir-item.active').removeClass('active');
-        $(elementId).addClass('active');
-      });
-    });
   },
 
   /**

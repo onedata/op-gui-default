@@ -142,21 +142,31 @@ export default DS.Model.extend({
   /// Utils
 
   /**
-   * Returns array with file parents, including the file.
+   * Resolves an array with file parents, including the file.
    * The array is ordered from root dir to given file (from parents to children).
    *
    * @param file - a leaf file of path to find
-   * @returns {Array} array of Files
+   * @returns {RSVP.Promise} resolves with array of Files
    */
   dirsPath() {
     let path = [this];
-    let parent = this.get('parent');
-    while (parent && parent.get('id')) {
-      path.unshift(parent);
-      parent = parent.get('parent');
-    }
-    console.debug(`Computed path for file ${this.get('id')}: ${JSON.stringify(path)}`);
-    return path;
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      this.get('parent').then(
+        (p) => {
+          if (p) {
+            p.dirsPath().then((ppath) => {
+              resolve(path.concat(ppath));
+            });
+          } else {
+            resolve(path);
+          }
+        },
+
+        () => {
+          reject();
+        }
+      );
+    });
   },
 
   // TODO: may not update properly

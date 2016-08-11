@@ -30,7 +30,7 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
-  classNames: ['one-option-button', 'col-xs-4'],
+  classNames: ['one-option-button'],
 
   /**
    * Binding to object with properties, whose will be toggled
@@ -50,6 +50,11 @@ export default Ember.Component.extend({
     this._super();
 
     const prop = `groupValues.${this.get('value')}`;
+
+    // groupValues can be not provided - use internal
+    if (!this.get('groupValues')) {
+      this.set('groupValues', Ember.Object.create());
+    }
 
     this.checked = Ember.computed(prop, {
       get() {

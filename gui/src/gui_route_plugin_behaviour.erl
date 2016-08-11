@@ -110,3 +110,15 @@
 %%--------------------------------------------------------------------
 -callback error_500_html_file() -> FileName :: binary().
 
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Should return a list of HTTP headers that will be send with every response.
+%% Usually used to add headers like HSTS or X-Frame-Opts.
+%% They will be used only if given cowboy listener uses proper gui function
+%% for onrequest callback (cowboy_protocol conf), like this:
+%% {onrequest, fun gui:response_headers/1}
+%% @end
+%%--------------------------------------------------------------------
+-callback response_headers() -> [{Key :: binary(), Value :: binary()}].
+

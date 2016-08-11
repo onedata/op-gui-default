@@ -25,6 +25,9 @@
         %% a batch request from ember client. For example if a batch of 100 find
         %% requests come, and first 20 take all this time, response will be sent
         %% for the 20 requests and then the other requests will be processed.
-        {gui_batch_processing_interval, 1000}
+        {gui_batch_processing_interval, 1000},
+        %% Maximum number of async processes that may be spawned to process
+        %% a batch websocket request.
+        {gui_max_async_processes_per_batch, 10}
     ]}
 ]}.

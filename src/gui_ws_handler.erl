@@ -24,6 +24,10 @@
 -export([websocket_info/3]).
 -export([websocket_terminate/3]).
 
+-ifdef(TEST).
+-compile(export_all).
+-endif.
+
 
 %% Interface between WebSocket Adapter client and server. Corresponding
 %% interface is located in ws_adapter.js.
@@ -152,7 +156,7 @@ websocket_init(_TransportName, Req, _Opts) ->
 %%--------------------------------------------------------------------
 %% @doc
 %% Handles the data received from the Websocket connection.
-%% Performs updacking of JSON, follows the data to handler and then encodes
+%% Performs unpacking of JSON, follows the data to handler and then encodes
 %% its response to JSON and sends it back to the client.
 %% @end
 %%--------------------------------------------------------------------
@@ -166,27 +170,29 @@ websocket_init(_TransportName, Req, _Opts) ->
     State :: no_state,
     OutFrame :: cowboy_websocket:frame().
 websocket_handle({text, MsgJSON}, Req, State) ->
-    % Try to decode message
+    % Try to decode request
     DecodedMsg = try
         json_utils:decode(MsgJSON)
     catch
         _:_ -> undefined
     end,
-    ResponseProps = case DecodedMsg of
-        % Accept only batch messages
-        [{<<"batch">>, Messages}] ->
-            % Message was decoded, try to process all the requests.
-            process_messages(Messages);
+    case DecodedMsg of
+        % Accept only batch requests
+        [{<<"batch">>, Requests}] ->
+            % Batch was decoded, try to process all the requests.
+            % Request processing is asynchronous.
+            process_requests(Requests),
+            {ok, Req, State};
         _ ->
-            % Message could not be decoded, reply with an error
+            % Request could not be decoded, reply with an error
             {_, ErrorMsg} = gui_error:cannot_decode_message(),
-            ErrorMsg
-    end,
-    ResponseJSON = json_utils:encode([{<<"batch">>, ResponseProps}]),
-    {reply, {text, ResponseJSON}, Req, State};
+            ResponseJSON = json_utils:encode([{<<"batch">>, ErrorMsg}]),
+            {reply, {text, ResponseJSON}, Req, State}
+    end;
 
 
-websocket_handle(_Data, Req, State) ->
+websocket_handle(Data, Req, State) ->
+    ?debug("Received unexpected data in GUI WS: ~p", [Data]),
     {ok, Req, State}.
 
 
@@ -206,9 +212,9 @@ websocket_handle(_Data, Req, State) ->
     Req :: cowboy_req:req(),
     State :: no_state,
     OutFrame :: cowboy_websocket:frame().
-websocket_info({process_messages, Messages}, Req, State) ->
+websocket_info({push_message, Reply}, Req, State) ->
     Msg = [
-        {<<"batch">>, process_messages(Messages)}
+        {<<"batch">>, [Reply]}
     ],
     {reply, {text, json_utils:encode(Msg)}, Req, State};
 
@@ -486,40 +492,77 @@ handle_session_RPC() ->
 %%--------------------------------------------------------------------
 %% @doc
 %% @private
-%% Processes a batch of requests. If processing takes more than configurable
-%% interval, partial response is sent and the process continues.
+%% Processes a batch of requests. A pool of processes is spawned and
+%% the requests are split between them.
+%% The requests are processed asynchronously and responses are sent gradually
+%% to the client.
 %% @end
 %%--------------------------------------------------------------------
--spec process_messages(Messages :: [proplists:proplist()]) ->
-    [proplists:proplist()].
-process_messages(Messages) ->
-    % Consider batch processing interval and send back some
-    % responses after it has passed.
-    SystemTime = erlang:system_time(milli_seconds),
-    {ok, BatchInterval} = application:get_env(
-        gui, gui_batch_processing_interval),
-    process_messages(Messages, [], SystemTime + BatchInterval).
+-spec process_requests(Requests :: [proplists:proplist()]) -> ok.
+process_requests(Requests) ->
+    {ok, ProcessLimit} =
+        application:get_env(gui, gui_max_async_processes_per_batch),
+    Parts = split_into_sublists(Requests, ProcessLimit),
+    lists:foreach(
+        fun(Part) ->
+            gui_async:spawn(true, fun() -> process_requests_async(Part) end)
+        end, Parts).
 
-process_messages([], Results, _) ->
-    Results;
-process_messages(Messages, Results, ReportBackTime) ->
-    try
-        SystemTime = erlang:system_time(milli_seconds),
-        case SystemTime > ReportBackTime of
-            true ->
-                self() ! {process_messages, Messages},
-                Results;
-            false ->
-                [Props | Tail] = Messages,
-                Result = handle_decoded_message(Props),
-                process_messages(Tail, [Result | Results], ReportBackTime)
-        end
-    catch
-        T:M ->
-            % There was an error processing the request, reply with
-            % an error.
-            ?error_stacktrace("Error while handling websocket message "
-            "- ~p:~p", [T, M]),
-            {_, ErrorMsg} = gui_error:internal_server_error(),
-            ErrorMsg
-    end.
+
+%%--------------------------------------------------------------------
+%% @doc
+%% @private
+%% Processes a batch of request. Responses are sent gradually to
+%% the websocket process, which sends them to the client.
+%% This should be done in an async process for scalability.
+%% @end
+%%--------------------------------------------------------------------
+-spec process_requests_async(Requests :: [proplists:proplist()]) -> ok.
+process_requests_async(Requests) ->
+    lists:foreach(
+        fun(Request) ->
+            Result = try
+                handle_decoded_message(Request)
+            catch
+                T:M ->
+                    % There was an error processing the request, reply with
+                    % an error.
+                    ?error_stacktrace("Error while handling websocket message "
+                    "- ~p:~p", [T, M]),
+                    {_, ErrorMsg} = gui_error:internal_server_error(),
+                    ErrorMsg
+            end,
+            gui_async:push_message(Result)
+        end, Requests).
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% @private
+%% Splits given list into a list of sublists with even length (+/- 1 element).
+%% If the list length is smaller than the number of parts, it splits it into a
+%% list of one element lists and the result list might be smaller than NumParts.
+%% @end
+%%--------------------------------------------------------------------
+-spec split_into_sublists(List :: list(), NumberOfParts :: non_neg_integer()) ->
+    [list()].
+split_into_sublists(List, NumberOfParts) when length(List) =< NumberOfParts ->
+    lists:map(fun(Element) -> [Element] end, List);
+split_into_sublists(List, NumberOfParts) ->
+    split_into_sublists(List, NumberOfParts, []).
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% @private
+%% Splits given list into a list of sublists with even length (+/- 1 element).
+%% @end
+%%--------------------------------------------------------------------
+-spec split_into_sublists(List :: list(), NumberOfParts :: non_neg_integer(),
+    ResultList :: [list()]) -> [list()].
+split_into_sublists(List, 1, ResultList) ->
+    [List | ResultList];
+
+split_into_sublists(List, NumberOfParts, ResultList) ->
+    {Part, Tail} = lists:split(length(List) div NumberOfParts, List),
+    split_into_sublists(Tail, NumberOfParts - 1, [Part | ResultList]).

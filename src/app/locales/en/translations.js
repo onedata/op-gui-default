@@ -12,6 +12,7 @@ import filePermissions from './file-permissions';
 */
 export default {
   common: {
+    unknown: 'unknown',
     unknownError: 'Unknown error',
     modal: {
       ok: 'OK',
@@ -34,6 +35,12 @@ export default {
     cannotLoadResource: 'Cannot load requested resource',
     serverError: 'Server error',
     fatalApplicationErrorResources: "A fatal error occured loading application's resources"
+  },
+  initializers: {
+    registerDownloadErrorHandler: {
+      title: 'Cannot download file',
+      message: 'File "{{fileName}}" cannot be downloaded because of server error: {{errorMessage}}'
+    }
   },
   services: {
     session: sessionLocales

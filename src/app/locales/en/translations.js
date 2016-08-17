@@ -36,12 +36,6 @@ export default {
     serverError: 'Server error',
     fatalApplicationErrorResources: "A fatal error occured loading application's resources"
   },
-  initializers: {
-    registerDownloadErrorHandler: {
-      title: 'Cannot download file',
-      message: 'File "{{fileName}}" cannot be downloaded because of server error: {{errorMessage}}'
-    }
-  },
   services: {
     session: sessionLocales
   },
@@ -282,7 +276,11 @@ export default {
       modification: 'modification',
       permissions: 'permissions',
       fileIsBroken: 'This file is not synced yet',
-      updatingMessage: 'Updating files list...'
+      updatingMessage: 'Updating files list...',
+      downloadError: {
+        title: 'Cannot download file',
+        message: 'File "{{fileName}}" cannot be downloaded because of server error: {{errorMessage}}'
+      }
     },
     dataFilesListToolbar: {
       tooltip: {

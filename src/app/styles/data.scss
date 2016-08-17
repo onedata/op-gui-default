@@ -264,3 +264,19 @@
 .empty-dir-image {
   background-image: url("/assets/images/empty-dir.svg");
 }
+
+.selection-background-pulse {
+  animation: azure-pulse 3s infinite;
+}
+
+@keyframes azure-pulse {
+  0% {
+    background-color: $onedata-light-azure;
+  }
+  50% {
+    background-color: $onedata-azure;
+  }
+  100% {
+    background-color: $onedata-light-azure;;
+  }
+}

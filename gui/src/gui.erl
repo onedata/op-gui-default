@@ -16,7 +16,7 @@
 -include("gui.hrl").
 
 %% API
--export([init/0, cleanup/0]).
+-export([init/0, cleanup/0, response_headers/1]).
 
 
 %%--------------------------------------------------------------------
@@ -37,3 +37,19 @@ init() ->
 -spec cleanup() -> ok.
 cleanup() ->
     ?GUI_SESSION_PLUGIN:cleanup().
+
+
+%%--------------------------------------------------------------------
+%% @doc Callback hook for cowboy to modify response headers for HTTPS GUI.
+%% Those headers improve security of https connection.
+%% Headers defined in gui_route_plugin:response_headers/0 will be added.
+%% @end
+%%--------------------------------------------------------------------
+-spec response_headers(Req :: cowboy_req:req()) -> cowboy_req:req().
+response_headers(Req) ->
+    lists:foldl(
+        fun({Key, Value}, AccReq) ->
+            cowboy_req:set_resp_header(Key, Value, AccReq)
+        end, Req, ?GUI_ROUTE_PLUGIN:response_headers()).
+
+

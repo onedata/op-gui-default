@@ -71,16 +71,18 @@ export default Ember.Service.extend(Ember.Evented, {
 
   expandDir(file) {
     return new Ember.RSVP.Promise((resolve) => {
-      let path = this.dirsPath(file);
+      this.dirsPath(file).then(
+        (path) => {
+          let parentsLength = path.length - 1;
+          for (let i=0; i<parentsLength; ++i) {
+            path[i].set('isExpanded', true);
+          }
+          resolve();
+        }
+      );
       // TODO: this.rootDir should be the same as first element of path
       // TODO: check if dir to expand is child of previous dir?
       // TODO: should last dir in path be expanded?
-      let parentsLength = path.length - 1;
-      for (let i=0; i<parentsLength; ++i) {
-        path[i].set('isExpanded', true);
-      }
-
-      resolve();
     });
 
   }

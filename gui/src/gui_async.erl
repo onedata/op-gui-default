@@ -15,13 +15,14 @@
 
 -include_lib("ctool/include/logging.hrl").
 %% API
--export([spawn/1, kill_async_processes/0]).
+-export([spawn/2, kill_async_processes/0]).
 -export([push_created/2, push_created/3]).
 -export([push_updated/2, push_updated/3]).
 -export([push_deleted/2, push_deleted/3]).
+-export([push_message/1, push_message/2]).
 
 % Keys in process dictionary used to store PIDs of processes.
--define(WEBSCOKET_PROCESS_KEY, ws_process).
+-define(WEBSOCKET_PROCESS_KEY, ws_process).
 -define(ASYNC_PROCESSES_KEY, async_processes).
 
 %%%===================================================================
@@ -36,12 +37,18 @@
 %% channel to the client about model changes.
 %% @end
 %%--------------------------------------------------------------------
--spec spawn(Fun :: fun()) -> {ok, Pid :: pid()}.
-spawn(Fun) ->
+-spec spawn(InitCtx :: boolean(), Fun :: fun()) -> {ok, Pid :: pid()}.
+spawn(InitCtx, Fun) ->
     % Prevent async proc from killing the calling proc on crash
     process_flag(trap_exit, true),
     WSPid = self(),
-    Pid = spawn_link(fun() -> async_init(WSPid, Fun) end),
+    CowboyReq = case InitCtx of
+        true ->
+            g_ctx:get_cowboy_req();
+        false ->
+            no_ctx
+    end,
+    Pid = spawn_link(fun() -> async_init(WSPid, CowboyReq, Fun) end),
     append_async_process(Pid),
     {ok, Pid}.
 
@@ -62,7 +69,7 @@ kill_async_processes() ->
 
 %%--------------------------------------------------------------------
 %% @doc
-%% Pushes an information about record creation to the client via WebSocket
+%% Pushes information about record creation to the client via WebSocket
 %% channel. The Data is a proplist that will be translated to JSON, it must
 %% include <<"id">> field.
 %% This variant can be used only from a process spawned by gui_async:spawn in
@@ -71,12 +78,12 @@ kill_async_processes() ->
 %%--------------------------------------------------------------------
 -spec push_created(ResType :: binary(), Data :: proplists:proplist()) -> ok.
 push_created(ResourceType, Data) ->
-    push_created(ResourceType, Data, get(?WEBSCOKET_PROCESS_KEY)).
+    push_created(ResourceType, Data, get(?WEBSOCKET_PROCESS_KEY)).
 
 
 %%--------------------------------------------------------------------
 %% @doc
-%% Pushes an information about record creation to the client via WebSocket
+%% Pushes information about record creation to the client via WebSocket
 %% channel. The Data is a proplist that will be translated to JSON, it must
 %% include <<"id">> field.
 %% Pushes the change to given pid.
@@ -91,7 +98,7 @@ push_created(ResourceType, Data, Pid) ->
 
 %%--------------------------------------------------------------------
 %% @doc
-%% Pushes an information about model update to the client via WebSocket channel.
+%% Pushes information about model update to the client via WebSocket channel.
 %% The Data is a proplist that will be translated to JSON, it must include
 %% <<"id">> field. It might also be the updated data of many records.
 %% This variant can be used only from a process spawned by gui_async:spawn in
@@ -100,12 +107,12 @@ push_created(ResourceType, Data, Pid) ->
 %%--------------------------------------------------------------------
 -spec push_updated(ResType :: binary(), Data :: proplists:proplist()) -> ok.
 push_updated(ResourceType, Data) ->
-    push_updated(ResourceType, Data, get(?WEBSCOKET_PROCESS_KEY)).
+    push_updated(ResourceType, Data, get(?WEBSOCKET_PROCESS_KEY)).
 
 
 %%--------------------------------------------------------------------
 %% @doc
-%% Pushes an information about model update to the client via WebSocket channel.
+%% Pushes information about model update to the client via WebSocket channel.
 %% The Data is a proplist that will be translated to JSON, it must include
 %% <<"id">> field. It might also be the updated data of many records.
 %% Pushes the change to given pid.
@@ -120,7 +127,7 @@ push_updated(ResourceType, Data, Pid) ->
 
 %%--------------------------------------------------------------------
 %% @doc
-%% Pushes an information about record deletion from model to the client
+%% Pushes information about record deletion from model to the client
 %% via WebSocket channel.
 %% This variant can be used only from a process spawned by gui_async:spawn in
 %% backend init callback.
@@ -128,12 +135,12 @@ push_updated(ResourceType, Data, Pid) ->
 %%--------------------------------------------------------------------
 -spec push_deleted(ResType :: binary(), IdOrIds :: binary() | [binary()]) -> ok.
 push_deleted(ResourceType, IdOrIds) ->
-    push_deleted(ResourceType, IdOrIds, get(?WEBSCOKET_PROCESS_KEY)).
+    push_deleted(ResourceType, IdOrIds, get(?WEBSOCKET_PROCESS_KEY)).
 
 
 %%--------------------------------------------------------------------
 %% @doc
-%% Pushes an information about record deletion from model to the client
+%% Pushes information about record deletion from model to the client
 %% via WebSocket channel.
 %% Pushes the change to given pid.
 %% @end
@@ -151,6 +158,32 @@ push_deleted(ResourceType, IdOrIds, Pid) ->
     ok.
 
 
+%%--------------------------------------------------------------------
+%% @doc
+%% Pushes information about record deletion from model to the client
+%% via WebSocket channel.
+%% This variant can be used only from a process spawned by gui_async:spawn in
+%% backend init callback.
+%% @end
+%%--------------------------------------------------------------------
+-spec push_message(Message :: proplists:proplist()) -> ok.
+push_message(Message) ->
+    push_message(Message, get(?WEBSOCKET_PROCESS_KEY)).
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Pushes information about record deletion from model to the client
+%% via WebSocket channel.
+%% Pushes the change to given pid.
+%% @end
+%%--------------------------------------------------------------------
+-spec push_message(Message :: proplists:proplist(), Pid :: pid()) -> ok.
+push_message(Message, Pid) ->
+    Pid ! {push_message, Message},
+    ok.
+
+
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
@@ -162,9 +195,16 @@ push_deleted(ResourceType, IdOrIds, Pid) ->
 %% process key in its dictionary. Then, its main function is evaluated.
 %% @end
 %%--------------------------------------------------------------------
--spec async_init(WSPid :: pid(), Fun :: fun()) -> term().
-async_init(WSPid, Fun) ->
-    put(?WEBSCOKET_PROCESS_KEY, WSPid),
+-spec async_init(WSPid :: pid(), CowboyReq :: cowboy_req:req(), Fun :: fun()) ->
+    term().
+async_init(WSPid, CowboyReq, Fun) ->
+    put(?WEBSOCKET_PROCESS_KEY, WSPid),
+    case CowboyReq of
+        no_ctx ->
+            ok;
+        _ ->
+            g_ctx:init(CowboyReq, false)
+    end,
     Fun().
 
 

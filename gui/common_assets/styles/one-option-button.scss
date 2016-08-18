@@ -1,6 +1,8 @@
 /// Styles for one-radio-button and one-checkbox-button
 /// They are both "one-option"
 
+/// Required stylesheets: colors-common
+
 .one-option-button {
   .one-option-button-container {
     position: relative;
@@ -29,6 +31,19 @@
       top: 50%;
       transform: translateY(-50%);
     }
+  }
+
+  &.warning {
+    .one-option-button-container {
+      &:hover {
+        color: $color-button-danger;
+      }
+
+      .option-icon {
+        color: $color-button-danger;
+      }
+    }
+
   }
 }
 

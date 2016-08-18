@@ -109,6 +109,9 @@
   {{/bs-modal-footer}}
 {{/bs-modal}}
 
+{{modals/file-share open=isSharingFile
+    file=(and isSharingFile dir.singleSelectedFile)}}
+
 {{!-- EDIT PERMISSIONS --}}
 
 {{modals/file-permissions open=isEditingPermissions files=dir.selectedFiles

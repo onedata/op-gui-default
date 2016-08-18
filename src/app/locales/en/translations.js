@@ -98,6 +98,36 @@ export default {
           posix: 'POSIX',
           acl: 'ACL'
         }
+      },
+      fileShare: {
+        title: 'Share the directory',
+        submitSuccess: 'Share created sucessfully',
+        submitFailed: 'Share creation failed',
+        rowName: {
+          label: 'Name',
+          sublabel: 'TODO: Set a name for created share that will be visible for other users'
+        },
+        rowShareType: {
+          label: 'Share type',
+          sublabel: 'TODO: Choose how the share will be supported by Onedata',
+          snapshot: {
+            label: 'Snapshot',
+            sublabel: 'TODO: Files in the share will be copied...'
+          },
+          dynamic: {
+            label: 'Dynamic',
+            sublabel: 'TODO: Files in the share will be linked...'
+          }
+        },
+        rowPublicAccess: {
+          label: 'Public access',
+          sublabel: 'Enable public access to get a link to file that can be used by any Onedata user',
+          enabled: 'A link will be generated when the Share will be created'
+        },
+        rowInvite: {
+          label: 'Invite',
+          sublabel: 'Search for Onedata users, groups or enter an e-mail address to send an invitation'
+        }
       }
     },
     spacesMenu: {

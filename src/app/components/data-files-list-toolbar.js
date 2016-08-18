@@ -53,10 +53,8 @@ export default Ember.Component.extend({
       {
         id: 'share-file-tool',
         icon: 'share',
-        action: 'notImplemented',
-        // TODO: feature not implemented yet
-        //disabled: !isSomeFileSelected,
-        disabled: true,
+        action: 'shareFile',
+        disabled: !isSingleFileSelected || isSingleSelectedFileAFile,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.shareFile')
       },
       // using fileUpload service binding
@@ -151,6 +149,12 @@ export default Ember.Component.extend({
     createFile() {
       this.set('createFileName', '');
       this.set('isCreatingFile', true);
+    },
+
+    shareFile() {
+      this.setProperties({
+        isSharingFile: true
+      });
     },
 
     renameModalOpened() {

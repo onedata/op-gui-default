@@ -10,7 +10,7 @@ import DS from 'ember-data';
  */
 export default DS.Model.extend({
   name: DS.attr('string'),
-  file: DS.hasMany('file', {async: true}),
+  file: DS.belongsTo('file', {async: true, inverse: null}),
   shareType: DS.attr('string'),
   publicAccess: DS.attr('boolean'),
   // TODO: list of users/group/emails

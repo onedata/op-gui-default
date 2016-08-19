@@ -40,7 +40,7 @@ Router.map(function() {
     });
   });
 
-  // groups/ - all spaces configuration reached from primary sidebar
+  // groups/ - all groups configuration reached from primary sidebar
   this.route('groups', {resetNamespace: true}, function() {
     // groups/:group_id - entry for configuration of the single space
     this.route('show', {path: ':group_id'}, function() {
@@ -49,10 +49,14 @@ Router.map(function() {
     });
   });
 
+  // shared/ - browse Shares reached from primary sidebar
+  this.route('shared', {resetNamespace: true}, function() {
+      this.route('show', {path: ':share_id'});
+  });
+
   // TODO: activate after routes implementation
   // this.route('recent', {resetNamespace: true});
   // this.route('links', {resetNamespace: true});
-  // this.route('collection', {resetNamespace: true});
   // this.route('trash', {resetNamespace: true});
 
   // handle routes not handled above and langauge-prefixed paths (e.g. /en/spaces)

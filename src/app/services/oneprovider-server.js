@@ -15,6 +15,9 @@ import Ember from 'ember';
 export default Ember.Service.extend({
   server: Ember.inject.service('server'),
 
+  // FIXME: only for Share testing purposes
+  store: Ember.inject.service(),
+
   /**--------------------------------------------------------------------
    File upload related procedures
    -------------------------------------------------------------------- */
@@ -88,11 +91,35 @@ export default Ember.Service.extend({
    */
   createFileShare(fileId, shareName, shareType, publicAccess) {
     // TODO: implement in backend
-    return this.get('server').privateRPC('createFileShare', {
-      fileId: fileId,
-      shareName: shareName,
-      shareType: shareType,
-      publicAccess: publicAccess
+    // return this.get('server').privateRPC('createFileShare', {
+    //   fileId: fileId,
+    //   shareName: shareName,
+    //   shareType: shareType,
+    //   publicAccess: publicAccess
+    // });
+
+    // FIXME: mocked share creation
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      const store = this.get('store');
+      store.findRecord('file', fileId).then(
+        (file) => {
+          const shareRecord = this.get('store').createRecord('share', {
+            file: file,
+            name: shareName,
+            shareType: shareType,
+            publicAccess: publicAccess
+          });
+          shareRecord.save().then(
+            () => {
+              resolve(shareRecord.get('id'));
+            },
+            () => {
+              reject({message: 'save Share failed'});
+            }
+          );
+        },
+        () => reject({message: 'no file for file id'})
+      );
     });
   },
 

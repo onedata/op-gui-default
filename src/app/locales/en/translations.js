@@ -75,7 +75,7 @@ export default {
       data: 'data',
       links: 'links',
       recent: 'recent',
-      collection: 'collection',
+      shared: 'shared',
       trash: 'trash',
       spaces: 'spaces',
       groups: 'groups',
@@ -254,6 +254,10 @@ export default {
 
       }
     },
+    sharesMenu: {
+      title: 'shares',
+      join: 'Join',
+    },
     permissionsTable: {
       save: 'save',
       discard: 'discard',
@@ -401,8 +405,8 @@ export default {
       spaces: "Spaces"
     }
   },
-  collection: {
-    title: 'Collection'
+  shared: {
+    title: 'Shared'
   },
   trash: {
     title: 'Trash'

@@ -1,0 +1,17 @@
+<div class="secondary-sidebar-header">
+  <div class="title">
+    {{t 'components.sharesMenu.title'}}
+  </div>
+  <figure class="icon" {{action 'startJoinShare'}}>
+    {{icon 'join'}}
+    <figcaption>{{t 'components.sharesMenu.join'}}</figcaption>
+  </figure>
+</div>
+
+<ul class="shares-list">
+  {{#each validSharesSorted as |share|}}
+    {{shares-menu-item share=share isExpanded=(eq activeShare.id share.id)
+      openSettingsModal='openSettingsModal' openSubmenuEntry='openSubmenuEntry'
+      collapseAllShares='collapseAllShares'}}
+  {{/each}}
+</ul>

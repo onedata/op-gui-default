@@ -58,6 +58,15 @@ export default Ember.Service.extend({
       this.set('activeItem', value);
     }
   }),
+  activeShare: Ember.computed('activeItem', 'itemType', {
+    get() {
+      return this.get('itemType') === 'share' ?
+        this.get('activeItem') : null;
+    },
+    set(key, value) {
+      this.set('activeItem', value);
+    }
+  }),
 
 
   clear: function() {

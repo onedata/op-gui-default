@@ -1,0 +1,32 @@
+<td id="file-{{file.id}}" class="file-list-col-file">
+  <div class="file-icon">
+    {{#if file.isBroken}}
+      {{icon "file" "color-directory"}}
+    {{else}}
+      {{#if file.isDir}}
+        {{icon "folder" "color-directory"}}
+      {{else}}
+        {{icon "file" "color-file"}}
+      {{/if}}
+    {{/if}}
+  </div>
+  <div class="file-label">
+    {{#truncated-string parentSelector=".file-list-col-file" shrinkBy=100}}
+      {{#if file.isBroken}}
+        <em>{{t 'components.dataFilesList.fileIsBroken'}}</em>
+      {{else}}
+        {{file.name}}
+      {{/if}}
+    {{/truncated-string}}
+  </div>
+</td>
+<td class="hidden-xs file-list-col-size nowrap">
+  {{file.sizeHumanReadable}}
+</td>
+{{!-- TODO: disabled in beta4 --}}
+{{!-- <td class="col-permissions hidden-xs hidden-sm file-list-col-permissions nowrap">
+  {{file.permissionsHumanReadable}}
+</td> --}}
+<td class="hidden-xs file-list-col-modification nowrap">
+  {{file.modificationMoment}}
+</td>

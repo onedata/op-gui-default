@@ -37,42 +37,8 @@
   <tbody>
   {{#each visibleFilesSorted as |file|}}
   {{!-- TODO: open file when selected and enter pressed --}}
-    <tr {{action "openFile" file on="doubleClick"}}
-        {{action "selectFile" file on="click"}}
-        class="{{if file.isSelected 'active'}}">
-      <td id="file-{{file.id}}" class="file-list-col-file">
-        <div class="file-icon">
-          {{#if file.isBroken}}
-            {{icon "file" "color-directory"}}
-          {{else}}
-            {{#if file.isDir}}
-              {{icon "folder" "color-directory"}}
-            {{else}}
-              {{icon "file" "color-file"}}
-            {{/if}}
-          {{/if}}
-        </div>
-        <div class="file-label">
-          {{#truncated-string parentSelector=".file-list-col-file" shrinkBy=100}}
-            {{#if file.isBroken}}
-              <em>{{t 'components.dataFilesList.fileIsBroken'}}</em>
-            {{else}}
-              {{file.name}}
-            {{/if}}
-          {{/truncated-string}}
-        </div>
-      </td>
-      <td class="hidden-xs file-list-col-size nowrap">
-        {{file.sizeHumanReadable}}
-      </td>
-      {{!-- TODO: disabled in beta4 --}}
-      {{!-- <td class="col-permissions hidden-xs hidden-sm file-list-col-permissions nowrap">
-        {{file.permissionsHumanReadable}}
-      </td> --}}
-      <td class="hidden-xs file-list-col-modification nowrap">
-        {{file.modificationMoment}}
-      </td>
-    </tr>
+    {{data-files-list/file-row file=file openDirInBrowser='openDirInBrowser'
+      downloadFile='downloadFile' selectFile='selectFile'}}
   {{/each}}
   </tbody>
 </table>

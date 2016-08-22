@@ -52,6 +52,25 @@ export default Ember.Service.extend({
   },
 
   /**--------------------------------------------------------------------
+   File download related procedures
+   -------------------------------------------------------------------- */
+
+  /**
+   * Fetch direct URL for file download.
+   *
+   * @param {String} fileId An ID of file to download
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve(object: data)`` when file can be downloaded
+   *  - ``data.fileUrl`` (string) - URL for file GET (using session auth)
+   * - ``reject(object: error)`` on failure or when file cannot be downloaded
+   */
+  getFileDownloadUrl(fileId) {
+    return this.get('server').privateRPC('getFileDownloadUrl', {
+      fileId: fileId
+    });
+  },
+
+  /**--------------------------------------------------------------------
    Space related procedures
    -------------------------------------------------------------------- */
   /**

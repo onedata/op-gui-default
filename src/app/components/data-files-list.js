@@ -17,6 +17,8 @@ export default Ember.Component.extend({
   fileUpload: Ember.inject.service(),
   commonLoader: Ember.inject.service(),
   i18n: Ember.inject.service(),
+  oneproviderServer: Ember.inject.service(),
+  messageBox: Ember.inject.service(),
 
   classNames: ['data-files-list'],
 
@@ -77,14 +79,53 @@ export default Ember.Component.extend({
     this.get('fileSystemTree').expandDir(dir);
   }.observes('dir'),
 
-  actions: {
-    /** If file - download it with backend; if dir - use route to browse other dir */
-    openFile(file) {
-      if (file.get('isDir')) {
-        this.sendAction('openDirInBrowser', file.get('id'));
-      } else {
-        window.open(`/download/${file.get('id')}`, '_blank');
+  downloadFile(file, downloadResolve, downloadReject) {
+    const i18n = this.get('i18n');
+    const messageBox = this.get('messageBox');
+    const p = this.get('oneproviderServer').getFileDownloadUrl(file.get('id'));
+    const fileName = (file && file.get('name') || i18n.t('common.unknown'));
+    p.then(
+      (data) => {
+        if (data && data.fileUrl) {
+          window.open(data.fileUrl, '_blank');
+          downloadResolve();
+        } else {
+          messageBox.open({
+            metadata: {name: 'file-download-failure'},
+            type: 'error',
+            title: i18n.t('components.dataFilesList.downloadError.title'),
+            message: i18n.t('components.dataFilesList.downloadError.message', {
+              fileName: fileName,
+              errorMessage: i18n.t('common.unknownError')
+            })
+          });
+          downloadReject();
+        }
+      },
+      (error) => {
+        downloadReject();
+        messageBox.open({
+          metadata: {name: 'file-download-failure'},
+          type: 'error',
+          title: i18n.t('components.dataFilesList.downloadError.title'),
+          message: i18n.t('components.dataFilesList.downloadError.message', {
+            fileName: fileName,
+            errorMessage: error && error.message || i18n.t('common.unknownError')
+          })
+        });
       }
+    );
+
+    return p;
+  },
+
+  actions: {
+    openDirInBrowser(file) {
+      this.sendAction('openDirInBrowser', file.get('id'));
+    },
+
+    downloadFile(file, resolve, reject) {
+      this.downloadFile(file, resolve, reject);
     },
 
     // TODO: multiple select only with ctrl

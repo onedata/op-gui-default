@@ -12,6 +12,7 @@ import filePermissions from './file-permissions';
 */
 export default {
   common: {
+    unknown: 'unknown',
     unknownError: 'Unknown error',
     modal: {
       ok: 'OK',
@@ -275,7 +276,11 @@ export default {
       modification: 'modification',
       permissions: 'permissions',
       fileIsBroken: 'This file is not synced yet',
-      updatingMessage: 'Updating files list...'
+      updatingMessage: 'Updating files list...',
+      downloadError: {
+        title: 'Cannot download file',
+        message: 'File "{{fileName}}" cannot be downloaded because of server error: {{errorMessage}}'
+      }
     },
     dataFilesListToolbar: {
       tooltip: {

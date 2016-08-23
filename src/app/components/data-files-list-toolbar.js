@@ -22,6 +22,20 @@ export default Ember.Component.extend({
 
   chunksModalError: null,
 
+  init() {
+    this._super(...arguments);
+    this.setProperties({
+      isRenamingFile: false,
+      isCreatingDir: false,
+      isCreatingFile: false,
+      isRemovingFiles: false,
+      isSharingFile: false,
+      isEditingPermissions: false,
+      isFileChunksModal: false,
+      isNotImplementedModal: false,
+    });
+  },
+
   /**
    * Holds items of toolbar. Each item is a Object with properties:
    * - icon {String}
@@ -118,11 +132,15 @@ export default Ember.Component.extend({
     ];
   }.property('dir.isSomeFileSelected', 'dir.singleSelectedFile', 'fileUpload.locked'),
 
+  fileBlocksProviders: Ember.computed('fileBlocks.@each.provider', function() {
+    return this.get('fileBlocks').mapBy('provider');
+  }),
+
   makeTooltips: function() {
     Ember.run.scheduleOnce('afterRender', this, function() {
       this.$().find('[data-toggle="tooltip"]').tooltip();
     });
-  }.observes('items', 'fileBlocks.@each.provider.@each.name'),
+  }.observes('items', 'fileBlocksProviders.@each.name'),
 
   didInsertElement() {
     this.makeTooltips();

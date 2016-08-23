@@ -12,7 +12,7 @@ export default {
 
   after: 'ember-i18n',
 
-  initialize: function(container, application) {
+  initialize: function(application) {
     application.inject('component', 'i18n', 'service:i18n');
     application.inject('route', 'i18n', 'service:i18n');
   }

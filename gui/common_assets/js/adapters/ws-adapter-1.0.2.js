@@ -207,7 +207,7 @@ export default DS.RESTAdapter.extend({
   },
 
   /** Called when ember store wants to find all records that match a query */
-  findQuery(store, type, query) {
+  query(store, type, query) {
     this.logToConsole(OP_FIND_QUERY, [store, type, query]);
     return this.asyncRequest(OP_FIND_QUERY, type.modelName, null, query);
   },

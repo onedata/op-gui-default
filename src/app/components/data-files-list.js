@@ -99,6 +99,7 @@ export default Ember.Component.extend({
               errorMessage: i18n.t('common.unknownError')
             })
           });
+          downloadReject();
         }
       },
       (error) => {

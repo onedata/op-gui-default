@@ -64,7 +64,7 @@ export default Ember.Service.extend({
    * @param {String} fileId An ID of file to download
    * @returns {RSVP.Promise} A backend operation completion:
    * - ``resolve(object: data)`` when file can be downloaded
-   *  - ``data.url`` (string) - URL for file GET (using session auth)
+   *  - ``data.fileUrl`` (string) - URL for file GET (using session auth)
    * - ``reject(object: error)`` on failure or when file cannot be downloaded
    */
   getFileDownloadUrl(fileId) {

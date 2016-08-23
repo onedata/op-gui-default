@@ -65,6 +65,7 @@
 -define(TYPE_MODEL_DLT_PUSH, <<"modelPushDeleted">>).
 -define(TYPE_RPC_REQ, <<"RPCReq">>).
 -define(TYPE_RPC_RESP, <<"RPCResp">>).
+-define(TYPE_PUSH_MESSAGE, <<"pushMessage">>).
 %% Operations on model, identified by ?KEY_OPERATION key
 -define(OP_FIND, <<"find">>).
 -define(OP_FIND_MANY, <<"findMany">>).
@@ -212,12 +213,27 @@ websocket_handle(Data, Req, State) ->
     Req :: cowboy_req:req(),
     State :: no_state,
     OutFrame :: cowboy_websocket:frame().
-websocket_info({push_message, Reply}, Req, State) ->
+% Sends any data to the client
+websocket_info({send, Data}, Req, State) ->
     Msg = [
-        {<<"batch">>, [Reply]}
+        {<<"batch">>, [Data]}
     ],
     {reply, {text, json_utils:encode(Msg)}, Req, State};
 
+% Sends a push message (server side event) to the client
+websocket_info({push_message, Data}, Req, State) ->
+    Msg = [
+        {<<"batch">>, [
+            [
+                {?KEY_MSG_TYPE, ?TYPE_PUSH_MESSAGE},
+                {?KEY_DATA, Data}
+            ]
+        ]}
+    ],
+    {reply, {text, json_utils:encode(Msg)}, Req, State};
+
+% Sends a push message informing about newly created item to the client
+% Concerns only model level items
 websocket_info({push_created, ResourceType, Data}, Req, State) ->
     Msg = [
         {<<"batch">>, [
@@ -230,6 +246,8 @@ websocket_info({push_created, ResourceType, Data}, Req, State) ->
     ],
     {reply, {text, json_utils:encode(Msg)}, Req, State};
 
+% Sends a push message informing about updated item to the client
+% Concerns only model level items
 websocket_info({push_updated, ResourceType, Data}, Req, State) ->
     Msg = [
         {<<"batch">>, [
@@ -242,6 +260,8 @@ websocket_info({push_updated, ResourceType, Data}, Req, State) ->
     ],
     {reply, {text, json_utils:encode(Msg)}, Req, State};
 
+% Sends a push message informing about deleted item to the client
+% Concerns only model level items
 websocket_info({push_deleted, ResourceType, Ids}, Req, State) ->
     Msg = [
         {<<"batch">>, [
@@ -532,7 +552,7 @@ process_requests_async(Requests) ->
                     {_, ErrorMsg} = gui_error:internal_server_error(),
                     ErrorMsg
             end,
-            gui_async:push_message(Result)
+            gui_async:send(Result)
         end, Requests).
 
 

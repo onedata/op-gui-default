@@ -31,7 +31,8 @@ export default Ember.Component.extend({
   visibleFiles: function() {
     return this.get('files').filter((f) => f.get('isLoaded'));
   }.property('files', 'files.[]', 'files.@each.isLoaded'),
-  visibleFilesSorted: Ember.computed.sort('visibleFiles', 'filesSorting'),
+  visibleFilesSortedAll: Ember.computed.sort('visibleFiles', 'filesSorting'),
+  visibleFilesSorted: Ember.computed.filterBy('visibleFilesSortedAll', 'isBroken', false),
 
   dirIsEmpty: function() {
     return !this.get('files') || this.get('files.length') === 0;

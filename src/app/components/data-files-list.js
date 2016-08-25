@@ -87,7 +87,13 @@ export default Ember.Component.extend({
     p.then(
       (data) => {
         if (data && data.fileUrl) {
-          window.open(data.fileUrl, '_blank');
+          const iframe = $("<iframe/>").attr({
+            src: data.fileUrl,
+            style: "visibility:hidden;display:none"
+          }).appendTo($('#app'));
+          setTimeout(function () {
+            iframe.remove();
+          }, 1000);
           downloadResolve();
         } else {
           messageBox.open({

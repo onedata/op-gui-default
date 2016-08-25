@@ -15,9 +15,7 @@ export default Ember.Route.extend({
     return this.modelFor('data');
   },
 
-  afterModel() {
-    Ember.run.scheduleOnce('afterRender', this, function() {
-      this.controllerFor(this.routeName).goToDefaultDataSpace();
-    });
+  activate() {
+    this.controllerFor(this.routeName).onDataSpacesChange();
   }
 });

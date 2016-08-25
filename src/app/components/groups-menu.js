@@ -223,7 +223,6 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
           isCreatingGroup: false,
           isSavingGroup: false,
         });
-        console.error('finally saved');
       });
     },
 

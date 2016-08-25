@@ -4,7 +4,7 @@ module.exports = function(environment) {
   var ENV = {
     modulePrefix: 'op-worker-gui',
     environment: environment,
-    baseURL: '/',
+    rootURL: '/',
     // set has location, because we want to have uris to share
     // without History API
     // see: http://emberjs.com/api/classes/Ember.Location.html
@@ -41,7 +41,6 @@ module.exports = function(environment) {
 
   if (environment === 'test') {
     // Testem prefers this...
-    ENV.baseURL = '/';
     ENV.locationType = 'none';
 
     // keep test console output quieter
@@ -53,6 +52,7 @@ module.exports = function(environment) {
 
   if (environment === 'production') {
     ENV.browserify.ignores.push('sinon-chai');
+    ENV.browserify.ignores.push('chai-jquery');
   }
 
   return ENV;

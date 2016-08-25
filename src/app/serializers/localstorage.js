@@ -3,6 +3,6 @@
  * @todo decide if this should be removed
  */
 
-import DS from 'ember-data';
+import { LSSerializer } from 'ember-localstorage-adapter';
 
-export default DS.LSSerializer.extend({});
+export default LSSerializer.extend({});

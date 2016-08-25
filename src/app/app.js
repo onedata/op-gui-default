@@ -34,4 +34,9 @@ if (config.environment === 'development') {
   console.log("Loaded livereload script");
 }
 
+if (config.environment === 'production') {
+  // silent debug in production env (pseudo-logger)
+  console.debug = function() {};
+}
+
 export default App;

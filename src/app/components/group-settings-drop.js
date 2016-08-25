@@ -122,10 +122,13 @@ export default Ember.Component.extend({
 
     removeGroup() {
       let i18n = this.get('i18n');
-      this.get('commonModals').openInfoModal(
-        i18n.t('common.featureNotSupportedShort'),
-        i18n.t('common.featureNotSupportedLong')
-      );
+      this.get('messageBox').open({
+        title: i18n.t('common.featureNotSupportedShort'),
+        type: 'warning',
+        allowClose: false,
+        message: i18n.t('common.featureNotSupportedLong')
+      });
+
       // TODO: remove function currently disabled
       // this.sendAction('openSettingsModal', 'remove', this.get('group'));
     },

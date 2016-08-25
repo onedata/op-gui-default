@@ -45,6 +45,13 @@ export default Ember.Service.extend({
    */
   type: DEFAULT_TYPE,
 
+  init() {
+    this._super(...arguments);
+    this.setProperties({
+      isOpened: false,
+    });
+  },
+
   /**
    * Opens the message box modal.
    *

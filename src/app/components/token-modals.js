@@ -17,6 +17,15 @@ export default Ember.Component.extend({
 
   inviteToken: null,
 
+  isOpened: false,
+
+  init() {
+    this._super(...arguments);
+    this.setProperties({
+      isOpened: false,
+    });
+  },
+
   /** Id of HTML element with -modal suffix */
   modalId: function() {
     return `token-${this.get('type')}`;

@@ -16,10 +16,11 @@
 -include_lib("ctool/include/logging.hrl").
 %% API
 -export([spawn/2, kill_async_processes/0]).
+-export([send/1, send/2]).
+-export([push_message/1, push_message/2]).
 -export([push_created/2, push_created/3]).
 -export([push_updated/2, push_updated/3]).
 -export([push_deleted/2, push_deleted/3]).
--export([push_message/1, push_message/2]).
 
 % Keys in process dictionary used to store PIDs of processes.
 -define(WEBSOCKET_PROCESS_KEY, ws_process).
@@ -69,6 +70,56 @@ kill_async_processes() ->
 
 %%--------------------------------------------------------------------
 %% @doc
+%% Sends any message to client connected via WebSocket.
+%% This variant can be used only from a process spawned by gui_async:spawn in
+%% backend init callback.
+%% @end
+%%--------------------------------------------------------------------
+-spec send(Message :: proplists:proplist()) -> ok.
+send(Message) ->
+    send(Message, get(?WEBSOCKET_PROCESS_KEY)).
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Sends any message to client connected via WebSocket.
+%% Pushes the data to given pid (that must be a websocket pid).
+%% @end
+%%--------------------------------------------------------------------
+-spec send(Message :: proplists:proplist(), Pid :: pid()) -> ok.
+send(Message, Pid) ->
+    Pid ! {send, Message},
+    ok.
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Sends a push message to client connected via WebSocket. Push messages are
+%% used as server side events that can be received by the client and processed.
+%% This variant can be used only from a process spawned by gui_async:spawn in
+%% backend init callback.
+%% @end
+%%--------------------------------------------------------------------
+-spec push_message(Message :: proplists:proplist()) -> ok.
+push_message(Message) ->
+    send(Message, get(?WEBSOCKET_PROCESS_KEY)).
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Sends a push message to client connected via WebSocket. Push messages are
+%% used as server side events that can be received by the client and processed.
+%% Pushes the message to given pid (that must be a websocket pid).
+%% @end
+%%--------------------------------------------------------------------
+-spec push_message(Message :: proplists:proplist(), Pid :: pid()) -> ok.
+push_message(Message, Pid) ->
+    Pid ! {push_message, Message},
+    ok.
+
+
+%%--------------------------------------------------------------------
+%% @doc
 %% Pushes information about record creation to the client via WebSocket
 %% channel. The Data is a proplist that will be translated to JSON, it must
 %% include <<"id">> field.
@@ -86,7 +137,7 @@ push_created(ResourceType, Data) ->
 %% Pushes information about record creation to the client via WebSocket
 %% channel. The Data is a proplist that will be translated to JSON, it must
 %% include <<"id">> field.
-%% Pushes the change to given pid.
+%% Pushes the change to given pid (that must be a websocket pid).
 %% @end
 %%--------------------------------------------------------------------
 -spec push_created(ResType :: binary(), Data :: proplists:proplist(),
@@ -115,7 +166,7 @@ push_updated(ResourceType, Data) ->
 %% Pushes information about model update to the client via WebSocket channel.
 %% The Data is a proplist that will be translated to JSON, it must include
 %% <<"id">> field. It might also be the updated data of many records.
-%% Pushes the change to given pid.
+%% Pushes the change to given pid (that must be a websocket pid).
 %% @end
 %%--------------------------------------------------------------------
 -spec push_updated(ResType :: binary(), Data :: proplists:proplist(),
@@ -142,7 +193,7 @@ push_deleted(ResourceType, IdOrIds) ->
 %% @doc
 %% Pushes information about record deletion from model to the client
 %% via WebSocket channel.
-%% Pushes the change to given pid.
+%% Pushes the change to given pid (that must be a websocket pid).
 %% @end
 %%--------------------------------------------------------------------
 -spec push_deleted(ResType :: binary(), IdOrIds :: binary() | [binary()],
@@ -155,32 +206,6 @@ push_deleted(ResourceType, IdOrIds, Pid) ->
             List
     end,
     Pid ! {push_deleted, ResourceType, Ids},
-    ok.
-
-
-%%--------------------------------------------------------------------
-%% @doc
-%% Pushes information about record deletion from model to the client
-%% via WebSocket channel.
-%% This variant can be used only from a process spawned by gui_async:spawn in
-%% backend init callback.
-%% @end
-%%--------------------------------------------------------------------
--spec push_message(Message :: proplists:proplist()) -> ok.
-push_message(Message) ->
-    push_message(Message, get(?WEBSOCKET_PROCESS_KEY)).
-
-
-%%--------------------------------------------------------------------
-%% @doc
-%% Pushes information about record deletion from model to the client
-%% via WebSocket channel.
-%% Pushes the change to given pid.
-%% @end
-%%--------------------------------------------------------------------
--spec push_message(Message :: proplists:proplist(), Pid :: pid()) -> ok.
-push_message(Message, Pid) ->
-    Pid ! {push_message, Message},
     ok.
 
 

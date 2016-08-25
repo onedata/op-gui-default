@@ -27,13 +27,17 @@ export default Ember.Service.extend(Ember.Evented, {
     this.set('failedDirs', new Set());
   },
 
+  rootDirs: Ember.computed('spaces.[]', function() {
+    return this.get('spaces').mapBy('rootDir');
+  }),
+
   rootSpaces: function() {
     let rootSpaces = {};
     this.get('spaces').forEach((s) => {
       rootSpaces[s.get('rootDir.id')] = s.get('id');
     });
     return rootSpaces;
-  }.property('spaces.@each.rootDir.id'),
+  }.property('rootDirs.id'),
 
   spacesChanged: function() {
     console.debug(`FST: Spaces changed: len ${this.get('spaces.length')}, prev: ${this.get('prevSelectedSpace')}`);

@@ -9,19 +9,9 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Controller.extend({
-  goToDefaultDataSpace() {
-    if (this.get('model')) {
-      let defaultSpace = this.get('model').find((s) => s.get('isDefault'));
-      if (defaultSpace) {
-        let dsId = defaultSpace.get('id');
-        console.debug(`data.index: Redirecting to default space: ${dsId}`);
-        this.transitionToRoute('data.data-space', dsId);
-      }
-    }
-  },
+  fileSystemTree: Ember.inject.service(),
 
-  // TODO: this code can cause problems when changing default space
   onDataSpacesChange: function() {
-    this.goToDefaultDataSpace();
+    this.set('fileSystemTree.spaces', this.get('model'));
   }.observes('model.[]'),
 });

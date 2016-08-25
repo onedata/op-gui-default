@@ -42,16 +42,25 @@ export default Ember.Service.extend(Ember.Evented, {
   spacesChanged: function() {
     console.debug(`FST: Spaces changed: len ${this.get('spaces.length')}, prev: ${this.get('prevSelectedSpace')}`);
     if (!this.get('prevSelectedSpace') && this.get('spaces.length') > 0) {
-      let defaultSpace = this.get('spaces').find((s) => s.get('isDefault'));
-      console.debug('FST: spaces: ' + this.get('spaces').map((s) => s.get('isDefault')));
-      if (defaultSpace) {
-        console.debug(`FST: Will set new selectedSpace: ${defaultSpace.get('name')}`);
-      } else {
-        console.debug('FST: no selectedSpace!');
+      const dataSpaces = this.get('spaces');
+      let newSpaceToSelect;
+      if (dataSpaces.get('isUpdating') === false) {
+        let defaultSpace = dataSpaces.find((s) => s.get('isDefault'));
+        if (defaultSpace) {
+          newSpaceToSelect = defaultSpace;
+        } else {
+          console.debug('No default data-space found - go to first data-space instead');
+          const firstSpace = dataSpaces.objectAt(0);
+          if (firstSpace) {
+            newSpaceToSelect = firstSpace;
+          } else {
+            console.debug('no data-spaces exist');
+          }
+        }
       }
 
       this.set('prevSelectedSpace', this.get('selectedSpace'));
-      this.set('selectedSpace', defaultSpace);
+      this.set('selectedSpace', newSpaceToSelect); 
     }
   }.observes('spaces', 'spaces.[]', 'spaces.@each.isDefault'),
 

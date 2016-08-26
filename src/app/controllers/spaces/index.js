@@ -15,8 +15,7 @@ export default Ember.Controller.extend({
     let spaces = this.get('model');
     if (spaces) {
       if (spaces.get('isUpdating') === false) {
-        let defaultSpace = null;
-        // let defaultSpace = spaces.find((space) => space.get('isDefault'));
+        let defaultSpace = spaces.find((space) => space.get('isDefault'));
         if (defaultSpace) {
           console.debug(`spaces.index: Transition to default space ${defaultSpace.get('id')}`);
           this.transitionToRoute('spaces.show', defaultSpace);

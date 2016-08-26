@@ -1,4 +1,5 @@
 import DS from 'ember-data';
+import Ember from 'ember';
 
 /**
  * A space for files. It has a reference to root dir with it's files.
@@ -16,6 +17,14 @@ export default DS.Model.extend({
   rootDir: DS.belongsTo('file', {async: true}),
 
   space: DS.belongsTo('space', {async: true}),
+
+  save() {
+    const p = this._super(...arguments);
+    p.then(() => {
+      this.get('space').then(s => s.update());
+    });
+    return p;
+  }
 
   // // TODO this does not work because does not loads rootDir...
   // validateRootDir: function() {

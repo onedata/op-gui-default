@@ -51,7 +51,7 @@ export default Ember.Service.extend(Ember.Evented, {
         newSpaceToSelect = defaultSpace;
       } else {
         console.debug('No default data-space found - go to first data-space instead');
-        const firstSpace = dataSpaces.objectAt(0);
+        const firstSpace = dataSpaces.sortBy('name').objectAt(0);
         if (firstSpace) {
           newSpaceToSelect = firstSpace;
         } else {

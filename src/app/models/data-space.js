@@ -1,5 +1,4 @@
 import DS from 'ember-data';
-import Ember from 'ember';
 
 /**
  * A space for files. It has a reference to root dir with it's files.

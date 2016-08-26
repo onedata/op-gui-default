@@ -22,7 +22,7 @@ export default Ember.Controller.extend({
           this.transitionToRoute('spaces.show', defaultSpace);
         } else {
           console.debug('spaces.index: No default space found - go to first space instead');
-          const firstSpace = spaces.objectAt(0);
+          const firstSpace = spaces.sortBy('name').objectAt(0);
           if (firstSpace) {
             this.transitionToRoute('spaces.show', firstSpace);
           } else {

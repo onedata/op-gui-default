@@ -89,13 +89,11 @@ export default Ember.Service.extend({
    *   - ``data.shareId`` (string) - an ID of the created Share record
    * - ``reject(object: error)`` on failure
    */
-  createFileShare(fileId, shareName, shareType, publicAccess) {
+  createFileShare(fileId, shareName) {
     // TODO: implement in backend
     // return this.get('server').privateRPC('createFileShare', {
     //   fileId: fileId,
     //   shareName: shareName,
-    //   shareType: shareType,
-    //   publicAccess: publicAccess
     // });
 
     // FIXME: mocked share creation
@@ -104,10 +102,10 @@ export default Ember.Service.extend({
       store.findRecord('file', fileId).then(
         (file) => {
           const shareRecord = this.get('store').createRecord('share', {
-            file: file,
             name: shareName,
-            shareType: shareType,
-            publicAccess: publicAccess
+            file: file,
+            // WARNING - a test code, lack of dataSpace:...
+            publicUrl: 'https://example.com'
           });
           shareRecord.save().then(
             () => {

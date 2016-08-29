@@ -17,6 +17,9 @@ export default DS.Model.extend({
 
   space: DS.belongsTo('space', {async: true}),
 
+  // FIXME
+  // share: DS.hasMany('share', {async: true}),
+
   // // TODO this does not work because does not loads rootDir...
   // validateRootDir: function() {
   //   let rootDir = this.get('rootDir');

@@ -10,8 +10,9 @@ import DS from 'ember-data';
  */
 export default DS.Model.extend({
   name: DS.attr('string'),
+  // FIXME: inverse
   file: DS.belongsTo('file', {async: true, inverse: null}),
-  shareType: DS.attr('string'),
-  publicAccess: DS.attr('boolean'),
-  // TODO: list of users/group/emails
+  // FIXME: inverse
+  dataSpace: DS.belongsTo('data-space', {async: true, inverse: null}),
+  publicUrl: DS.attr('string')
 });

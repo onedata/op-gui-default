@@ -17,6 +17,9 @@ export default DS.Model.extend({
   errorNotifier: Ember.inject.service('errorNotifier'),
   notify: Ember.inject.service('notify'),
 
+  // FIXME: enable
+  // share: DS.belongsTo('share', {async: true}),
+
   name: DS.attr('string'),
   /**
     Specifies is this object a regular file ("file") or directory ("dir")
@@ -32,6 +35,11 @@ export default DS.Model.extend({
 
   isExpanded: false,
   isSelected: false,
+
+  init() {
+    this._super(...arguments);
+    this.set('dirsPath', []);
+  },
 
   // TODO: implement B, MB, GB, TODO: move to helper
   sizeHumanReadable: function() {
@@ -148,14 +156,14 @@ export default DS.Model.extend({
    * @param file - a leaf file of path to find
    * @returns {RSVP.Promise} resolves with array of Files
    */
-  dirsPath() {
+  resolveDirsPath() {
     let path = [this];
     return new Ember.RSVP.Promise((resolve, reject) => {
       this.get('parent').then(
         (p) => {
           if (p) {
-            p.dirsPath().then((ppath) => {
-              resolve(path.concat(ppath));
+            p.resolveDirsPath().then((ppath) => {
+              resolve(ppath.concat(path));
             });
           } else {
             resolve(path);
@@ -169,10 +177,14 @@ export default DS.Model.extend({
     });
   },
 
-  // TODO: may not update properly
-  path: function() {
-    return this.dirsPath().map(f => f.get('name')).join('/');
-  }.property('parent'),
+  updateDirsPath: Ember.on('init', Ember.observer('parent', 'parent.name', function() {
+    this.resolveDirsPath().then(data => this.set('dirsPath', data));
+  })),
+
+  path: Ember.computed('dirsPath.@each.name', function() {
+    const dp = this.get('dirsPath');
+    return dp && dp.mapBy('name').join('/');
+  }),
 
   // TODO: move directory utils to mixin
   /// Directory utils

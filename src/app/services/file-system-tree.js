@@ -68,14 +68,9 @@ export default Ember.Service.extend(Ember.Evented, {
     }
   },
 
-  // TODO: cache of tree
-  dirsPath(file) {
-    return file ? file.dirsPath() : [];
-  },
-
   expandDir(file) {
     return new Ember.RSVP.Promise((resolve) => {
-      this.dirsPath(file).then(
+      file.resolveDirsPath().then(
         (path) => {
           let parentsLength = path.length - 1;
           for (let i=0; i<parentsLength; ++i) {

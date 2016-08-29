@@ -170,19 +170,6 @@ export default DS.RESTAdapter.extend({
    * Adapter API
    * ------------------------------------------------------------------- */
 
-  /** This method is used by the store to determine if the store should reload
-   * all records from the adapter when records are requested by store.findAll.
-   * */
-  shouldReloadAll() {
-    return false;
-  },
-
-  /** This method is used by the store to determine if the store should reload
-   * a record after the store.findRecord method resolves a cached record. */
-  shouldBackgroundReloadRecord() {
-    return false;
-  },
-
   /** Developer function - for logging/debugging */
   logToConsole(fun_name, fun_params) {
     console.debug(fun_name + '(');

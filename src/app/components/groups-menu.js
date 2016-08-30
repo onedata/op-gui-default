@@ -32,8 +32,8 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
   groups: null,
   validGroups: function() {
-    return this.get('groups').filter((s) => s.get('isLoaded'));
-  }.property('groups', 'groups.[]', 'groups.@each.isLoaded'),
+    return this.get('groups').filter((s) => s.get('isLoaded') && !s.get('isDeleted'));
+  }.property('groups', 'groups.[]', 'groups.@each.isLoaded', 'groups.@each.isDeleted'),
   groupsSorting: ['isDefault:desc', 'name'],
   validGroupsSorted: Ember.computed.sort('validGroups', 'groupsSorting'),
 

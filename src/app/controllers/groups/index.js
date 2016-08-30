@@ -16,7 +16,7 @@ export default Ember.Controller.extend({
     if (groups && groups.get('length') > 0) {
       // TODO: which group should be loaded as default?
       let firstGroup = groups.filter(g => g.get('id') && g.get('id') != 'null').toArray()[0];
-      if (firstGroup) {
+      if (firstGroup && !firstGroup.get('isDeleted') && !firstGroup.get('_invalidRoute')) {
         console.debug(`groups.index: Transition to default group ${firstGroup.get('id')}`);
         this.transitionToRoute('groups.show', firstGroup);
       } else {

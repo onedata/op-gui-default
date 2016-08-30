@@ -65,6 +65,9 @@ export default Ember.Mixin.create({
   // TODO: maybe specific error messages
   handleAfterModelErrors(model) {
     if (!model || model.get('isDeleted')) {
+      if (model) {
+        model.set('_invalidRoute', true);
+      }
       this.actionOnReject();
     }
   }

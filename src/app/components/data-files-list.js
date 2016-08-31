@@ -133,6 +133,10 @@ export default Ember.Component.extend({
     selectFile(file) {
       file.set('isSelected', !file.get('isSelected'));
     },
+
+    openFileShareModal(file) {
+      this.sendAction('openFileShareModal', file);
+    }
   }
 
 });

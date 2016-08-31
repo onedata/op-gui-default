@@ -15,6 +15,8 @@ export default Ember.Component.extend({
 
   isDownloading: false,
 
+  // TODO: make a component for file/dir icon
+
   click() {
     this.sendAction('selectFile', this.get('file'));
   },
@@ -28,6 +30,12 @@ export default Ember.Component.extend({
         this.sendAction('downloadFile', this.get('file'), resolve, reject);
       });
       p.finally(() => this.set('isDownloading', false));
+    }
+  },
+
+  actions: {
+    shareFile() {
+      this.sendAction('openFileShareModal', this.get('file'));
     }
   }
 });

@@ -17,7 +17,9 @@ export default DS.Model.extend({
   errorNotifier: Ember.inject.service('errorNotifier'),
   notify: Ember.inject.service('notify'),
 
-  // FIXME: enable
+  hasShare: Ember.computed('share', function() {
+    return this.belongsTo('share').value() != null;
+  }),
   share: DS.belongsTo('share', {async: true}),
 
   name: DS.attr('string'),
@@ -39,6 +41,24 @@ export default DS.Model.extend({
   init() {
     this._super(...arguments);
     this.set('dirsPath', []);
+  },
+
+  /**
+   * Initializes a ``hasShare`` property by resolving a ``share``
+   * relation. Note, that it make a request.
+   *
+   * @param
+   * @returns
+   */
+  checkShare() {
+    this.get('share').then(
+      (share) => {
+        this.set('hasShare', !!share);
+      },
+      () => {
+        this.set('hasShare', false);
+      }
+    );
   },
 
   // TODO: implement B, MB, GB, TODO: move to helper

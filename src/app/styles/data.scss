@@ -142,6 +142,17 @@
           float: left;
           margin-left: 20px;
         }
+        .file-row-tools {
+          position: absolute;
+          right: 0;
+          .oneicon {
+            position: absolute;
+            right: 0;
+            margin-right: 10px;
+            font-size: 30px;
+            cursor: pointer;
+          }
+        }
       }
     }
   }
@@ -150,6 +161,7 @@
 /// file list table column styles
 
 .file-list-col-file {
+  position: relative !important;
   width: 100%;
 }
 .file-list-col-size {

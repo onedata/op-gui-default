@@ -4,11 +4,7 @@
       <div id="tree-dir-{{file.id}}"
         class="secondary-sidebar-item dir-item single-selectable onedata-red {{if (eq file.id fileBrowser.dir.id) 'active'}}">
         <span class="item-element item-icon" {{action 'toggleDir' file}}>
-          {{#if file.isExpanded}}
-            {{icon "folder-open" "color-directory"}}
-          {{else}}
-            {{icon "folder" "color-directory"}}
-          {{/if}}
+          {{file-icon file=file containerType='tree'}}
         </span>
         <span class="item-element item-click-area"  {{action 'browseDir' file}}>
           <span class="item-label">

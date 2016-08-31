@@ -102,17 +102,21 @@ export default Ember.Service.extend({
       store.findRecord('file', fileId).then(
         (file) => {
           const shareRecord = this.get('store').createRecord('share', {
+            id: file.get('id'),
             name: shareName,
             file: file,
             // WARNING - a test code, lack of dataSpace:...
             publicUrl: 'https://example.com'
           });
-          shareRecord.save().then(
+          file.setProperties({
+            share: shareRecord,
+          });
+          file.save().then(
             () => {
-              resolve(shareRecord.get('id'));
+              resolve({shareId: shareRecord.get('id')});
             },
             () => {
-              reject({message: 'save Share failed'});
+              reject({message: 'save File/Share failed'});
             }
           );
         },

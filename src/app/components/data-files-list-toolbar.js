@@ -29,7 +29,6 @@ export default Ember.Component.extend({
       isCreatingDir: false,
       isCreatingFile: false,
       isRemovingFiles: false,
-      isSharingFile: false,
       isEditingPermissions: false,
       isFileChunksModal: false,
       isNotImplementedModal: false,
@@ -168,11 +167,9 @@ export default Ember.Component.extend({
       this.set('createFileName', '');
       this.set('isCreatingFile', true);
     },
-
+    
     shareFile() {
-      this.setProperties({
-        isSharingFile: true
-      });
+      this.sendAction('openFileShareModal', this.get('dir.singleSelectedFile'));
     },
 
     renameModalOpened() {

@@ -1,13 +1,10 @@
 import Ember from 'ember';
 import PromiseLoadingMixin from '../../mixins/promise-loading';
 
-const DEFAULT_SHARE_TYPE =  'snapshot';
-const DEFAULT_SHARE_PUBLIC_ACCESS = false;
-
 /**
  * Modal that allows to create a Share from selected directory.
  *
- * @module modals/file-share
+ * @module modals/create-share
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
@@ -36,8 +33,6 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
   /*** Form values ***/
   shareName: null,
-  shareType: DEFAULT_SHARE_TYPE,
-  sharePublicAccess: DEFAULT_SHARE_PUBLIC_ACCESS,
 
   /**
    * Indicates that ``submit`` action is pending.
@@ -60,9 +55,9 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   resetProperties() {
     this.setProperties({
       shareName: null,
-      shareType: DEFAULT_SHARE_TYPE,
-      sharePublicAccess: DEFAULT_SHARE_PUBLIC_ACCESS,
       error: null,
+      file: null,
+      isSubmitting: false,
     });
   },
 
@@ -86,36 +81,47 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
       const createPromise = this.get('oneproviderServer').createFileShare(
         file.get('id'),
-        this.get('shareName'),
-        this.get('shareType'),
-        this.get('sharePublicAccess')
+        this.get('shareName')
       );
 
       createPromise
-        .then(() => this.submitSucceed())
+        .then((createData) => this.submitSucceed(createData))
         .catch((error) => this.submitFailed(error))
         .finally(() => this.submitCompleted());
     },
 
   },
 
-  submitSucceed() {
-    this.set('open', false);
-    const msg = this.get('i18n').t('components.modals.fileShare.submitSuccess');
+
+  /**
+   * Handle successful resolve of ``createFileShare`` - a shareId is resolved
+   * so use it to fetch created Share record.
+   *
+   * @param  {Object} shareCreatedData object resolved from
+   *    ``oneproviderServer.createFileShare`` RPC
+   */
+  submitSucceed(shareCreatedData) {
+    const msg = this.get('i18n').t('components.modals.createShare.submitSuccess');
     this.get('notify').info(msg);
+
+    // use a get share promise to open a share info modal
+    this.sendAction(
+      'openShareInfoModal',
+      this.get('store').findRecord('share', shareCreatedData.shareId)
+    );
+
+    this.set('open', false);
   },
 
   submitFailed(error) {
     // TODO: display it in a share modal as an alert panel
-    const msg = this.get('i18n').t('components.modals.fileShare.submitFailed');
+    const msg = this.get('i18n').t('components.modals.createShare.submitFailed');
     this.get('notify').error(msg + (error && error.message && ': ' + error.message));
     console.error(msg);
   },
 
   submitCompleted() {
-    this.setProperties({
-      isSubmitting: false
-    });
+    this.resetProperties();
   }
 
 });

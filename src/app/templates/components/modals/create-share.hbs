@@ -1,0 +1,34 @@
+{{#bs-modal open=open body=false footer=false size='lg'
+    id="create-share"
+    title=(t 'components.modals.createShare.title')
+    openAction="open"
+    openedAction="opened"
+    closedAction="closed"
+    keyboard=(not isBusy)
+    autoClose=(not isBusy)
+    backdropClose=(not isBusy)
+    closeButton=(not isBusy)
+  }}
+  {{#bs-modal-body class='create-share-modal-body'}}
+
+    {{#modals/elements/form-row translationBase="components.modals.createShare.rowName"}}
+      {{input type="text" value=shareName autofocus=true
+        class="form-control"}}
+    {{/modals/elements/form-row}}
+
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#spin-button-onedata buttonType="submit"
+      action=(action "submit")
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isSubmitting
+      disabled=(not isReadyToSubmit)
+    }}
+      {{t "common.modal.create"}}
+    {{/spin-button-onedata}}
+    {{#bs-button action=(action "close" target=footer) type="default"
+    }}
+      {{t "common.modal.cancel"}}
+    {{/bs-button}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}

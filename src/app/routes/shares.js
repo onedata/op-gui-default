@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
-  mainRouteName: 'shared',
+  mainRouteName: 'shares',
 
   model() {
     return this.store.findAll('share');
@@ -10,7 +10,7 @@ export default Ember.Route.extend({
   actions: {
     /** Show Share */
     goToShare(share) {
-      this.transitionTo('shared.show', share);
+      this.transitionTo('shares.show', share);
     },
   }
 });

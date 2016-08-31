@@ -18,7 +18,7 @@ export default DS.Model.extend({
   notify: Ember.inject.service('notify'),
 
   // FIXME: enable
-  // share: DS.belongsTo('share', {async: true}),
+  share: DS.belongsTo('share', {async: true}),
 
   name: DS.attr('string'),
   /**

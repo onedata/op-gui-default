@@ -1,0 +1,39 @@
+{{#bs-modal open=open body=false footer=false size='lg'
+    id="share-info"
+    title=(t 'components.modals.fileShareInfo.title')
+    openAction="open"
+    openedAction="opened"
+    closedAction="closed"
+    keyboard=true
+    autoClose=true
+    backdropClose=true
+    closeButton=true
+  }}
+  {{#bs-modal-body}}
+
+    {{#if isLoading}}
+      {{!-- FIXME loader --}}
+      LOADING
+    {{else}}
+      {{t 'components.modals.fileShareInfo.subtitle'
+        path=share.file.path
+        name=share.name
+      }}
+
+      {{#modals/elements/form-row translationBase="components.modals.fileShareInfo.publicUrl"}}
+        {{input type="text" value=share.publicUrl autofocus=true
+          class="form-control"}}
+        {{!-- FIXME: copy --}}
+      {{/modals/elements/form-row}}
+    {{/if}}
+
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#bs-button disabled=goToShareDisabled action=(if (not goToShareDisabled) (action "goToShare")) type="primary"}}
+      {{t "components.modals.fileShareInfo.goToShare"}}
+    {{/bs-button}}
+    {{#bs-button action=(action "close" target=footer) type="default"}}
+      {{t "common.modal.close"}}
+    {{/bs-button}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}

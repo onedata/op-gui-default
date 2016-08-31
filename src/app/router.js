@@ -49,8 +49,8 @@ Router.map(function() {
     });
   });
 
-  // shared/ - browse Shares reached from primary sidebar
-  this.route('shared', {resetNamespace: true}, function() {
+  // shares/ - browse Shares reached from primary sidebar
+  this.route('shares', {resetNamespace: true}, function() {
       this.route('show', {path: ':share_id'});
   });
 

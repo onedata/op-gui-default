@@ -1,7 +1,21 @@
 .modal {
+  $control-label-margin-bottom: 20px;
+
   .control-label {
-    margin-bottom: 20px;
+    margin-bottom: $control-label-margin-bottom;
     font-weight: bold;
+    // TODO: change in new modal style
+    // text-transform: uppercase;
+  }
+
+  .control-label + .control-sublabel {
+    margin-top: -$control-label-margin-bottom + 4px;
+  }
+
+  .control-sublabel {
+    margin-bottom: $control-label-margin-bottom;
+    font-size: 90%;
+    color: #888;
   }
 
   .modal-dialog {
@@ -40,10 +54,11 @@
         // TODO: only input[type=text] ?
         .form-control {
           border-radius: 0;
-          border: solid 1px #545C74;
+          border: solid 1px #B6C7D3;
 
           &:focus {
             box-shadow: none;
+            border: solid 1px #545C74;
           }
         }
       }

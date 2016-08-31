@@ -88,6 +88,52 @@ export default Ember.Route.extend(RouteRejectHandler, {
         message: this.get('i18n').t('data.dataSpace.dir.loaderMessage'),
         area: 'content'
       });
+    },
+
+    /**
+     * Open either create-file-share or share-info modal for specified
+     * File record, which should be a directory.
+     *
+     * @param {File} file
+     */
+    openFileShareModal(file, resolveAction) {
+      const p = file.get('share').then(
+        (share) => {
+          if (share) {
+            // we already got a Share, show info
+            this.controller.set('isShowingShareInfo', true);
+          } else {
+            // we do not have a Share - open create modal
+            this.controller.set('isCreatingShare', true);
+          }
+          if (resolveAction) {
+            resolveAction();
+          }
+        },
+        () => {
+          this.controller.set('isCreatingShare', true);
+          if (resolveAction) {
+            resolveAction();
+          }
+        }
+      );
+
+      p.finally(() => {
+        this.controller.set('fileShareFile', file);
+      });
+    },
+
+    openShareInfoModal(share) {
+      if (share) {
+        if (share.then) {
+          this.controller.set('sharePromise', share);
+        } else {
+          this.controller.set('share', share);
+        }
+        this.controller.set('isShowingShareInfo', true);
+      }
+
     }
   }
+
 });

@@ -2,11 +2,11 @@
 
 @font-face {
   font-family: 'oneicons';
-  src:  url('#{$icomoon-font-path}/oneicons.eot?il41pw');
-  src:  url('#{$icomoon-font-path}/oneicons.eot?il41pw#iefix') format('embedded-opentype'),
-    url('#{$icomoon-font-path}/oneicons.ttf?il41pw') format('truetype'),
-    url('#{$icomoon-font-path}/oneicons.woff?il41pw') format('woff'),
-    url('#{$icomoon-font-path}/oneicons.svg?il41pw#oneicons') format('svg');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?ehhh7p');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?ehhh7p#iefix') format('embedded-opentype'),
+    url('#{$icomoon-font-path}/oneicons.ttf?ehhh7p') format('truetype'),
+    url('#{$icomoon-font-path}/oneicons.woff?ehhh7p') format('woff'),
+    url('#{$icomoon-font-path}/oneicons.svg?ehhh7p#oneicons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -114,6 +114,11 @@
 .oneicon-folder-open {
   &:before {
     content: $oneicon-folder-open;
+  }
+}
+.oneicon-folder-share {
+  &:before {
+    content: $oneicon-folder-share;
   }
 }
 .oneicon-folder {
@@ -284,6 +289,11 @@
 .oneicon-settings {
   &:before {
     content: $oneicon-settings;
+  }
+}
+.oneicon-share-collection {
+  &:before {
+    content: $oneicon-share-collection;
   }
 }
 .oneicon-share {

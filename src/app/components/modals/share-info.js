@@ -25,44 +25,13 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
   error: null,
 
-  isLoading: false,
-
   /**
-   * To inject if ``sharePromise`` is not injected
-   * @type share
+   * @type Share or Ember.ObjectProxy of Share
    */
   share: null,
 
-  /**
-   * To inject if ``share`` is not injected
-   * @type share
-   */
-  sharePromise: null,
-
-  sharePromiseChanged: Ember.observer('sharePromise', function() {
-    const sp = this.get('sharePromise');
-    if (sp) {
-      this.set('isLoading', true);
-      sp.then(
-        (share) => {
-          this.setProperties({
-            share: share,
-            sharePromise: null,
-          });
-        },
-        () => {
-          this.setProperties({
-            share: null,
-            sharePromise: null
-          });
-        }
-      );
-      sp.finally(
-        () => {
-          this.set('isLoading', false);
-        }
-      );
-    }
+  isLoading: Ember.computed('share.content', function() {
+    return !this.get('share.content');
   }),
 
   init() {
@@ -72,9 +41,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
   resetProperties() {
     this.setProperties({
-      share: null,
-      sharePromise: null,
-      isLoading: false,
+      share: null
     });
   },
 

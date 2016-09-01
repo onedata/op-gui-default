@@ -27,8 +27,8 @@ export default Ember.Route.extend(RouteRejectHandler, {
   },
 
   actions: {
-    openDirInBrowser(fileId) {
-      this.transitionTo('data.data-space.dir', fileId);
+    openDirInBrowser(file) {
+      this.transitionTo('data.data-space.dir', file);
     },
 
     goToDataSpace(spaceId) {

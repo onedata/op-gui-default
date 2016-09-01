@@ -68,9 +68,17 @@ export default Ember.Service.extend(Ember.Evented, {
     }
   },
 
+  /**
+   * Expands all directories (File) to root of directory tree from the File
+   *
+   * @param {File|Ember.ObjectProxy} file - a leaf file of the files tree
+   * @returns {Promise} promise that will resolve when all dirs in tree to
+   *  the file are expanded
+   */
   expandDir(file) {
     return new Ember.RSVP.Promise((resolve) => {
-      file.resolveDirsPath().then(
+      // using invocation from property, because file can be an ObjectProxy
+      file.get('resolveDirsPath').apply(file).then(
         (path) => {
           let parentsLength = path.length - 1;
           for (let i=0; i<parentsLength; ++i) {

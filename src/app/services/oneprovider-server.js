@@ -91,39 +91,39 @@ export default Ember.Service.extend({
    */
   createFileShare(fileId, dataSpaceId, shareName) {
     // TODO: implement in backend
-    // return this.get('server').privateRPC('createFileShare', {
-    //   fileId: fileId,
-    //   dataSpaceId: dataSpaceId,
-    //   shareName: shareName,
-    // });
+    return this.get('server').privateRPC('createFileShare', {
+      fileId: fileId,
+      dataSpaceId: dataSpaceId,
+      shareName: shareName,
+    });
 
     // FIXME: mocked share creation
-    return new Ember.RSVP.Promise((resolve, reject) => {
-      const store = this.get('store');
-      store.findRecord('file', fileId).then(
-        (file) => {
-          const shareRecord = this.get('store').createRecord('share', {
-            id: file.get('id'),
-            name: shareName,
-            file: file,
-            // WARNING - a test code, lack of dataSpace:...
-            publicUrl: 'https://example.com/'+dataSpaceId
-          });
-          file.setProperties({
-            share: shareRecord,
-          });
-          file.save().then(
-            () => {
-              resolve({shareId: shareRecord.get('id')});
-            },
-            () => {
-              reject({message: 'save File/Share failed'});
-            }
-          );
-        },
-        () => reject({message: 'no file for file id'})
-      );
-    });
+    // return new Ember.RSVP.Promise((resolve, reject) => {
+    //   const store = this.get('store');
+    //   store.findRecord('file', fileId).then(
+    //     (file) => {
+    //       const shareRecord = this.get('store').createRecord('share', {
+    //         id: file.get('id'),
+    //         name: shareName,
+    //         file: file,
+    //         // WARNING - a test code, lack of dataSpace:...
+    //         publicUrl: 'https://example.com/'+dataSpaceId
+    //       });
+    //       file.setProperties({
+    //         share: shareRecord,
+    //       });
+    //       file.save().then(
+    //         () => {
+    //           resolve({shareId: shareRecord.get('id')});
+    //         },
+    //         () => {
+    //           reject({message: 'save File/Share failed'});
+    //         }
+    //       );
+    //     },
+    //     () => reject({message: 'no file for file id'})
+    //   );
+    // });
   },
 
   /**--------------------------------------------------------------------

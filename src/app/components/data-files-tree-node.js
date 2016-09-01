@@ -4,7 +4,7 @@ import Ember from 'ember';
  * A node in a files tree. Should be a directory.
  *
  * Sends actions:
- * - openDirInBrowser(fileId) - should open a dir in a browser (data-files-list)
+ * - openDirInBrowser(file) - should open a dir in a browser (data-files-list)
  * @module components/data-files-tree-node
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
@@ -12,7 +12,7 @@ import Ember from 'ember';
  */
 export default Ember.Component.extend({
   fileBrowser: Ember.inject.service(),
-  
+
   /**
    * To inject - a dir which this node represents
    */
@@ -47,15 +47,15 @@ export default Ember.Component.extend({
 
     browseDir(dirFile) {
       if (dirFile.get('isDir')) {
-        this.sendAction('openDirInBrowser', dirFile.get('id'));
+        this.sendAction('openDirInBrowser', dirFile);
       } else {
         console.error(`Tried to browse a file in file brower (should be dir): ${dirFile.get('id')}`);
       }
     },
 
     /** Pass the action up (action goes up from child dirs) */
-    openDirInBrowser(fileId) {
-      this.sendAction('openDirInBrowser', fileId);
+    openDirInBrowser(file) {
+      this.sendAction('openDirInBrowser', file);
     }
   }
 });

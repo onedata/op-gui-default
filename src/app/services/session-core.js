@@ -1,1 +1,1 @@
-../../../gui/common_assets/js/services/session-core-no-simple-auth.js
+../../../gui/common_assets/js/services/session-core.js

@@ -2,11 +2,19 @@
   Name: {{model.name}}
 </div>
 <div class="row">
-  Directory: {{model.file.name}}
+  Space: {{model.dataSpace.name}}
 </div>
 <div class="row">
-  Type: {{model.shareType}}
+  Directory path: {{model.file.path}}
 </div>
 <div class="row">
-  Public access: {{model.publicAccess}}
+  Public URL: {{model.publicUrl}}
+</div>
+
+<div class="files-list">
+  Dire: {{directory}}
+  {{#if directory}}
+    {{data-files-list dir=directory openDirInBrowser='openDirInBrowser'
+      openFileShareModal='openFileShareModal'}}
+  {{/if}}
 </div>

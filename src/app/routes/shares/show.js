@@ -4,4 +4,9 @@ export default Ember.Route.extend({
   model(params) {
     return this.handleReject(this.store.find('share', params.share_id));
   },
+
+  setupController(controller, model) {
+    this._super(controller, model);
+    controller.modelChanged();
+  }
 });

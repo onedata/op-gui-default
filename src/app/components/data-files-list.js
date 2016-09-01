@@ -121,7 +121,7 @@ export default Ember.Component.extend({
 
   actions: {
     openDirInBrowser(file) {
-      this.sendAction('openDirInBrowser', file.get('id'));
+      this.sendAction('openDirInBrowser', file);
     },
 
     downloadFile(file, resolve, reject) {

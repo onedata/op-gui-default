@@ -8,7 +8,8 @@
   }}
 
 {{modals/create-share open=isCreatingShare openShareInfoModal="openShareInfoModal"
-    file=(and isCreatingShare fileShareFile)}}
+    file=(and isCreatingShare fileShareFile)
+    dataSpace=(and isCreatingShare dataSpace)}}
 
 <div class="files-list">
   {{data-files-list dir=model openDirInBrowser='openDirInBrowser'

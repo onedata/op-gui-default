@@ -89,10 +89,11 @@ export default Ember.Service.extend({
    *   - ``data.shareId`` (string) - an ID of the created Share record
    * - ``reject(object: error)`` on failure
    */
-  createFileShare(fileId, shareName) {
+  createFileShare(fileId, dataSpaceId, shareName) {
     // TODO: implement in backend
     // return this.get('server').privateRPC('createFileShare', {
     //   fileId: fileId,
+    //   dataSpaceId: dataSpaceId,
     //   shareName: shareName,
     // });
 
@@ -106,7 +107,7 @@ export default Ember.Service.extend({
             name: shareName,
             file: file,
             // WARNING - a test code, lack of dataSpace:...
-            publicUrl: 'https://example.com'
+            publicUrl: 'https://example.com/'+dataSpaceId
           });
           file.setProperties({
             share: shareRecord,

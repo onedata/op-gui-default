@@ -31,6 +31,12 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
    */
   file: null,
 
+  /**
+   * To inject
+   * @type DataSpace
+   */
+  dataSpace: null,
+
   /*** Form values ***/
   shareName: null,
 
@@ -77,10 +83,12 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
     submit() {
       const file = this.get('file');
+      const dataSpace = this.get('dataSpace');
       this.set('isSubmitting', true);
 
       const createPromise = this.get('oneproviderServer').createFileShare(
         file.get('id'),
+        dataSpace.get('id'),
         this.get('shareName')
       );
 

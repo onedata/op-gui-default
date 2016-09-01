@@ -18,11 +18,11 @@ export default Ember.Component.extend({
   containerType: 'list',
 
   iconName: Ember.computed(
-    'file.isDir', 'file.share', 'file.share', 'file.isExpanded',
+    'file.isDir', 'file.hasShare', 'file.share', 'file.isExpanded',
     'containerType',
     function() {
       const isDir = this.get('file.isDir');
-      const hasShare = !!this.get('file').belongsTo('share').value();
+      const hasShare = this.get('file.hasShare');
       const isExpanded = this.get('file.isExpanded');
       const containerType = this.get('containerType');
       if (isDir) {

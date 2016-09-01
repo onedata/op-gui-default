@@ -18,7 +18,7 @@ export default DS.Model.extend({
   notify: Ember.inject.service('notify'),
 
   hasShare: Ember.computed('share', function() {
-    return this.belongsTo('share').value() != null;
+    return this.belongsTo('share').id() != null;
   }),
   share: DS.belongsTo('share', {async: true}),
 

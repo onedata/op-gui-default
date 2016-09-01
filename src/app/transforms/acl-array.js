@@ -1,6 +1,6 @@
 import DS from 'ember-data';
 import Ember from 'ember';
-import ACL from '../utils/access-control-entity';
+import ACL from 'op-worker-gui/utils/access-control-entity';
 
 /**
  * Transforms array of AccessControlEntity.

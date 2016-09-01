@@ -5,7 +5,7 @@ import {
   it
 } from 'mocha';
 import { mergeAcls } from 'op-worker-gui/utils/acl-utils';
-import ACE from '../../../utils/access-control-entity';
+import ACE from 'op-worker-gui/utils/access-control-entity';
 
 describe('aclUtils', function() {
   it('has mergeAcls function which creates one AccessControlEntity (ACE) from an ACE[] without duplicate elements', function() {

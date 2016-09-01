@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import PromiseLoadingMixin from '../../mixins/promise-loading';
+import PromiseLoadingMixin from 'op-worker-gui/mixins/promise-loading';
 
 /**
  * Modal that shows summary (basic information) about Share.
@@ -64,7 +64,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
       const s = this.get('share');
       if (s) {
         this.set('open', false);
-        this.sendAction('transitionTo', 'shares.show', this.get('share'));
+        this.sendAction('transitionTo', 'onedata.shares.show', this.get('share'));
       }
     }
   },

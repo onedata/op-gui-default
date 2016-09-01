@@ -25,7 +25,7 @@ export default Ember.Service.extend({
 
   /** Parses currentPath (a route path) and sets currentItem */
   currentItem: function() {
-    let itemName = this.get('currentPath').match(/((\w|-)+)\.?.*/);
+    let itemName = this.get('currentPath').match(/onedata\.((\w|-)+)\.?.*/);
     return itemName && itemName[1];
   }.property('currentPath'),
 

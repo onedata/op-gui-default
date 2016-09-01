@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import PermissionsModelSpaceMixin from '../mixins/permissions-model-space';
+import PermissionsModelSpaceMixin from 'op-worker-gui/mixins/permissions-model-space';
 
 /**
  * A set of single Space permissions for a single User

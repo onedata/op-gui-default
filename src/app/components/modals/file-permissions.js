@@ -1,7 +1,7 @@
 import Ember from 'ember';
-import PromiseLoadingMixin from '../../mixins/promise-loading';
-import { mergeAcls } from '../../utils/acl-utils';
-import { POSIX_SPECIAL_DIFFERENT } from '../file-permissions/posix';
+import PromiseLoadingMixin from 'op-worker-gui/mixins/promise-loading';
+import { mergeAcls } from 'op-worker-gui/utils/acl-utils';
+import { POSIX_SPECIAL_DIFFERENT } from 'op-worker-gui/components/file-permissions/posix';
 
 /**
  * Report error when removing ACL failed

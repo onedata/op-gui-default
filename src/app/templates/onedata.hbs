@@ -1,0 +1,21 @@
+<header>
+  {{#top-bar}}
+    {{outlet 'toolbar'}}
+  {{/top-bar}}
+</header>
+
+<nav class="primary-sidebar">
+  <div class="sidebar-content">
+    {{main-menu goToItem="goToItem"}}
+  </div>
+</nav>
+
+{{!-- The app main part (without top and left navigations) --}}
+<section id="main-content">
+  {{common-loader}}
+  {{outlet}}
+</section>
+
+<div class="file-upload">
+  {{file-upload dir=model}}
+</div>

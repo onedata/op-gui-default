@@ -24,20 +24,21 @@ export default Ember.Mixin.create({
   }.property('permissionsType'),
 
   model() {
-    var subject = this.modelFor(`${this.get('routeType')}.show`);
+    var subject = this.modelFor(`onedata.${this.get('routeType')}.show`);
     return {
       subject: subject,
       permissions: subject.get(this.get('collectionName'))
     };
   },
 
+  setupController(controller, model) {
+    this._super(controller, model);
+    controller.changeMenuActiveOption();
+  },
+
   collectionName: function() {
     return `${this.get('permissionsTypeSingular')}Permissions`;
   }.property('permissionsTypeSingular'),
-
-  onActivate: function() {
-    this.controllerFor(this.routeName).changeMenuActiveOption();
-  }.on('activate'),
 
   onDeactivate: function() {
     // TODO: use properties bind

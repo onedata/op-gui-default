@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import snakeToCamel from '../utils/snake-to-camel';
+import snakeToCamel from 'op-worker-gui/utils/snake-to-camel';
 
 /**
  * Provides API for open some modals rendered by common-modals component.

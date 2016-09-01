@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import bindFloater from '../utils/bind-floater';
+import bindFloater from 'op-worker-gui/utils/bind-floater';
 
 /**
  * Drop-right menu for single space, conaining i.a. rename space, remove space etc.

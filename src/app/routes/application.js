@@ -7,6 +7,7 @@
  */
 
 import Ember from 'ember';
+// import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
 
 export default Ember.Route.extend({
   mainMenuService: Ember.inject.service('main-menu'),
@@ -18,7 +19,7 @@ export default Ember.Route.extend({
 
   actions: {
     goToItem(name) {
-      this.transitionTo(`${name}.index`);
+      this.transitionTo(`onedata.${name}.index`);
     },
 
     transitionTo() {
@@ -27,12 +28,23 @@ export default Ember.Route.extend({
   },
 
   initSession: function () {
-    // @todo This returns a promise. We should display a loading page here
-    // and transition to proper page on promise resolve.
-    this.get('session').initSession(false).then(
+    let p = this.get('session').initSession();
+
+    p.then(
       () => {
-        console.log('initSession resolved');
+        console.debug('initSession resolved');
+      },
+      // TODO: translations
+      () => {
+        this.get('messageBox').open({
+          type: 'error',
+          allowClose: false,
+          title: 'Session initialization error',
+          message: 'Fatal error: session cannot be initialized'
+        });
       }
     );
-  }.on('init')
+
+    return p;
+  }.on('init'),
 });

@@ -10,14 +10,14 @@
 
 import DS from 'ember-data';
 import Ember from 'ember';
-import octalPermissionsToString from '../utils/octal-permissions-to-string';
+import octalPermissionsToString from 'op-worker-gui/utils/octal-permissions-to-string';
 /* globals moment */
 
 export default DS.Model.extend({
   errorNotifier: Ember.inject.service('errorNotifier'),
   notify: Ember.inject.service('notify'),
 
-  hasShare: Ember.computed('share', function() {
+  hasShare: Ember.computed('share.content', function() {
     return this.belongsTo('share').id() != null;
   }),
   share: DS.belongsTo('share', {async: true}),

@@ -11,8 +11,8 @@ import DS from 'ember-data';
 export default DS.Model.extend({
   name: DS.attr('string'),
   // FIXME: inverse
-  file: DS.belongsTo('file', {async: true, inverse: null}),
+  file: DS.belongsTo('file', {async: true}),
   // FIXME: inverse
-  dataSpace: DS.belongsTo('data-space', {async: true, inverse: null}),
+  dataSpace: DS.belongsTo('data-space', {async: true}),
   publicUrl: DS.attr('string')
 });

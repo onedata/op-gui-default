@@ -45,12 +45,14 @@ export default Ember.Mixin.create(PermissionsModelMixin, {
   modSetPrivileges: false,
   modInviteProvider: false,
   modRemoveProvider: false,
+  modManageShares: false,
 
   /** A collection of permissions and modified flags suffixes,
    *  used mainly to iterate over these flags */
   FLAG_NAMES: [
     'ViewSpace', 'ModifySpace', 'RemoveSpace', 'InviteUser', 'RemoveUser',
-     'InviteGroup', 'RemoveGroup', 'SetPrivileges', 'InviteProvider', 'RemoveProvider'
+     'InviteGroup', 'RemoveGroup', 'SetPrivileges', 'InviteProvider', 'RemoveProvider',
+     'ManageShares'
   ],
 
   // Checks if Permission is modified using mod* flags
@@ -61,5 +63,5 @@ export default Ember.Mixin.create(PermissionsModelMixin, {
     }, this);
   }.property('modViewSpace', 'modModifySpace', 'modRemoveSpace', 'modInviteUser',
     'modRemoveUser', 'modInviteGroup', 'modRemoveGroup', 'modSetPrivileges', 'modInviteProvider',
-    'modRemoveProvider'),
+    'modRemoveProvider', 'modManageShares'),
 });

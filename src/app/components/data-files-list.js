@@ -143,6 +143,10 @@ export default Ember.Component.extend({
       this.get('dir.parent').then(
         parentDir => parentDir && this.set('dir', parentDir)
       );
+    },
+
+    changeDir(dir) {
+      this.set('dir', dir);
     }
   }
 

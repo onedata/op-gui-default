@@ -136,6 +136,13 @@ export default Ember.Component.extend({
 
     openFileShareModal(file) {
       this.sendAction('openFileShareModal', file);
+    },
+
+    // TODO: loading
+    goUp() {
+      this.get('dir.parent').then(
+        parentDir => parentDir && this.set('dir', parentDir)
+      );
     }
   }
 

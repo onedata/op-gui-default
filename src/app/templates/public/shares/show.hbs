@@ -1,19 +1,25 @@
-<div class="row">
-  Name: {{model.name}}
-</div>
-<div class="row">
-  Space: {{model.dataSpace.name}}
-</div>
-<div class="row">
-  Directory path: {{model.file.path}}
-</div>
-<div class="row">
-  Public URL: <a href="{{model.publicUrl}}">{{model.publicUrl}}</a>
-</div>
+{{!-- TODO: layout (public-top and public-content) should be in public route --}}
+<div class="public-top">
 
-<div class="files-list">
-  {{#if directory}}
-    {{data-files-list dir=directory openDirInBrowser='openDirInBrowser'
-      openFileShareModal='openFileShareModal'}}
-  {{/if}}
+</div>
+<div class="public-content">
+  <div class="row">
+    Name: {{model.name}}
+  </div>
+  <div class="row">
+    Space: {{model.dataSpace.name}}
+  </div>
+  <div class="row">
+    Directory path: {{model.file.path}}
+  </div>
+  <div class="row">
+    Public URL: <a href="{{model.publicUrl}}">{{model.publicUrl}}</a>
+  </div>
+
+  <div class="files-list">
+    {{#if directory}}
+      {{data-files-list dir=directory openDirInBrowser='openDirInBrowser'
+        openFileShareModal='openFileShareModal' goUpButton=true}}
+    {{/if}}
+  </div>
 </div>

@@ -1,3 +1,9 @@
+{{#if goUpButton}}
+  {{#bs-button action=(action "goUp") type="primary"}}
+    Up
+  {{/bs-button}}
+{{/if}}
+
 <table class="table table-strips files-table relative">
   <div class="drop-area">
     {{icon 'upload'}}

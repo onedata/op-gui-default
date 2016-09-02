@@ -18,9 +18,9 @@ export default DS.Model.extend({
   notify: Ember.inject.service('notify'),
 
   hasShare: Ember.computed('share.content', function() {
-    return this.belongsTo('share').id() != null;
+    return this.belongsTo('share-public').id() != null;
   }),
-  share: DS.belongsTo('share', {async: true}),
+  share: DS.belongsTo('share-public', {async: true}),
 
   name: DS.attr('string'),
   /**
@@ -28,8 +28,8 @@ export default DS.Model.extend({
     To check if it is a dir please use "isDir" property.
   */
   type: DS.attr('string'),
-  parent: DS.belongsTo('file', {inverse: 'children', async: true}),
-  children: DS.hasMany('file', {inverse: 'parent', async: true}),
+  parent: DS.belongsTo('file-public', {inverse: 'children', async: true}),
+  children: DS.hasMany('file-public', {inverse: 'parent', async: true}),
 
   modificationTime: DS.attr('number'),
   size: DS.attr('number'),

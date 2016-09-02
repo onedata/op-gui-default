@@ -13,6 +13,6 @@ export default DS.Model.extend({
   // FIXME: inverse
   file: DS.belongsTo('file-public', {async: true}),
   // FIXME: inverse
-  dataSpace: DS.belongsTo('data-space', {async: true}),
+  dataSpace: DS.belongsTo('data-space-public', {async: true}),
   publicUrl: DS.attr('string')
 });

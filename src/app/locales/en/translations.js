@@ -271,6 +271,7 @@ export default {
       getSupport: 'get support',
       removeSubgroup: 'remove subgroup',
       joinGroup: 'join group',
+      manageShares: 'manage shares',
       inviteModal: {
         title: 'Invite {{type}} to space',
         label: 'Pass the below token to the {{type}} you want to invite'

@@ -68,9 +68,8 @@ Router.map(function() {
 
   // /public - a root of all views that does not use authentication (public)
   this.route('public', {resetNamespace: true}, function() {
-
     // nothing here, TODO: redirect to index or something
-    this.route('shares', {resetNamespace: true}, function() {
+    this.route('shares', function() {
       // public/shares/:share_id - show public view of Share
       this.route('show', {path: ':share_id'});
     });

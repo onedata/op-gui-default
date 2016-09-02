@@ -27,6 +27,7 @@ export default Ember.Mixin.create(PermissionsModelMixin, {
   permSetPrivileges: DS.attr('boolean', {defaultValue: false}),
   permInviteProvider: DS.attr('boolean', {defaultValue: false}),
   permRemoveProvider: DS.attr('boolean', {defaultValue: false}),
+  permManageShares: DS.attr('boolean', {defaultValue: false}),
 
   /* Modification flags (not persisted) - if true, the corresponding perm*
    * attribte was modified in view but not saved.

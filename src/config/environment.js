@@ -32,9 +32,9 @@ module.exports = function(environment) {
 
     'ember-simple-auth': {
       session: 'session:custom',
-      authenticationRoute: 'index', // 'login'
-      routeAfterAuthentication: 'index', // 'onedata'
-      routeIfAlreadyAuthenticated: 'index' // 'onedata'
+      authenticationRoute: 'login', // 'login'
+      routeAfterAuthentication: 'onedata', // 'onedata'
+      routeIfAlreadyAuthenticated: 'onedata' // 'onedata'
     }
   };
 

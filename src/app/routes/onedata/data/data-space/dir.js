@@ -125,7 +125,7 @@ export default Ember.Route.extend(RouteRejectHandler, {
 
     openShareInfoModal(share) {
       if (share) {
-        this.setProperties({
+        this.controller.setProperties({
           share: share,
           isShowingShareInfo: true,
         });

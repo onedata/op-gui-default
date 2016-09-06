@@ -58,6 +58,7 @@ export default Ember.Component.extend({
 
   didInsertElement() {
     this.isLoadingChanged();
+    this.selectedSpaceDidChange();
   },
 
   actions: {

@@ -17,8 +17,13 @@ export default DS.Model.extend({
 
   space: DS.belongsTo('space', {async: true}),
 
-  // FIXME
-  // share: DS.hasMany('share', {async: true}),
+  save() {
+    const p = this._super(...arguments);
+    p.then(() => {
+      this.get('space').then(s => s.update());
+    });
+    return p;
+  }
 
   // // TODO this does not work because does not loads rootDir...
   // validateRootDir: function() {

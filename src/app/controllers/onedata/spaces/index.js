@@ -14,12 +14,20 @@ export default Ember.Controller.extend({
     console.debug(`spaces.index: Will try to go to default space`);
     let spaces = this.get('model');
     if (spaces) {
-      let defaultSpace = spaces.find((space) => space.get('isDefault'));
-      if (defaultSpace) {
-        console.debug(`spaces.index: Transition to default space ${defaultSpace.get('id')}`);
-        this.transitionToRoute('onedata.spaces.show', defaultSpace);
-      } else {
-        console.debug('spaces.index: No default space found yet');
+      if (spaces.get('isUpdating') === false) {
+        let defaultSpace = spaces.find((space) => space.get('isDefault'));
+        if (defaultSpace) {
+          console.debug(`spaces.index: Transition to default space ${defaultSpace.get('id')}`);
+          this.transitionToRoute('spaces.show', defaultSpace);
+        } else {
+          console.debug('spaces.index: No default space found - go to first space instead');
+          const firstSpace = spaces.sortBy('name').objectAt(0);
+          if (firstSpace) {
+            this.transitionToRoute('spaces.show', firstSpace);
+          } else {
+            console.debug('no spaces exist');
+          }
+        }
       }
     }
   },

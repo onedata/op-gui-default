@@ -29,13 +29,13 @@ export default Ember.Component.extend({
   filesSorting: ['type:asc', 'name:asc'],
   files: Ember.computed.alias('dir.children'),
   visibleFiles: function() {
-    return this.get('files').filter((f) => f.get('isLoaded'));
+    return this.get('files').filter((f) => f.get('isLoaded') && !f.get('isBroken'));
   }.property('files', 'files.[]', 'files.@each.isLoaded'),
   visibleFilesSorted: Ember.computed.sort('visibleFiles', 'filesSorting'),
 
   dirIsEmpty: function() {
-    return !this.get('files') || this.get('files.length') === 0;
-  }.property('files.length'),
+    return !this.get('visibleFiles') || this.get('visibleFiles.length') === 0;
+  }.property('visibleFiles.length'),
 
   /**
    * A file browser loading state. Not only checks if files model is loaded
@@ -87,7 +87,13 @@ export default Ember.Component.extend({
     p.then(
       (data) => {
         if (data && data.fileUrl) {
-          window.open(data.fileUrl, '_blank');
+          const iframe = $("<iframe/>").attr({
+            src: data.fileUrl,
+            style: "visibility:hidden;display:none"
+          }).appendTo($('#app'));
+          setTimeout(function () {
+            iframe.remove();
+          }, 1000);
           downloadResolve();
         } else {
           messageBox.open({

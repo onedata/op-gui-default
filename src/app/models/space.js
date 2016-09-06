@@ -25,5 +25,13 @@ export default DS.Model.extend({
   /** An absolute position on list */
   listOrder: DS.attr('number'),
 
-  dataSpace: DS.belongsTo('dataSpace', {async: true})
+  dataSpace: DS.belongsTo('dataSpace', {async: true}),
+
+  save() {
+    const p = this._super(...arguments);
+    p.then(() => {
+      this.get('dataSpace').then(s => s.update());
+    });
+    return p;
+  }
 });

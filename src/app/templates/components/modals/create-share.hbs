@@ -13,13 +13,13 @@
 
     {{#modals/elements/form-row translationBase="components.modals.createShare.rowName"}}
       {{input type="text" value=shareName autofocus=true
-        class="form-control"}}
+        class="form-control" action=(if isReadyToSubmit (action "submit"))}}
     {{/modals/elements/form-row}}
 
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata buttonType="submit"
-      action=(action "submit")
+      action=(if isReadyToSubmit (action "submit"))
       class="btn btn-primary no-outline" spinnerColor="#fff"
       inFlight=isSubmitting
       disabled=(not isReadyToSubmit)
@@ -27,7 +27,7 @@
       {{t "common.modal.create"}}
     {{/spin-button-onedata}}
     {{#bs-button action=(action "close" target=footer) type="default"
-    }}
+      disabled=isBusy}}
       {{t "common.modal.cancel"}}
     {{/bs-button}}
   {{/bs-modal-footer}}

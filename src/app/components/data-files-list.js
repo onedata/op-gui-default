@@ -22,6 +22,11 @@ export default Ember.Component.extend({
 
   classNames: ['data-files-list'],
 
+  /// Options, features
+  uploadEnabled: true,
+  goUpButton: false,
+
+
   /** A parent directory to list its files */
   dir: null,
 
@@ -66,8 +71,10 @@ export default Ember.Component.extend({
 
   didInsertElement() {
     this.dirChanged();
-    console.debug('Binding upload area for file list');
-    this.get('fileUpload').assignDrop(this.$());
+    if (this.get('uploadEnabled')) {
+      console.debug('Binding upload area for file list');
+      this.get('fileUpload').assignDrop(this.$());
+    }
   },
 
   dirChanged: function() {

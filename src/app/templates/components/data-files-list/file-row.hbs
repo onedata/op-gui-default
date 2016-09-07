@@ -13,7 +13,7 @@
   </div>
   <div class="file-row-tools">
     {{#if file.hasShare}}
-      <div {{action (action 'shareFile')}} class="file-tool file-tool-share">
+      <div {{action (action 'shareFile') bubbles=false}} class="file-tool file-tool-share">
         {{icon 'share' 'visible-on-parent-hover'}}
       </div>
     {{/if}}

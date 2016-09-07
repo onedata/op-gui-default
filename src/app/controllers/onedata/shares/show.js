@@ -1,6 +1,8 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
+  secondaryMenu: Ember.inject.service(),
+
   /**
    * Can be both File or Ember.ObjectProxy of File.
    * Please do not use this - use ``directory`` property instead.
@@ -14,7 +16,19 @@ export default Ember.Controller.extend({
    */
   modelChanged: Ember.observer('model', function() {
     this.set('directory', this.get('model.file'));
+    if (this.get('model')) {
+      this.changeMenuActiveItem();
+    }
   }),
+
+  changeMenuActiveItem() {
+    this.set('secondaryMenu.activeItem', this.get('model'));
+
+    // TODO: use property binding
+    Ember.run.scheduleOnce('afterRender', this, function() {
+      $('nav.secondary-sidebar').addClass('visible');
+    });
+  },
 
   actions: {
     openDirInBrowser(file) {

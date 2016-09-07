@@ -119,13 +119,17 @@ export default Ember.Route.extend(RouteRejectHandler, {
       );
 
       p.finally(() => {
-        this.controller.set('fileShareFile', file);
+        this.controller.setProperties({
+          fileShareFile: file,
+          share: null,
+        });
       });
     },
 
     openShareInfoModal(share) {
       if (share) {
         this.controller.setProperties({
+          fileShareFile: null,
           share: share,
           isShowingShareInfo: true,
         });

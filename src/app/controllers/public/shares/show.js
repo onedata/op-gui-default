@@ -1,5 +1,6 @@
 import Ember from 'ember';
 
+// FIXME: jsdoc
 export default Ember.Controller.extend({
   /**
    * Can be both File or Ember.ObjectProxy of File.

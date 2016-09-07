@@ -13,7 +13,7 @@
 
     {{#modals/elements/form-row translationBase="components.modals.createShare.rowName"}}
       {{input type="text" value=shareName autofocus=true
-        class="form-control" action=(if isReadyToSubmit (action "submit"))}}
+        class="form-control" enter=(if isReadyToSubmit (action "submit"))}}
     {{/modals/elements/form-row}}
 
   {{/bs-modal-body}}

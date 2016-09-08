@@ -116,6 +116,15 @@ $icomoon-font-path: 'fonts/oneicons';
     width: 64px;
     height: 64px;
   }
+
+  &.spinner-128 {
+    width: 128px;
+    height: 128px;
+  }
+
+  &.spinner-centered {
+    width: 100% !important;
+  }
 }
 
 .fixed-center {

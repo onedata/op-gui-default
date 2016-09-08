@@ -27,8 +27,8 @@ export default {
       fetchingTokenError: 'Fetching token failed!',
     },
     notify: {
-      clipboardSuccess: 'The text copied to clipboard',
-      clipboardFailue: 'The text cannot be copied to clipboard - please copy it manually'
+      clipboardSuccess: 'Text has been copied to clipboard.',
+      clipboardFailue: 'Text cannot be copied to clipboard - please copy it manually'
     },
     featureNotSupportedShort: 'Feature not supported',
     featureNotSupportedLong: 'Sorry, this feature is not supported yet.',

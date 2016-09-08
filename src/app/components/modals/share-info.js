@@ -66,7 +66,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
         this.set('open', false);
         this.sendAction('transitionTo', 'onedata.shares.show', this.get('share'));
       }
-    }
+    },
   },
 
 });

@@ -18,12 +18,12 @@ export default Ember.Controller.extend({
         let defaultSpace = spaces.find((space) => space.get('isDefault'));
         if (defaultSpace) {
           console.debug(`spaces.index: Transition to default space ${defaultSpace.get('id')}`);
-          this.transitionToRoute('spaces.show', defaultSpace);
+          this.transitionToRoute('onedata.spaces.show', defaultSpace);
         } else {
           console.debug('spaces.index: No default space found - go to first space instead');
           const firstSpace = spaces.sortBy('name').objectAt(0);
           if (firstSpace) {
-            this.transitionToRoute('spaces.show', firstSpace);
+            this.transitionToRoute('onedata.spaces.show', firstSpace);
           } else {
             console.debug('no spaces exist');
           }

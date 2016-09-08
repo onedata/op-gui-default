@@ -20,10 +20,9 @@
         name=share.name
       }}
 
-      {{#modals/elements/form-row translationBase="components.modals.fileShareInfo.publicUrl"}}
-        {{input type="text" value=share.publicUrl autofocus=true readonly=true
-          class="form-control"}}
-        {{!-- FIXME: copy --}}
+      {{#modals/elements/form-row translationBase="components.modals.fileShareInfo.publicUrl"
+        class="modal-row"}}
+          {{input-copy inputValue=share.publicUrl}}
       {{/modals/elements/form-row}}
     {{/if}}
 

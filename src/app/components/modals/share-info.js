@@ -30,8 +30,8 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
    */
   share: null,
 
-  isLoading: Ember.computed('share.content', function() {
-    return !this.get('share.content');
+  isLoading: Ember.computed('share.name', function() {
+    return !this.get('share.name');
   }),
 
   init() {

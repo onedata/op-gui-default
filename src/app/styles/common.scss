@@ -420,6 +420,8 @@ html, body {
       // we do not set top padding of content
       padding-top: 0;
 
+      background-color: $color-main-background;
+
       // add a padding-top if not added already
       .inner-content {
         padding-top: $content-padding;
@@ -705,4 +707,32 @@ html, body {
   padding-left: 10px;
   padding-right: 10px;
   font-size: 2em;
+}
+
+
+/// New look experimental
+
+.op-panel {
+  padding: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-top-width: 6px;
+  border-top-style: solid;
+  background-color: $color-panel-background;
+
+  &.op-panel-azure {
+    border-color: $color-panel-azure;
+  }
+
+  &.op-panel-red {
+    border-color: $color-panel-red;
+  }
+
+  &.op-panel-green {
+    border-color: $color-panel-green;
+  }
+
+  &.op-panel-graphite {
+    border-color: $color-panel-graphite;
+  }
 }

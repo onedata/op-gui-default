@@ -1,0 +1,50 @@
+{{!-- TODO: translations --}}
+
+{{#bs-tab fade=false}}
+  {{#bs-tab-pane title="Basic"}}
+    <table class="metadata-basic-table">
+      <tbody>
+        <tr>
+          {{!-- TODO: these will be components --}}
+
+          {{!-- TODO: only if share --}}
+          <td class="metadata-key">
+            share name
+          </td>
+          <td class="metadata-value">
+            {{metaBasic.shareName}}
+          </td>
+        </tr>
+        <tr>
+          {{!-- TODO: only if share --}}
+          <td class="metadata-key">
+            public url
+          </td>
+          <td class="metadata-value">
+            {{metaBasic.publicUrl}}
+          </td>
+        </tr>
+        <tr>
+          {{!-- TODO: only if directory --}}
+          <td class="metadata-key">
+            path in space
+          </td>
+          <td class="metadata-value">
+            {{metaBasic.path}}
+          </td>
+        </tr>
+        <tr>
+          <td class="metadata-key">
+            parent space
+          </td>
+          <td class="metadata-value">
+            {{metaBasic.spaceName}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  {{/bs-tab-pane}}
+  {{#bs-tab-pane title="JSON"}}
+    Empty.
+  {{/bs-tab-pane}}
+{{/bs-tab}}

@@ -380,6 +380,10 @@ export default {
         label: 'Pass the below token to a provider of your choice. The token can be used to create a space for your group and grant support to the space.'
       }
     },
+    shareInfoHead: {
+      path: 'Path',
+      publicUrl: 'Public URL',
+    }
   },
   notFound: {
     notifyMessage: 'Requested path not found'

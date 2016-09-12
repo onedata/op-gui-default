@@ -12,7 +12,7 @@ import {
 
 import Ember from 'ember';
 import ACE from 'op-worker-gui/utils/access-control-entity';
-import { resolvePromise, rejectPromise } from 'op-worker-gui/test-helper';
+import { resolvePromise, rejectPromise } from 'op-worker-gui/tests/test-helper';
 
 import { POSIX_SPECIAL_DIFFERENT } from 'op-worker-gui/components/file-permissions/posix';
 

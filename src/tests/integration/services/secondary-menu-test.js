@@ -9,7 +9,7 @@ import {
   afterEach
 } from 'mocha';
 
-import startApp from 'op-worker-gui/helpers/start-app';
+import startApp from 'op-worker-gui/tests/helpers/start-app';
 
 import Ember from 'ember';
 

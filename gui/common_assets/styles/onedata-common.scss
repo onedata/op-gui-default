@@ -112,6 +112,11 @@ $icomoon-font-path: 'fonts/oneicons';
 .spinner-container {
   position: relative;
 
+  &.spinner-32 {
+    width: 32px;
+    height: 32px;
+  }
+
   &.spinner-64 {
     width: 64px;
     height: 64px;

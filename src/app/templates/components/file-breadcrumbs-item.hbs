@@ -1,0 +1,11 @@
+{{#if file.hasParent}}
+  <div class="file-breadcrumbs-element file-breadcrumbs-next-icon">
+    {{icon 'arrow-right'}}
+  </div>
+{{/if}}
+<div class="file-breadcrumbs-element file-breadcrumbs-name">
+  <a id="{{elementId}}-file-{{f.id}}" {{action "changeDir" file}}
+    class="file-breadcrumb-item-link" href="javascript:void(0);">
+    {{file.name}}
+  </a>
+</div>

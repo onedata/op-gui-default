@@ -1,16 +1,6 @@
 {{#if goUpButton}}
   <div class="row">
-    {{#bs-button action=(action "goUp") type="primary"}}
-      Up
-    {{/bs-button}}
-  </div>
-
-  <div class="row">
-    {{#each dir.dirsPath as |pdir|}}
-      {{#bs-button action=(action "changeDir" pdir) type="primary"}}
-        {{pdir.name}}
-      {{/bs-button}}
-    {{/each}}
+    {{file-breadcrumbs file=dir changeDir="changeDir"}}
   </div>
 {{/if}}
 

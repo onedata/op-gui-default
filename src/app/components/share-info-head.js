@@ -15,5 +15,9 @@ export default Ember.Component.extend({
    */
   file: Ember.computed.oneWay('share.file'),
 
-  translate: 'components.shareInfoHead.',
+  actions: {
+    openDataDir(file) {
+      this.sendAction('openDataDir', file);
+    }
+  }
 });

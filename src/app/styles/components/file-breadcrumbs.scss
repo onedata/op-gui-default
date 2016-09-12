@@ -1,0 +1,33 @@
+/// Styles for components: file-breadcrumbs, file-breadcrumbs-item
+
+// TODO: this should use global "gray"
+$color-breadcrumbs-font: #768D9F;
+
+.file-breadcrumbs {
+  .file-breadcrumbs-list {
+    width: 100%;
+    .file-breadcrumbs-item {
+      float: left;
+      display: table;
+
+      .file-breadcrumbs-element {
+        display: table-cell;
+      }
+      .file-breadcrumbs-next-icon {
+        width: 24px;
+        color: $color-breadcrumbs-font;
+
+        .oneicon {
+          position: absolute;
+          transform: translate(4px, 4px);
+        }
+      }
+      .file-breadcrumbs-name {
+        a {
+          color: $color-breadcrumbs-font !important;
+        }
+      }
+    }
+
+  }
+}

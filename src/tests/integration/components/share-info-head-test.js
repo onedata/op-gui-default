@@ -37,5 +37,18 @@ describeComponent(
       this.render(hbs`{{share-info-head share=share}}`);
       expect(this.$()).to.contain(share.name);
     });
+
+    it('displays a link to public url of share', function() {
+      const share = {
+        name: 'Share with link',
+        publicUrl: 'https://example.com'
+      };
+
+      this.set('share', share);
+
+      this.render(hbs`{{share-info-head share=share}}`);
+      expect(this.$()).to.contain(share.publicUrl);
+      expect(this.$().find('a')).to.have.attr('href', share.publicUrl);
+    });
   }
 );

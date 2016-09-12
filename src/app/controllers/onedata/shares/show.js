@@ -34,5 +34,14 @@ export default Ember.Controller.extend({
     openDirInBrowser(file) {
       this.set('directory', file);
     },
+
+    openDataDir(dirFile, reject) {
+      this.get('model.dataSpace').then(
+        (dataSpace) => {
+          this.transitionToRoute('onedata.data.data-space.dir', dataSpace, dirFile);
+        },
+        (error) => reject && reject(error)
+      );
+    },
   }
 });

@@ -28,7 +28,12 @@ export default DS.Model.extend({
     To check if it is a dir please use "isDir" property.
   */
   type: DS.attr('string'),
+
+  hasParent: Ember.computed('parent.content', function() {
+    return this.belongsTo('parent').id() != null;
+  }),
   parent: DS.belongsTo('file', {inverse: 'children', async: true}),
+
   children: DS.hasMany('file', {inverse: 'parent', async: true}),
 
   modificationTime: DS.attr('number'),
@@ -43,23 +48,23 @@ export default DS.Model.extend({
     this.set('dirsPath', []);
   },
 
-  /**
-   * Initializes a ``hasShare`` property by resolving a ``share``
-   * relation. Note, that it make a request.
-   *
-   * @param
-   * @returns
-   */
-  checkShare() {
-    this.get('share').then(
-      (share) => {
-        this.set('hasShare', !!share);
-      },
-      () => {
-        this.set('hasShare', false);
-      }
-    );
-  },
+  // /**
+  //  * Initializes a ``hasShare`` property by resolving a ``share``
+  //  * relation. Note, that it make a request.
+  //  *
+  //  * @param
+  //  * @returns
+  //  */
+  // checkShare() {
+  //   this.get('share').then(
+  //     (share) => {
+  //       this.set('hasShare', !!share);
+  //     },
+  //     () => {
+  //       this.set('hasShare', false);
+  //     }
+  //   );
+  // },
 
   // TODO: implement B, MB, GB, TODO: move to helper
   sizeHumanReadable: function() {

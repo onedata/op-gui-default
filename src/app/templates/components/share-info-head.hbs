@@ -2,14 +2,10 @@
 <table>
   <tr>
     <th>{{t 'components.shareInfoHead.path'}}</th>
-    <td>{{file-breadcrumbs file=file}}</td>
+    <td>{{file-breadcrumbs file=file changeDir="openDataDir"}}</td>
   </tr>
   <tr>
-    <th>Telephone:</th>
-    <td>555 77 854</td>
-  </tr>
-  <tr>
-    <th>Telephone:</th>
-    <td>555 77 855</td>
+    <th>{{t 'components.shareInfoHead.publicUrl'}}</th>
+    <td><a href="{{share.publicUrl}}">{{share.publicUrl}}</a></td>
   </tr>
 </table>

@@ -4,8 +4,10 @@
   }
 
   table {
+    border-collapse: separate;
+    border-spacing: 0px 10px;
     th {
-      width: 300px;
+      width: 120px;
     }
     td {
       width: auto;

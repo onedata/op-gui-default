@@ -13,6 +13,7 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
   }
   .nav-tabs li {
     margin-bottom: -$tab-border-width;
+    margin-right: 4px;
   }
   .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
     background-color: $color-tab-active-background;

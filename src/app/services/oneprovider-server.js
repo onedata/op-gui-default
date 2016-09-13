@@ -82,18 +82,15 @@ export default Ember.Service.extend({
    *
    * @param {String} fileId An ID of the directory that will be shared with a Share
    * @param {String} shareName Name of new Share
-   * @param {String} shareType One of: snasphot, dynamic
-   * @param {Boolean} publicAccess If true, request a public access for Share
    * @returns {RSVP.Promise} A backend operation completion:
    * - ``resolve(object: data)`` when successfully created the share
    *   - ``data.shareId`` (string) - an ID of the created Share record
    * - ``reject(object: error)`` on failure
    */
-  createFileShare(fileId, dataSpaceId, shareName) {
+  createFileShare(fileId, shareName) {
     // TODO: implement in backend
     return this.get('server').privateRPC('createFileShare', {
       fileId: fileId,
-      dataSpaceId: dataSpaceId,
       shareName: shareName,
     });
 

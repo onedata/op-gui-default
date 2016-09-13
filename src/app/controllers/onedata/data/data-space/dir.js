@@ -11,9 +11,4 @@ export default Ember.Controller.extend({
   isCreatingShare: false,
 
   fileShareFile: null,
-
-  /**
-   * Will be injected by data-space controller
-   */
-  dataSpace: Ember.computed.alias('fileSystemTree.selectedSpace'),
 });

@@ -5,7 +5,8 @@
 {{else}}
   <div class="file-breadcrumbs-list">
     {{#each dirsPath as |f|}}
-      {{file-breadcrumbs-item file=f changeDir="changeDir"}}
+      {{file-breadcrumbs-item file=f changeDir="changeDir"
+        useAsRoot=(eq f.id rootDir.id)}}
     {{/each}}
   </div>
 {{/if}}

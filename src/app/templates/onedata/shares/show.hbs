@@ -8,7 +8,8 @@
   <div class="files-list">
     {{#if directory}}
       {{data-files-list dir=directory openDirInBrowser='openDirInBrowser'
-        openFileShareModal='openFileShareModal' goUpButton=true uploadEnabled=false}}
+        openFileShareModal='openFileShareModal' rootDir=model.file
+        breadcrumbsEnabled=true uploadEnabled=false}}
     {{/if}}
   </div>
 </div>

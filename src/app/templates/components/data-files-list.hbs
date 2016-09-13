@@ -1,6 +1,6 @@
-{{#if goUpButton}}
+{{#if breadcrumbsEnabled}}
   <div class="row">
-    {{file-breadcrumbs file=dir changeDir="changeDir"}}
+    {{file-breadcrumbs file=dir rootDir=rootDir changeDir="changeDir"}}
   </div>
 {{/if}}
 

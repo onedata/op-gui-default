@@ -24,7 +24,14 @@ export default Ember.Component.extend({
 
   /// Options, features
   uploadEnabled: true,
-  goUpButton: false,
+  breadcrumbsEnabled: false,
+
+  /**
+   * Optional: if specified, breadcrumbs will have this dir as a root.
+   * Otherwise, breadcrumbs will display full parents path.
+   * @type {File}
+   */
+  rootDir: null,
 
 
   /** A parent directory to list its files */

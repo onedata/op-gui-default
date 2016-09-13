@@ -97,5 +97,45 @@ describeComponent(
 
       file2.updateDirsPath();
     });
+
+    it('does not displays parent path dirs above specified rootDir', function(done) {
+      const file1 = this.store.createRecord('file', {
+        name: 'hello1'
+      });
+      const file2 = this.store.createRecord('file', {
+        parent: file1,
+        name: 'hello2'
+      });
+      const file3 = this.store.createRecord('file', {
+        parent: file2,
+        name: 'hello3'
+      });
+      const file4 = this.store.createRecord('file', {
+        parent: file3,
+        name: 'hello4'
+      });
+
+      this.set('file3', file3);
+      this.set('file4', file4);
+
+      this.render(hbs`{{file-breadcrumbs file=file4 rootDir=file3}}`);
+
+      let doneCalled = false;
+
+      file2.addObserver('dirsPath', this, function() {
+        Ember.run.scheduleOnce('afterRender', this, function() {
+          if (file2.get('dirsPath')) {
+            expect(this.$()).to.not.contain(file1.get('name'));
+            expect(this.$()).to.not.contain(file2.get('name'));
+            if (!doneCalled) {
+              doneCalled = true;
+              done();
+            }
+          }
+        });
+      });
+
+      file4.updateDirsPath();
+    });
   }
 );

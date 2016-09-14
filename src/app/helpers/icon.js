@@ -21,14 +21,14 @@ import Ember from 'ember';
  * @param {String[]} params - arguments for helper
  * @param {String} params[0] - name of an icon
  * @param {String} params[1] - classes string
- * @returns {Ember.Handlebars.SafeString} a HTML code
+ * @returns {Ember.String.htmlSafe} a HTML code
  */
 export function iconHTML(params) {
   let name = params[0];
   let classes = params[1] || '';
 
   var html = '<span class="oneicon oneicon-'+name+' '+classes+'"></span>';
-  return new Ember.Handlebars.SafeString(html);
+  return new Ember.String.htmlSafe(html);
 }
 
 export default Ember.Helper.helper(iconHTML);

@@ -18,7 +18,7 @@ export default Ember.Service.extend({
 
   /**
    * Where fixed loader should be placed.
-   * One of: main-content, secondary-sidebar, content
+   * One of: app, main-content, secondary-sidebar, content
    * @type string
    */
   area: 'main-content',

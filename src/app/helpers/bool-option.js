@@ -27,5 +27,5 @@ export default Ember.Helper.helper(function(params) {
 
   // TODO: use icon helper
   var html = '<span class="one-checkbox '+cssClasses+'" aria-hidden="true"></span>';
-  return new Ember.Handlebars.SafeString(html);
+  return new Ember.String.htmlSafe(html);
 });

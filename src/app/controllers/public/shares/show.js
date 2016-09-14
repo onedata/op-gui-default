@@ -1,6 +1,12 @@
 import Ember from 'ember';
 
-// FIXME: jsdoc
+/**
+ * Watch for model changes in public show share view.
+ * @module controllers/public/shares/show
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Controller.extend({
   /**
    * Can be both File or Ember.ObjectProxy of File.

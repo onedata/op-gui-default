@@ -8,12 +8,12 @@ import DS from 'ember-data';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend({
+  /** A root directory with space files. It must be a dir-type File! */
+  rootDir: DS.belongsTo('file', {async: true}),
+
   /** Name exposed in GUI */
   name: DS.attr('string'),
   isDefault: DS.attr('boolean'),
-
-  /** A root directory with space files. It must be a "dir" file! */
-  rootDir: DS.belongsTo('file', {async: true}),
 
   space: DS.belongsTo('space', {async: true}),
 
@@ -24,14 +24,4 @@ export default DS.Model.extend({
     });
     return p;
   }
-
-  // // TODO this does not work because does not loads rootDir...
-  // validateRootDir: function() {
-  //   let rootDir = this.get('rootDir');
-  //   if (!rootDir) {
-  //     console.error(`DataSpace ${this.get('id')} rootDir is null or undefinded!`);
-  //   } else if (!rootDir.get('isDir')) {
-  //     console.error(`DataSpace ${this.get('id')} rootDir has been set to non dir file!`);
-  //   }
-  // }.observes('rootDir')
 });

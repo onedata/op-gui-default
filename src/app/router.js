@@ -76,8 +76,7 @@ Router.map(function() {
 
   });
 
-  // FIXME this should redirect to OZ login page
-  // unauthenticated only
+  // /login - show info about login and redirect to /login.html after timeout
   this.route('login');
 
   // handle routes not handled above and langauge-prefixed paths (e.g. /en/spaces)

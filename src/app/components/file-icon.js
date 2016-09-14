@@ -31,7 +31,6 @@ export default Ember.Component.extend({
           return 'folder-open';
         } else {
           if (hasShare) {
-            // FIXME: new icon for shared folder
             return 'folder-share';
           } else {
             return 'folder';

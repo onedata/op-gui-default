@@ -126,7 +126,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   },
 
   submitCompleted() {
-    this.resetProperties();
+    this.set('open', false);
   }
 
 });

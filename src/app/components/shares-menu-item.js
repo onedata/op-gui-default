@@ -33,6 +33,9 @@ export default Ember.Component.extend({
       this.sendAction('openSubmenuEntry', this.get('share'), name);
     },
 
+    /**
+     * Pass the action up, modals are placed in shares-menu
+     */
     openSettingsModal(modalName, share) {
       this.sendAction('openSettingsModal', modalName, share);
     },

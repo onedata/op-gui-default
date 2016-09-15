@@ -1,7 +1,7 @@
 // TODO: common mixin with shares-menu
 
 /**
- * A secondary sidebar for selecting Share to modify its permissions.
+ * A secondary sidebar for selecting Share show its view.
  * Renders list of shares-menu-item.
  *
  * @module components/shares-menu
@@ -21,9 +21,6 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   commonModals: Ember.inject.service(),
   commonLoader: Ember.inject.service(),
 
-  /** A buffer for token that is entered by user and submitted to backend */
-  inputToken: null,
-
   /** A buffer for Share object that is set before the modal
     (which allows to manipulate a Share) appears. The Share is global
     for all modals, so only one modal should be used at once!
@@ -34,7 +31,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   validShares: function() {
     return this.get('shares').filter((s) => s.get('isLoaded'));
   }.property('shares', 'shares.[]', 'shares.@each.isLoaded'),
-  sharesSorting: ['isDefault:desc', 'name'],
+  sharesSorting: ['name'],
   validSharesSorted: Ember.computed.sort('validShares', 'sharesSorting'),
 
   activeShare: Ember.computed.alias('secondaryMenu.activeShare'),
@@ -47,6 +44,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     return !this.get('shares') || this.get('shares').any((s) => !s.get('isLoaded'));
   }.property('shares', 'shares.@each.isLoaded'),
 
+  // TODO: make a mixin for all *-menus components with this method
   // TODO: what is loading?
   isLoadingChanged: function() {
     if (this.get('isLoading')) {
@@ -66,11 +64,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
   /*** Variables for actions and modals ***/
 
-  isCreatingShare: false,
-  newShareName: null,
-
-  isJoiningShare: false,
-  joinShareToken: null,
+  // TODO: thes properties should be created dynamically using name of modal
 
   isRenameModalOpened: Ember.computed('openedModal', {
     get() {
@@ -97,57 +91,13 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     }
   }),
 
-  isLeaveModalOpened: Ember.computed('openedModal', {
-    get() {
-      return this.get('openedModal') === 'leave';
-    },
-    set(key, value) {
-      if (!value) {
-        this.set('openedModal', null);
-      }
-      return value;
-    }
-  }),
-
-  isJoinSpaceModalOpened: Ember.computed('openedModal', {
-    get() {
-      return this.get('openedModal') === 'joinSpace';
-    },
-    set(key, value) {
-      if (!value) {
-        this.set('openedModal', null);
-      }
-      return value;
-    }
-  }),
-
-  isJoinAsSubshareModalOpened: Ember.computed('openedModal', {
-    get() {
-      return this.get('openedModal') === 'joinAsSubshare';
-    },
-    set(key, value) {
-      if (!value) {
-        this.set('openedModal', null);
-      }
-      return value;
-    }
-  }),
-
-  isLeaveParentShareModalOpened: Ember.computed('openedModal', {
-    get() {
-      return this.get('openedModal') === 'leaveParentShare';
-    },
-    set(key, value) {
-      if (!value) {
-        this.set('openedModal', null);
-      }
-      return value;
-    }
-  }),
+  // TODO: move to *-menu mixin
 
   registerInsecondaryMenu: function() {
     this.set('secondaryMenu.component', this);
   }.on('init'),
+
+  // TODO: move to *-menu mixin
 
   activeShareDidChange: function() {
     if (this.get('activeShare')) {
@@ -157,9 +107,6 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   }.observes('activeShare'),
 
   didInsertElement() {
-    // reset shares expanded state
-    this.get('shares').forEach((s) => s.set('isExpanded', false));
-
     this.isLoadingChanged();
   },
 
@@ -169,237 +116,10 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   },
 
   actions: {
-    openSubmenuEntry(share, name) {
-      console.debug(`shares-menu: openSubmenuEntry(${share}, ${name})`);
-      this.sendAction('openSubmenuEntry', share, name);
-    },
-
+    // TODO: this action can be defined in mixin for all *-menu
     openSettingsModal(modalName, share) {
       this.set('modalShare', share);
       this.set('openedModal', modalName);
-    },
-
-    startCreateShare() {
-      this.set('isCreatingShare', true);
-    },
-
-    createShareModalOpened() {
-      this.setProperties({
-        newShareName: null,
-        isSavingShare: false
-      });
-    },
-
-    submitCreateShare() {
-      if (this.get('isCreatingShare')) {
-        this.set('isSavingShare', true);
-        this.send('_submitCreateShare');
-      }
-    },
-
-    _submitCreateShare() {
-      let name = this.get('newShareName');
-      let s = this.get('store').createRecord('share', {
-        name: name
-      });
-      let savePromise = s.save();
-      savePromise.then(
-        () => {
-          this.get('i18n').t('components.sharesMenu.notify.createSuccess', {
-            name: name
-          });
-        },
-        (error) => {
-          this.get('notify').error(
-            this.get('i18n').t('components.sharesMenu.notify.createFailed', {
-              name: name
-            }) + ': ' + ((error && error.message) || this.get('i18n').t('common.unknownError'))
-          );
-          s.deleteRecord();
-        }
-      );
-      savePromise.finally(() => {
-        this.setProperties({
-          isCreatingShare: false,
-          isSavingShare: false,
-        });
-        console.error('finally saved');
-      });
-    },
-
-    startJoinShare() {
-      this.setProperties({
-        inputToken: null,
-        isJoiningShare: true
-      });
-    },
-
-    submitJoinShare() {
-      this.set('isJoiningShareWorking', true);
-      let token = this.get('inputToken') && this.get('inputToken').trim();
-      let serverPromise = this.get('oneproviderServer').userJoinShare(token);
-      serverPromise.then(
-        (data) => {
-          this.shareActionMessage('info', 'joinSuccess', data.shareName);
-        },
-        (errorJson) => {
-          console.log(errorJson.message);
-          let message = this.get('i18n').t('components.sharesMenu.notify.joinFailed', {errorDetails: errorJson.message});
-          this.get('notify').error(message);
-        }
-      );
-      serverPromise.finally(() => {
-        this.setProperties({
-          inputToken: null,
-          isJoiningShareWorking: false,
-          isJoiningShare: false
-        });
-      });
-    },
-
-    submitLeaveShare() {
-      try {
-        let share = this.get('modalShare');
-        let shareName = share.get('name');
-        const p = this.promiseLoading(this.get('oneproviderServer').userLeaveShare(share.get('id')));
-        p.then(
-          () => {
-            share.deleteRecord();
-            let message = this.get('i18n').t('components.sharesMenu.notify.leaveSuccess', {
-              name: shareName
-            });
-            this.get('notify').info(message);
-            if (share.get('id') === this.get('activeShare.id')) {
-              this.sendAction('goToShare', null);
-            }
-          },
-          (error) => {
-            console.log(`Leave share ${shareName} failed ${error.message}`);
-            let message = this.get('i18n').t('components.sharesMenu.notify.leaveFailed', {
-              name: shareName
-            });
-            message = message + ': ' + error.message;
-            this.get('notify').error(message);
-          }
-        );
-        p.finally(() => this.setProperties({
-          modalShare: null,
-          openedModel: null,
-          isLeaveModalOpened: false
-        }));
-      } finally {
-        this.setProperties({
-          modalShare: null,
-          openedModel: null
-        });
-      }
-    },
-
-    startJoinSpace() {
-      this.set('inputToken', null);
-    },
-
-    submitJoinSpace() {
-      let token = this.get('inputToken') && this.get('inputToken').trim();
-      let share = this.get('modalShare');
-      let promise = this.promiseLoading(this.get('oneproviderServer')
-        .shareJoinSpace(this.get('modalShare.id'), token)).then(
-          (data) => {
-            let message = this.get('i18n').t('components.sharesMenu.notify.joinSpaceSuccess', {
-              shareName: share.get('name'),
-              spaceName: data.spaceName
-            });
-            this.get('notify').info(message);
-          },
-          (error) => {
-            console.log(error.message);
-            let message = this.get('i18n').t('components.sharesMenu.notify.joinSpaceFailed', {
-              shareName: share.get('name'),
-            });
-            message = message + ': ' + error.message;
-            this.get('notify').error(message);
-          }
-      );
-      promise.finally(() => {
-        this.setProperties({
-          inputToken: null,
-          isJoiningSpaceWorking: false,
-          isJoinSpaceModalOpened: false
-        });
-      });
-    },
-
-    startJoinAsSubshare() {
-      this.set('inputToken', null);
-    },
-
-    submitJoinAsSubshare() {
-      let token = this.get('inputToken') && this.get('inputToken').trim();
-      let share = this.get('modalShare');
-      let promise = this.promiseLoading(this.get('oneproviderServer')
-        .shareJoinShare(this.get('modalShare.id'), token)).then(
-          (data) => {
-            let message = this.get('i18n').t('components.sharesMenu.notify.joinAsSubshareSuccess', {
-              thisShareName: share.get('name'),
-              shareName: data.shareName
-            });
-            this.get('notify').info(message);
-          },
-          (error) => {
-            console.log(error.message);
-            let message = this.get('i18n').t('components.sharesMenu.notify.joinAsSubshareFailed', {
-              shareName: share.get('name'),
-            });
-            message = message + ': ' + error.message;
-            this.get('notify').error(message);
-          }
-      );
-      promise.finally(() => {
-        this.setProperties({
-          inputToken: null,
-          isJoiningAsSubshareWorking: false,
-          isJoinAsSubshareModalOpened: false
-        });
-      });
-    },
-
-    startLeaveParentShare() {
-      this.set('parentShareToLeave', this.get('modalShare.parentShares').objectAt(0));
-    },
-
-    submitLeaveParentShare() {
-      try {
-        let parentShare = this.get('parentShareToLeave');
-        let subshare = this.get('modalShare');
-        this.promiseLoading(
-          this.get('oneproviderServer').shareLeaveShare(parentShare.get('id'), subshare.get('id')),
-          () => this.set('isLeaveParentShareWorking', true),
-          () => this.set('isLeaveParentShareWorking', false)
-        ).then(
-          () => {
-            let message = this.get('i18n').t('components.sharesMenu.notify.leaveParentShareSuccess', {
-              subshareName: subshare.get('name'),
-              parentShareName: parentShare.get('name')
-
-            });
-            this.get('notify').info(message);
-          },
-          (error) => {
-            let message = this.get('i18n').t('components.sharesMenu.notify.leaveParentShareFailed', {
-              subshareName: subshare.get('name'),
-              parentShareName: parentShare.get('name')
-            });
-            message = message + ': ' + error.message;
-            this.get('notify').error(message);
-          }
-        );
-      } finally {
-        this.setProperties({
-          modelShare: null,
-          openedModal: null,
-          parentShareToLeave: null,
-        });
-      }
     },
   },
 

@@ -65,6 +65,7 @@ export default {
       defaultMessage: 'Loading...',
       synchronizingSpaces: 'Synchronizing user spaces...',
       synchronizingGroups: 'Synchronizing groups...',
+      synchronizingShares: 'Synchronizing shares...',
       firstLogin: 'This might take a while if this is the first login to this provider'
     },
     topBar: {
@@ -86,6 +87,10 @@ export default {
       renameModal: {
         renameSuccess: 'Element "{{oldName}}" renamed to "{{newName}}"',
         renameFailed: 'Element "{{oldName}}" rename to "{{newName}}" failed due to an error',
+      },
+      removeModal: {
+        removeSuccess: 'Element "{{name}}" has been removed',
+        removeFailed: 'Element "{{name}}" cannot be removed due to an error',
       },
       filePermissions: {
         title: 'Edit permissions',
@@ -245,6 +250,18 @@ export default {
     sharesMenu: {
       title: 'shares',
       join: 'Join',
+      drop: {
+        rename: 'Rename',
+        remove: 'Remove'
+      },
+      renameModal: {
+        title: 'Rename share',
+        label: 'Enter new share name:'
+      },
+      removeModal: {
+        title: 'Remove share',
+        label: 'Are you sure that you want to remove the "{{name}}" share?'
+      }
     },
     permissionsTable: {
       save: 'save',

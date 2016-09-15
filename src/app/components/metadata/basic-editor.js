@@ -5,7 +5,6 @@ export default Ember.Component.extend({
 
   init() {
     this._super(...arguments);
-    debugger;
   },
 
   liveData: Ember.computed('data', {

@@ -1,26 +1,42 @@
 {{!-- TODO: layout (public-top and public-content) should be in public route --}}
 <div class="public-top">
+  <div class="container">
+    <div class="public-top-upper-bar">
+      <div class="public-top-brand"></div>
+    </div>
 
+    <h1 class="share-name">{{model.name}}</h1>
+  </div>
 </div>
 <div class="public-content">
-  <div class="row">
-    Name: {{model.name}}
-  </div>
-  <div class="row">
-    Space: {{model.dataSpace.name}}
-  </div>
-  <div class="row">
-    Directory path: {{model.file.path}}
-  </div>
-  <div class="row">
-    Public URL: <a href="{{model.publicUrl}}">{{model.publicUrl}}</a>
-  </div>
+  <div class="container">
 
-  <div class="files-list">
-    {{#if directory}}
-      {{data-files-list dir=directory openDirInBrowser='openDirInBrowser'
-        openFileShareModal='openFileShareModal' goUpButton=true uploadEnabled=false
-        publicMode=true}}
-    {{/if}}
+    {{!-- custom share info head elements for public view --}}
+    <div class="share-info-head">
+      <table>
+        <tr>
+          <th>
+            {{t 'components.shareInfoHead.publicUrl'}}
+          </th>
+          <td>
+            {{input-copy inputValue=model.publicUrl}}
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    {{!-- <div class="op-panel op-panel-azure">
+    </div> --}}
+
+    <div class="op-panel op-panel-red">
+      <div class="files-list">
+        {{#if directory}}
+          {{data-files-list dir=directory openDirInBrowser='openDirInBrowser'
+            openFileShareModal='openFileShareModal' breadcrumbsEnabled=true
+            uploadEnabled=false
+            publicMode=true}}
+        {{/if}}
+      </div>
+    </div>
   </div>
 </div>

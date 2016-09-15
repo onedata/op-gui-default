@@ -38,6 +38,18 @@ $font-family-sans-serif: 'Open Sans';
 
 html, body {
   font-family: $font-family-sans-serif !important;
+  background-color: $color-main-background;
+
+  // TODO: only input[type=text] ?
+  .form-control {
+    border-radius: 0;
+    border: solid 1px #B6C7D3;
+
+    &:focus {
+      box-shadow: none;
+      border: solid 1px #545C74;
+    }
+  }
 }
 
 #app {
@@ -663,7 +675,6 @@ html, body {
 // handling empty collections
 
 .empty-model {
-  position: absolute;
   // below drop-zone
   z-index: 99;
   left: 0;
@@ -671,7 +682,6 @@ html, body {
   top: 0;
   bottom: 0;
   padding: 20px;
-  background-color: white; // rgba(white, 0.75);
 
   .empty-model-container {
     padding-top: 40px;

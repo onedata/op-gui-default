@@ -1,4 +1,27 @@
 .public-top {
   height: 180px;
   background-color: #32373C;
+
+  .public-top-upper-bar {
+    margin-top: 36px;
+    height: 72px;
+  }
+
+  .public-top-brand {
+    height: 100%;
+    width: 220px;
+    background-image: url(/assets/images/logo-light.svg);
+    background-position: center left;
+    background-size: 220px auto;
+    background-repeat: no-repeat;
+  }
+
+  .share-name {
+    font-size: 30px;
+    color: white;
+  }
+}
+
+.public-content {
+  background-color: $color-main-background;
 }

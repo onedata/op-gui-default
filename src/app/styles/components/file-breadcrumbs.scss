@@ -31,3 +31,10 @@ $color-breadcrumbs-font: #768D9F;
 
   }
 }
+
+.data-files-list {
+  .file-breadcrumbs {
+    // align to first header
+    padding: 0 8px;
+  }
+}

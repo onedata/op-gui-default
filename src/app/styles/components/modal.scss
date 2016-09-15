@@ -51,16 +51,6 @@
           }
         }
 
-        // TODO: only input[type=text] ?
-        .form-control {
-          border-radius: 0;
-          border: solid 1px #B6C7D3;
-
-          &:focus {
-            box-shadow: none;
-            border: solid 1px #545C74;
-          }
-        }
       }
 
       .modal-footer {

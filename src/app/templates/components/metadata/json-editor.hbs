@@ -1,1 +1,9 @@
-{{yield}}
+{{textarea value=prettyData}}
+
+<div class="parse-status-panel">
+  {{#if isError}}
+    {{error}}
+  {{else}}
+    JSON data is valid.
+  {{/if}}
+</div>

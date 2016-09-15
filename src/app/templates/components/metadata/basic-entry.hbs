@@ -1,8 +1,9 @@
-<tr>
-  <th>
-    {{key}}
-  </th>
-  <td>
-    {{input value=value}}
-  </td>
-</tr>
+<th>
+  {{key}}
+</th>
+<td>
+  {{input value=value disabled=disabled}}
+  <div class="basic-entry-remove" {{action "remove"}}>
+    {{icon 'close'}}
+  </div>
+</td>

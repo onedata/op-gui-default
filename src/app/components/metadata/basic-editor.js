@@ -23,4 +23,22 @@ export default Ember.Component.extend({
       return obj;
     }
   }),
+
+  actions: {
+    createNewEntry(key, value, resolve) {
+      // FIXME: validate - do not allow duplicate keys
+      this.get('data')[key] = value;
+      this.notifyPropertyChange('data');
+      if (resolve) {
+        resolve();
+      }
+    },
+    removeEntry(key, resolve) {
+      delete this.get('data')[key];
+      this.notifyPropertyChange('data');
+      if (resolve) {
+        resolve();
+      }
+    }
+  }
 });

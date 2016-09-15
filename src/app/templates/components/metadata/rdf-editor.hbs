@@ -1,1 +1,9 @@
-{{yield}}
+{{textarea value=data}}
+
+<div class="parse-status-panel">
+  {{#if isError}}
+    XML data is not valid!
+  {{else}}
+    XML data is valid.
+  {{/if}}
+</div>

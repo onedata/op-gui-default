@@ -1,7 +1,9 @@
 <table class="metadata-basic-table">
   <tbody>
     {{#each liveData as |entry|}}
-      {{metadata/basic-entry key=entry.[0] value=entry.[1]}}
+      {{metadata/basic-entry key=entry.[0] value=entry.[1] removeEntry="removeEntry"}}
     {{/each}}
+
+    {{metadata/basic-new-entry createNewEntry="createNewEntry"}}
   </tbody>
 </table>

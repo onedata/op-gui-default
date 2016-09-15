@@ -48,23 +48,13 @@ export default Ember.Controller.extend({
       const file = this.get('model.file');
       file.then(
         f => {
-          const metadata = this.get('store').createRecord('meta', {
-            basic: {
-              a: 'jeden',
-              b: 'dwa',
-              c: 'trzy',
-            },
-            json: {
-              jeden: {
-                dwa: {
-                  trzy: 4
-                }
-              }
-            },
-            rdf: "<some></some>",
+          const metadata = this.get('store').createRecord('file-property', {
+            basic: {},
+            json: {},
+            rdf: "",
             file: f,
           });
-          f.set('metadata', metadata);
+          f.set('fileProperty', metadata);
           metadata.save().then(
             () => f.save()
           );

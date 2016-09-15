@@ -61,7 +61,9 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
   border-collapse: separate;
   border-spacing: 0px 10px;
   th {
-    width: 120px;
+    width: 100px;
+    padding-right: 20px;
+    text-transform: uppercase;
   }
   td {
     width: auto;
@@ -74,4 +76,34 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
   .metadata-value {
     color: #768D9F;
   }
+}
+
+.metadata-panel {
+  textarea {
+    resize: horizontal;
+    min-height: 280px;
+    width: 100%;
+    font-family: monospace;
+  }
+  .parse-error {
+    textarea {
+      color: $onedata-red;
+    }
+    .parse-status-panel {
+      color: $onedata-red;
+    }
+  }
+  .parse-status-panel {
+    color: $onedata-fresh-green;
+  }
+}
+
+.basic-entry-remove {
+  display: inline;
+  cursor: pointer;
+  cursor: hand;
+}
+
+.save-metadata-row {
+  margin-top: 20px;
 }

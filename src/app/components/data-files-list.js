@@ -25,6 +25,7 @@ export default Ember.Component.extend({
   /// Options, features
   uploadEnabled: true,
   breadcrumbsEnabled: false,
+  publicMode: false,
 
   /**
    * Optional: if specified, breadcrumbs will have this dir as a root.
@@ -93,10 +94,15 @@ export default Ember.Component.extend({
     this.get('fileSystemTree').expandDir(dir);
   }.observes('dir'),
 
+  fileDownloadServerMethod: Ember.computed('publicMode', function() {
+    return this.get('publicMode') ? 'getPublicFileDownloadUrl' : 'getFileDownloadUrl';
+  }),
+
   downloadFile(file, downloadResolve, downloadReject) {
     const i18n = this.get('i18n');
     const messageBox = this.get('messageBox');
-    const p = this.get('oneproviderServer').getFileDownloadUrl(file.get('id'));
+    const server = this.get('oneproviderServer');
+    const p = server[this.get('fileDownloadServerMethod')](file.get('id'));
     const fileName = (file && file.get('name') || i18n.t('common.unknown'));
     p.then(
       (data) => {

@@ -1,9 +1,15 @@
 {{share-info-head share=model openDataDir="openDataDir"}}
 
 {{!-- TODO: metadata-panel --}}
-{{!-- <div class="op-panel op-panel-azure">
-  {{metadata-panel}}
-</div> --}}
+{{#if model.file.metadata}}
+  <div class="op-panel op-panel-azure">
+    {{metadata-panel metadata=model.file.metadata}}
+  </div>
+{{/if}}
+
+{{#bs-button action="createMetadata"}}
+  Create metadata
+{{/bs-button}}
 
 <div class="op-panel op-panel-red">
   <div class="files-list">

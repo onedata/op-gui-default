@@ -1,50 +1,20 @@
 {{!-- TODO: translations --}}
 
-{{#bs-tab fade=false}}
-  {{#bs-tab-pane title="Basic"}}
-    <table class="metadata-basic-table">
-      <tbody>
-        <tr>
-          {{!-- TODO: these will be components --}}
-
-          {{!-- TODO: only if share --}}
-          <td class="metadata-key">
-            share name
-          </td>
-          <td class="metadata-value">
-            {{metaBasic.shareName}}
-          </td>
-        </tr>
-        <tr>
-          {{!-- TODO: only if share --}}
-          <td class="metadata-key">
-            public url
-          </td>
-          <td class="metadata-value">
-            {{metaBasic.publicUrl}}
-          </td>
-        </tr>
-        <tr>
-          {{!-- TODO: only if directory --}}
-          <td class="metadata-key">
-            path in space
-          </td>
-          <td class="metadata-value">
-            {{metaBasic.path}}
-          </td>
-        </tr>
-        <tr>
-          <td class="metadata-key">
-            parent space
-          </td>
-          <td class="metadata-value">
-            {{metaBasic.spaceName}}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  {{/bs-tab-pane}}
-  {{#bs-tab-pane title="JSON"}}
-    Empty.
-  {{/bs-tab-pane}}
-{{/bs-tab}}
+<div class="row">
+  {{#bs-tab fade=false}}
+    {{#bs-tab-pane title="Basic"}}
+      {{metadata/basic-editor data=metadata.basic}}
+    {{/bs-tab-pane}}
+    {{#bs-tab-pane title="JSON"}}
+      {{metadata/json-editor data=metadata.json}}
+    {{/bs-tab-pane}}
+    {{#bs-tab-pane title="RDF"}}
+      {{metadata/rdf-editor data=metadata.rdf}}
+    {{/bs-tab-pane}}
+  {{/bs-tab}}
+</div>
+<div class="row">
+  {{#bs-button action="saveAll"}}
+    Save all
+  {{/bs-button}}
+</div>

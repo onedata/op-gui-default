@@ -43,5 +43,33 @@ export default Ember.Controller.extend({
         (error) => reject && reject(error)
       );
     },
+
+    createMetadata() {
+      const file = this.get('model.file');
+      file.then(
+        f => {
+          const metadata = this.get('store').createRecord('meta', {
+            basic: {
+              a: 'jeden',
+              b: 'dwa',
+              c: 'trzy',
+            },
+            json: {
+              jeden: {
+                dwa: {
+                  trzy: 4
+                }
+              }
+            },
+            rdf: "<some></some>",
+            file: f,
+          });
+          f.set('metadata', metadata);
+          metadata.save().then(
+            () => f.save()
+          );
+        }
+      );
+    }
   }
 });

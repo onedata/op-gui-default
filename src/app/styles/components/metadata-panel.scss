@@ -57,8 +57,14 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
 }
 
 .metadata-basic-table {
-  tr {
-    padding: 15px auto;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0px 10px;
+  th {
+    width: 120px;
+  }
+  td {
+    width: auto;
   }
   .metadata-key {
     width: 200px;

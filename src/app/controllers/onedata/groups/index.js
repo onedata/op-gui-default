@@ -15,7 +15,7 @@ export default Ember.Controller.extend({
     let groups = this.get('model');
     if (groups && groups.get('length') > 0) {
       // TODO: which group should be loaded as default?
-      let firstGroup = groups.filter(g => g.get('id') && g.get('id') != 'null').toArray()[0];
+      const firstGroup = groups.sortBy('name').objectAt(0);
       if (firstGroup && !firstGroup.get('isDeleted') && !firstGroup.get('_invalidRoute')) {
         console.debug(`groups.index: Transition to default group ${firstGroup.get('id')}`);
         this.transitionToRoute('onedata.groups.show', firstGroup);
@@ -30,7 +30,9 @@ export default Ember.Controller.extend({
     When found - show this group.
     This is a workaround for afterModel, which does not recieve ready groups list.
   */
-  onModelChange: function() {
-    this.goToFirstGroup();
-  }.observes('model.[]', 'model.@each.id')
+  onModelChange: Ember.observer('model.[]', 'model.@each.id', function() {
+    if (this.get('isActive')) {
+      this.goToFirstGroup();
+    }
+  })
 });

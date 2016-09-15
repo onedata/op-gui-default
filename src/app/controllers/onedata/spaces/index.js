@@ -37,7 +37,11 @@ export default Ember.Controller.extend({
     When found - show this space.
     This is a workaround for afterModel, which does not recieve ready spaces list.
   */
-  onModelChange: function() {
-    this.goToDefaultSpace();
-  }.observes('model.[]', 'model.@each.id')
+  onModelChange: Ember.observer('model.[]', 'model.@each.isDefault', 'model.isUpdating',
+    function() {
+      if (this.get('isActive')) {
+        this.goToDefaultSpace();
+      }
+    }
+  )
 });

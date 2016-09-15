@@ -17,6 +17,9 @@ export default Ember.Controller.extend({
   },
 
   onModelChange: Ember.observer('model.[]', 'model.@each.id', function() {
-    this.goToDefault();
+    // TODO: the observer works even if we are not on this route
+    if (this.get('isActive')) {
+      this.goToDefault();
+    }
   }),
 });

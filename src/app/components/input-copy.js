@@ -6,6 +6,9 @@ export default Ember.Component.extend({
 
   classNames: ['input-with-button'],
 
+  /// Options
+  autofocus: true,
+
   clipboardTarget: Ember.computed('elementId', function() {
     return `#${this.get('elementId')} input[type=text]`;
   }),

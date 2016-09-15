@@ -14,11 +14,14 @@ $color-breadcrumbs-font: #768D9F;
         display: table-cell;
       }
       .file-breadcrumbs-next-icon {
+        position: relative;
         width: 24px;
         color: $color-breadcrumbs-font;
 
         .oneicon {
           position: absolute;
+          top: 0;
+          left: 0;
           transform: translate(4px, 4px);
         }
       }

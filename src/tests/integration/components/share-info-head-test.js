@@ -38,7 +38,7 @@ describeComponent(
       expect(this.$()).to.contain(share.name);
     });
 
-    it('displays a link to public url of share', function() {
+    it('displays a public url of share in input element', function() {
       const share = {
         name: 'Share with link',
         publicUrl: 'https://example.com'
@@ -47,8 +47,7 @@ describeComponent(
       this.set('share', share);
 
       this.render(hbs`{{share-info-head share=share}}`);
-      expect(this.$()).to.contain(share.publicUrl);
-      expect(this.$().find('a')).to.have.attr('href', share.publicUrl);
+      expect(this.$().find('input')[0].value).to.equal(share.publicUrl);
     });
   }
 );

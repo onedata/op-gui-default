@@ -103,6 +103,20 @@ export default Ember.Mixin.create({
     this.resetBrowserState();
   },
 
+  /**
+   * Delete share when file delete succeeded
+   */
+  destroyRecord() {
+    const sharePromise = this.get('share');
+    const destroyPromise = this._super(...arguments);
+    destroyPromise.then(() => {
+      if (sharePromise) {
+        sharePromise.then(s => s.deleteRecord());
+      }
+    });
+    return destroyPromise;
+  },
+
   // TODO: doc, destroy, not destroyRecord!
   destroyRecursive() {
     // TODO: onsuccess onfailure...

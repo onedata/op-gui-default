@@ -376,7 +376,6 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     // TODO: maybe this should be displayed in modal as an alert panel
     const msg = this.get('i18n').t('components.modals.filePermissions.submitFailed');
     this.get('notify').error(msg);
-    console.error(msg);
   },
 
   submitCompleted() {

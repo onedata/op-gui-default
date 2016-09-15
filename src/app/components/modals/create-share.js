@@ -123,7 +123,6 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     // TODO: display it in a share modal as an alert panel
     const msg = this.get('i18n').t('components.modals.createShare.submitFailed');
     this.get('notify').error(msg + (error && error.message && ': ' + error.message));
-    console.error(msg);
   },
 
   submitCompleted() {

@@ -29,7 +29,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
   shares: null,
   validShares: function() {
-    return this.get('shares').filter((s) => s.get('isLoaded'));
+    return this.get('shares').filter((s) => s.get('isLoaded') && !s.get('isDeleted'));
   }.property('shares', 'shares.[]', 'shares.@each.isLoaded'),
   sharesSorting: ['name'],
   validSharesSorted: Ember.computed.sort('validShares', 'sharesSorting'),

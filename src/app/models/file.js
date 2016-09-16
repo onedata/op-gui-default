@@ -8,6 +8,7 @@
  */
 
 import DS from 'ember-data';
+import Ember from 'ember';
 
 import FileMixin from 'op-worker-gui/mixins/models/file';
 
@@ -16,4 +17,8 @@ export default DS.Model.extend(FileMixin, {
   parent: DS.belongsTo('file', {inverse: 'children', async: true}),
   children: DS.hasMany('file', {inverse: 'parent', async: true}),
   fileProperty: DS.belongsTo('file-property', {inverse: 'file', async: true}),
+
+  hasMetadata: Ember.computed('fileProperty.content', function() {
+    return this.belongsTo('fileProperty').id() != null || !!this.get('fileProperty.content');
+  }),
 });

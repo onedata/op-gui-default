@@ -17,6 +17,12 @@
         {{icon 'share' 'visible-on-parent-hover'}}
       </div>
     {{/if}}
+    {{#if file.hasMetadata}}
+      <div {{action (action 'showFileMetadata') bubbles=false}} class="file-tool file-tool-metadata">
+        {{!-- FIXME: metadata icon --}}
+        {{icon 'view-list' 'visible-on-parent-hover'}}
+      </div>
+    {{/if}}
   </div>
 </td>
 <td class="hidden-xs file-list-col-size nowrap">

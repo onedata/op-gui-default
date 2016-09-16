@@ -10,8 +10,12 @@ export default Ember.Component.extend({
   liveData: Ember.computed('data', {
     get() {
       const data = this.get('data');
-      const flat = Object.keys(data).map(key => [key, data[key]]);
-      return Ember.A(flat);
+      if (data) {
+        const flat = Object.keys(data).map(key => [key, data[key]]);
+        return Ember.A(flat);
+      } else {
+        return Ember.A();
+      }
     },
     set(key, value) {
       const arr = value;

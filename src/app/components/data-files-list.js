@@ -145,6 +145,10 @@ export default Ember.Component.extend({
     return p;
   },
 
+  isShowingMetadata: Ember.computed('metadataFile', function() {
+    return !!this.get('metadataFile');
+  }),
+
   actions: {
     openDirInBrowser(file) {
       this.sendAction('openDirInBrowser', file);
@@ -173,6 +177,14 @@ export default Ember.Component.extend({
 
     changeDir(dir) {
       this.set('dir', dir);
+    },
+
+    showFileMetadata(file) {
+      this.set('metadataFile', file);
+    },
+
+    hideFileMetadata() {
+      this.set('metadataFile', null);
     }
   }
 

@@ -152,6 +152,12 @@
             font-size: 30px;
             cursor: pointer;
           }
+
+          // FIXME: this is a hack
+          .file-tool-metadata {
+            position: relative;
+            right: 32px;
+          }
         }
       }
     }

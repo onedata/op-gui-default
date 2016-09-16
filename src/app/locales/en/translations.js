@@ -333,7 +333,8 @@ export default {
         copy: 'Copy element',
         cut: 'Cut element',
         remove: 'Remove element',
-        chunks: 'Show file distribution'
+        chunks: 'Show file distribution',
+        metadata: 'Edit file metadata',
       },
       renameFileModal: {
         title: 'Rename file or directory',

@@ -54,8 +54,20 @@
   {{!-- TODO: open file when selected and enter pressed --}}
     {{data-files-list/file-row file=file openDirInBrowser='openDirInBrowser'
       downloadFile='downloadFile' selectFile='selectFile'
-      openFileShareModal='openFileShareModal'}}
+      openFileShareModal='openFileShareModal'
+      showFileMetadata='showFileMetadata' hideFileMetadata='hideFileMetadata'}}
   {{/each}}
+  {{!-- FIXME: move to file row? --}}
+  {{#if isShowingMetadata}}
+    {{!-- FIXME: loading --}}
+    <tr>
+      <td colspan="3">
+        <div class="op-panel op-panel-azure">
+          {{metadata-panel data=metadataFile.fileProperty}}
+        </div>
+      </td>
+    </tr>
+  {{/if}}
   </tbody>
 
 </table>

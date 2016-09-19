@@ -32,11 +32,24 @@ $font-family-sans-serif: 'Open Sans';
 
 // routes-specific styles
 
+@import 'public';
 @import 'data';
 @import 'groups';
 
 html, body {
   font-family: $font-family-sans-serif !important;
+  background-color: $color-main-background;
+
+  // TODO: only input[type=text] ?
+  .form-control {
+    border-radius: 0;
+    border: solid 1px #B6C7D3;
+
+    &:focus {
+      box-shadow: none;
+      border: solid 1px #545C74;
+    }
+  }
 }
 
 #app {
@@ -419,6 +432,8 @@ html, body {
       // we do not set top padding of content
       padding-top: 0;
 
+      background-color: $color-main-background;
+
       // add a padding-top if not added already
       .inner-content {
         padding-top: $content-padding;
@@ -660,7 +675,6 @@ html, body {
 // handling empty collections
 
 .empty-model {
-  position: absolute;
   // below drop-zone
   z-index: 99;
   left: 0;
@@ -668,7 +682,6 @@ html, body {
   top: 0;
   bottom: 0;
   padding: 20px;
-  background-color: white; // rgba(white, 0.75);
 
   .empty-model-container {
     padding-top: 40px;
@@ -704,4 +717,32 @@ html, body {
   padding-left: 10px;
   padding-right: 10px;
   font-size: 2em;
+}
+
+
+/// New look experimental
+
+.op-panel {
+  padding: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-top-width: 6px;
+  border-top-style: solid;
+  background-color: $color-panel-background;
+
+  &.op-panel-azure {
+    border-color: $color-panel-azure;
+  }
+
+  &.op-panel-red {
+    border-color: $color-panel-red;
+  }
+
+  &.op-panel-green {
+    border-color: $color-panel-green;
+  }
+
+  &.op-panel-graphite {
+    border-color: $color-panel-graphite;
+  }
 }

@@ -13,7 +13,12 @@ export default Ember.Component.extend({
   commonLoader: Ember.inject.service(),
 
   classNames: ['common-loader', 'semi-transparent'],
-  classNameBindings: ['isLoading::hidden', 'area'],
+  classNameBindings: ['isLoading::hidden', 'areaClass'],
+
+  areaClass: Ember.computed('commonLoader.area', function() {
+    const _area = this.get('commonLoader.area');
+    return `loader-area-${_area}`;
+  }),
 
   area: Ember.computed.alias('commonLoader.area'),
   type: Ember.computed.alias('commonLoader.type'),

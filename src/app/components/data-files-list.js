@@ -22,6 +22,19 @@ export default Ember.Component.extend({
 
   classNames: ['data-files-list'],
 
+  /// Options, features
+  uploadEnabled: true,
+  breadcrumbsEnabled: false,
+  publicMode: false,
+
+  /**
+   * Optional: if specified, breadcrumbs will have this dir as a root.
+   * Otherwise, breadcrumbs will display full parents path.
+   * @type {File}
+   */
+  rootDir: null,
+
+
   /** A parent directory to list its files */
   dir: null,
 
@@ -66,8 +79,10 @@ export default Ember.Component.extend({
 
   didInsertElement() {
     this.dirChanged();
-    console.debug('Binding upload area for file list');
-    this.get('fileUpload').assignDrop(this.$());
+    if (this.get('uploadEnabled')) {
+      console.debug('Binding upload area for file list');
+      this.get('fileUpload').assignDrop(this.$());
+    }
   },
 
   dirChanged: function() {
@@ -79,10 +94,15 @@ export default Ember.Component.extend({
     this.get('fileSystemTree').expandDir(dir);
   }.observes('dir'),
 
+  fileDownloadServerMethod: Ember.computed('publicMode', function() {
+    return this.get('publicMode') ? 'getPublicFileDownloadUrl' : 'getFileDownloadUrl';
+  }),
+
   downloadFile(file, downloadResolve, downloadReject) {
     const i18n = this.get('i18n');
     const messageBox = this.get('messageBox');
-    const p = this.get('oneproviderServer').getFileDownloadUrl(file.get('id'));
+    const server = this.get('oneproviderServer');
+    const p = server[this.get('fileDownloadServerMethod')](file.get('id'));
     const fileName = (file && file.get('name') || i18n.t('common.unknown'));
     p.then(
       (data) => {
@@ -127,7 +147,7 @@ export default Ember.Component.extend({
 
   actions: {
     openDirInBrowser(file) {
-      this.sendAction('openDirInBrowser', file.get('id'));
+      this.sendAction('openDirInBrowser', file);
     },
 
     downloadFile(file, resolve, reject) {
@@ -139,6 +159,21 @@ export default Ember.Component.extend({
     selectFile(file) {
       file.set('isSelected', !file.get('isSelected'));
     },
+
+    openFileShareModal(file) {
+      this.sendAction('openFileShareModal', file);
+    },
+
+    // TODO: loading
+    goUp() {
+      this.get('dir.parent').then(
+        parentDir => parentDir && this.set('dir', parentDir)
+      );
+    },
+
+    changeDir(dir) {
+      this.set('dir', dir);
+    }
   }
 
 });

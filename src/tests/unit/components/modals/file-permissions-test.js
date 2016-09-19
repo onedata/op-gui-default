@@ -11,10 +11,10 @@ import {
 } from 'ember-mocha';
 
 import Ember from 'ember';
-import ACE from '../../../../utils/access-control-entity';
-import { resolvePromise, rejectPromise } from '../../../test-helper';
+import ACE from 'op-worker-gui/utils/access-control-entity';
+import { resolvePromise, rejectPromise } from 'op-worker-gui/tests/test-helper';
 
-import { POSIX_SPECIAL_DIFFERENT } from '../../../../components/file-permissions/posix';
+import { POSIX_SPECIAL_DIFFERENT } from 'op-worker-gui/components/file-permissions/posix';
 
 import { mockI18n } from 'ember-i18n-test-helpers';
 

@@ -24,7 +24,7 @@ export default Ember.Mixin.create({
    * Specify the route to go when model promise rejects. E.g. 'spaces.index'.
    * @abstract
    */
-  fallbackRoute: 'index',
+  fallbackRoute: 'onedata.index',
 
   /**
    * Optional custom message on rejection handled with 'handleReject' displayed

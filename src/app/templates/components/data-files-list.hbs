@@ -1,23 +1,38 @@
-<table class="table table-strips files-table relative">
+{{#if breadcrumbsEnabled}}
+  <div class="row">
+    {{file-breadcrumbs file=dir rootDir=rootDir changeDir="changeDir"}}
+  </div>
+{{/if}}
+
+{{#if uploadEnabled}}
   <div class="drop-area">
     {{icon 'upload'}}
   </div>
+{{/if}}
 
-  {{#if dirIsEmpty}}
+{{#if dirIsEmpty}}
 
-  <div class="empty-model">
-    <div class="empty-model-container">
-      <div class="empty-model-image empty-dir-image"></div>
+<div class="empty-model">
+  <div class="empty-model-container">
+    <div class="empty-model-image empty-dir-image"></div>
+    {{#if uploadEnabled}}
       <div class="empty-model-message">
         Nothing here yet.
       </div>
       <div class="empty-model-message secondary">
         Drop your files here or use the <span class="inline-button">{{icon 'upload'}}</span> button in toolbar
       </div>
+    {{else}}
+    <div class="empty-model-message">
+      This directory is empty.
     </div>
+    {{/if}}
   </div>
+</div>
 
-  {{/if}}
+{{else}}
+
+<table class="table table-strips files-table relative">
 
   <thead>
   <th>
@@ -38,7 +53,10 @@
   {{#each visibleFilesSorted as |file|}}
   {{!-- TODO: open file when selected and enter pressed --}}
     {{data-files-list/file-row file=file openDirInBrowser='openDirInBrowser'
-      downloadFile='downloadFile' selectFile='selectFile'}}
+      downloadFile='downloadFile' selectFile='selectFile'
+      openFileShareModal='openFileShareModal'}}
   {{/each}}
   </tbody>
+
 </table>
+{{/if}}

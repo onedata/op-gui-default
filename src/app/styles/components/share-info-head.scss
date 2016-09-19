@@ -1,0 +1,21 @@
+.share-info-head {
+  .share-name {
+    font-size: 30px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0px 10px;
+    th {
+      width: 120px;
+    }
+    td {
+      width: auto;
+    }
+  }
+
+  .input-with-button {
+    max-width: 500px;
+  }
+}

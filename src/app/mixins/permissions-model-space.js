@@ -27,6 +27,8 @@ export default Ember.Mixin.create(PermissionsModelMixin, {
   permSetPrivileges: DS.attr('boolean', {defaultValue: false}),
   permInviteProvider: DS.attr('boolean', {defaultValue: false}),
   permRemoveProvider: DS.attr('boolean', {defaultValue: false}),
+  permManageShares: DS.attr('boolean', {defaultValue: false}),
+  permWriteFiles: DS.attr('boolean', {defaultValue: false}),
 
   /* Modification flags (not persisted) - if true, the corresponding perm*
    * attribte was modified in view but not saved.
@@ -44,12 +46,15 @@ export default Ember.Mixin.create(PermissionsModelMixin, {
   modSetPrivileges: false,
   modInviteProvider: false,
   modRemoveProvider: false,
+  modManageShares: false,
+  modWriteFiles: false,
 
   /** A collection of permissions and modified flags suffixes,
    *  used mainly to iterate over these flags */
   FLAG_NAMES: [
     'ViewSpace', 'ModifySpace', 'RemoveSpace', 'InviteUser', 'RemoveUser',
-     'InviteGroup', 'RemoveGroup', 'SetPrivileges', 'InviteProvider', 'RemoveProvider'
+     'InviteGroup', 'RemoveGroup', 'SetPrivileges', 'InviteProvider', 'RemoveProvider',
+     'ManageShares', 'WriteFiles'
   ],
 
   // Checks if Permission is modified using mod* flags
@@ -60,5 +65,5 @@ export default Ember.Mixin.create(PermissionsModelMixin, {
     }, this);
   }.property('modViewSpace', 'modModifySpace', 'modRemoveSpace', 'modInviteUser',
     'modRemoveUser', 'modInviteGroup', 'modRemoveGroup', 'modSetPrivileges', 'modInviteProvider',
-    'modRemoveProvider'),
+    'modRemoveProvider', 'modManageShares', 'modWriteFiles'),
 });

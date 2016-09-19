@@ -1,0 +1,11 @@
+<h1 class="share-name">{{share.name}}</h1>
+<table>
+  <tr>
+    <th>{{t 'components.shareInfoHead.path'}}</th>
+    <td>{{file-breadcrumbs file=file changeDir="openDataDir"}}</td>
+  </tr>
+  <tr>
+    <th>{{t 'components.shareInfoHead.publicUrl'}}</th>
+    <td>{{input-copy inputValue=share.publicUrl}}</td>
+  </tr>
+</table>

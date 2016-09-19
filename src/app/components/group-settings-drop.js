@@ -1,18 +1,16 @@
 import Ember from 'ember';
-import bindFloater from '../utils/bind-floater';
+import SettingsDropMixin from 'op-worker-gui/mixins/components/settings-drop';
 
 /**
  * Drop-right menu for single group, conaining i.a. rename group, remove group etc.
- * Component does not have groups manipulation logic - actions are sended to parent components or services.
+ * Component does not have groups manipulation logic - actions are sent to parent components or services.
  * @module components/group-settings-drop
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default Ember.Component.extend({
+export default Ember.Component.extend(SettingsDropMixin, {
   commonModals: Ember.inject.service(),
-
-  classNames: ['item-element', 'item-icon'],
 
   /**
     Items in "group settings" dropright menu
@@ -85,27 +83,6 @@ export default Ember.Component.extend({
       },
     ].filter((item) => !item.disabled);
   }.property('group', 'group.parentGroups', 'group.parentGroups.length'),
-
-  // TODO: deregister event from sidebar on willDestroyElement
-  // maybe use: this.on('willDestroyElement', () => { sidebar.off(...) } ) etc.
-  didInsertElement() {
-    let sidebar = $('.secondary-sidebar');
-    let drop = this.$().find('.dropdown-menu');
-    let updater = bindFloater(drop, null, {
-      offsetX: 8
-    });
-    sidebar.on('scroll', updater);
-    drop.on('mouseover', updater);
-
-    // a hack to update drop position after group menu expand
-    // this hack is probably not needed anymore, because groups menu doesn't expand
-    // on settings icon click - but we leave it "just in case"
-    drop.closest('.settings-dropdown').on('click', function() {
-      window.setTimeout(() => {
-        updater();
-      }, 50);
-    });
-  },
 
   actions: {
     leaveGroup() {

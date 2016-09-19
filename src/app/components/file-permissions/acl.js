@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import ACE from '../../utils/access-control-entity';
+import ACE from 'op-worker-gui/utils/access-control-entity';
 
 export default Ember.Component.extend({
   store: Ember.inject.service(),

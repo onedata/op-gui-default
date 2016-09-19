@@ -1,7 +1,7 @@
 // jshint esnext: true
 
 import Ember from 'ember';
-import safeElementIdUtil from '../utils/safe-element-id';
+import safeElementIdUtil from 'op-worker-gui/utils/safe-element-id';
 
 /**
  * Using safeElementId util, convert string to safe element id.

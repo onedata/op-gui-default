@@ -43,16 +43,6 @@ export default Ember.Component.extend({
     return `invite-form-${this.get('modalId')}`;
   }.property('modalId'),
 
-  clipboardTarget: function() {
-    return `#${this.get('formElementId')} input`;
-  }.property('formElementId'),
-
-  selectTokenText() {
-    let input = $('#invite-token-field')[0];
-    $(input).focus();
-    input.setSelectionRange(0, input.value.length);
-  },
-
   actions: {
     getToken() {
       let type = this.get('type');
@@ -77,14 +67,6 @@ export default Ember.Component.extend({
     closeModal() {
       this.set('inviteToken', null);
       this.set('errorMessage', null);
-    },
-    copySuccess() {
-      this.selectTokenText();
-      this.get('notify').info(this.get('i18n').t('common.notify.clipboardSuccess'));
-    },
-    copyError() {
-      this.selectTokenText();
-      this.get('notify').warn(this.get('i18n').t('common.notify.clipboardFailure'));
     },
   }
 });

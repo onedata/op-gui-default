@@ -27,8 +27,8 @@ export default {
       fetchingTokenError: 'Fetching token failed!',
     },
     notify: {
-      clipboardSuccess: 'The text copied to clipboard',
-      clipboardFailue: 'The text cannot be copied to clipboard - please copy it manually'
+      clipboardSuccess: 'Text has been copied to clipboard.',
+      clipboardFailue: 'Text cannot be copied to clipboard - please copy it manually'
     },
     featureNotSupportedShort: 'Feature not supported',
     featureNotSupportedLong: 'Sorry, this feature is not supported yet.',
@@ -65,6 +65,7 @@ export default {
       defaultMessage: 'Loading...',
       synchronizingSpaces: 'Synchronizing user spaces...',
       synchronizingGroups: 'Synchronizing groups...',
+      synchronizingShares: 'Synchronizing shares...',
       firstLogin: 'This might take a while if this is the first login to this provider'
     },
     topBar: {
@@ -75,7 +76,7 @@ export default {
       data: 'data',
       links: 'links',
       recent: 'recent',
-      collection: 'collection',
+      shared: 'shared',
       trash: 'trash',
       spaces: 'spaces',
       groups: 'groups',
@@ -87,6 +88,10 @@ export default {
         renameSuccess: 'Element "{{oldName}}" renamed to "{{newName}}"',
         renameFailed: 'Element "{{oldName}}" rename to "{{newName}}" failed due to an error',
       },
+      removeModal: {
+        removeSuccess: 'Element "{{name}}" has been removed',
+        removeFailed: 'Element "{{name}}" cannot be removed due to an error',
+      },
       filePermissions: {
         title: 'Edit permissions',
         permissionsType: 'Permissions type',
@@ -97,6 +102,24 @@ export default {
         types: {
           posix: 'POSIX',
           acl: 'ACL'
+        }
+      },
+      createShare: {
+        title: 'Share the directory',
+        submitSuccess: 'Share created sucessfully',
+        submitFailed: 'Share creation failed',
+        rowName: {
+          label: 'Name',
+          sublabel: 'Set a name for created share that will be visible to other users'
+        },
+      },
+      fileShareInfo: {
+        title: 'Share summary',
+        subtitle: 'A directory with path "{{path}}" is shared with name "{{name}}"',
+        goToShare: 'Open the share',
+        publicUrl: {
+          label: 'Public URL',
+          sublabel: 'You can give an acces to the shared directory to anyone with the public URL:'
         }
       }
     },
@@ -224,6 +247,22 @@ export default {
 
       }
     },
+    sharesMenu: {
+      title: 'shares',
+      join: 'Join',
+      drop: {
+        rename: 'Rename',
+        remove: 'Remove'
+      },
+      renameModal: {
+        title: 'Rename share',
+        label: 'Enter new share name:'
+      },
+      removeModal: {
+        title: 'Remove share',
+        label: 'Are you sure that you want to remove the "{{name}}" share?'
+      }
+    },
     permissionsTable: {
       save: 'save',
       discard: 'discard',
@@ -249,6 +288,8 @@ export default {
       getSupport: 'get support',
       removeSubgroup: 'remove subgroup',
       joinGroup: 'join group',
+      manageShares: 'manage shares',
+      writeFiles: 'write files',
       inviteModal: {
         title: 'Invite {{type}} to space',
         label: 'Pass the below token to the {{type}} you want to invite'
@@ -357,9 +398,18 @@ export default {
         label: 'Pass the below token to a provider of your choice. The token can be used to create a space for your group and grant support to the space.'
       }
     },
+    shareInfoHead: {
+      path: 'Path',
+      publicUrl: 'Public URL',
+    }
   },
   notFound: {
     notifyMessage: 'Requested path not found'
+  },
+  login: {
+    message: "Waiting for Oneprovider session...",
+    messageSecondary: "If you are not logged in to this Oneprovider, you will be " +
+      "redirected to Onezone login page automatically in {{nSeconds}} seconds..."
   },
   groups: {
     title: 'Groups',
@@ -371,8 +421,8 @@ export default {
       spaces: "Spaces"
     }
   },
-  collection: {
-    title: 'Collection'
+  shares: {
+    title: 'Shared'
   },
   trash: {
     title: 'Trash'

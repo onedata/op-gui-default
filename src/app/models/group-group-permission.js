@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import PermissionsModelGroupMixin from '../mixins/permissions-model-group';
+import PermissionsModelGroupMixin from 'op-worker-gui/mixins/permissions-model-group';
 
 /**
  * A set of single Group permissions for a single (sub)Group

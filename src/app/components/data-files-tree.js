@@ -4,7 +4,7 @@ import Ember from 'ember';
  * Container for data-files-tree-nodes.
  *
  * Sends actions:
- * - openDirInBrowser(fileId) - open dir for browsing
+ * - openDirInBrowser(file) - open dir for browsing
  * @module components/data-files-tree
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
@@ -41,8 +41,8 @@ export default Ember.Component.extend({
 
   actions: {
     /** Typically invoked by actions passed up from tree nodes */
-    openDirInBrowser(fileId) {
-      this.sendAction('openDirInBrowser', fileId);
+    openDirInBrowser(file) {
+      this.sendAction('openDirInBrowser', file);
     }
   }
 });

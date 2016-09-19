@@ -28,6 +28,13 @@ module.exports = function(environment) {
 
     i18n: {
       defaultLocale: 'en'
+    },
+
+    'ember-simple-auth': {
+      session: 'session:custom',
+      authenticationRoute: 'login', // 'login'
+      routeAfterAuthentication: 'onedata', // 'onedata'
+      routeIfAlreadyAuthenticated: 'onedata' // 'onedata'
     }
   };
 

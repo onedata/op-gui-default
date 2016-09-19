@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import PromiseLoadingMixin from '../../mixins/promise-loading';
+import PromiseLoadingMixin from 'op-worker-gui/mixins/promise-loading';
 
 export default Ember.Component.extend(PromiseLoadingMixin, {
   notify: Ember.inject.service(),

@@ -1,4 +1,4 @@
-import ENV from '../config/environment';
+import ENV from 'op-worker-gui/config/environment';
 
 export default {
   name: 'testing-model',

@@ -1,14 +1,6 @@
-<td id="file-{{file.id}}" class="file-list-col-file">
+<td id="file-{{file.id}}" class="file-list-col-file hover-parent">
   <div class="file-icon">
-    {{#if file.isBroken}}
-      {{icon "file" "color-directory"}}
-    {{else}}
-      {{#if file.isDir}}
-        {{icon "folder" "color-directory"}}
-      {{else}}
-        {{icon "file" "color-file"}}
-      {{/if}}
-    {{/if}}
+    {{file-icon file=file}}
   </div>
   <div class="file-label">
     {{#truncated-string parentSelector=".file-list-col-file" shrinkBy=100}}
@@ -18,6 +10,13 @@
         {{file.name}}
       {{/if}}
     {{/truncated-string}}
+  </div>
+  <div class="file-row-tools">
+    {{#if file.hasShare}}
+      <div {{action (action 'shareFile') bubbles=false}} class="file-tool file-tool-share">
+        {{icon 'share' 'visible-on-parent-hover'}}
+      </div>
+    {{/if}}
   </div>
 </td>
 <td class="hidden-xs file-list-col-size nowrap">

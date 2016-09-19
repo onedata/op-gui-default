@@ -12,10 +12,10 @@
  */
 
 import Ember from 'ember';
-import RouteRejectHandler from '../mixins/route-reject-handler';
+import RouteRejectHandler from 'op-worker-gui/mixins/route-reject-handler';
 
 export default Ember.Route.extend(RouteRejectHandler, {
-  fallbackRoute: 'index',
+  fallbackRoute: 'onedata.index',
 
   rejectMessage(path) {
     return this.get('i18n').t('notFound.notifyMessage') +

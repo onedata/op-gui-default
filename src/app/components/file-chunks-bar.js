@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import FileChunksBar from '../utils/file-chunks-bar';
+import FileChunksBar from 'op-worker-gui/utils/file-chunks-bar';
 
 /**
  * Draw a bar with file chunks (blocks) using function from utils.

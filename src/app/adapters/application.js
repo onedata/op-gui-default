@@ -9,7 +9,7 @@
 import OnedataAdapter from './application-onedata';
 import LSAdapter from './application-localstorage';
 
-import ENV from '../config/environment';
+import ENV from 'op-worker-gui/config/environment';
 
 let ApplicationAdapter =
   (ENV.environment === 'test' ? LSAdapter : OnedataAdapter);

@@ -289,6 +289,7 @@ export default {
       removeSubgroup: 'remove subgroup',
       joinGroup: 'join group',
       manageShares: 'manage shares',
+      writeFiles: 'write files',
       inviteModal: {
         title: 'Invite {{type}} to space',
         label: 'Pass the below token to the {{type}} you want to invite'

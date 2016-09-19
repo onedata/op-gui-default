@@ -99,6 +99,8 @@
       </th>
       {{#if (eq subjectType "space")}}
         <th class="one-th">{{t 'components.permissionsTable.viewSpace'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.writeFiles'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.manageShares'}}</th>
         <th class="one-th">{{t 'components.permissionsTable.modifySpace'}}</th>
         <th class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</th>
         <th class="one-th">{{t 'components.permissionsTable.removeSpace'}}</th>
@@ -108,7 +110,6 @@
         <th class="one-th">{{t 'components.permissionsTable.removeGroup'}}</th>
         <th class="one-th">{{t 'components.permissionsTable.inviteProvider'}}</th>
         <th class="one-th">{{t 'components.permissionsTable.removeProvider'}}</th>
-        <th class="one-th">{{t 'components.permissionsTable.manageShares'}}</th>
       {{/if}}
       {{#if (eq subjectType "group")}}
         <th class="one-th">{{t 'components.permissionsTable.viewGroup'}}</th>

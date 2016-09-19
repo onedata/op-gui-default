@@ -126,6 +126,15 @@
     </div>
   </div>
 
+  <div class="one-td clickable" {{action 'togglePermission' perm 'WriteFiles'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.manageShares'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permWriteFiles perm.modWriteFiles}}
+      </span>
+    </div>
+  </div>
+
 {{/if}}
 
 {{!-- ................ --}}

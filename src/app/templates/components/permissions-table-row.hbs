@@ -36,6 +36,24 @@
     </div>
   </div>
 
+  <div class="one-td clickable" {{action 'togglePermission' perm 'WriteFiles'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.manageShares'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permWriteFiles perm.modWriteFiles}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'ManageShares'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.manageShares'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permManageShares perm.modManageShares}}
+      </span>
+    </div>
+  </div>
+
   <div class="one-td clickable" {{action 'togglePermission' perm 'ModifySpace'}}>
     <div class="one-table-label">{{t 'components.permissionsTable.modifySpace'}}</div>
     <div class="one-table-checkbox">
@@ -113,15 +131,6 @@
     <div class="one-table-checkbox">
       <span>
         {{bool-option perm.permRemoveProvider perm.modRemoveProvider}}
-      </span>
-    </div>
-  </div>
-
-  <div class="one-td clickable" {{action 'togglePermission' perm 'ManageShares'}}>
-    <div class="one-table-label">{{t 'components.permissionsTable.manageShares'}}</div>
-    <div class="one-table-checkbox">
-      <span>
-        {{bool-option perm.permManageShares perm.modManageShares}}
       </span>
     </div>
   </div>

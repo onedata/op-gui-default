@@ -14,14 +14,19 @@
         "grid": 0,
         "tags": [
           "add-filled"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 81,
-        "id": 80,
+        "order": 165,
+        "id": 82,
         "name": "add-filled",
         "prevSize": 32,
         "code": 59648
@@ -45,15 +50,21 @@
         "grid": 0,
         "tags": [
           "add"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 82,
-        "id": 79,
+        "order": 166,
+        "id": 81,
         "name": "add",
         "prevSize": 32,
         "code": 59649
@@ -75,14 +86,19 @@
         "grid": 0,
         "tags": [
           "arrow-down"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 83,
-        "id": 78,
+        "order": 167,
+        "id": 80,
         "name": "arrow-down",
         "prevSize": 32,
         "code": 59650
@@ -104,14 +120,19 @@
         "grid": 0,
         "tags": [
           "arrow-right"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 84,
-        "id": 77,
+        "order": 168,
+        "id": 79,
         "name": "arrow-right",
         "prevSize": 32,
         "code": 59651
@@ -133,14 +154,19 @@
         "grid": 0,
         "tags": [
           "arrow-up"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 85,
-        "id": 76,
+        "order": 169,
+        "id": 78,
         "name": "arrow-up",
         "prevSize": 32,
         "code": 59652
@@ -164,15 +190,21 @@
         "grid": 0,
         "tags": [
           "checkbox-check"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 86,
-        "id": 75,
+        "order": 170,
+        "id": 77,
         "name": "checkbox-check",
         "prevSize": 32,
         "code": 59653
@@ -194,14 +226,19 @@
         "grid": 0,
         "tags": [
           "checkbox-empty"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 87,
-        "id": 74,
+        "order": 171,
+        "id": 76,
         "name": "checkbox-empty",
         "prevSize": 32,
         "code": 59654
@@ -223,14 +260,19 @@
         "grid": 0,
         "tags": [
           "checkbox-filled"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 88,
-        "id": 73,
+        "order": 172,
+        "id": 75,
         "name": "checkbox-filled",
         "prevSize": 32,
         "code": 59655
@@ -254,15 +296,21 @@
         "grid": 0,
         "tags": [
           "checkbox-option"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 89,
-        "id": 72,
+        "order": 173,
+        "id": 74,
         "name": "checkbox-option",
         "prevSize": 32,
         "code": 59656
@@ -286,15 +334,21 @@
         "grid": 0,
         "tags": [
           "checkbox-x"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 90,
-        "id": 71,
+        "order": 174,
+        "id": 73,
         "name": "checkbox-x",
         "prevSize": 32,
         "code": 59657
@@ -316,14 +370,19 @@
         "grid": 0,
         "tags": [
           "checkbox"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 91,
-        "id": 70,
+        "order": 175,
+        "id": 72,
         "name": "checkbox",
         "prevSize": 32,
         "code": 59658
@@ -345,14 +404,19 @@
         "grid": 0,
         "tags": [
           "close"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 92,
-        "id": 69,
+        "order": 176,
+        "id": 71,
         "name": "close",
         "prevSize": 32,
         "code": 59659
@@ -374,14 +438,19 @@
         "grid": 0,
         "tags": [
           "collection-create"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 93,
-        "id": 68,
+        "order": 177,
+        "id": 70,
         "name": "collection-create",
         "prevSize": 32,
         "code": 59660
@@ -409,7 +478,15 @@
         "grid": 0,
         "tags": [
           "copy"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
@@ -418,8 +495,8 @@
         {}
       ],
       "properties": {
-        "order": 94,
-        "id": 67,
+        "order": 178,
+        "id": 69,
         "name": "copy",
         "prevSize": 32,
         "code": 59661
@@ -449,7 +526,16 @@
         "grid": 0,
         "tags": [
           "cut"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
@@ -459,8 +545,8 @@
         {}
       ],
       "properties": {
-        "order": 95,
-        "id": 66,
+        "order": 179,
+        "id": 68,
         "name": "cut",
         "prevSize": 32,
         "code": 59662
@@ -482,14 +568,19 @@
         "grid": 0,
         "tags": [
           "file"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 96,
-        "id": 65,
+        "order": 180,
+        "id": 67,
         "name": "file",
         "prevSize": 32,
         "code": 59663
@@ -511,14 +602,19 @@
         "grid": 0,
         "tags": [
           "folder-new"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 97,
-        "id": 64,
+        "order": 181,
+        "id": 66,
         "name": "folder-new",
         "prevSize": 32,
         "code": 59664
@@ -542,15 +638,21 @@
         "grid": 0,
         "tags": [
           "folder-open"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 98,
-        "id": 63,
+        "order": 182,
+        "id": 65,
         "name": "folder-open",
         "prevSize": 32,
         "code": 59665
@@ -574,15 +676,21 @@
         "grid": 0,
         "tags": [
           "folder-share"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 99,
-        "id": 62,
+        "order": 183,
+        "id": 64,
         "name": "folder-share",
         "prevSize": 32,
         "code": 59666
@@ -606,15 +714,21 @@
         "grid": 0,
         "tags": [
           "folder"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 100,
-        "id": 61,
+        "order": 184,
+        "id": 63,
         "name": "folder",
         "prevSize": 32,
         "code": 59667
@@ -636,14 +750,19 @@
         "grid": 0,
         "tags": [
           "group-add"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 101,
-        "id": 60,
+        "order": 185,
+        "id": 62,
         "name": "group-add",
         "prevSize": 32,
         "code": 59668
@@ -665,14 +784,19 @@
         "grid": 0,
         "tags": [
           "group-invite"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 102,
-        "id": 59,
+        "order": 186,
+        "id": 61,
         "name": "group-invite",
         "prevSize": 32,
         "code": 59669
@@ -698,7 +822,14 @@
         "grid": 0,
         "tags": [
           "group-leave-group"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
@@ -706,8 +837,8 @@
         {}
       ],
       "properties": {
-        "order": 103,
-        "id": 58,
+        "order": 187,
+        "id": 60,
         "name": "group-leave-group",
         "prevSize": 32,
         "code": 59670
@@ -729,14 +860,19 @@
         "grid": 0,
         "tags": [
           "group"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 104,
-        "id": 57,
+        "order": 188,
+        "id": 59,
         "name": "group",
         "prevSize": 32,
         "code": 59671
@@ -758,14 +894,19 @@
         "grid": 0,
         "tags": [
           "groups"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 105,
-        "id": 56,
+        "order": 189,
+        "id": 58,
         "name": "groups",
         "prevSize": 32,
         "code": 59672
@@ -787,14 +928,19 @@
         "grid": 0,
         "tags": [
           "home-outline"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 106,
-        "id": 55,
+        "order": 190,
+        "id": 57,
         "name": "home-outline",
         "prevSize": 32,
         "code": 59673
@@ -816,14 +962,19 @@
         "grid": 0,
         "tags": [
           "home"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 107,
-        "id": 54,
+        "order": 191,
+        "id": 56,
         "name": "home",
         "prevSize": 32,
         "code": 59674
@@ -845,14 +996,19 @@
         "grid": 0,
         "tags": [
           "inbox"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 108,
-        "id": 53,
+        "order": 192,
+        "id": 55,
         "name": "inbox",
         "prevSize": 32,
         "code": 59675
@@ -876,15 +1032,21 @@
         "grid": 0,
         "tags": [
           "join"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 109,
-        "id": 52,
+        "order": 193,
+        "id": 54,
         "name": "join",
         "prevSize": 32,
         "code": 59676
@@ -906,14 +1068,19 @@
         "grid": 0,
         "tags": [
           "key"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 110,
-        "id": 51,
+        "order": 194,
+        "id": 53,
         "name": "key",
         "prevSize": 32,
         "code": 59677
@@ -937,15 +1104,21 @@
         "grid": 0,
         "tags": [
           "leave-space"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 111,
-        "id": 50,
+        "order": 195,
+        "id": 52,
         "name": "leave-space",
         "prevSize": 32,
         "code": 59678
@@ -967,14 +1140,19 @@
         "grid": 0,
         "tags": [
           "lock"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 112,
-        "id": 49,
+        "order": 196,
+        "id": 51,
         "name": "lock",
         "prevSize": 32,
         "code": 59679
@@ -998,15 +1176,21 @@
         "grid": 0,
         "tags": [
           "menu-collection"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 113,
-        "id": 48,
+        "order": 197,
+        "id": 50,
         "name": "menu-collection",
         "prevSize": 32,
         "code": 59680
@@ -1028,14 +1212,19 @@
         "grid": 0,
         "tags": [
           "menu-data"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 114,
-        "id": 47,
+        "order": 198,
+        "id": 49,
         "name": "menu-data",
         "prevSize": 32,
         "code": 59681
@@ -1057,14 +1246,19 @@
         "grid": 0,
         "tags": [
           "menu-groups"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 115,
-        "id": 46,
+        "order": 199,
+        "id": 48,
         "name": "menu-groups",
         "prevSize": 32,
         "code": 59682
@@ -1092,7 +1286,15 @@
         "grid": 0,
         "tags": [
           "menu-links"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
@@ -1101,8 +1303,8 @@
         {}
       ],
       "properties": {
-        "order": 116,
-        "id": 45,
+        "order": 200,
+        "id": 47,
         "name": "menu-links",
         "prevSize": 32,
         "code": 59683
@@ -1124,14 +1326,19 @@
         "grid": 0,
         "tags": [
           "menu-providers"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 117,
-        "id": 44,
+        "order": 201,
+        "id": 46,
         "name": "menu-providers",
         "prevSize": 32,
         "code": 59684
@@ -1155,15 +1362,21 @@
         "grid": 0,
         "tags": [
           "menu-recent"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 118,
-        "id": 43,
+        "order": 202,
+        "id": 45,
         "name": "menu-recent",
         "prevSize": 32,
         "code": 59685
@@ -1185,14 +1398,19 @@
         "grid": 0,
         "tags": [
           "menu-shared"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 119,
-        "id": 42,
+        "order": 203,
+        "id": 44,
         "name": "menu-shared",
         "prevSize": 32,
         "code": 59686
@@ -1226,7 +1444,18 @@
         "grid": 0,
         "tags": [
           "menu-token"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
@@ -1238,8 +1467,8 @@
         {}
       ],
       "properties": {
-        "order": 120,
-        "id": 41,
+        "order": 204,
+        "id": 43,
         "name": "menu-token",
         "prevSize": 32,
         "code": 59687
@@ -1279,7 +1508,21 @@
         "grid": 0,
         "tags": [
           "menu-trash"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
@@ -1294,8 +1537,8 @@
         {}
       ],
       "properties": {
-        "order": 121,
-        "id": 40,
+        "order": 205,
+        "id": 42,
         "name": "menu-trash",
         "prevSize": 32,
         "code": 59688
@@ -1303,6 +1546,93 @@
       "setIdx": 0,
       "setId": 0,
       "iconIdx": 40
+    },
+    {
+      "icon": {
+        "paths": [
+          "M460.8 561.6c0-8-4.8-15.2-11.2-18.4l-64-29.6 64-29.6c7.2-3.2 11.2-10.4 11.2-18.4v-0.8c0-7.2-3.2-12.8-9.6-16.8-3.2-2.4-7.2-3.2-10.4-3.2s-5.6 0.8-8 1.6l-102.4 48c-7.2 3.2-11.2 10.4-11.2 18.4v1.6c0 8 4.8 15.2 11.2 18.4l102.4 48c2.4 1.6 5.6 1.6 8.8 1.6 4 0 7.2-0.8 10.4-3.2 5.6-4 8.8-10.4 8.8-17.6v0zM460.8 561.6z",
+          "M562.4 396c-4-4.8-9.6-8-16-8h-0.8c-8.8 0-16 5.6-19.2 13.6l-68 209.6c-1.6 6.4-0.8 12.8 3.2 17.6s9.6 8 16 8h0.8c8.8 0 16-5.6 19.2-13.6l68-209.6c1.6-5.6 0-12-3.2-17.6v0zM562.4 396z",
+          "M694.4 494.4l-102.4-48c-2.4-1.6-5.6-1.6-8-1.6-4 0-7.2 0.8-10.4 3.2-5.6 4-9.6 9.6-9.6 16.8v0.8c0 8 4.8 15.2 11.2 18.4l64 29.6-64 29.6c-7.2 3.2-11.2 10.4-11.2 18.4v0.8c0 7.2 3.2 12.8 9.6 16.8 3.2 2.4 7.2 3.2 10.4 3.2s5.6-0.8 8.8-1.6l102.4-48c7.2-3.2 11.2-10.4 11.2-18.4v-1.6c-0.8-8-4.8-15.2-12-18.4v0zM694.4 494.4z",
+          "M512 201.6c-172 0-311.2 139.2-311.2 311.2s139.2 311.2 311.2 311.2 311.2-139.2 311.2-311.2c0-172.8-139.2-311.2-311.2-311.2zM512 799.2c-158.4 0-286.4-128-286.4-286.4s128-286.4 286.4-286.4 286.4 128 286.4 286.4c0 156.8-128 286.4-286.4 286.4z",
+          "M512 512.8z"
+        ],
+        "attrs": [
+          {
+            "fill": "rgb(0, 0, 0)"
+          },
+          {
+            "fill": "rgb(0, 0, 0)"
+          },
+          {
+            "fill": "rgb(0, 0, 0)"
+          },
+          {
+            "fill": "rgb(5, 5, 5)"
+          },
+          {
+            "fill": "rgb(0, 0, 0)"
+          }
+        ],
+        "isMulticolor": true,
+        "isMulticolor2": false,
+        "grid": 0,
+        "tags": [
+          "metadata"
+        ],
+        "colorPermutations": {
+          "15551": [
+            {
+              "f": 0
+            },
+            {
+              "f": 0
+            },
+            {
+              "f": 0
+            },
+            {
+              "f": 1
+            },
+            {
+              "f": 0
+            }
+          ]
+        }
+      },
+      "attrs": [
+        {
+          "fill": "rgb(0, 0, 0)"
+        },
+        {
+          "fill": "rgb(0, 0, 0)"
+        },
+        {
+          "fill": "rgb(0, 0, 0)"
+        },
+        {
+          "fill": "rgb(5, 5, 5)"
+        },
+        {
+          "fill": "rgb(0, 0, 0)"
+        }
+      ],
+      "properties": {
+        "order": 206,
+        "id": 41,
+        "name": "metadata",
+        "prevSize": 32,
+        "code": 59689,
+        "codes": [
+          59689,
+          59690,
+          59691,
+          59692,
+          59693
+        ]
+      },
+      "setIdx": 0,
+      "setId": 0,
+      "iconIdx": 41
     },
     {
       "icon": {
@@ -1317,21 +1647,26 @@
         "grid": 0,
         "tags": [
           "move-down"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 122,
-        "id": 39,
+        "order": 207,
+        "id": 40,
         "name": "move-down",
         "prevSize": 32,
-        "code": 59689
+        "code": 59694
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 41
+      "iconIdx": 42
     },
     {
       "icon": {
@@ -1346,21 +1681,26 @@
         "grid": 0,
         "tags": [
           "move-up"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 123,
-        "id": 38,
+        "order": 208,
+        "id": 39,
         "name": "move-up",
         "prevSize": 32,
-        "code": 59690
+        "code": 59695
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 42
+      "iconIdx": 43
     },
     {
       "icon": {
@@ -1377,22 +1717,28 @@
         "grid": 0,
         "tags": [
           "password-change"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 124,
-        "id": 37,
+        "order": 209,
+        "id": 38,
         "name": "password-change",
         "prevSize": 32,
-        "code": 59691
+        "code": 59696
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 43
+      "iconIdx": 44
     },
     {
       "icon": {
@@ -1417,7 +1763,17 @@
         "grid": 0,
         "tags": [
           "provider-add"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
@@ -1428,15 +1784,15 @@
         {}
       ],
       "properties": {
-        "order": 125,
-        "id": 36,
+        "order": 210,
+        "id": 37,
         "name": "provider-add",
         "prevSize": 32,
-        "code": 59692
+        "code": 59697
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 44
+      "iconIdx": 45
     },
     {
       "icon": {
@@ -1461,7 +1817,17 @@
         "grid": 0,
         "tags": [
           "provider-default"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
@@ -1472,15 +1838,15 @@
         {}
       ],
       "properties": {
-        "order": 126,
-        "id": 35,
+        "order": 211,
+        "id": 36,
         "name": "provider-default",
         "prevSize": 32,
-        "code": 59693
+        "code": 59698
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 45
+      "iconIdx": 46
     },
     {
       "icon": {
@@ -1503,7 +1869,16 @@
         "grid": 0,
         "tags": [
           "provider-home"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
@@ -1513,15 +1888,15 @@
         {}
       ],
       "properties": {
-        "order": 127,
-        "id": 34,
+        "order": 212,
+        "id": 35,
         "name": "provider-home",
         "prevSize": 32,
-        "code": 59694
+        "code": 59699
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 46
+      "iconIdx": 47
     },
     {
       "icon": {
@@ -1542,7 +1917,15 @@
         "grid": 0,
         "tags": [
           "provider"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
@@ -1551,15 +1934,15 @@
         {}
       ],
       "properties": {
-        "order": 128,
-        "id": 33,
+        "order": 213,
+        "id": 34,
         "name": "provider",
         "prevSize": 32,
-        "code": 59695
+        "code": 59700
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 47
+      "iconIdx": 48
     },
     {
       "icon": {
@@ -1574,21 +1957,26 @@
         "grid": 0,
         "tags": [
           "providers-outline"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 129,
-        "id": 32,
+        "order": 214,
+        "id": 33,
         "name": "providers-outline",
         "prevSize": 32,
-        "code": 59696
+        "code": 59701
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 48
+      "iconIdx": 49
     },
     {
       "icon": {
@@ -1603,21 +1991,26 @@
         "grid": 0,
         "tags": [
           "remove"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 130,
-        "id": 31,
+        "order": 215,
+        "id": 32,
         "name": "remove",
         "prevSize": 32,
-        "code": 59697
+        "code": 59702
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 49
+      "iconIdx": 50
     },
     {
       "icon": {
@@ -1636,7 +2029,14 @@
         "grid": 0,
         "tags": [
           "rename"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
@@ -1644,15 +2044,15 @@
         {}
       ],
       "properties": {
-        "order": 131,
-        "id": 30,
+        "order": 216,
+        "id": 31,
         "name": "rename",
         "prevSize": 32,
-        "code": 59698
+        "code": 59703
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 50
+      "iconIdx": 51
     },
     {
       "icon": {
@@ -1667,21 +2067,26 @@
         "grid": 0,
         "tags": [
           "search"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 132,
-        "id": 29,
+        "order": 217,
+        "id": 30,
         "name": "search",
         "prevSize": 32,
-        "code": 59699
+        "code": 59704
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 51
+      "iconIdx": 52
     },
     {
       "icon": {
@@ -1696,21 +2101,26 @@
         "grid": 0,
         "tags": [
           "settings"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 133,
-        "id": 28,
+        "order": 218,
+        "id": 29,
         "name": "settings",
         "prevSize": 32,
-        "code": 59700
+        "code": 59705
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 52
+      "iconIdx": 53
     },
     {
       "icon": {
@@ -1727,22 +2137,28 @@
         "grid": 0,
         "tags": [
           "share-collection"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 134,
-        "id": 27,
+        "order": 219,
+        "id": 28,
         "name": "share-collection",
         "prevSize": 32,
-        "code": 59701
+        "code": 59706
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 53
+      "iconIdx": 54
     },
     {
       "icon": {
@@ -1757,21 +2173,26 @@
         "grid": 0,
         "tags": [
           "share"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 135,
-        "id": 26,
+        "order": 220,
+        "id": 27,
         "name": "share",
         "prevSize": 32,
-        "code": 59702
+        "code": 59707
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 54
+      "iconIdx": 55
     },
     {
       "icon": {
@@ -1786,21 +2207,26 @@
         "grid": 0,
         "tags": [
           "sign-error"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 136,
-        "id": 25,
+        "order": 221,
+        "id": 26,
         "name": "sign-error",
         "prevSize": 32,
-        "code": 59703
+        "code": 59708
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 55
+      "iconIdx": 56
     },
     {
       "icon": {
@@ -1815,21 +2241,26 @@
         "grid": 0,
         "tags": [
           "sign-info"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 137,
-        "id": 24,
+        "order": 222,
+        "id": 25,
         "name": "sign-info",
         "prevSize": 32,
-        "code": 59704
+        "code": 59709
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 56
+      "iconIdx": 57
     },
     {
       "icon": {
@@ -1844,21 +2275,26 @@
         "grid": 0,
         "tags": [
           "sign-question"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 138,
-        "id": 23,
+        "order": 223,
+        "id": 24,
         "name": "sign-question",
         "prevSize": 32,
-        "code": 59705
+        "code": 59710
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 57
+      "iconIdx": 58
     },
     {
       "icon": {
@@ -1873,21 +2309,26 @@
         "grid": 0,
         "tags": [
           "sign-warning"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 139,
-        "id": 22,
+        "order": 224,
+        "id": 23,
         "name": "sign-warning",
         "prevSize": 32,
-        "code": 59706
+        "code": 59711
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 58
+      "iconIdx": 59
     },
     {
       "icon": {
@@ -1910,7 +2351,16 @@
         "grid": 0,
         "tags": [
           "social-dropbox"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
@@ -1920,15 +2370,217 @@
         {}
       ],
       "properties": {
-        "order": 140,
-        "id": 21,
+        "order": 225,
+        "id": 22,
         "name": "social-dropbox",
         "prevSize": 32,
-        "code": 59707
+        "code": 59712
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 59
+      "iconIdx": 60
+    },
+    {
+      "icon": {
+        "paths": [
+          "M530.4 233.6c2.4-16.8 16.8-29.6 33.6-29.6v0c1.6 0 3.2 0 4.8 0v0c18.4 2.4 32 19.2 28.8 38.4v0c-2.4 18.4-19.2 32-38.4 28.8v0c-18.4-1.6-31.2-18.4-28.8-37.6v0z",
+          "M447.2 205.6c1.6 0 3.2 0 4.8 0v0c16.8 0 31.2 12 33.6 28.8v0c3.2 18.4-9.6 36-28.8 38.4v0c-18.4 3.2-36-9.6-38.4-28.8v0c-2.4-17.6 10.4-35.2 28.8-38.4v0z",
+          "M331.2 241.6c4.8-2.4 9.6-3.2 14.4-3.2v0c12.8 0 24.8 7.2 30.4 19.2v0c8 16.8 0.8 37.6-16 45.6v0c-16.8 8-37.6 0.8-45.6-16v0c-8-17.6 0-37.6 16.8-45.6v0z",
+          "M740 306.4c6.4-8 16-12 25.6-12v0c8 0 16 2.4 22.4 8v0c14.4 12 16 33.6 4 48v0c-12 14.4-33.6 16-48 4v0 0c-14.4-12-16-33.6-4-48v0z",
+          "M229.6 308.8c6.4-5.6 14.4-8.8 22.4-8.8v0c9.6 0 18.4 4 25.6 11.2v0c12.8 13.6 11.2 35.2-2.4 48v0 0c-13.6 12.8-35.2 11.2-48-2.4v0c-12.8-14.4-11.2-36 2.4-48v0 0 0z",
+          "M820.8 384.8c5.6-4 12-5.6 18.4-5.6v0c11.2 0 22.4 5.6 28.8 15.2v0 0 0c10.4 16 5.6 36.8-10.4 47.2v0c-16 10.4-36.8 5.6-47.2-10.4v0 0c-9.6-15.2-5.6-36.8 10.4-46.4v0z",
+          "M152 401.6c6.4-10.4 17.6-16 28.8-16v0c6.4 0 12 1.6 17.6 4.8v0c16 9.6 20.8 31.2 11.2 46.4v0c-9.6 16-31.2 20.8-46.4 11.2v0c-16.8-9.6-21.6-30.4-11.2-46.4v0 0 0z",
+          "M103.2 512.8c4-15.2 17.6-24.8 32.8-24.8v0c3.2 0 5.6 0 8.8 1.6v0c18.4 4.8 28.8 24 24 41.6v0c-4.8 18.4-24 28.8-41.6 24v0c-18.4-5.6-28.8-24-24-42.4v0z",
+          "M524.8 304.8c1.6-12 12-20.8 24-20.8v0c0.8 0 2.4 0 3.2 0v0 0 0c12.8 1.6 22.4 13.6 20.8 27.2v0c-1.6 12.8-13.6 22.4-27.2 20.8v0c-12.8-1.6-22.4-13.6-20.8-27.2v0z",
+          "M466.4 284.8c1.6 0 2.4 0 4 0v0c12 0 21.6 8.8 24 20.8v0c2.4 12.8-7.2 25.6-20 27.2v0c-12.8 2.4-25.6-7.2-27.2-20v0c-3.2-13.6 5.6-25.6 19.2-28v0z",
+          "M603.2 320c4-8.8 12.8-14.4 21.6-14.4v0c3.2 0 6.4 0.8 9.6 2.4v0 0 0c12 5.6 17.6 20 12 32v0c-5.6 12-20 17.6-32 12v0c-11.2-5.6-16.8-20-11.2-32v0z",
+          "M384 310.4c3.2-1.6 7.2-2.4 10.4-2.4v0c8.8 0 17.6 4.8 21.6 13.6v0c5.6 12 0.8 26.4-11.2 32v0c-12 5.6-26.4 0.8-32-11.2v0c-6.4-12-0.8-26.4 11.2-32v0 0 0z",
+          "M673.6 356.8c4.8-5.6 11.2-8 18.4-8v0c5.6 0 11.2 1.6 16 5.6v0 0 0c10.4 8.8 11.2 24 2.4 33.6v0c-8.8 10.4-24 11.2-33.6 2.4v0 0c-10.4-8.8-12-24-3.2-33.6v0z",
+          "M312 357.6c4.8-4 10.4-6.4 16-6.4v0c6.4 0 13.6 2.4 17.6 8v0c8.8 9.6 8 24.8-1.6 33.6v0c-9.6 8.8-24.8 8-33.6-1.6v0c-9.6-9.6-8-24.8 1.6-33.6v0z",
+          "M730.4 412c4-2.4 8.8-4 12.8-4v0c8 0 15.2 4 20 11.2v0c7.2 11.2 4 26.4-7.2 33.6v0c-11.2 7.2-26.4 4-33.6-7.2v0c-5.6-12-2.4-26.4 8-33.6v0z",
+          "M256.8 424c4.8-7.2 12.8-11.2 20.8-11.2v0c4 0 8.8 0.8 12.8 4v0c11.2 7.2 14.4 21.6 8 32.8v0 0c-7.2 11.2-21.6 14.4-32.8 8v0c-12.8-8-16-22.4-8.8-33.6v0 0 0z",
+          "M222.4 502.4c3.2-10.4 12.8-17.6 23.2-17.6v0c2.4 0 4 0 6.4 0.8v0c12.8 3.2 20 16.8 16.8 29.6v0c-3.2 12.8-16.8 20-29.6 16.8v0c-12.8-3.2-20.8-16.8-16.8-29.6v0z",
+          "M520.8 363.2c0.8-8 8-13.6 16-13.6v0c0.8 0 1.6 0 2.4 0v0c8.8 0.8 15.2 9.6 13.6 18.4v0c-0.8 8.8-9.6 15.2-18.4 13.6v0c-8.8-1.6-15.2-9.6-13.6-18.4v0z",
+          "M481.6 349.6c0.8 0 1.6 0 2.4 0v0c8 0 14.4 5.6 16 13.6v0c1.6 8.8-4.8 16.8-13.6 18.4v0 0c-8.8 1.6-16.8-4.8-18.4-13.6v0c-1.6-8.8 4.8-16.8 13.6-18.4v0 0 0z",
+          "M572.8 372.8c2.4-5.6 8.8-9.6 14.4-9.6v0c2.4 0 4.8 0.8 6.4 1.6v0 0 0 0c8 4 12 12.8 8 21.6v0c-4 8-12.8 12-21.6 8v0c-7.2-4-11.2-13.6-7.2-21.6v0z",
+          "M426.4 366.4c2.4-0.8 4.8-1.6 7.2-1.6v0c6.4 0 12 3.2 14.4 9.6v0c4 8 0 17.6-8 21.6v0c-8 4-17.6 0-21.6-8v0c-3.2-8 0-17.6 8-21.6v0 0 0z",
+          "M378.4 398.4c3.2-2.4 7.2-4 10.4-4v0c4.8 0 8.8 1.6 12 5.6v0c5.6 6.4 5.6 16.8-1.6 22.4v0 0c-6.4 5.6-16.8 5.6-22.4-1.6v0c-5.6-6.4-4.8-16.8 1.6-22.4v0z",
+          "M657.6 434.4c2.4-1.6 5.6-2.4 8.8-2.4v0c5.6 0 10.4 2.4 13.6 7.2v0c4.8 7.2 2.4 17.6-4.8 22.4v0c-7.2 4.8-17.6 2.4-22.4-4.8v0c-4.8-8-2.4-17.6 4.8-22.4v0z",
+          "M684 480c1.6-0.8 3.2-0.8 4.8-0.8v0c7.2 0 13.6 4.8 15.2 11.2v0c2.4 8.8-2.4 17.6-11.2 20v0c-8.8 2.4-17.6-2.4-20-11.2v0c-2.4-8 3.2-16.8 11.2-19.2v0z",
+          "M318.4 494.4c1.6-7.2 8.8-12 15.2-12v0c1.6 0 3.2 0 4 0.8v0c8.8 2.4 13.6 11.2 11.2 20v0 0c-2.4 8.8-11.2 13.6-20 11.2v0c-7.2-2.4-12.8-11.2-10.4-20v0z",
+          "M517.6 404.8c0.8-4.8 4.8-8.8 10.4-8.8v0c0.8 0 0.8 0 1.6 0v0c5.6 0.8 9.6 5.6 8.8 11.2v0c-0.8 5.6-5.6 9.6-11.2 8.8v0 0c-6.4 0-10.4-5.6-9.6-11.2v0z",
+          "M492.8 396.8c0.8 0 0.8 0 1.6 0v0c4.8 0 9.6 4 10.4 8.8v0c0.8 5.6-3.2 10.4-8.8 12v0c-5.6 0.8-10.4-3.2-12-8.8v0c-0.8-6.4 3.2-11.2 8.8-12v0 0 0z",
+          "M550.4 411.2c1.6-4 5.6-6.4 9.6-6.4v0c1.6 0 3.2 0 4 0.8v0 0 0c4.8 2.4 7.2 8 4.8 13.6v0c-2.4 4.8-8 7.2-13.6 4.8v0 0c-4.8-1.6-7.2-7.2-4.8-12.8v0z",
+          "M427.2 427.2c1.6-1.6 4-2.4 6.4-2.4v0c3.2 0 5.6 0.8 8 3.2v0c4 4 3.2 10.4-0.8 14.4v0c-4 4-10.4 3.2-14.4-0.8v0c-4-4-3.2-10.4 0.8-14.4v0z",
+          "M604.8 450.4c1.6-0.8 4-1.6 5.6-1.6v0c3.2 0 6.4 1.6 8.8 4.8v0 0 0c3.2 4.8 1.6 11.2-3.2 14.4v0c-4.8 3.2-11.2 1.6-14.4-3.2v0c-3.2-4.8-1.6-11.2 3.2-14.4v0z",
+          "M404 455.2c1.6-3.2 5.6-4.8 8.8-4.8v0c1.6 0 4 0.8 5.6 1.6v0c4.8 3.2 6.4 9.6 3.2 14.4v0c-3.2 4.8-9.6 6.4-14.4 3.2v0c-4.8-3.2-6.4-9.6-3.2-14.4v0z",
+          "M621.6 479.2c0.8 0 1.6-0.8 3.2-0.8v0c4.8 0 8.8 3.2 9.6 7.2v0 0 0 0c1.6 5.6-1.6 11.2-7.2 12.8v0c-5.6 1.6-11.2-1.6-12.8-7.2v0c-1.6-4.8 1.6-10.4 7.2-12v0z",
+          "M388.8 488.8c1.6-4.8 5.6-7.2 9.6-7.2v0c0.8 0 1.6 0 2.4 0v0c5.6 1.6 8.8 7.2 7.2 12.8v0c-1.6 5.6-7.2 8.8-12.8 7.2v0c-4.8-1.6-8-7.2-6.4-12.8v0 0 0z",
+          "M770.4 480.8c2.4-0.8 4.8-0.8 7.2-0.8v0c10.4 0 20 6.4 23.2 17.6v0 0 0c4 12.8-3.2 26.4-16 29.6v0c-12.8 4-26.4-3.2-29.6-16v0 0c-4.8-13.6 2.4-26.4 15.2-30.4v0z",
+          "M860 599.2h56v224.8h-56v-224.8z",
+          "M180.8 712c0-15.2 12.8-28 28-28h169.6c4 0 7.2-1.6 9.6-4v0c2.4-2.4 4-5.6 4-9.6v0c0-4-1.6-7.2-4-9.6v0c-2.4-2.4-5.6-4-9.6-4v0h-164c-15.2 0-29.6 6.4-39.2 16.8v0c-10.4 10.4-16.8 24-16.8 40v0c0 16 6.4 29.6 16.8 40v0c10.4 10.4 24 16.8 39.2 16.8v0h234.4v56h-234.4c0 0 0 0 0 0v0c-31.2 0-59.2-12.8-79.2-32.8v0c-20-20-32.8-48.8-32.8-79.2v0c0-31.2 12.8-59.2 32.8-79.2v0c20-20 48.8-32.8 79.2-32.8h164c19.2 0 36.8 8 49.6 20.8v0c12.8 12.8 20.8 30.4 20.8 49.6v0c0 19.2-8 36.8-20.8 49.6v0c-12.8 12.8-30.4 20.8-49.6 20.8h-169.6c-16-3.2-28-16-28-31.2z",
+          "M557.6 712c0 15.2 12.8 28 28 28h169.6c4 0 7.2 1.6 9.6 4v0c2.4 2.4 4 5.6 4 9.6v0c0 4-1.6 7.2-4 9.6v0c-2.4 2.4-5.6 4-9.6 4v0h-164c-15.2 0-29.6-6.4-39.2-16.8v0c-10.4-10.4-16-24-16.8-40v0c0-15.2 6.4-29.6 16.8-40v0c10.4-10.4 24-16 39.2-16.8v0h234.4v-56h-234.4c0 0 0 0 0 0v0c-31.2 0-59.2 12.8-79.2 32.8v0c-20 20-32.8 48.8-32.8 79.2v0c0 31.2 12.8 59.2 32.8 79.2v0c20 20 48.8 32.8 79.2 32.8h164c19.2 0 36.8-8 49.6-20.8v0c12.8-12.8 20.8-30.4 20.8-49.6v0c0-19.2-8-36.8-20.8-49.6v0c-12.8-12.8-30.4-20.8-49.6-20.8h-169.6c-15.2 3.2-28 15.2-28 31.2v0z",
+          "M918.4 508.8c0 18.557-15.043 33.6-33.6 33.6s-33.6-15.043-33.6-33.6c0-18.557 15.043-33.6 33.6-33.6s33.6 15.043 33.6 33.6z",
+          "M704.8 268.8c0 18.557-15.043 33.6-33.6 33.6s-33.6-15.043-33.6-33.6c0-18.557 15.043-33.6 33.6-33.6s33.6 15.043 33.6 33.6z",
+          "M648 408c0 8.837-7.163 16-16 16s-16-7.163-16-16c0-8.837 7.163-16 16-16s16 7.163 16 16z",
+          "M371.2 450.4c0 8.837-7.163 16-16 16s-16-7.163-16-16c0-8.837 7.163-16 16-16s16 7.163 16 16z",
+          "M598.4 433.6c0 5.744-4.656 10.4-10.4 10.4s-10.4-4.656-10.4-10.4c0-5.744 4.656-10.4 10.4-10.4s10.4 4.656 10.4 10.4z",
+          "M472 416.8c0 5.744-4.656 10.4-10.4 10.4s-10.4-4.656-10.4-10.4c0-5.744 4.656-10.4 10.4-10.4s10.4 4.656 10.4 10.4z"
+        ],
+        "attrs": [
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {}
+        ],
+        "isMulticolor": false,
+        "isMulticolor2": false,
+        "grid": 0,
+        "tags": [
+          "social-egi"
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "attrs": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      "properties": {
+        "order": 226,
+        "id": 21,
+        "name": "social-egi",
+        "prevSize": 32,
+        "code": 59713
+      },
+      "setIdx": 0,
+      "setId": 0,
+      "iconIdx": 61
     },
     {
       "icon": {
@@ -1943,21 +2595,26 @@
         "grid": 0,
         "tags": [
           "social-facebook"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 141,
+        "order": 227,
         "id": 20,
         "name": "social-facebook",
         "prevSize": 32,
-        "code": 59708
+        "code": 59714
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 60
+      "iconIdx": 62
     },
     {
       "icon": {
@@ -1972,21 +2629,26 @@
         "grid": 0,
         "tags": [
           "social-github"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 142,
+        "order": 228,
         "id": 19,
         "name": "social-github",
         "prevSize": 32,
-        "code": 59709
+        "code": 59715
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 61
+      "iconIdx": 63
     },
     {
       "icon": {
@@ -2001,21 +2663,26 @@
         "grid": 0,
         "tags": [
           "social-google"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 143,
+        "order": 229,
         "id": 18,
         "name": "social-google",
         "prevSize": 32,
-        "code": 59710
+        "code": 59716
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 62
+      "iconIdx": 64
     },
     {
       "icon": {
@@ -2030,21 +2697,26 @@
         "grid": 0,
         "tags": [
           "social-indigo"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 144,
+        "order": 230,
         "id": 17,
         "name": "social-indigo",
         "prevSize": 32,
-        "code": 59711
+        "code": 59717
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 63
+      "iconIdx": 65
     },
     {
       "icon": {
@@ -2113,7 +2785,39 @@
         "grid": 0,
         "tags": [
           "social-plgrid"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
@@ -2146,15 +2850,15 @@
         {}
       ],
       "properties": {
-        "order": 145,
+        "order": 231,
         "id": 16,
         "name": "social-plgrid",
         "prevSize": 32,
-        "code": 59712
+        "code": 59718
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 64
+      "iconIdx": 66
     },
     {
       "icon": {
@@ -2169,21 +2873,26 @@
         "grid": 0,
         "tags": [
           "space-add"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 146,
+        "order": 232,
         "id": 15,
         "name": "space-add",
         "prevSize": 32,
-        "code": 59713
+        "code": 59719
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 65
+      "iconIdx": 67
     },
     {
       "icon": {
@@ -2200,22 +2909,28 @@
         "grid": 0,
         "tags": [
           "space-default"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 147,
+        "order": 233,
         "id": 14,
         "name": "space-default",
         "prevSize": 32,
-        "code": 59714
+        "code": 59720
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 66
+      "iconIdx": 68
     },
     {
       "icon": {
@@ -2230,21 +2945,26 @@
         "grid": 0,
         "tags": [
           "space-empty"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 148,
+        "order": 234,
         "id": 13,
         "name": "space-empty",
         "prevSize": 32,
-        "code": 59715
+        "code": 59721
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 67
+      "iconIdx": 69
     },
     {
       "icon": {
@@ -2261,22 +2981,28 @@
         "grid": 0,
         "tags": [
           "space-home"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 149,
+        "order": 235,
         "id": 12,
         "name": "space-home",
         "prevSize": 32,
-        "code": 59716
+        "code": 59722
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 68
+      "iconIdx": 70
     },
     {
       "icon": {
@@ -2291,21 +3017,26 @@
         "grid": 0,
         "tags": [
           "space-join"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 150,
+        "order": 236,
         "id": 11,
         "name": "space-join",
         "prevSize": 32,
-        "code": 59717
+        "code": 59723
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 69
+      "iconIdx": 71
     },
     {
       "icon": {
@@ -2320,21 +3051,26 @@
         "grid": 0,
         "tags": [
           "space-reload"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 151,
+        "order": 237,
         "id": 10,
         "name": "space-reload",
         "prevSize": 32,
-        "code": 59718
+        "code": 59724
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 70
+      "iconIdx": 72
     },
     {
       "icon": {
@@ -2349,21 +3085,26 @@
         "grid": 0,
         "tags": [
           "space"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 152,
+        "order": 238,
         "id": 9,
         "name": "space",
         "prevSize": 32,
-        "code": 59719
+        "code": 59725
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 71
+      "iconIdx": 73
     },
     {
       "icon": {
@@ -2378,21 +3119,26 @@
         "grid": 0,
         "tags": [
           "star-empty"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 153,
+        "order": 239,
         "id": 8,
         "name": "star-empty",
         "prevSize": 32,
-        "code": 59720
+        "code": 59726
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 72
+      "iconIdx": 74
     },
     {
       "icon": {
@@ -2407,21 +3153,26 @@
         "grid": 0,
         "tags": [
           "star"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 154,
+        "order": 240,
         "id": 7,
         "name": "star",
         "prevSize": 32,
-        "code": 59721
+        "code": 59727
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 73
+      "iconIdx": 75
     },
     {
       "icon": {
@@ -2438,22 +3189,28 @@
         "grid": 0,
         "tags": [
           "support"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 155,
+        "order": 241,
         "id": 6,
         "name": "support",
         "prevSize": 32,
-        "code": 59722
+        "code": 59728
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 74
+      "iconIdx": 76
     },
     {
       "icon": {
@@ -2468,21 +3225,26 @@
         "grid": 0,
         "tags": [
           "upload"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 156,
+        "order": 242,
         "id": 5,
         "name": "upload",
         "prevSize": 32,
-        "code": 59723
+        "code": 59729
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 75
+      "iconIdx": 77
     },
     {
       "icon": {
@@ -2499,22 +3261,28 @@
         "grid": 0,
         "tags": [
           "user-add"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
         {}
       ],
       "properties": {
-        "order": 157,
+        "order": 243,
         "id": 4,
         "name": "user-add",
         "prevSize": 32,
-        "code": 59724
+        "code": 59730
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 76
+      "iconIdx": 78
     },
     {
       "icon": {
@@ -2529,21 +3297,26 @@
         "grid": 0,
         "tags": [
           "user-profile"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 158,
+        "order": 244,
         "id": 3,
         "name": "user-profile",
         "prevSize": 32,
-        "code": 59725
+        "code": 59731
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 77
+      "iconIdx": 79
     },
     {
       "icon": {
@@ -2558,21 +3331,26 @@
         "grid": 0,
         "tags": [
           "user"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {}
+          ]
+        }
       },
       "attrs": [
         {}
       ],
       "properties": {
-        "order": 159,
+        "order": 245,
         "id": 2,
         "name": "user",
         "prevSize": 32,
-        "code": 59726
+        "code": 59732
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 78
+      "iconIdx": 80
     },
     {
       "icon": {
@@ -2593,7 +3371,15 @@
         "grid": 0,
         "tags": [
           "view-grid"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
@@ -2602,15 +3388,15 @@
         {}
       ],
       "properties": {
-        "order": 160,
+        "order": 246,
         "id": 1,
         "name": "view-grid",
         "prevSize": 32,
-        "code": 59727
+        "code": 59733
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 79
+      "iconIdx": 81
     },
     {
       "icon": {
@@ -2631,7 +3417,15 @@
         "grid": 0,
         "tags": [
           "view-list"
-        ]
+        ],
+        "colorPermutations": {
+          "15551": [
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
       },
       "attrs": [
         {},
@@ -2640,15 +3434,15 @@
         {}
       ],
       "properties": {
-        "order": 161,
+        "order": 247,
         "id": 0,
         "name": "view-list",
         "prevSize": 32,
-        "code": 59728
+        "code": 59734
       },
       "setIdx": 0,
       "setId": 0,
-      "iconIdx": 80
+      "iconIdx": 82
     }
   ],
   "height": 1024,
@@ -2665,7 +3459,7 @@
       "metadata": {
         "fontFamily": "oneicons",
         "majorVersion": 1,
-        "minorVersion": 15
+        "minorVersion": 16
       },
       "metrics": {
         "emSize": 1024,

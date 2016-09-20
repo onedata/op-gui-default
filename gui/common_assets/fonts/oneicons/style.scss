@@ -2,11 +2,11 @@
 
 @font-face {
   font-family: 'oneicons';
-  src:  url('#{$icomoon-font-path}/oneicons.eot?ehhh7p');
-  src:  url('#{$icomoon-font-path}/oneicons.eot?ehhh7p#iefix') format('embedded-opentype'),
-    url('#{$icomoon-font-path}/oneicons.ttf?ehhh7p') format('truetype'),
-    url('#{$icomoon-font-path}/oneicons.woff?ehhh7p') format('woff'),
-    url('#{$icomoon-font-path}/oneicons.svg?ehhh7p#oneicons') format('svg');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?wu7059');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?wu7059#iefix') format('embedded-opentype'),
+    url('#{$icomoon-font-path}/oneicons.ttf?wu7059') format('truetype'),
+    url('#{$icomoon-font-path}/oneicons.woff?wu7059') format('woff'),
+    url('#{$icomoon-font-path}/oneicons.svg?wu7059#oneicons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -231,6 +231,40 @@
     content: $oneicon-menu-trash;
   }
 }
+.oneicon-metadata .path1 {
+  &:before {
+    content: $oneicon-metadata-path1;  
+    color: rgb(0, 0, 0);
+  }
+}
+.oneicon-metadata .path2 {
+  &:before {
+    content: $oneicon-metadata-path2;  
+    margin-left: -1em;  
+    color: rgb(0, 0, 0);
+  }
+}
+.oneicon-metadata .path3 {
+  &:before {
+    content: $oneicon-metadata-path3;  
+    margin-left: -1em;  
+    color: rgb(0, 0, 0);
+  }
+}
+.oneicon-metadata .path4 {
+  &:before {
+    content: $oneicon-metadata-path4;  
+    margin-left: -1em;  
+    color: rgb(5, 5, 5);
+  }
+}
+.oneicon-metadata .path5 {
+  &:before {
+    content: $oneicon-metadata-path5;  
+    margin-left: -1em;  
+    color: rgb(0, 0, 0);
+  }
+}
 .oneicon-move-down {
   &:before {
     content: $oneicon-move-down;
@@ -324,6 +358,11 @@
 .oneicon-social-dropbox {
   &:before {
     content: $oneicon-social-dropbox;
+  }
+}
+.oneicon-social-egi {
+  &:before {
+    content: $oneicon-social-egi;
   }
 }
 .oneicon-social-facebook {

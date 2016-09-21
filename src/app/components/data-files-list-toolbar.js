@@ -74,7 +74,7 @@ export default Ember.Component.extend({
       // FIXME: meadata icon
       {
         id: 'file-metadata-tool',
-        icon: 'view-list',
+        icon: 'metadata',
         action: 'editFileMetadata',
         disabled: !isSingleFileSelected,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.metadata')

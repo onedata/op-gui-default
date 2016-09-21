@@ -20,7 +20,6 @@
     {{#if file.hasMetadata}}
       <bs-tooltip title="Edit file metadata" placement="bottom">
         <div {{action (action 'toggleFileMetadata') bubbles=false}} class="file-tool file-tool-metadata">
-          {{!-- FIXME: metadata icon --}}
           {{icon 'metadata'}}
         </div>
       </bs-tooltip>

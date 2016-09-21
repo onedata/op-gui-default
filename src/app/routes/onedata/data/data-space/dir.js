@@ -10,7 +10,6 @@ import RouteRejectHandler from 'op-worker-gui/mixins/route-reject-handler';
  */
 export default Ember.Route.extend(RouteRejectHandler, {
   fileSystemTree: Ember.inject.service(),
-  dataFilesTree: Ember.inject.service(),
   notify: Ember.inject.service(),
   commonLoader: Ember.inject.service(),
 

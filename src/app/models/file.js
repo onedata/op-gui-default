@@ -18,6 +18,7 @@ export default DS.Model.extend(FileMixin, {
   children: DS.hasMany('file', {inverse: 'parent', async: true}),
   fileProperty: DS.belongsTo('file-property', {inverse: 'file', async: true}),
 
+  hasFileProperty: Ember.computed.reads('hasMetadata'),
   hasMetadata: Ember.computed('fileProperty.content', function() {
     return this.belongsTo('fileProperty').id() != null || !!this.get('fileProperty.content');
   }),

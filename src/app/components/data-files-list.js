@@ -179,13 +179,9 @@ export default Ember.Component.extend({
       this.set('dir', dir);
     },
 
-    showFileMetadata(file) {
-      this.set('metadataFile', file);
+    toggleFileMetadata(file) {
+      this.get('fileSystemTree').toggleFileMetadata(file);
     },
-
-    hideFileMetadata() {
-      this.set('metadataFile', null);
-    }
   }
 
 });

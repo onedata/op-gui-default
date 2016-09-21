@@ -15,10 +15,6 @@ export default Ember.Component.extend({
 
   isDownloading: false,
 
-  isShowingMetadata: false,
-
-  // TODO: make a component for file/dir icon
-
   click() {
     this.sendAction('selectFile', this.get('file'));
   },
@@ -39,13 +35,8 @@ export default Ember.Component.extend({
     shareFile() {
       this.sendAction('openFileShareModal', this.get('file'));
     },
-    showFileMetadata() {
-      // this.set('isShowingMetadata', true);
-      this.sendAction('showFileMetadata', this.get('file'));
-    },
-    hideFileMetadata() {
-      // this.set('isShowingMetadata', false);
-      this.sendAction('hideFileMetadata', this.get('file'));
+    toggleFileMetadata() {
+      this.sendAction('toggleFileMetadata', this.get('file'));
     }
   }
 });

@@ -12,6 +12,7 @@ export default Ember.Component.extend({
   notify: Ember.inject.service('notify'),
   fileUpload: Ember.inject.service('fileUpload'),
   store: Ember.inject.service(),
+  fileSystemTree: Ember.inject.service(),
 
   tagName: 'ul',
   classNames: ['nav', 'navbar-nav', 'navbar-right', 'toolbar-group'],
@@ -224,9 +225,17 @@ export default Ember.Component.extend({
       });
     },
 
+    // FIXME: maybe this should be moved to dataFilesTree service?
+    // because we want to use various methods to invoke this
     // FIXME: handle reject
     editFileMetadata() {
       const file = this.get('dir.singleSelectedFile');
+      const notify = this.get('notify');
+      const fileSystemTree = this.get('fileSystemTree');
+      fileSystemTree.toggleMetadataEditor(file);
+      // FIXME translations
+      // const i18n = this.get('i18n');
+      // TODO: button loader?
       file.get('fileProperty').then(
         (metadata) => {
           if (!metadata) {
@@ -234,6 +243,17 @@ export default Ember.Component.extend({
               file: file
             });
             file.set('fileProperty', metadata);
+            // FIXME: handle save reject error message
+            const metaSavePromise = metadata.save();
+
+            metaSavePromise.then(() => {
+              // FIXME: translation
+              notify.info(`Metadata initialized for file ${file.get('name')}`);
+            });
+
+            metaSavePromise.catch(() => {
+              notify.info(`Could not create metadata for file ${file.get('name')}`);
+            });
           }
         }
       );

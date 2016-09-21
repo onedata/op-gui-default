@@ -2,8 +2,8 @@ import DS from 'ember-data';
 
 export default DS.Model.extend({
   file: DS.belongsTo('file', {async: true}),
-  basic: DS.attr('object', {defaultValue: {}}),
-  json: DS.attr('object', {defaultValue: {}}),
+  basic: DS.attr('object', {defaultValue: () => {}}),
+  json: DS.attr('object', {defaultValue: () => {}}),
   rdf: DS.attr('string'),
 
   // HACK: force update of object attributes as it is not managed by Ember

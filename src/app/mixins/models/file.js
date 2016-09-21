@@ -26,8 +26,10 @@ export default Ember.Mixin.create({
   size: DS.attr('number'),
   permissions: DS.attr('number'),
 
+  /// Runtime fields used to store state of file in application
   isExpanded: false,
   isSelected: false,
+  isEditingMetadata: false,
 
   /** @abstract */
   share: undefined,

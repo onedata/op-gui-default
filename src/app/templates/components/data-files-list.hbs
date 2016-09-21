@@ -55,19 +55,24 @@
     {{data-files-list/file-row file=file openDirInBrowser='openDirInBrowser'
       downloadFile='downloadFile' selectFile='selectFile'
       openFileShareModal='openFileShareModal'
-      showFileMetadata='showFileMetadata' hideFileMetadata='hideFileMetadata'}}
+      toggleFileMetadata='toggleFileMetadata'}}
+    {{#if file.isEditingMetadata}}
+      {{!-- FIXME: loading --}}
+      <tr>
+        <td colspan="999">
+          <div class="op-panel op-panel-azure">
+            {{#if file.fileProperty}}
+              {{metadata-panel data=file.fileProperty}}
+            {{else}}
+              <div class="spinner-container spinner-64">
+                {{spin-spinner scale=0.5 lines=12 length=20 width=10}}
+              </div>
+            {{/if}}
+          </div>
+        </td>
+      </tr>
+    {{/if}}
   {{/each}}
-  {{!-- FIXME: move to file row? --}}
-  {{#if isShowingMetadata}}
-    {{!-- FIXME: loading --}}
-    <tr>
-      <td colspan="3">
-        <div class="op-panel op-panel-azure">
-          {{metadata-panel data=metadataFile.fileProperty}}
-        </div>
-      </td>
-    </tr>
-  {{/if}}
   </tbody>
 
 </table>

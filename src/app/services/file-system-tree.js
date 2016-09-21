@@ -101,5 +101,22 @@ export default Ember.Service.extend(Ember.Evented, {
       // TODO: should last dir in path be expanded?
     });
 
+  },
+
+  /**
+   * Opens a metadata editor for specified file in opened file browsers.
+   *
+   * @param  {File} file
+   */
+  openMetadataEditor(file) {
+    file.set('isEditingMetadata', true);
+  },
+
+  closeMetadataEditor(file) {
+    file.set('isEditingMetadata', false);
+  },
+
+  toggleMetadataEditor(file) {
+    file.set('isEditingMetadata', !this.get('isEditingMetadata'));
   }
 });

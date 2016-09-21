@@ -97,6 +97,9 @@ $icomoon-font-path: 'fonts/oneicons';
     .visible-on-parent-hover, .transparent-not-hovered {
       color: transparent !important;
     }
+    .visible-on-parent-hover-25p {
+      opacity: 0.25;
+    }
   }
 }
 

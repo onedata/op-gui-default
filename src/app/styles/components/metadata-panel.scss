@@ -53,6 +53,7 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
     padding: 20px;
     border: $tab-border-style;
     margin-top: -$tab-border-width;
+    background-color: white;
   }
 }
 
@@ -61,21 +62,35 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
   border-collapse: separate;
   border-spacing: 0px 10px;
   th {
-    width: 100px;
+    width: 200px;
     padding-right: 20px;
-    text-transform: uppercase;
   }
   td {
-    width: auto;
+    width: 200px;
   }
   .metadata-key {
-    width: 200px;
     color: #32373B; // TODO: color variable
-    text-transform: uppercase;
   }
   .metadata-value {
     color: #768D9F;
   }
+
+  .basic-entry-button-cell {
+    position: relative;
+
+    .basic-entry-button {
+      display: inline;
+      font-size: 28px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      margin-left: 10px;
+      cursor: pointer;
+      cursor: hand;
+    }
+  }
+
+
 }
 
 .metadata-panel {
@@ -98,12 +113,6 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
   }
 }
 
-.basic-entry-remove {
-  display: inline;
-  cursor: pointer;
-  cursor: hand;
-}
-
 .save-metadata-row {
-  margin-top: 20px;
+  margin-top: 10px;
 }

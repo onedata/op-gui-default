@@ -1,11 +1,35 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
+  /**
+   * "basic" property of metadata record.
+   * @type {Object}
+   */
   data: null,
 
-  init() {
-    this._super(...arguments);
-  },
+  // FIXME
+  // /**
+  //  * Original injected data, saved on init for comparison on data changes.
+  //  * @type {Object}
+  //  */
+  // originalData: null,
+  dataIsDirty: false,
+
+  // FIXME
+  // init() {
+  //   this._super(...arguments);
+  //   this.set('originalData', this.get('data'));
+  // },
+  //
+  // dataChanged: Ember.observer('data', 'originalData', function() {
+  //   // FIXME: two objects comparison effectiveness
+  //   const dataIsDirty = (JSON.stringify(this.get('data')) !== JSON.stringify(this.get('originalData')));
+  //   this.set('dataIsDirty', dataIsDirty);
+  // }),
+  //
+  // dataIsDirtyChanged: Ember.observer('dataIsDirty', function() {
+  //   this.sendAction('dataIsDirtyChanged', this.get('dataIsDirty'));
+  // }),
 
   liveData: Ember.computed('data', {
     get() {

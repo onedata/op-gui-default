@@ -11,20 +11,8 @@
       {{/if}}
     {{/truncated-string}}
   </div>
-  <div class="file-row-tools visible-on-parent-hover-25p">
-    {{#if file.hasShare}}
-      <div {{action (action 'shareFile') bubbles=false}} class="file-tool file-tool-share">
-        {{icon 'share'}}
-      </div>
-    {{/if}}
-    {{#if file.hasMetadata}}
-      <bs-tooltip title="Edit file metadata" placement="bottom">
-        <div {{action (action 'toggleFileMetadata') bubbles=false}} class="file-tool file-tool-metadata">
-          {{icon 'metadata'}}
-        </div>
-      </bs-tooltip>
-    {{/if}}
-  </div>
+  {{data-files-list/file-row-tools file=file
+    shareFile='shareFile' toggleFileMetadata='toggleFileMetadata'}}
 </td>
 <td class="hidden-xs file-list-col-size nowrap">
   {{file.sizeHumanReadable}}

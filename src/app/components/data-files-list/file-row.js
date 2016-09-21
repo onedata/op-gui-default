@@ -2,8 +2,9 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   tagName: 'tr',
+  classNames: ['first-level'],
   classNameBindings: [
-    'file.isSelected:active',
+    'highlightClass',
     'isDownloading:selection-background-pulse'
   ],
 
@@ -14,6 +15,12 @@ export default Ember.Component.extend({
   file: null,
 
   isDownloading: false,
+
+  highlightClass: Ember.computed('file.isSelected', 'file.isEditingMetadata', function() {
+    return this.get('file.isSelected') && 'active' ||
+      this.get('file.isEditingMetadata') && 'metadata-opened' ||
+      '';
+  }),
 
   click() {
     this.sendAction('selectFile', this.get('file'));
@@ -32,11 +39,11 @@ export default Ember.Component.extend({
   },
 
   actions: {
-    shareFile() {
-      this.sendAction('openFileShareModal', this.get('file'));
+    shareFile(file) {
+      this.sendAction('openFileShareModal', file || this.get('file'));
     },
-    toggleFileMetadata() {
-      this.sendAction('toggleFileMetadata', this.get('file'));
+    toggleFileMetadata(file) {
+      this.sendAction('toggleFileMetadata', file || this.get('file'));
     }
   }
 });

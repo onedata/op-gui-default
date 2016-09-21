@@ -117,6 +117,6 @@ export default Ember.Service.extend(Ember.Evented, {
   },
 
   toggleMetadataEditor(file) {
-    file.set('isEditingMetadata', !this.get('isEditingMetadata'));
+    file.set('isEditingMetadata', !file.get('isEditingMetadata'));
   }
 });

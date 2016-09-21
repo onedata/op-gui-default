@@ -654,6 +654,13 @@ html, body {
   height: 100%;
 }
 
+// insert a <td> to allow other cells to be fixed width
+.table-space-fill {
+  width: auto !important;
+  max-width: initial !important;
+  min-width: initial !important;
+}
+
 // for debugging
 .service-debugger {
   position: fixed;

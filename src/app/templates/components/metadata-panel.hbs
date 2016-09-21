@@ -3,21 +3,27 @@
 <div class="row">
   {{#bs-tab fade=false}}
     {{#bs-tab-pane title="Basic"}}
-      {{metadata/basic-editor data=data.basic}}
+      {{metadata/basic-editor data=metadata.basic dataIsDirtyChanged="basicDataIsDirtyChanged"}}
     {{/bs-tab-pane}}
     {{#bs-tab-pane title="JSON"}}
-      {{metadata/json-editor data=data.json}}
+      {{metadata/json-editor data=metadata.json}}
     {{/bs-tab-pane}}
     {{#bs-tab-pane title="RDF"}}
-      {{metadata/rdf-editor data=data.rdf}}
+      {{metadata/rdf-editor data=metadata.rdf}}
     {{/bs-tab-pane}}
   {{/bs-tab}}
 </div>
 <div class="row save-metadata-row">
   {{#spin-button-onedata buttonType="submit"
     class="btn btn-primary no-outline" spinnerColor="#fff"
-    inFlight=isSaving disabled=isSaving
+    inFlight=isSaving disabled=saveEnabled
     action="saveAll"}}
-    Save metadata
+    Save changes
   {{/spin-button-onedata}}
+
+  {{#bs-button
+    class="btn btn-default no-outline" disabled=saveEnabled
+    action="discardChanges"}}
+    Discard changes
+  {{/bs-button}}
 </div>

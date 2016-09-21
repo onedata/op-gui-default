@@ -108,8 +108,8 @@
     }
   }
 
-  tbody{
-    tr {
+  tbody {
+    tr.first-level {
       line-height: 32px;
 
       &:hover {
@@ -118,6 +118,10 @@
 
       &.active {
         background-color: $onedata-light-azure;
+      }
+
+      &.metadata-opened {
+        background-color: $onedata-light-gray;
       }
 
       td {
@@ -157,6 +161,10 @@
           .file-tool-metadata {
             position: relative;
             right: 32px;
+
+            &.active {
+              color: $onedata-red;
+            }
           }
         }
       }
@@ -168,7 +176,6 @@
 
 .file-list-col-file {
   position: relative !important;
-  width: 100%;
 }
 .file-list-col-size {
   width: 140px;
@@ -296,5 +303,11 @@
   }
   100% {
     background-color: $onedata-light-azure;;
+  }
+}
+
+.file-tool {
+  &:hover {
+    color: $onedata-red;
   }
 }

@@ -2,8 +2,10 @@
   {{key}}
 </th>
 <td>
-  {{input value=value disabled=disabled}}
-  <div class="basic-entry-remove" {{action "remove"}}>
+  {{input value=value disabled=disabled class="form-control"}}
+</td>
+<td class="basic-entry-button-cell table-space-fill">
+  <div class="basic-entry-button" {{action "remove"}}>
     {{icon 'close'}}
   </div>
 </td>

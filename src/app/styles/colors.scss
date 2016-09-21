@@ -1,3 +1,20 @@
+/// New look experimental
+
+$color-main-background: #FAFAFA;
+$color-panel-background: #FFFFFF;
+$color-panel-azure: #3098E1;
+$color-panel-red: #FE4C57;
+$color-panel-green: #5AC997;
+$color-panel-graphite: #535F72;
+$color-panel-yellow: #FFC664;
+$color-panel-red-2: #FE4C57;
+$color-panel-azure-light: #A8D0F1;
+$color-panel-red-light: #FFAEB1;
+$color-panel-green-light: #B6E7CF;
+$color-panel-graphite-light: #AFB5BF;
+$color-panel-yellow-light: #FFE6B6;
+
+
 $onedata-red: #F14549;
 $onedata-azure: #5192EB;
 $onedata-gold: #F5A700;
@@ -6,8 +23,8 @@ $onedata-graphite: #2F333A;
 $onedata-graphite-2: #2B3037;
 $onedata-gray: #B6BAC0;
 $onedata-snow: #F6F7F8;
-$onedata-light-gray: #FAFAFA;
-$onedata-light-azure: #F2F7FA;
+$onedata-light-gray: #F0F0F0;
+$onedata-light-azure: #DCEFFA;
 $onedata-fresh-green: #97C31B;
 $onedata-mint-green: #55E191;
 // TODO: same as graphite?
@@ -48,22 +65,6 @@ $color-notify-success: $onedata-fresh-green;
 $color-notify-warning: $onedata-red;
 $color-notify-alert: $onedata-red;
 $color-notify-error: $onedata-red;
-
-/// New look experimental
-
-$color-main-background: #FAFAFA;
-$color-panel-background: #FFFFFF;
-$color-panel-azure: #3098E1;
-$color-panel-red: #FE4C57;
-$color-panel-green: #5AC997;
-$color-panel-graphite: #535F72;
-$color-panel-yellow: #FFC664;
-$color-panel-red-2: #FE4C57;
-$color-panel-azure-light: #A8D0F1;
-$color-panel-red-light: #FFAEB1;
-$color-panel-green-light: #B6E7CF;
-$color-panel-graphite-light: #AFB5BF;
-$color-panel-yellow-light: #FFE6B6;
 
 
 /// Color classes

@@ -180,7 +180,7 @@ export default Ember.Component.extend({
     },
 
     toggleFileMetadata(file) {
-      this.get('fileSystemTree').toggleFileMetadata(file);
+      this.get('fileSystemTree').toggleMetadataEditor(file);
     },
   }
 

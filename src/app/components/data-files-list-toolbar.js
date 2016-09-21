@@ -230,7 +230,6 @@ export default Ember.Component.extend({
     // FIXME: handle reject
     editFileMetadata() {
       const file = this.get('dir.singleSelectedFile');
-      const notify = this.get('notify');
       const fileSystemTree = this.get('fileSystemTree');
       fileSystemTree.toggleMetadataEditor(file);
       // FIXME translations
@@ -243,18 +242,20 @@ export default Ember.Component.extend({
               file: file
             });
             file.set('fileProperty', metadata);
-            // FIXME: handle save reject error message
-            const metaSavePromise = metadata.save();
-
-            metaSavePromise.then(() => {
-              // FIXME: translation
-              notify.info(`Metadata initialized for file ${file.get('name')}`);
-            });
-
-            metaSavePromise.catch(() => {
-              notify.info(`Could not create metadata for file ${file.get('name')}`);
-            });
           }
+
+          //   // FIXME: handle save reject error message
+          //   const metaSavePromise = metadata.save();
+          //
+          //   metaSavePromise.then(() => {
+          //     // FIXME: translation
+          //     notify.info(`Metadata initialized for file ${file.get('name')}`);
+          //   });
+          //
+          //   metaSavePromise.catch(() => {
+          //     notify.error(`Could not create metadata for file ${file.get('name')}`);
+          //   });
+          // }
         }
       );
     },

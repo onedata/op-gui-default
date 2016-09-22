@@ -235,29 +235,6 @@ export default Ember.Component.extend({
       // FIXME translations
       // const i18n = this.get('i18n');
       // TODO: button loader?
-      file.get('fileProperty').then(
-        (metadata) => {
-          if (!metadata) {
-            metadata = this.get('store').createRecord('fileProperty', {
-              file: file
-            });
-            file.set('fileProperty', metadata);
-          }
-
-          //   // FIXME: handle save reject error message
-          //   const metaSavePromise = metadata.save();
-          //
-          //   metaSavePromise.then(() => {
-          //     // FIXME: translation
-          //     notify.info(`Metadata initialized for file ${file.get('name')}`);
-          //   });
-          //
-          //   metaSavePromise.catch(() => {
-          //     notify.error(`Could not create metadata for file ${file.get('name')}`);
-          //   });
-          // }
-        }
-      );
     },
 
     uploadBrowse() {

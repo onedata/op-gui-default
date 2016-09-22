@@ -7,7 +7,7 @@ export default Ember.Component.extend({
 
   file: null,
 
-  metadata: Ember.computed.alias('file.fileProperty'),
+  metadata: Ember.computed.alias('file.fileProperty.content'),
 
   isLoading: Ember.computed('metadata', function() {
     return !this.get('metadata');

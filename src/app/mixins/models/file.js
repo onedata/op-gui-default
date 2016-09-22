@@ -113,7 +113,11 @@ export default Ember.Mixin.create({
     const destroyPromise = this._super(...arguments);
     destroyPromise.then(() => {
       if (sharePromise) {
-        sharePromise.then(s => s.deleteRecord());
+        sharePromise.then(s => {
+          if (s) {
+            s.deleteRecord();
+          }
+        });
       }
     });
     return destroyPromise;

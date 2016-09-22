@@ -1,36 +1,39 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
+  dataString: null,
+
   /**
-   * "basic" property of metadata record.
+   * Original injected data, saved on init for comparison on data changes.
    * @type {Object}
    */
-  data: null,
+  originalDataString: null,
 
-  // FIXME
-  // /**
-  //  * Original injected data, saved on init for comparison on data changes.
-  //  * @type {Object}
-  //  */
-  // originalData: null,
-  dataIsDirty: false,
+  init() {
+    this._super(...arguments);
+    this.set('originalDataString', this.get('dataString'));
+  },
 
-  // FIXME
-  // init() {
-  //   this._super(...arguments);
-  //   this.set('originalData', this.get('data'));
-  // },
-  //
-  // dataChanged: Ember.observer('data', 'originalData', function() {
-  //   // FIXME: two objects comparison effectiveness
-  //   const dataIsDirty = (JSON.stringify(this.get('data')) !== JSON.stringify(this.get('originalData')));
-  //   this.set('dataIsDirty', dataIsDirty);
-  // }),
-  //
-  // dataIsDirtyChanged: Ember.observer('dataIsDirty', function() {
-  //   this.sendAction('dataIsDirtyChanged', this.get('dataIsDirty'));
-  // }),
+  data: Ember.computed('dataString', {
+    get() {
+      return JSON.parse(this.get('dataString'));
+    },
+    set(key, value) {
+      this.set('dataString', JSON.stringify(value));
+      this.notifyPropertyChange('data');
+      return value;
+    }
+  }),
 
+  dataIsDirty: Ember.computed('dataString', 'originalDataString', function() {
+    return this.get('dataString') !== this.get('originalDataString');
+  }),
+
+  /**
+   * Converts the ``data``, which is a plain object, to ``Ember.Array``
+   * of arrays ([key, value]).
+   * We do it, because we need ``Ember.Array``'s notifications.
+   */
   liveData: Ember.computed('data', {
     get() {
       const data = this.get('data');
@@ -55,15 +58,19 @@ export default Ember.Component.extend({
   actions: {
     createNewEntry(key, value, resolve) {
       // FIXME: validate - do not allow duplicate keys
-      this.get('data')[key] = value;
-      this.notifyPropertyChange('data');
+      const tmpData = this.get('data');
+      tmpData[key] = value;
+      this.set('data', tmpData);
+      // this.notifyPropertyChange('data');
       if (resolve) {
         resolve();
       }
     },
     removeEntry(key, resolve) {
-      delete this.get('data')[key];
-      this.notifyPropertyChange('data');
+      const tmpData = this.get('data');
+      delete tmpData[key];
+      this.set('data', tmpData);
+      // this.notifyPropertyChange('data');
       if (resolve) {
         resolve();
       }

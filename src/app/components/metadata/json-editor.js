@@ -4,10 +4,22 @@ export default Ember.Component.extend({
   classNames: ['metadata-json-editor'],
   classNameBindings: ['isError:parse-error'],
 
-  data: null,
+  dataString: null,
   error: null,
+
   isError: Ember.computed('error', function() {
     return !!this.get('error');
+  }),
+
+  data: Ember.computed('dataString', {
+    get() {
+      return JSON.parse(this.get('dataString'));
+    },
+    set(key, value) {
+      this.set('dataString', JSON.stringify(value));
+      this.notifyPropertyChange('data');
+      return value;
+    }
   }),
 
   // TODO: maybe we shouldn't serialize/deserialize in fly

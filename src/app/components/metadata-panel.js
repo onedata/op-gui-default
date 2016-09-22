@@ -13,15 +13,18 @@ export default Ember.Component.extend({
   metadata: null,
 
   isSaving: false,
-  metadataIsDirty: false,
 
   init() {
     this._super(...arguments);
   },
 
-  saveEnabled: Ember.computed('metadataIsDirty', 'isSaving',
+  metadataIsModified: Ember.computed('metadata.content.hasDirtyAttributes', function() {
+    return this.get('metadata.content.hasDirtyAttributes');
+  }),
+
+  saveEnabled: Ember.computed('metadataIsModified', 'isSaving',
     function() {
-      return this.get('metadataIsDirty') || !this.get('isSaving');
+      return this.get('metadataIsModified') && !this.get('isSaving');
     }
   ),
 
@@ -47,11 +50,6 @@ export default Ember.Component.extend({
 
     discardChanges() {
       this.get('metadata.content').rollbackAttributes();
-    },
-
-    basicDataIsDirtyChanged(state) {
-      // FIXME: should take into account all metadata types
-      this.set('metadataIsDirty', state);
     },
   }
 });

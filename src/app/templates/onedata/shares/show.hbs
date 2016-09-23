@@ -2,7 +2,7 @@
 
 {{#if model.file.fileProperty}}
   <div class="op-panel op-panel-azure">
-    {{metadata-panel metadata=model.file.fileProperty}}
+    {{metadata-panel metadataProxy=model.file.fileProperty}}
   </div>
 {{else}}
   {{#bs-button action="createMetadata"}}

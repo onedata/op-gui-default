@@ -8,9 +8,9 @@ export default Ember.Component.extend({
   /**
    * A metadata record to edit in this panel.
    * To inject.
-   * @type {FileProperty}
+   * @type {Ember.ObjectProxy<FileProperty>}
    */
-  metadata: null,
+  metadataProxy: null,
 
   isSaving: false,
 
@@ -18,8 +18,10 @@ export default Ember.Component.extend({
     this._super(...arguments);
   },
 
-  metadataIsModified: Ember.computed('metadata.content.hasDirtyAttributes', function() {
-    return this.get('metadata.content.hasDirtyAttributes');
+  metadata: Ember.computed.oneWay('metadataProxy.content'),
+
+  metadataIsModified: Ember.computed('metadata.hasDirtyAttributes', function() {
+    return this.get('metadata.hasDirtyAttributes');
   }),
 
   saveEnabled: Ember.computed('metadataIsModified', 'isSaving',
@@ -37,7 +39,7 @@ export default Ember.Component.extend({
       // FIXME: validate before save
       // FIXME: translations
       this.set('isSaving', true);
-      const p = this.get('metadata.content').save();
+      const p = this.get('metadata').save();
       p.then(() => {
         // TODO: file name
         this.get('notify').info('Metadata saved successfully');
@@ -49,7 +51,13 @@ export default Ember.Component.extend({
     },
 
     discardChanges() {
-      this.get('metadata.content').rollbackAttributes();
+      if (this.get('metadata.isNew')) {
+        // we created new local record, and by discarding changes, we remove it completely
+        this.get('metadata').deleteRecord();
+        this.sendAction('closeMetadataPanel');
+      } else {
+        this.get('metadata').rollbackAttributes();
+      }
     },
   }
 });

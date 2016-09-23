@@ -32,7 +32,11 @@ export default DS.Model.extend({
   save() {
     const p = this._super(...arguments);
     p.then(() => {
-      this.get('dataSpace').then(s => s.update());
+      this.get('dataSpace').then(s => {
+        if (s) {
+          s.update();
+        }
+      });
     });
     return p;
   }

@@ -27,4 +27,6 @@ export default DS.Model.extend({
   // TODO: currently not used - use list Order in templates
   /** An absolute position on list */
   listOrder: DS.attr('number'),
+
+  hasViewPrivilege: DS.attr('boolean'),
 });

@@ -1,5 +1,14 @@
 {{page-title (t 'groups.show.members.title')}}
 
-{{permissions-table subjectType="group" subject=model.subject
-  usersPermissions=model.userPermissions
-  groupsPermissions=model.groupPermissions}}
+{{#if canViewPermissions}}
+  {{permissions-table subjectType="group" subject=model.subject
+    usersPermissions=model.userPermissions
+    groupsPermissions=model.groupPermissions}}
+{{else}}
+  {{!-- TODO: translations --}}
+
+  <div class="inner-content content-error">
+    You do not have privileges to view members of this space.
+  </div>
+  <div class="content-error-icon glyphicon glyphicon-ban-circle"></div>
+{{/if}}

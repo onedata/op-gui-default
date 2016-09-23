@@ -12,7 +12,7 @@ import Ember from 'ember';
 export default Ember.Controller.extend({
   goToFirstGroup() {
     console.debug(`groups.index: Will try to go to default group`);
-    let groups = this.get('model');
+    let groups = this.get('model').filterBy('isDeleted', false);
     if (groups && groups.get('length') > 0) {
       // TODO: which group should be loaded as default?
       const firstGroup = groups.sortBy('name').objectAt(0);

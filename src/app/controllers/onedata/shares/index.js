@@ -10,7 +10,7 @@ import Ember from 'ember';
 export default Ember.Controller.extend({
   goToDefault() {
     console.debug(`shares.index: Will try to go to first share`);
-    let shares = this.get('model');
+    let shares = this.get('model').filterBy('isDeleted', false);
     if (shares && shares.get('length') > 0) {
       this.transitionToRoute('onedata.shares.show', shares.sortBy('name').get('firstObject'));
     }

@@ -234,9 +234,9 @@ export default DS.RESTAdapter.extend({
     let changedAttributes = snapshot.changedAttributes();
     let keys = Object.keys(changedAttributes);
 
-    let changesData = {};
     const serializer = store.serializerFor(type.modelName);
-    serializer.serializeIntoHash(changesData, type, snapshot, {keys: keys});
+    let changesData =
+      serializer.serialize(snapshot, {keys: keys});
 
     return this.asyncRequest(OP_UPDATE_RECORD, type.modelName, id, changesData);
   },

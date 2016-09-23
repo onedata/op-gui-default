@@ -1,3 +1,3 @@
-import RESTSerializer from 'ember-data/serializers/rest';
+import WSSerializer from './ws-serializer';
 
-export default RESTSerializer;
+export default WSSerializer;

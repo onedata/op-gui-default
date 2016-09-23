@@ -27,6 +27,8 @@ export default DS.Model.extend({
 
   dataSpace: DS.belongsTo('dataSpace', {async: true}),
 
+  hasViewPrivilege: DS.attr('boolean'),
+
   save() {
     const p = this._super(...arguments);
     p.then(() => {

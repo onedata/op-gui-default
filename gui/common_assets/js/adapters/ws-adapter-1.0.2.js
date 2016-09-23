@@ -230,10 +230,15 @@ export default DS.RESTAdapter.extend({
   updateRecord(store, type, snapshot) {
     this.logToConsole(OP_UPDATE_RECORD, [store, type, snapshot]);
     let id = Ember.get(snapshot, 'id');
-    let data = {};
-    let serializer = store.serializerFor(type.modelName);
-    serializer.serializeIntoHash(data, type, snapshot);
-    return this.asyncRequest(OP_UPDATE_RECORD, type.modelName, id, data);
+
+    let changedAttributes = snapshot.changedAttributes();
+    let keys = Object.keys(changedAttributes);
+
+    let changesData = {};
+    const serializer = store.serializerFor(type.modelName);
+    serializer.serializeIntoHash(changesData, type, snapshot, {keys: keys});
+
+    return this.asyncRequest(OP_UPDATE_RECORD, type.modelName, id, changesData);
   },
 
   /** Called when ember store wants to delete a record */

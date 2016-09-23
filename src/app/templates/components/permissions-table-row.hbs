@@ -3,7 +3,7 @@
 {{!-- The subgroup can be linked to group in Groups collection --}}
 {{#if (and (eq type 'groups') (array-contains availableGroupIds perm.owner.id))}}
 <div class="one-td one-first hidden-xs hidden-sm" {{action 'activate'}}>
-  {{#link-to 'groups.show' perm.owner.id class="full-size"}}
+  {{#link-to 'onedata.groups.show' perm.owner.id class="full-size"}}
     {{#truncated-string parentSelector=".one-first" shrinkBy=20}}
       {{perm.owner.name}}
     {{/truncated-string}}

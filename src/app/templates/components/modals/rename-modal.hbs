@@ -9,12 +9,16 @@
     closeButton=false
   }}
   {{#bs-modal-body}}
-    {{#bs-form action=(action "submit") model=this}}
-      {{bs-form-element controlType="text" property="renameName" autofocus=true
-        label=label
-        disabled=isLoading
-      }}
-    {{/bs-form}}
+  
+    <div class="control-label">
+      {{label}}
+    </div>
+
+    {{input type="text" value=renameName autofocus=true
+      class="form-control"
+      enter=(if (and renameName (not isLoading)) "submit")
+      disabled=isLoading}}
+
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata buttonType="submit"

@@ -18,12 +18,22 @@
     class="btn btn-primary no-outline" spinnerColor="#fff"
     inFlight=isSaving disabled=(not saveEnabled)
     action="saveAll"}}
-    Save changes
+    Save all changes
   {{/spin-button-onedata}}
 
   {{#bs-button
-    class="btn btn-default no-outline" disabled=(not saveEnabled)
+    class="no-outline" disabled=(not saveEnabled)
+    type="default"
     action="discardChanges"}}
     Discard changes
   {{/bs-button}}
+
+  {{#if removeAvailable}}
+    {{#bs-button
+      class="no-outline" disabled=(not removeEnabled)
+      type="danger"
+      action="removeMetadata"}}
+      Remove metadata
+    {{/bs-button}}
+  {{/if}}
 </div>

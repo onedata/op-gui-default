@@ -30,6 +30,18 @@ export default Ember.Component.extend({
     }
   ),
 
+  removeAvailable: Ember.computed('metadata.isNew',
+    function() {
+      return !this.get('metadata.isNew');
+    }
+  ),
+
+  removeEnabled: Ember.computed('isSaving',
+    function() {
+      return !this.get('isSaving');
+    }
+  ),
+
   didInsertElement() {
     this.$().find('ul').addClass('nav-tabs');
   },
@@ -59,5 +71,9 @@ export default Ember.Component.extend({
         this.get('metadata').rollbackAttributes();
       }
     },
+
+    removeMetadata() {
+      this.sendAction('removeMetadata');
+    }
   }
 });

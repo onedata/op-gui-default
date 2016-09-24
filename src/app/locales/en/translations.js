@@ -335,7 +335,7 @@ export default {
         cut: 'Cut element',
         remove: 'Remove element',
         chunks: 'Show file distribution',
-        metadata: 'Toggle file metadata editor',
+        metadata: 'Edit metadata',
       },
       renameFileModal: {
         title: 'Rename file or directory',

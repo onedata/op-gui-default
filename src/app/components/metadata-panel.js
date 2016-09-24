@@ -53,9 +53,10 @@ export default Ember.Component.extend({
       this.set('isSaving', true);
       const p = this.get('metadata').save();
       p.then(() => {
-        // TODO: file name
+        // TODO: file name - action should be sent down
         this.get('notify').info('Metadata saved successfully');
       });
+
       p.catch((error) => {
         this.get('notify').error('Cannot save metadata: ' + error && error.message || 'unknown error');
       });
@@ -74,6 +75,6 @@ export default Ember.Component.extend({
 
     removeMetadata() {
       this.sendAction('removeMetadata');
-    }
+    },
   }
 });

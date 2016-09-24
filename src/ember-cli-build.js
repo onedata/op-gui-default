@@ -34,5 +34,7 @@ module.exports = function(defaults) {
 
   app.import(app.bowerDirectory + '/spin.js/spin.js');
 
+  app.import(app.bowerDirectory + '/animate.css/animate.min.css');
+
   return app.toTree();
 };

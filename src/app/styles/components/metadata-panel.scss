@@ -75,6 +75,14 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
     color: #768D9F;
   }
 
+  .basic-new-entry {
+    &.invalid {
+      input.basic-new-entry-key {
+        color: $color-panel-red !important;
+      }
+    }
+  }
+
   .basic-entry-button-cell {
     position: relative;
 
@@ -87,6 +95,16 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
       margin-left: 10px;
       cursor: pointer;
       cursor: hand;
+      color: $color-toolbar-icon-disabled;
+
+      &:hover {
+        color: $color-toolbar-icon-hover;
+      }
+
+      .oneicon {
+        // pull the icon down
+        top: 3px;
+      }
     }
   }
 

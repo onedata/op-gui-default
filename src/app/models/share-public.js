@@ -11,5 +11,6 @@ import DS from 'ember-data';
 export default DS.Model.extend({
   name: DS.attr('string'),
   file: DS.belongsTo('file-public', {async: true}),
+  containerDir: DS.belongsTo('file-public', {async: true}),
   publicUrl: DS.attr('string')
 });

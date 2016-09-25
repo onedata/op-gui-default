@@ -13,7 +13,7 @@ import FileMixin from 'op-worker-gui/mixins/models/file';
 
 export default DS.Model.extend(FileMixin, {
   share: DS.belongsTo('share', {inverse: null, async: true}),
-  parent: DS.belongsTo('file', {inverse: 'children', async: true}),
-  children: DS.hasMany('file', {inverse: 'parent', async: true}),
-  fileProperty: DS.belongsTo('file-property', {inverse: 'file', async: true}),
+  parent: DS.belongsTo('file-shared', {inverse: 'children', async: true}),
+  children: DS.hasMany('file-shared', {inverse: 'parent', async: true}),
+  fileProperty: DS.belongsTo('file-property-shared', {inverse: 'file', async: true}),
 });

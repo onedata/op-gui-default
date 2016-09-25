@@ -5,8 +5,6 @@ export default Ember.Controller.extend({
 
   /**
    * Can be both File or Ember.ObjectProxy of File.
-   * Please do not use this - use ``directory`` property instead.
-   * @private
    */
   directory: null,
 
@@ -15,7 +13,7 @@ export default Ember.Controller.extend({
    * files browser.
    */
   modelChanged: Ember.observer('model', function() {
-    this.set('directory', this.get('model.file'));
+    this.set('directory', this.get('model.containerDir'));
     if (this.get('model')) {
       this.changeMenuActiveItem();
     }
@@ -43,23 +41,5 @@ export default Ember.Controller.extend({
         (error) => reject && reject(error)
       );
     },
-
-    createMetadata() {
-      const file = this.get('model.file');
-      file.then(
-        f => {
-          const metadata = this.get('store').createRecord('file-property', {
-            basic: {},
-            json: {},
-            rdf: "",
-            file: f,
-          });
-          f.set('fileProperty', metadata);
-          metadata.save().then(
-            () => f.save()
-          );
-        }
-      );
-    }
   }
 });

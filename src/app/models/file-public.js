@@ -12,7 +12,7 @@ import DS from 'ember-data';
 import FileMixin from 'op-worker-gui/mixins/models/file';
 
 export default DS.Model.extend(FileMixin, {
-  share: DS.belongsTo('share-public', {async: true}),
+  share: DS.belongsTo('share-public', {inverse: 'file', async: true}),
   parent: DS.belongsTo('file-public', {inverse: 'children', async: true}),
   children: DS.hasMany('file-public', {inverse: 'parent', async: true}),
   fileProperty: DS.belongsTo('file-property-public', {inverse: 'file', async: true}),

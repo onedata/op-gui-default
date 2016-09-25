@@ -1,16 +1,5 @@
 {{share-info-head share=model openDataDir="openDataDir"}}
 
-{{#if model.file.fileProperty}}
-  <div class="op-panel op-panel-azure">
-    {{metadata-panel metadataProxy=model.file.fileProperty}}
-  </div>
-{{else}}
-  {{#bs-button action="createMetadata"}}
-    Create metadata
-  {{/bs-button}}
-{{/if}}
-
-
 <div class="op-panel op-panel-red">
   <div class="files-list">
     {{#if directory}}

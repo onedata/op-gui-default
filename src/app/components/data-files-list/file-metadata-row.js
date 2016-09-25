@@ -32,12 +32,20 @@ export default Ember.Component.extend({
    */
   handleMetadataRemoved(failed, error) {
     const fileName = this.get('file.name');
-    // FIXME: translate
+    const i18n = this.get('i18n');
     if (failed === true) {
-      const errorMsg = error.message ? (": " + error.message) : "";
-      this.get('notify').error(`Could not delete metadata for file "${fileName}${errorMsg}"`);
+      this.get('notify').error(
+        i18n.t('components.dataFilesList.fileMetadataRow.metadataDeleteFailed', {
+          fileName: fileName,
+          errorMessage: error.message
+        })
+      );
     } else {
-      this.get('notify').info(`Deleted metadata for file "${fileName}"`);
+      this.get('notify').info(
+        i18n.t('components.dataFilesList.fileMetadataRow.metadataDeleteSuccess', {
+          fileName: fileName
+        })
+      );
       this.send('closeMetadataEditor');
     }
   },

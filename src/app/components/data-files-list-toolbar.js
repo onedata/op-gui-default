@@ -71,7 +71,6 @@ export default Ember.Component.extend({
         disabled: !isSingleFileSelected || isSingleSelectedFileAFile,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.shareFile')
       },
-      // FIXME: meadata icon
       {
         id: 'file-metadata-tool',
         icon: 'metadata',
@@ -225,16 +224,10 @@ export default Ember.Component.extend({
       });
     },
 
-    // FIXME: maybe this should be moved to dataFilesTree service?
-    // because we want to use various methods to invoke this
-    // FIXME: handle reject
     editFileMetadata() {
       const file = this.get('dir.singleSelectedFile');
       const fileSystemTree = this.get('fileSystemTree');
       fileSystemTree.toggleMetadataEditor(file);
-      // FIXME translations
-      // const i18n = this.get('i18n');
-      // TODO: button loader?
     },
 
     uploadBrowse() {

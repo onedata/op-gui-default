@@ -48,17 +48,18 @@ export default Ember.Component.extend({
 
   actions: {
     saveAll() {
-      // FIXME: validate before save
-      // FIXME: translations
+      const i18n = this.get('i18n');
       this.set('isSaving', true);
       const p = this.get('metadata').save();
       p.then(() => {
         // TODO: file name - action should be sent down
-        this.get('notify').info('Metadata saved successfully');
+        this.get('notify').info(i18n.t('components.metadataPanel.saveSuccess'));
       });
 
       p.catch((error) => {
-        this.get('notify').error('Cannot save metadata: ' + error && error.message || 'unknown error');
+        this.get('notify').error(i18n.t('components.metadataPanel.saveFailure', {
+          errorMessage: error.message
+        }));
       });
       p.finally(() => this.set('isSaving', false));
     },

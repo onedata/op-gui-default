@@ -8,19 +8,23 @@ export default Ember.Component.extend({
     'isDownloading:selection-background-pulse'
   ],
 
+  highlightClass: Ember.computed('file.isSelected', 'file.isEditingMetadata', function() {
+    return this.get('file.isSelected') && 'active' ||
+      this.get('file.isEditingMetadata') && 'metadata-opened' ||
+      '';
+  }),
+
   /**
    * To inject - a file that the row represents
    * @type File
    */
   file: null,
 
+  /**
+   * If true, the file is currently downloaded, so it will be indicated in GUI.
+   * @type {Boolean}
+   */
   isDownloading: false,
-
-  highlightClass: Ember.computed('file.isSelected', 'file.isEditingMetadata', function() {
-    return this.get('file.isSelected') && 'active' ||
-      this.get('file.isEditingMetadata') && 'metadata-opened' ||
-      '';
-  }),
 
   click() {
     this.sendAction('selectFile', this.get('file'));

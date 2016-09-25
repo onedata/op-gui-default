@@ -49,7 +49,10 @@ export default Ember.Mixin.create({
   hasParent: Ember.computed('parent.content', function() {
     return this.belongsTo('parent').id() != null;
   }),
-
+  hasFileProperty: Ember.computed.reads('hasMetadata'),
+  hasMetadata: Ember.computed('fileProperty.content', function() {
+    return this.belongsTo('fileProperty').id() != null || !!this.get('fileProperty.content');
+  }),
 
   init() {
     this._super(...arguments);

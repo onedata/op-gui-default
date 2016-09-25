@@ -15,4 +15,5 @@ export default DS.Model.extend(FileMixin, {
   share: DS.belongsTo('share-public', {async: true}),
   parent: DS.belongsTo('file-public', {inverse: 'children', async: true}),
   children: DS.hasMany('file-public', {inverse: 'parent', async: true}),
+  fileProperty: DS.belongsTo('file-property-public', {inverse: 'file', async: true}),
 });

@@ -23,8 +23,33 @@ export default Ember.Component.extend({
   classNames: ['data-files-list'],
 
   /// Options, features
+
+  /**
+   * To inject. Optional.
+   *
+   * If true, files list will have a file drop area to upload files.
+   * @type {Boolean}
+   * @default true
+   */
   uploadEnabled: true,
+
+  /**
+   * To inject. Optional.
+   *
+   * If true, a breadcrumbs component will be shown on top of file browser.
+   * It allows to naviage through dirs tree of the list.
+   * @type {Boolean}
+   * @default false
+   */
   breadcrumbsEnabled: false,
+
+  /**
+   * To inject. Optional.
+   *
+   * If true, file will be downloaded in public mode (``file-public``).
+   * @type {Boolean}
+   * @default false
+   */
   publicMode: false,
 
   /**
@@ -35,7 +60,10 @@ export default Ember.Component.extend({
   rootDir: null,
 
 
-  /** A parent directory to list its files */
+  /**
+   * A parent directory to list its files
+   * @type {File}
+   */
   dir: null,
 
   // TODO: sorting switch in GUI

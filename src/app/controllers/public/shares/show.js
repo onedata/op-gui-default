@@ -20,7 +20,7 @@ export default Ember.Controller.extend({
    * files browser.
    */
   modelChanged: Ember.observer('model', function() {
-    this.set('directory', this.get('model.file'));
+    this.set('directory', this.get('model.containerDir'));
   }),
 
   actions: {

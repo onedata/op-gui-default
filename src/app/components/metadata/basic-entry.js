@@ -6,6 +6,14 @@ export default Ember.Component.extend({
 
   /**
    * To inject.
+   * If true, entry cannot be removed.
+   * @type {Boolean}
+   * @default
+   */
+  readOnly: false,
+
+  /**
+   * To inject.
    * Truthy if this entry should flash itself, because it was recently added.
    * @type {Boolean}
    */

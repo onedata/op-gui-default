@@ -12,6 +12,14 @@ export default Ember.Component.extend({
    */
   metadataProxy: null,
 
+  /**
+   * To inject.
+   * If true, metadata cannot be edited.
+   * @type {Boolean}
+   * @default
+   */
+  readOnly: false,
+
   isSaving: false,
 
   init() {

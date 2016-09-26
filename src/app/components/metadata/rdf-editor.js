@@ -4,6 +4,14 @@ export default Ember.Component.extend({
   classNames: ['metadata-xml-editor'],
   classNameBindings: ['isError:parse-error'],
 
+  /**
+   * To inject.
+   * If true, content cannot be edited.
+   * @type {Boolean}
+   * @default
+   */
+  readOnly: false,
+
   isError: Ember.computed('error', function() {
     return !!this.get('error');
   }),

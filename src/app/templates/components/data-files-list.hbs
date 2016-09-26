@@ -54,10 +54,11 @@
   {{!-- TODO: open file when selected and enter pressed --}}
     {{data-files-list/file-row file=file openDirInBrowser='openDirInBrowser'
       downloadFile='downloadFile' selectFile='selectFile'
+      readOnly=readOnly
       openFileShareModal='openFileShareModal'
       toggleFileMetadata='toggleFileMetadata'}}
     {{#if file.isEditingMetadata}}
-      {{data-files-list/file-metadata-row file=file}}
+      {{data-files-list/file-metadata-row file=file readOnly=readOnly}}
     {{/if}}
   {{/each}}
   </tbody>

@@ -51,12 +51,20 @@ export default Ember.Component.extend({
   downloadMode: false,
 
   /**
+   * To inject.
    * Optional: if specified, breadcrumbs will have this dir as a root.
    * Otherwise, breadcrumbs will display full parents path.
    * @type {File}
    */
   rootDir: null,
 
+  /**
+   * To inject.
+   * If true, content cannot be edited.
+   * @type {Boolean}
+   * @default
+   */
+  readOnly: false,
 
   /**
    * A parent directory to list its files

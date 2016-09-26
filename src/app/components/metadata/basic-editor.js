@@ -9,6 +9,14 @@ export default Ember.Component.extend({
   dataString: null,
 
   /**
+   * To inject.
+   * If true, metadata cannot be edited.
+   * @type {Boolean}
+   * @default
+   */
+  readOnly: false,
+
+  /**
    * If true, basic metadata in editor is valid and thus can be saved.
    * @type {Boolean}
    */

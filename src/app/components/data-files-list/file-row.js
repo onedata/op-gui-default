@@ -26,6 +26,14 @@ export default Ember.Component.extend({
    */
   isDownloading: false,
 
+  /**
+   * To inject.
+   * If true, tools for file manipulation are disabled.
+   * @type {Boolean}
+   * @default
+   */
+  readOnly: false,
+
   click() {
     this.sendAction('selectFile', this.get('file'));
   },

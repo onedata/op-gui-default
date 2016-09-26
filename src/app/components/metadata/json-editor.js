@@ -5,6 +5,15 @@ export default Ember.Component.extend({
   classNameBindings: ['isError:parse-error'],
 
   dataString: null,
+
+  /**
+   * To inject.
+   * If true, content cannot be edited.
+   * @type {Boolean}
+   * @default
+   */
+  readOnly: false,
+
   error: null,
 
   isError: Ember.computed('error', function() {

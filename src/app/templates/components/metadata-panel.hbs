@@ -1,18 +1,18 @@
-{{!-- FIXME: translations --}}
-
 <div class="row">
   {{#bs-tab fade=false}}
     {{#bs-tab-pane title="Basic"}}
-      {{metadata/basic-editor dataString=metadata.basic}}
+      {{metadata/basic-editor dataString=metadata.basic readOnly=readOnly}}
     {{/bs-tab-pane}}
     {{#bs-tab-pane title="JSON"}}
-      {{metadata/json-editor dataString=metadata.json}}
+      {{metadata/json-editor dataString=metadata.json readOnly=readOnly}}
     {{/bs-tab-pane}}
     {{#bs-tab-pane title="RDF"}}
-      {{metadata/rdf-editor data=metadata.rdf}}
+      {{metadata/rdf-editor data=metadata.rdf readOnly=readOnly}}
     {{/bs-tab-pane}}
   {{/bs-tab}}
 </div>
+
+{{#unless readOnly}}
 <div class="row save-metadata-row">
   {{#spin-button-onedata buttonType="submit"
     class="btn btn-primary no-outline" spinnerColor="#fff"
@@ -37,3 +37,4 @@
     {{/bs-button}}
   {{/if}}
 </div>
+{{/unless}}

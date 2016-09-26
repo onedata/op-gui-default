@@ -13,18 +13,24 @@ export default Ember.Component.extend({
    */
   file: null,
 
+  /**
+   * To inject.
+   * If true, tools for file manipulation are disabled.
+   * @type {Boolean}
+   * @default
+   */
+  readOnly: false,
+
   metadataClass: Ember.computed('file.isEditingMetadata', 'file.hasMetadata', function() {
     if (this.get('file.isEditingMetadata')) {
       return 'active';
     } else if (this.get('file.hasMetadata')) {
       return 'visible-on-parent-hover-25p';
+    } else if (this.get('readOnly')) {
+      return 'hidden';
     } else {
       return 'visible-on-parent-hover';
     }
-  }),
-
-  metadataClickActionName: Ember.computed('', function() {
-
   }),
 
   // TODO: use tooltips!
@@ -40,7 +46,7 @@ export default Ember.Component.extend({
     metadataClicked() {
       if (this.get('file.hasMetadata')) {
         this.send('toggleFileMetadata');
-      } else {
+      } else if (!this.get('readOnly')) {
         this.send('createFileMetadata');
       }
     },

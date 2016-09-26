@@ -36,6 +36,7 @@
 
 %% Predefined errors
 -export([internal_server_error/0]).
+-export([unauthorized/0]).
 -export([no_session/0]).
 -export([cannot_decode_message/0]).
 
@@ -87,7 +88,17 @@ report_critical(Message) ->
 %%--------------------------------------------------------------------
 -spec internal_server_error() -> error_result().
 internal_server_error() ->
-    error_result(<<"error">>, <<"Internal Server Error">>).
+    error_result(<<"error">>, <<"Internal Sever Error">>).
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Predefined error that reports an "Unauthorized" on client side.
+%% @end
+%%--------------------------------------------------------------------
+-spec unauthorized() -> error_result().
+unauthorized() ->
+    error_result(<<"error">>, <<"Unauthorized">>).
 
 
 %%--------------------------------------------------------------------

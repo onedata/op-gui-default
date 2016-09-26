@@ -21,7 +21,7 @@ export default Ember.Component.extend({
    */
   readOnly: false,
 
-  metadataClass: Ember.computed('file.isEditingMetadata', 'file.hasMetadata', function() {
+  metadataClass: Ember.computed('file.isEditingMetadata', 'file.hasMetadata', 'readOnly', function() {
     if (this.get('file.isEditingMetadata')) {
       return 'active';
     } else if (this.get('file.hasMetadata')) {
@@ -31,12 +31,6 @@ export default Ember.Component.extend({
     } else {
       return 'visible-on-parent-hover';
     }
-  }),
-
-  // TODO: use tooltips!
-  metadataIconTip: Ember.computed('file.hasMetadata', function() {
-    // TODO: translate
-    return this.get('file.hasMetadata') ? 'Toggle metadata editor' : 'Initialize metadata';
   }),
 
   actions: {

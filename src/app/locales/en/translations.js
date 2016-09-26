@@ -113,6 +113,12 @@ export default {
           sublabel: 'Set a name for created share that will be visible to other users'
         },
       },
+      publishShare: {
+        title: "Publish the share",
+        selectHandleServicePlaceholder: "Choose a handle service",
+        publishButton: "Publish",
+        noHandleServices: 'Unfortunately, currently you do not have access to any handle service.',
+      },
       fileShareInfo: {
         title: 'Share summary',
         subtitle: 'A directory with path "{{path}}" is shared with name "{{name}}"',
@@ -413,6 +419,7 @@ export default {
     shareInfoHead: {
       path: 'Path',
       publicUrl: 'Public URL',
+      publish: 'Publish',
     }
   },
   notFound: {

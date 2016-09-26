@@ -9,6 +9,12 @@ export default Ember.Controller.extend({
   directory: null,
 
   /**
+   * If true, open the modal, which is for publishing this share.
+   * @type {Boolean}
+   */
+  publishShareModalOpened: false,
+
+  /**
    * Watch change of Share, because we want to change current directory in
    * files browser.
    */
@@ -41,5 +47,9 @@ export default Ember.Controller.extend({
         (error) => reject && reject(error)
       );
     },
+
+    publishShare() {
+      this.set('publishShareModalOpened', true);
+    }
   }
 });

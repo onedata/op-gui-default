@@ -1,4 +1,4 @@
-{{share-info-head share=model openDataDir="openDataDir"}}
+{{share-info-head share=model openDataDir="openDataDir" publishShare="publishShare"}}
 
 <div class="op-panel op-panel-red">
   <div class="files-list">
@@ -10,3 +10,7 @@
     {{/if}}
   </div>
 </div>
+
+{{#if publishShareModalOpened}}
+  {{modals/publish-share open=publishShareModalOpened share=model}}
+{{/if}}

@@ -6,6 +6,12 @@ export default Ember.Component.extend({
 
   /**
    * To inject.
+   * @type {String}
+   */
+  data: null,
+
+  /**
+   * To inject.
    * If true, content cannot be edited.
    * @type {Boolean}
    * @default

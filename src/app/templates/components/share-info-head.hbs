@@ -1,4 +1,17 @@
-<h1 class="share-name">{{share.name}}</h1>
+<div class="share-top-row">
+  <div class="share-top-row-name">
+    <h1 class="share-name">{{share.name}}</h1>
+  </div>
+  <div class="share-top-row-publish">
+    {{#bs-button
+      type="outline"
+      action="publishShare"
+      class="btn btn-publish no-outline"}}
+      {{t 'components.shareInfoHead.publish'}}
+    {{/bs-button}}
+  </div>
+</div>
+
 <table>
   <tr>
     <th>{{t 'components.shareInfoHead.path'}}</th>

@@ -37,7 +37,10 @@ export default Ember.Service.extend(Ember.Evented, {
     file.get('fileProperty').then(
       (metadata) => {
         if (!metadata) {
-          metadata = this.get('store').createRecord('fileProperty', {
+          const fileType = file.get('constructor.modelName');
+          const metadataType =
+            (fileType === 'file-shared') ? 'filePropertyShared' : 'fileProperty';
+          metadata = this.get('store').createRecord(metadataType, {
             file: file
           });
           file.set('fileProperty', metadata);

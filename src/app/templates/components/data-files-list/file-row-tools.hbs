@@ -5,9 +5,7 @@
     {{icon 'share'}}
   </div>
 {{/if}}
-{{#if file.hasMetadata}}
-  <div {{action (action 'toggleFileMetadata') bubbles=false}}
-    class="file-tool file-tool-metadata {{metadataClass}}">
-    {{icon 'metadata'}}
-  </div>
-{{/if}}
+<div {{action (action 'metadataClicked') bubbles=false}}
+  class="file-tool file-tool-metadata {{metadataClass}}">
+  {{icon 'metadata'}}
+</div>

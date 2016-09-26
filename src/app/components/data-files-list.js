@@ -44,13 +44,11 @@ export default Ember.Component.extend({
   breadcrumbsEnabled: false,
 
   /**
-   * To inject. Optional.
-   *
-   * If true, file will be downloaded in public mode (``file-public``).
-   * @type {Boolean}
-   * @default false
+   * To inject.
+   * One of: data, shared, public
+   * @type {String}
    */
-  publicMode: false,
+  downloadMode: false,
 
   /**
    * Optional: if specified, breadcrumbs will have this dir as a root.
@@ -122,8 +120,17 @@ export default Ember.Component.extend({
     this.get('fileSystemTree').expandDir(dir);
   }.observes('dir'),
 
-  fileDownloadServerMethod: Ember.computed('publicMode', function() {
-    return this.get('publicMode') ? 'getPublicFileDownloadUrl' : 'getFileDownloadUrl';
+  fileDownloadServerMethod: Ember.computed('downloadMode', function() {
+    switch (this.get('downloadMode')) {
+      case 'data':
+        return 'getFileDownloadUrl';
+      case 'shared':
+        return 'getSharedFileDownloadUrl';
+      case 'public':
+        return 'getPublicFileDownloadUrl';
+      default:
+        return 'getFileDownloadUrl';
+    }
   }),
 
   downloadFile(file, downloadResolve, downloadReject) {

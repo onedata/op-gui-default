@@ -71,6 +71,21 @@ export default Ember.Service.extend({
   },
 
   /**
+   * Fetch direct URL for file download - authenticated user in shared view.
+   *
+   * @param {String} fileId An ID of file to download
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve(object: data)`` when file can be downloaded
+   *  - ``data.fileUrl`` (string) - URL for file GET (using session auth)
+   * - ``reject(object: error)`` on failure or when file cannot be downloaded
+   */
+  getSharedFileDownloadUrl(fileId) {
+    return this.get('server').privateRPC('getSharedFileDownloadUrl', {
+      fileId: fileId
+    });
+  },
+
+  /**
    * Fetch direct URL for file download - public mode.
    *
    * @param {String} fileId An ID of file to download

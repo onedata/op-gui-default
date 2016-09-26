@@ -1,0 +1,9 @@
+{{textarea value=prettyData class="form-control" readonly=readOnly}}
+
+<div class="parse-status-panel">
+  {{#if isError}}
+    {{error}}
+  {{else}}
+    JSON data is valid.
+  {{/if}}
+</div>

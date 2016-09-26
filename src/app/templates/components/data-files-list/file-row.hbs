@@ -11,13 +11,8 @@
       {{/if}}
     {{/truncated-string}}
   </div>
-  <div class="file-row-tools">
-    {{#if file.hasShare}}
-      <div {{action (action 'shareFile') bubbles=false}} class="file-tool file-tool-share">
-        {{icon 'share' 'visible-on-parent-hover'}}
-      </div>
-    {{/if}}
-  </div>
+  {{data-files-list/file-row-tools file=file readOnly=readOnly
+    shareFile='shareFile' toggleFileMetadata='toggleFileMetadata'}}
 </td>
 <td class="hidden-xs file-list-col-size nowrap">
   {{file.sizeHumanReadable}}

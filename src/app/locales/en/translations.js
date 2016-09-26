@@ -321,7 +321,18 @@ export default {
       downloadError: {
         title: 'Cannot download file',
         message: 'File "{{fileName}}" cannot be downloaded because of server error: {{errorMessage}}'
-      }
+      },
+      fileMetadataRow: {
+        metadataDeleteFailed: 'Could not delete metadata for file "{{fileName}": {{errorMessage}}',
+        metadataDeleteSuccess: 'Deleted metadata for file "{{fileName}}"',
+      },
+    },
+    metadataPanel: {
+      saveAllChanges: 'Save all changes',
+      discardChanges: 'Discard changes',
+      removeMetadata: 'Remove metadata',
+      saveSuccess: 'Metadata saved successfully',
+      saveFailure: 'Cannot save metadata: {{errorMessage}}',
     },
     dataFilesListToolbar: {
       tooltip: {
@@ -334,7 +345,8 @@ export default {
         copy: 'Copy element',
         cut: 'Cut element',
         remove: 'Remove element',
-        chunks: 'Show file distribution'
+        chunks: 'Show file distribution',
+        metadata: 'Edit metadata',
       },
       renameFileModal: {
         title: 'Rename file or directory',

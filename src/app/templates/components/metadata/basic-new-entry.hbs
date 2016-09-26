@@ -1,0 +1,13 @@
+<th>
+  {{input value=newKey placeholder="Attribute" class="basic-new-entry-key form-control"
+    enter="trySubmit" disabled=isSubmitting}}
+</th>
+<td>
+  {{input value=newValue placeholder="Value" class="basic-new-entry-value form-control"
+    enter="trySubmit" disabled=isSubmitting}}
+</td>
+<td class="basic-entry-button-cell table-space-fill">
+  <div class="basic-entry-button" {{action "trySubmit"}}>
+    {{icon 'add'}}
+  </div>
+</td>

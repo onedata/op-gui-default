@@ -7,8 +7,8 @@ import {
 import hbs from 'htmlbars-inline-precompile';
 
 describeComponent(
-  'metadata-panel',
-  'Integration: MetadataPanelComponent',
+  'data-files-list/file-metadata-row',
+  'Integration: DataFilesListFileMetadataRowComponent',
   {
     integration: true
   },
@@ -18,12 +18,12 @@ describeComponent(
       // Handle any actions with this.on('myAction', function(val) { ... });
       // Template block usage:
       // this.render(hbs`
-      //   {{#metadata-panel}}
+      //   {{#data-files-list/file-metadata-row}}
       //     template content
-      //   {{/metadata-panel}}
+      //   {{/data-files-list/file-metadata-row}}
       // `);
 
-      this.render(hbs`{{metadata-panel}}`);
+      this.render(hbs`{{data-files-list/file-metadata-row}}`);
       expect(this.$()).to.have.length(1);
     });
   }

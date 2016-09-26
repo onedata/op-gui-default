@@ -53,19 +53,84 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
     padding: 20px;
     border: $tab-border-style;
     margin-top: -$tab-border-width;
+    background-color: white;
   }
 }
 
 .metadata-basic-table {
-  tr {
-    padding: 15px auto;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0px 10px;
+  th {
+    width: 200px;
+    padding-right: 20px;
+  }
+  td {
+    width: 200px;
   }
   .metadata-key {
-    width: 200px;
     color: #32373B; // TODO: color variable
-    text-transform: uppercase;
   }
   .metadata-value {
     color: #768D9F;
   }
+
+  .basic-new-entry {
+    &.invalid {
+      input.basic-new-entry-key {
+        color: $color-panel-red !important;
+      }
+    }
+  }
+
+  .basic-entry-button-cell {
+    position: relative;
+
+    .basic-entry-button {
+      display: inline;
+      font-size: 28px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      margin-left: 10px;
+      cursor: pointer;
+      cursor: hand;
+      color: $color-toolbar-icon-disabled;
+
+      &:hover {
+        color: $color-toolbar-icon-hover;
+      }
+
+      .oneicon {
+        // pull the icon down
+        top: 3px;
+      }
+    }
+  }
+
+
+}
+
+.metadata-panel {
+  textarea {
+    resize: horizontal;
+    min-height: 280px;
+    width: 100%;
+    font-family: monospace;
+  }
+  .parse-error {
+    textarea {
+      color: $onedata-red;
+    }
+    .parse-status-panel {
+      color: $onedata-red;
+    }
+  }
+  .parse-status-panel {
+    color: $onedata-fresh-green;
+  }
+}
+
+.save-metadata-row {
+  margin-top: 10px;
 }

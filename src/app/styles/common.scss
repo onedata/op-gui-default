@@ -654,6 +654,13 @@ html, body {
   height: 100%;
 }
 
+// insert a <td> to allow other cells to be fixed width
+.table-space-fill {
+  width: auto !important;
+  max-width: initial !important;
+  min-width: initial !important;
+}
+
 // for debugging
 .service-debugger {
   position: fixed;
@@ -672,9 +679,10 @@ html, body {
   }
 }
 
-// handling empty collections
+// style for messages that covers main content
+// this evolved from handling empty collections, so we have double class names
 
-.empty-model {
+.empty-model, .main-content-message {
   // below drop-zone
   z-index: 99;
   left: 0;
@@ -683,10 +691,10 @@ html, body {
   bottom: 0;
   padding: 20px;
 
-  .empty-model-container {
+  .empty-model-container, .main-content-message-container {
     padding-top: 40px;
 
-    .empty-model-image {
+    .empty-model-image, .main-content-message-image {
       width: 100%;
       height: 128px;
       background-position: center;
@@ -694,7 +702,7 @@ html, body {
       background-size: contain;
     }
 
-    .empty-model-message {
+    .empty-model-message, .main-content-message-text {
       position: relative;
       width: 100%;
       margin-top: 20px;

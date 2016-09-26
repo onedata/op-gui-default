@@ -23,19 +23,53 @@ export default Ember.Component.extend({
   classNames: ['data-files-list'],
 
   /// Options, features
-  uploadEnabled: true,
-  breadcrumbsEnabled: false,
-  publicMode: false,
 
   /**
+   * To inject. Optional.
+   *
+   * If true, files list will have a file drop area to upload files.
+   * @type {Boolean}
+   * @default true
+   */
+  uploadEnabled: true,
+
+  /**
+   * To inject. Optional.
+   *
+   * If true, a breadcrumbs component will be shown on top of file browser.
+   * It allows to naviage through dirs tree of the list.
+   * @type {Boolean}
+   * @default false
+   */
+  breadcrumbsEnabled: false,
+
+  /**
+   * To inject.
+   * One of: data, shared, public
+   * @type {String}
+   */
+  downloadMode: false,
+
+  /**
+   * To inject.
    * Optional: if specified, breadcrumbs will have this dir as a root.
    * Otherwise, breadcrumbs will display full parents path.
    * @type {File}
    */
   rootDir: null,
 
+  /**
+   * To inject.
+   * If true, content cannot be edited.
+   * @type {Boolean}
+   * @default
+   */
+  readOnly: false,
 
-  /** A parent directory to list its files */
+  /**
+   * A parent directory to list its files
+   * @type {File}
+   */
   dir: null,
 
   // TODO: sorting switch in GUI
@@ -94,8 +128,17 @@ export default Ember.Component.extend({
     this.get('fileSystemTree').expandDir(dir);
   }.observes('dir'),
 
-  fileDownloadServerMethod: Ember.computed('publicMode', function() {
-    return this.get('publicMode') ? 'getPublicFileDownloadUrl' : 'getFileDownloadUrl';
+  fileDownloadServerMethod: Ember.computed('downloadMode', function() {
+    switch (this.get('downloadMode')) {
+      case 'data':
+        return 'getFileDownloadUrl';
+      case 'shared':
+        return 'getSharedFileDownloadUrl';
+      case 'public':
+        return 'getPublicFileDownloadUrl';
+      default:
+        return 'getFileDownloadUrl';
+    }
   }),
 
   downloadFile(file, downloadResolve, downloadReject) {
@@ -145,6 +188,10 @@ export default Ember.Component.extend({
     return p;
   },
 
+  isShowingMetadata: Ember.computed('metadataFile', function() {
+    return !!this.get('metadataFile');
+  }),
+
   actions: {
     openDirInBrowser(file) {
       this.sendAction('openDirInBrowser', file);
@@ -173,7 +220,11 @@ export default Ember.Component.extend({
 
     changeDir(dir) {
       this.set('dir', dir);
-    }
+    },
+
+    toggleFileMetadata(file) {
+      this.get('fileSystemTree').toggleMetadataEditor(file);
+    },
   }
 
 });

@@ -27,6 +27,34 @@ export default Ember.Service.extend(Ember.Evented, {
     this.set('failedDirs', new Set());
   },
 
+  /**
+   * Opens a metadata editor for specified file in opened file browsers.
+   * If file has no metadata, initialize it by creating a record (but not saving it).
+   *
+   * @param  {File} file
+   */
+  openMetadataEditor(file) {
+    file.get('fileProperty').then(
+      (metadata) => {
+        if (!metadata) {
+          const fileType = file.get('constructor.modelName');
+          const metadataType =
+            (fileType === 'file-shared') ? 'filePropertyShared' : 'fileProperty';
+          metadata = this.get('store').createRecord(metadataType, {
+            file: file
+          });
+          file.set('fileProperty', metadata);
+        }
+      }
+    );
+
+    file.set('isEditingMetadata', true);
+  },
+
+  closeMetadataEditor(file) {
+    file.set('isEditingMetadata', false);
+  },
+
   rootDirs: Ember.computed('spaces.[]', function() {
     return this.get('spaces').mapBy('rootDir');
   }),
@@ -101,5 +129,13 @@ export default Ember.Service.extend(Ember.Evented, {
       // TODO: should last dir in path be expanded?
     });
 
+  },
+
+  toggleMetadataEditor(file) {
+    if (file.get('isEditingMetadata')) {
+      this.closeMetadataEditor(file);
+    } else {
+      this.openMetadataEditor(file);
+    }
   }
 });

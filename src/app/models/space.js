@@ -27,10 +27,16 @@ export default DS.Model.extend({
 
   dataSpace: DS.belongsTo('dataSpace', {async: true}),
 
+  hasViewPrivilege: DS.attr('boolean'),
+
   save() {
     const p = this._super(...arguments);
     p.then(() => {
-      this.get('dataSpace').then(s => s.update());
+      this.get('dataSpace').then(s => {
+        if (s) {
+          s.update();
+        }
+      });
     });
     return p;
   }

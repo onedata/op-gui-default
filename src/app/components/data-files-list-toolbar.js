@@ -12,6 +12,7 @@ export default Ember.Component.extend({
   notify: Ember.inject.service('notify'),
   fileUpload: Ember.inject.service('fileUpload'),
   store: Ember.inject.service(),
+  fileSystemTree: Ember.inject.service(),
 
   tagName: 'ul',
   classNames: ['nav', 'navbar-nav', 'navbar-right', 'toolbar-group'],
@@ -69,6 +70,13 @@ export default Ember.Component.extend({
         action: 'shareFile',
         disabled: !isSingleFileSelected || isSingleSelectedFileAFile,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.shareFile')
+      },
+      {
+        id: 'file-metadata-tool',
+        icon: 'metadata',
+        action: 'editFileMetadata',
+        disabled: !isSingleFileSelected,
+        tooltip: i18n.t('components.dataFilesListToolbar.tooltip.metadata')
       },
       // using fileUpload service binding
       {
@@ -167,7 +175,7 @@ export default Ember.Component.extend({
       this.set('createFileName', '');
       this.set('isCreatingFile', true);
     },
-    
+
     shareFile() {
       this.sendAction('openFileShareModal', this.get('dir.singleSelectedFile'));
     },
@@ -214,6 +222,12 @@ export default Ember.Component.extend({
         fileBlocks: null,
         chunksModalError: null
       });
+    },
+
+    editFileMetadata() {
+      const file = this.get('dir.singleSelectedFile');
+      const fileSystemTree = this.get('fileSystemTree');
+      fileSystemTree.toggleMetadataEditor(file);
     },
 
     uploadBrowse() {

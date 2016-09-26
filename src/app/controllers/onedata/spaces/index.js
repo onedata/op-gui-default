@@ -12,7 +12,7 @@ import Ember from 'ember';
 export default Ember.Controller.extend({
   goToDefaultSpace() {
     console.debug(`spaces.index: Will try to go to default space`);
-    let spaces = this.get('model');
+    let spaces = this.get('model').filterBy('isDeleted', false);
     if (spaces) {
       if (spaces.get('isUpdating') === false) {
         let defaultSpace = spaces.find((space) => space.get('isDefault'));

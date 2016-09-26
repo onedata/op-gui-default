@@ -26,8 +26,10 @@ export default Ember.Mixin.create({
   size: DS.attr('number'),
   permissions: DS.attr('number'),
 
+  /// Runtime fields used to store state of file in application
   isExpanded: false,
   isSelected: false,
+  isEditingMetadata: false,
 
   /** @abstract */
   share: undefined,
@@ -47,7 +49,10 @@ export default Ember.Mixin.create({
   hasParent: Ember.computed('parent.content', function() {
     return this.belongsTo('parent').id() != null;
   }),
-
+  hasFileProperty: Ember.computed.reads('hasMetadata'),
+  hasMetadata: Ember.computed('fileProperty.content', function() {
+    return this.belongsTo('fileProperty').id() != null || !!this.get('fileProperty.content');
+  }),
 
   init() {
     this._super(...arguments);
@@ -111,7 +116,11 @@ export default Ember.Mixin.create({
     const destroyPromise = this._super(...arguments);
     destroyPromise.then(() => {
       if (sharePromise) {
-        sharePromise.then(s => s.deleteRecord());
+        sharePromise.then(s => {
+          if (s) {
+            s.deleteRecord();
+          }
+        });
       }
     });
     return destroyPromise;

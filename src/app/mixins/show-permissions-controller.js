@@ -12,6 +12,10 @@ import Ember from 'ember';
 export default Ember.Mixin.create({
   secondaryMenu: Ember.inject.service(),
 
+  canViewPermissions: Ember.computed('model', function() {
+    return this.get('model').subject.get('hasViewPrivilege');
+  }),
+
   changeMenuActiveOption() {
     this.set('secondaryMenu.activeOption', this.get('permissionsType'));
 

@@ -200,7 +200,8 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     _submitCreateGroup() {
       let name = this.get('newGroupName');
       let s = this.get('store').createRecord('group', {
-        name: name
+        name: name,
+        hasViewPrivilege: true,
       });
       let savePromise = s.save();
       savePromise.then(

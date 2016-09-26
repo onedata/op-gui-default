@@ -1,16 +1,12 @@
 {{share-info-head share=model openDataDir="openDataDir"}}
 
-{{!-- TODO: metadata-panel --}}
-{{!-- <div class="op-panel op-panel-azure">
-  {{metadata-panel}}
-</div> --}}
-
 <div class="op-panel op-panel-red">
   <div class="files-list">
     {{#if directory}}
       {{data-files-list dir=directory openDirInBrowser='openDirInBrowser'
-        openFileShareModal='openFileShareModal' rootDir=model.file
-        breadcrumbsEnabled=true uploadEnabled=false}}
+        openFileShareModal='openFileShareModal'
+        breadcrumbsEnabled=true uploadEnabled=false
+        downloadMode='shared'}}
     {{/if}}
   </div>
 </div>

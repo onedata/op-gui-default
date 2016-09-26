@@ -1,0 +1,11 @@
+{{!-- TODO: tooltips for tools --}}
+{{#if file.hasShare}}
+  <div {{action (action 'shareFile') bubbles=false}}
+    class="file-tool file-tool-share visible-on-parent-hover-25p">
+    {{icon 'share'}}
+  </div>
+{{/if}}
+<div {{action (action 'metadataClicked') bubbles=false}}
+  class="file-tool file-tool-metadata {{metadataClass}}">
+  {{icon 'metadata'}}
+</div>

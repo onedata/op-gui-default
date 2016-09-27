@@ -132,3 +132,7 @@ $screen-lg-min: $min-width-desktop-medium;
 @import 'components/metadata-panel';
 @import 'components/share-info-head';
 @import 'components/file-breadcrumbs';
+
+// original stylesheet for ember-power-select
+@import "ember-power-select";
+@import "components/ember-power-select";

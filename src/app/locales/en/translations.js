@@ -113,6 +113,15 @@ export default {
           sublabel: 'Set a name for created share that will be visible to other users'
         },
       },
+      publishShare: {
+        title: "Publish the share",
+        selectHandleServicePlaceholder: "Choose a handle service",
+        publishButton: "Publish",
+        noHandleServices: 'Unfortunately, currently you do not have access to any handle service.',
+        dublinCoreLabel: 'Please eneter Dublin Core metadata here:',
+        publishFailure: 'Publishing share "{{shareName}}" failed: {{errorMessage}}',
+        publishSuccess: 'Share "{{shareName}}" has been published successfully!',
+      },
       fileShareInfo: {
         title: 'Share summary',
         subtitle: 'A directory with path "{{path}}" is shared with name "{{name}}"',
@@ -413,6 +422,8 @@ export default {
     shareInfoHead: {
       path: 'Path',
       publicUrl: 'Public URL',
+      publicHandle: 'Public handle',
+      publish: 'Publish',
     }
   },
   notFound: {

@@ -1,4 +1,19 @@
 .share-info-head {
+  .share-top-row {
+    display: table;
+    width: 100%;
+    > * {
+      display: table-cell;
+    }
+    .share-top-row-name {
+
+    }
+    .share-top-row-publish {
+      width: 200px;
+      text-align: right;
+    }
+  }
+
   .share-name {
     font-size: 30px;
   }

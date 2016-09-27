@@ -371,6 +371,9 @@ html, body {
             // TODO: this causes a left "margin" of horizontal lines...
             border-left: 5px solid;
             border-left-color: transparent;
+            &:hover {
+              border-left-color: $onedata-light-gray;
+            }
           }
 
           &.active.first-level {
@@ -738,12 +741,30 @@ html, body {
   border-top-style: solid;
   background-color: $color-panel-background;
 
-  &.op-panel-azure {
-    border-color: $color-panel-azure;
+  &.op-panel-background {
+    background-repeat: no-repeat;
+    background-position: 102% 40px;
+    padding-right: 200px;
+    background-size: 200px 200px;
+
+    // additional styles for file browser, to not trim a background gfx
+    .data-files-list {
+      min-height: 200px;
+    }
   }
 
-  &.op-panel-red {
+  &.op-panel-azure, &.op-panel-metadata {
+    border-color: $color-panel-azure;
+    &.op-panel-background {
+      background-image: url(/assets/images/panels/metadata.svg);
+    }
+  }
+
+  &.op-panel-red, &.op-panel-files {
     border-color: $color-panel-red;
+    &.op-panel-background {
+      background-image: url(/assets/images/panels/files.svg);
+    }
   }
 
   &.op-panel-green {

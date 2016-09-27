@@ -22,10 +22,22 @@
             {{input-copy inputValue=model.publicUrl}}
           </td>
         </tr>
+        {{#if model.handle.publicHandle}}
+        <tr>
+          <th>{{t 'components.shareInfoHead.publicHandle'}}</th>
+          <td>{{input-copy inputValue=model.handle.publicHandle autofocus=false}}</td>
+        </tr>
+        {{/if}}
       </table>
     </div>
 
-    <div class="op-panel op-panel-red">
+    {{#if model.handle.metadataString}}
+      <div class="op-panel op-panel-metadata op-panel-background metadata-panel">
+        {{metadata/rdf-editor data=model.handle.metadataString readOnly=true}}
+      </div>
+    {{/if}}
+
+    <div class="op-panel op-panel-files op-panel-background">
       <div class="files-list">
         {{#if directory}}
           {{data-files-list dir=directory openDirInBrowser='openDirInBrowser'

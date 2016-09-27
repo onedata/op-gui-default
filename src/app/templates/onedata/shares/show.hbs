@@ -1,6 +1,13 @@
-{{share-info-head share=model openDataDir="openDataDir"}}
+{{share-info-head share=model openDataDir="openDataDir" publishShare="publishShare"}}
 
-<div class="op-panel op-panel-red">
+{{#if model.handle.metadataString}}
+<div class="op-panel op-panel-metadata op-panel-background metadata-panel">
+  {{metadata/rdf-editor data=model.handle.metadataString readOnly=true}}
+</div>
+{{/if}}
+
+
+<div class="op-panel op-panel-files op-panel-background">
   <div class="files-list">
     {{#if directory}}
       {{data-files-list dir=directory openDirInBrowser='openDirInBrowser'
@@ -10,3 +17,7 @@
     {{/if}}
   </div>
 </div>
+
+{{#if publishShareModalOpened}}
+  {{modals/publish-share open=publishShareModalOpened share=model}}
+{{/if}}

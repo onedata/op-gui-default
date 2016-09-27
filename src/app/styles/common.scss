@@ -738,12 +738,25 @@ html, body {
   border-top-style: solid;
   background-color: $color-panel-background;
 
-  &.op-panel-azure {
-    border-color: $color-panel-azure;
+  &.op-panel-background {
+    background-repeat: no-repeat;
+    background-position: 102% 40px;
+    padding-right: 150px;
+    background-size: 200px 200px;
   }
 
-  &.op-panel-red {
+  &.op-panel-azure, &.op-panel-metadata {
+    border-color: $color-panel-azure;
+    &.op-panel-background {
+      background-image: url(/assets/images/panels/metadata.svg);
+    }
+  }
+
+  &.op-panel-red, &.op-panel-files {
     border-color: $color-panel-red;
+    &.op-panel-background {
+      background-image: url(/assets/images/panels/files.svg);
+    }
   }
 
   &.op-panel-green {

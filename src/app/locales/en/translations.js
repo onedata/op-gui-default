@@ -119,8 +119,8 @@ export default {
         publishButton: "Publish",
         noHandleServices: 'Unfortunately, currently you do not have access to any handle service.',
         dublinCoreLabel: 'Please eneter Dublin Core metadata here:',
-        publishFailure: 'Publishing share failed: {{errorMessage}}',
-        publishSuccess: 'Share has been published successfully!',
+        publishFailure: 'Publishing share "{{shareName}}" failed: {{errorMessage}}',
+        publishSuccess: 'Share "{{shareName}}" has been published successfully!',
       },
       fileShareInfo: {
         title: 'Share summary',

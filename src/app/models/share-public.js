@@ -1,4 +1,5 @@
 import DS from 'ember-data';
+import Ember from 'ember';
 
 /**
  * A container for shared files in public view.
@@ -13,5 +14,9 @@ export default DS.Model.extend({
   file: DS.belongsTo('file-public', {async: true}),
   containerDir: DS.belongsTo('file-public', {async: true}),
   publicUrl: DS.attr('string'),
-  handle: DS.belongsTo('handle-public', {async: true}),
+  handle: DS.belongsTo('handle-public', {inverse: null, async: true}),
+
+  hasHandle: Ember.computed('handle.content', function() {
+    return this.belongsTo('handle').id() != null;
+  }),
 });

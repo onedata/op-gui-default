@@ -9,7 +9,6 @@ import DS from 'ember-data';
  */
 export default DS.Model.extend({
   handleService: DS.belongsTo('handleService', {inverse: null, async: true}),
-  share: DS.belongsTo('share-public', {async: true}),
   metadataString: DS.attr('string'),
   publicHandle: DS.attr('string'),
 });

@@ -11,20 +11,27 @@
   }}
   {{#bs-modal-body class='publish-share-modal-body'}}
 
-    {{#power-select
-      selected=handleService
-      options=availableHandleServices
-      onchange=(action 'handleServiceChanged')
-      placeholder=(t 'components.modals.publishShare.selectHandleServicePlaceholder')
-      as |hs|}}
-        {{hs.name}}
-    {{/power-select}}
+    <div class="modal-row">
+      {{#power-select
+        selected=handleService
+        options=availableHandleServices
+        onchange=(action 'handleServiceChanged')
+        placeholder=(t 'components.modals.publishShare.selectHandleServicePlaceholder')
+        as |hs|}}
+          {{hs.name}}
+      {{/power-select}}
+    </div>
 
     {{#if handleServicesNotEmpty}}
-    <div class="op-panel op-panel-azure">
+
+    <div class="modal-row metadata-panel">
+      <div class="control-label">
+        {{t 'components.modals.publishShare.dublinCoreLabel'}}
+      </div>
       {{!-- TODO: this editor should not be named "rdf-editor" --}}
       {{metadata/rdf-editor data=metadataString disabled=metadataEditorDisabled}}
     </div>
+
     {{else}}
     <div class="modal-row">
       {{t 'components.modals.publishShare.noHandleServices'}}

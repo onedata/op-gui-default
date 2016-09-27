@@ -1,5 +1,12 @@
 {{share-info-head share=model openDataDir="openDataDir" publishShare="publishShare"}}
 
+{{#if model.handle.metadataString}}
+<div class="op-panel op-panel-azure metadata-panel">
+  {{metadata/rdf-editor data=model.handle.metadataString readOnly=true}}
+</div>
+{{/if}}
+
+
 <div class="op-panel op-panel-red">
   <div class="files-list">
     {{#if directory}}

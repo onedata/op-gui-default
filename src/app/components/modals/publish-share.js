@@ -119,20 +119,32 @@ export default Ember.Component.extend({
       const savePromise = handle.save();
 
       savePromise
-        .then((handle) => this.submitSucceed(handle))
-        .catch((error) => this.submitFailed(error))
+        .then((handle) => this.submitSucceed(this.get('share'), handle))
+        .catch((error) => this.submitFailed(this.get('share'), handle, error))
         .finally(() => this.submitCompleted());
     },
 
   },
 
-  submitSucceed(handle) {
+  submitSucceed(share, handle) {
     console.debug(`Share handle created with publicHandle: ${handle.get('publicHandle')}`);
+    this.get('notify').info(
+      this.get('i18n').t('components.modals.publishShare.publishSuccess', {
+        shareName: share.get('name')
+      })
+    );
   },
 
-  submitFailed(error) {
-    // FIXME: handle errors
-    console.error(`Publish share error: ${error}`);
+  submitFailed(share, handle, error) {
+    this.get('notify').error(
+      this.get('i18n').t('components.modals.publishShare.publishFailure', {
+        errorMessage: error.message || 'unknown error',
+        shareName: share.get('name')
+      })
+    );
+    if (handle) {
+      handle.rollbackAttributes();
+    }
   },
 
   submitCompleted() {

@@ -419,6 +419,7 @@ export default {
     shareInfoHead: {
       path: 'Path',
       publicUrl: 'Public URL',
+      publicHandle: 'Public handle',
       publish: 'Publish',
     }
   },

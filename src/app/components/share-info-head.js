@@ -20,6 +20,10 @@ export default Ember.Component.extend({
    */
   handle: Ember.computed.oneWay('share.handle.content'),
 
+  isPublished: Ember.computed('share.hasHandle', function() {
+    return !!this.get('share.hasHandle');
+  }),
+
   actions: {
     openDataDir(file) {
       this.sendAction('openDataDir', file);

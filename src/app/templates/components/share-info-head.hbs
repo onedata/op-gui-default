@@ -2,6 +2,7 @@
   <div class="share-top-row-name">
     <h1 class="share-name">{{share.name}}</h1>
   </div>
+  {{#unless isPublished}}
   <div class="share-top-row-publish">
     {{#bs-button
       type="outline"
@@ -10,6 +11,7 @@
       {{t 'components.shareInfoHead.publish'}}
     {{/bs-button}}
   </div>
+  {{/unless}}
 </div>
 
 <table>
@@ -21,4 +23,10 @@
     <th>{{t 'components.shareInfoHead.publicUrl'}}</th>
     <td>{{input-copy inputValue=share.publicUrl autofocus=false}}</td>
   </tr>
+  {{#if isPublished}}
+  <tr>
+    <th>{{t 'components.shareInfoHead.publicHandle'}}</th>
+    <td>{{input-copy inputValue=share.handle.publicHandle autofocus=false}}</td>
+  </tr>
+  {{/if}}
 </table>

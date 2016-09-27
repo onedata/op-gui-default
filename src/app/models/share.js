@@ -1,4 +1,5 @@
 import DS from 'ember-data';
+import Ember from 'ember';
 
 /**
  * A container for shared files.
@@ -15,4 +16,8 @@ export default DS.Model.extend({
   dataSpace: DS.belongsTo('data-space', {async: true}),
   publicUrl: DS.attr('string'),
   handle: DS.belongsTo('handle', {async: true}),
+
+  hasHandle: Ember.computed('handle.content', function() {
+    return this.belongsTo('handle').id() != null;
+  }),
 });

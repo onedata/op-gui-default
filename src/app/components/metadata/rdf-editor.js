@@ -18,6 +18,8 @@ export default Ember.Component.extend({
    */
   readOnly: false,
 
+  disabled: false,
+
   isError: Ember.computed('error', function() {
     return !!this.get('error');
   }),

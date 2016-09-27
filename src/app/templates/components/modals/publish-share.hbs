@@ -12,8 +12,9 @@
   {{#bs-modal-body class='publish-share-modal-body'}}
 
     {{#power-select
+      selected=handleService
       options=availableHandleServices
-      selected=selected onchange=(action 'handleServiceChanged')
+      onchange=(action 'handleServiceChanged')
       placeholder=(t 'components.modals.publishShare.selectHandleServicePlaceholder')
       as |hs|}}
         {{hs.name}}
@@ -22,7 +23,7 @@
     {{#if handleServicesNotEmpty}}
     <div class="op-panel op-panel-azure">
       {{!-- TODO: this editor should not be named "rdf-editor" --}}
-      {{metadata/rdf-editor data=metadataString}}
+      {{metadata/rdf-editor data=metadataString disabled=metadataEditorDisabled}}
     </div>
     {{else}}
     <div class="modal-row">

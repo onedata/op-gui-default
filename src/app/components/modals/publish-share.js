@@ -64,6 +64,10 @@ export default Ember.Component.extend({
     });
   }),
 
+  metadataEditorDisabled: Ember.computed('handleService', function() {
+    return !this.get('handleService');
+  }),
+
   handleServicesNotEmpty: Ember.computed('availableHandleServices', function() {
     return this.get('availableHandleServices');
   }),

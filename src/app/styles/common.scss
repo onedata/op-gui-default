@@ -371,6 +371,9 @@ html, body {
             // TODO: this causes a left "margin" of horizontal lines...
             border-left: 5px solid;
             border-left-color: transparent;
+            &:hover {
+              border-left-color: $onedata-light-gray;
+            }
           }
 
           &.active.first-level {

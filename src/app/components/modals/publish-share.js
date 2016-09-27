@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 /**
- * FIXME: description
+ * A modal for publishing a share by creating a ``handle`` record.
  *
  * @module modals/publish-share
  * @author Jakub Liput
@@ -43,6 +43,13 @@ export default Ember.Component.extend({
   availableHandleServices: null,
 
   /**
+   * A flag to indicate that fetched list of ``handleServices`` is empty
+   * or unavailable.
+   * @type {Boolean}
+   */
+  noHandleServicesAvailable: false,
+
+  /**
    * MetadataString that will be added to handle created with this modal.
    * @type {String}
    */
@@ -59,8 +66,14 @@ export default Ember.Component.extend({
       if (hsList) {
         this.set('availableHandleServices', hsList);
       } else {
-        // FIXME: handle empty handle services
+        this.set('noHandleServicesAvailable', true);
       }
+    });
+
+    // TODO: indicate error when handle services cannot be fetched
+    fetchPromise.catch((error) => {
+      console.error(`Cannot fetch handle services list due to an error: ${error.message}`);
+      this.set('noHandleServicesAvailable', true);
     });
   }),
 
@@ -69,7 +82,9 @@ export default Ember.Component.extend({
   }),
 
   handleServicesNotEmpty: Ember.computed('availableHandleServices', function() {
-    return this.get('availableHandleServices');
+    return this.get('availableHandleServices') &&
+      this.get('availableHandleServices.length') > 0 &&
+      !this.get('noHandleServicesAvailable');
   }),
 
   isBusy: Ember.computed.alias('isSubmitting'),
@@ -80,9 +95,9 @@ export default Ember.Component.extend({
 
   resetProperties() {
     this.setProperties({
-      shareName: null,
-      error: null,
-      file: null,
+      availableHandleServices: null,
+      noHandleServicesAvailable: false,
+      metadataString: null,
       isSubmitting: false,
     });
   },

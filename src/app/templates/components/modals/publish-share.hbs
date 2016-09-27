@@ -11,15 +11,20 @@
   }}
   {{#bs-modal-body class='publish-share-modal-body'}}
 
+
     <div class="modal-row">
-      {{#power-select
-        selected=handleService
-        options=availableHandleServices
-        onchange=(action 'handleServiceChanged')
-        placeholder=(t 'components.modals.publishShare.selectHandleServicePlaceholder')
-        as |hs|}}
-          {{hs.name}}
-      {{/power-select}}
+      {{#if noHandleServicesAvailable}}
+        
+      {{else}}
+        {{#power-select
+          selected=handleService
+          options=availableHandleServices
+          onchange=(action 'handleServiceChanged')
+          placeholder=(t 'components.modals.publishShare.selectHandleServicePlaceholder')
+          as |hs|}}
+            {{hs.name}}
+        {{/power-select}}
+      {{/if}}
     </div>
 
     {{#if handleServicesNotEmpty}}

@@ -22,6 +22,10 @@ export default Ember.Component.extend({
    */
   rootDir: null,
 
+  didInsertElement() {
+    $('.secondary-sidebar').resizable({handleSelector: '', resizeHeight: false});
+  },
+
   /*** Bind with main-menu service, TODO: use mixin or something? ***/
   SERVICE_API: ['setRootDir'],
 

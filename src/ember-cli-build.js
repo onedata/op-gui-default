@@ -29,12 +29,15 @@ module.exports = function(defaults) {
   // please specify an object with the list of modules as keys
   // along with the exports of each module as its value.
 
-  app.import("bower_components/resumable.js/resumable.js");
-  app.import("bower_components/moment/min/moment-with-locales.min.js");
+  const BOWER_ASSETS = [
+    'resumable.js/resumable.js',
+    'moment/min/moment-with-locales.min.js',
+    'spin.js/spin.js',
+    'animate.css/animate.min.css',
+    'jquery-resizable/dist/jquery-resizable.min.js',
+  ];
 
-  app.import(app.bowerDirectory + '/spin.js/spin.js');
-
-  app.import(app.bowerDirectory + '/animate.css/animate.min.css');
+  BOWER_ASSETS.forEach(path => app.import(app.bowerDirectory + '/' + path));
 
   return app.toTree();
 };

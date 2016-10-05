@@ -6,6 +6,7 @@ $top-bar-height: 72px !default;
 $global-min-width: 1000px !default;
 // $secondary-sidebar-width: 352px;
 $secondary-sidebar-width: 352px !default;
+$secondary-sidebar-width-max-addition: 400px;
 $secondary-sidebar-item-padding: $secondary-sidebar-width * 0.077 !default;
 
 $content-padding: 12px !default;
@@ -243,7 +244,7 @@ html, body {
       overflow-y: auto;
       height: 100%;
 
-      max-width: $secondary-sidebar-width;
+      max-width: $secondary-sidebar-width + $secondary-sidebar-width-max-addition;
       min-width: $secondary-sidebar-width;
 
       border-right: #E6E6E6 2px solid;

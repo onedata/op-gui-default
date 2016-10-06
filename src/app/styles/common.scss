@@ -238,7 +238,21 @@ html, body {
 
     background: $content-background-color;
 
+    .resize-handler {
+      position: absolute;
+      z-index: 1000;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      cursor: ew-resize;
+
+      .transparent {
+        color: transparent;
+      }
+    }
+
     nav.secondary-sidebar {
+      position: relative;
       float: left;
       overflow-x: hidden;
       overflow-y: auto;

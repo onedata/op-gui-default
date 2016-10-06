@@ -23,7 +23,18 @@ export default Ember.Component.extend({
   rootDir: null,
 
   didInsertElement() {
-    $('.secondary-sidebar').resizable({handleSelector: '', resizeHeight: false});
+    const handleSelector = '#data-sidebar-resize-handler';
+    const $resizeHandler = $(handleSelector);
+    const $secondarySidebar = $('.secondary-sidebar');
+    // resize handler is positioned absolutely to main-content
+    $resizeHandler.css('left', $secondarySidebar.width() - $resizeHandler.width()/2);
+    $('.secondary-sidebar').resizable({
+      handleSelector: handleSelector,
+      resizeHeight: false,
+      onDrag(e, $el, newWidth/*, newHeight, opt*/) {
+        $resizeHandler.css('left', newWidth - $resizeHandler.width()/2);
+      }
+    });
   },
 
   /*** Bind with main-menu service, TODO: use mixin or something? ***/

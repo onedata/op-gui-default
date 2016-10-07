@@ -26,6 +26,8 @@ export default Ember.Mixin.create({
   size: DS.attr('number'),
   permissions: DS.attr('number'),
 
+  childrenCount: DS.attr('number'),
+
   /// Runtime fields used to store state of file in application
   isExpanded: false,
   isSelected: false,
@@ -310,8 +312,10 @@ export default Ember.Mixin.create({
     return new Ember.RSVP.Promise((resolve, reject) => {
       let savePromise = record.save();
       savePromise.then(
-        () => {
-          resolve(record);
+        (fileId) => {
+          const findNewFile = this.get('store').findRecord('file', fileId);
+          findNewFile.then(record => resolve(record));
+          // FIXME: handle newly created file fetch failed
         },
         (error) => {
           // advanced error notifier moved up

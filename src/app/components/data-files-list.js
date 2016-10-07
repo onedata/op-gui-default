@@ -225,6 +225,10 @@ export default Ember.Component.extend({
     toggleFileMetadata(file) {
       this.get('fileSystemTree').toggleMetadataEditor(file);
     },
+
+    fetchMoreFiles() {
+      this.get('server').fetchMoreChildren(this.get('dir.id'), this.get('files.count'));
+    }
   }
 
 });

@@ -104,6 +104,45 @@ export default Ember.Service.extend({
    Files/directories operations
    -------------------------------------------------------------------- */
 
+   /**
+    * Request creation of a File for given parent directory.
+    *
+    * @param {String} fileName Name of new File
+    * @param {String} parentId ID of File record that is a parent dir for new file
+    * @param {String} type Type-string of file object: "file" or "dir"
+    * @returns {RSVP.Promise} A backend operation completion:
+    * - ``resolve(object: data)`` when successfully created the share
+    *   - ``data.fileId`` (string) - an ID of the created File record
+    * - ``reject(object: error)`` on failure
+    */
+  createFile(fileName, parentId, type) {
+    return this.get('server').privateRPC('createFile', {
+      fileName: name,
+      parentId: parentId,
+      type: type,
+    });
+  },
+
+  /**
+   * Request backend to send more children files for given directory.
+   * Used for dynamically load more files for directory.
+   *
+   * @param {String} dirId ID of File record which is a directory whose
+   *                       children should be loaded
+   * @param {Number} currentChildrenCount Current number of loaded directory
+   *                                      children
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve(object: data)`` when successfully created the share
+   *   - ``data.newChildrenCount`` (number) - new number of children of directory
+   * - ``reject(object: error)`` on failure
+   */
+  fetchMoreChildren(dirId, currentChildrenCount) {
+    return this.get('server').privateRPC('fetchMoreChildren', {
+      dirId: dirId,
+      currentChildrenCount: currentChildrenCount,
+    });
+  },
+
   /**
    * Request creation of a Share for given directory.
    *

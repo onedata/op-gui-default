@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 /**
- * Container for data-files-tree-nodes.
+ * Container for data-files-tree-list(s).
  *
  * Sends actions:
  * - openDirInBrowser(file) - open dir for browsing

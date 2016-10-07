@@ -1,0 +1,17 @@
+<div id="tree-dir-{{file.id}}"
+  class="secondary-sidebar-item dir-item single-selectable onedata-red {{if (eq file.id fileBrowser.dir.id) 'active'}}">
+  <span class="item-element item-icon" {{action 'toggleDir'}}>
+    {{file-icon file=file containerType='tree'}}
+  </span>
+  <span class="item-element item-click-area"  {{action 'browseDir' file}}>
+    <span class="item-label">
+      <div class="truncate truncate-secondary-sidebar-item {{levelClass}}">
+        {{file.name}}
+      </div>
+    </span>
+  </span>
+</div>
+{{#if file.isExpanded}}
+  {{data-files-tree-list rootDir=file openDirInBrowser="openDirInBrowser"
+    level=(inc level)}}
+{{/if}}

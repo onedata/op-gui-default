@@ -13,6 +13,7 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   fileBrowser: Ember.inject.service(),
   fileSystemTreeService: Ember.inject.service('fileSystemTree'),
+  eventsBus: Ember.inject.service(),
 
   classNames: ['data-files-tree'],
 
@@ -54,9 +55,11 @@ export default Ember.Component.extend({
       resizeHeight: false,
       onDrag(e, $el, newWidth/*, newHeight, opt*/) {
         $resizeHandler.css('left', newWidth - $resizeHandler.width()/2);
+        self.get('eventsBus').trigger('secondarySidebar:resized');
       },
       onDragEnd(/*e, $el, opt*/) {
         self.get('updateResizeHandlerPositionFun')();
+        self.get('eventsBus').trigger('secondarySidebar:resized');
       },
     });
   },

@@ -4,6 +4,7 @@ const PER_LEVEL_PADDING_PX = 22;
 
 export default Ember.Component.extend({
   fileBrowser: Ember.inject.service(),
+  eventsBus: Ember.inject.service(),
 
   tagName: 'li',
   classNames: ['data-files-list-item'],
@@ -14,11 +15,34 @@ export default Ember.Component.extend({
    */
   level: null,
 
+  didInsertElement() {
+    this.updateTruncateSize();
+    this.get('eventsBus').on('secondarySidebar:resized', this.get('updateTruncateSizeFun'));
+  },
+
+  willDestroyElement() {
+    this.get('eventsBus').off('secondarySidebar:resized', this.get('updateTruncateSizeFun'));
+  },
+
   innerItemStyle: Ember.computed('level', function() {
     return Ember.String.htmlSafe(
       `padding-left: ${this.get('level')*PER_LEVEL_PADDING_PX}px;`
     );
   }),
+
+  updateTruncateSizeFun: Ember.computed(function() {
+    return () => this.updateTruncateSize();
+  }),
+
+  updateTruncateSize() {
+    const $item = this.$().find('.secondary-sidebar-item');
+    const $trunc = $item.find('.truncate-secondary-sidebar-item').first();
+    const $secondarySidebar = $('.secondary-sidebar');
+    $trunc.css(
+      'max-width',
+      ($secondarySidebar.width() - ($trunc.offset().left - $secondarySidebar.offset().left) - parseInt($item.css('padding-right'))) + 'px'
+    );
+  },
 
   actions: {
     toggleDir() {

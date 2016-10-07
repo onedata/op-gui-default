@@ -260,6 +260,7 @@ html, body {
       height: 100%;
 
       max-width: $secondary-sidebar-width + $secondary-sidebar-width-max-addition;
+      width: $secondary-sidebar-width;
       min-width: $secondary-sidebar-width;
 
       border-right: #E6E6E6 2px solid;
@@ -332,7 +333,9 @@ html, body {
 
         .item-icon {
           display: table-cell;
-          width: 1.5em;
+          min-width: 32px;
+          width: 32px;
+          max-width: 32px;
           vertical-align: middle;
           font-size: $secondary-sidebar-icon-font-size;
           text-align: center;
@@ -340,7 +343,6 @@ html, body {
 
         .item-label {
           display: table-cell;
-          width: 100%;
           vertical-align: middle;
           font-size: $secondary-sidebar-font-size;
           padding-left: 1em;
@@ -549,34 +551,6 @@ html, body {
 
 .truncate-secondary-sidebar-select {
   max-width: $secondary-sidebar-width - 110px;
-}
-
-.truncate-secondary-sidebar-item {
-  max-width: $secondary-sidebar-width - 70px;
-
-  &.level-1 {
-    max-width: $secondary-sidebar-width - 100px;
-  }
-
-  &.level-2 {
-    max-width: $secondary-sidebar-width - 120px;
-  }
-
-  &.level-3 {
-    max-width: $secondary-sidebar-width - 140px;
-  }
-
-  &.level-4 {
-    max-width: $secondary-sidebar-width - 160px;
-  }
-
-  &.level-5 {
-    max-width: $secondary-sidebar-width - 180px;
-  }
-
-  &.level-6 {
-    max-width: $secondary-sidebar-width - 200px;
-  }
 }
 
 .truncate-drop {

@@ -1,11 +1,12 @@
 import Ember from 'ember';
 
+const PER_LEVEL_PADDING_PX = 22;
+
 export default Ember.Component.extend({
   fileBrowser: Ember.inject.service(),
 
   tagName: 'li',
   classNames: ['data-files-list-item'],
-  classNameBindings: ['levelClass'],
 
   /**
    * To inject.
@@ -13,9 +14,10 @@ export default Ember.Component.extend({
    */
   level: null,
 
-  levelClass: Ember.computed('level', function() {
-    let level = this.get('level');
-    return level ? `level-${level}` : '';
+  innerItemStyle: Ember.computed('level', function() {
+    return Ember.String.htmlSafe(
+      `padding-left: ${this.get('level')*PER_LEVEL_PADDING_PX}px;`
+    );
   }),
 
   actions: {

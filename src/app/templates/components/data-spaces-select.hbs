@@ -1,22 +1,20 @@
 <div class="dropdown">
-  <a href="#" class="dropdown-toggle secondary-sidebar-item secondary-sidebar-header single-selectable"
+  <a href="#" class="dropdown-toggle secondary-sidebar-item secondary-sidebar-header single-selectable dropdown-select-icon"
     data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-    <div class="item-element dropdown-select-icon">
-      <div class="item-icon">
-        {{icon (if selectedSpace.isDefault 'space-home' 'space')}}
+    <div class="item-icon">
+      {{icon (if selectedSpace.isDefault 'space-home' 'space')}}
+    </div>
+    <div class="item-label" title="{{selectedSpace.name}}">
+      <div class="truncate truncate-secondary-sidebar-select">
+        {{#if isLoading}}
+          ...
+        {{else}}
+          {{selectedSpace.name}}
+        {{/if}}
       </div>
-      <div class="item-label" title="{{selectedSpace.name}}">
-        <div class="truncate truncate-secondary-sidebar-select">
-          {{#if isLoading}}
-            ...
-          {{else}}
-            {{selectedSpace.name}}
-          {{/if}}
-        </div>
-      </div>
-      <div class="item-icon select-arrow">
-        {{icon 'arrow-down'}}
-      </div>
+    </div>
+    <div class="item-icon select-arrow">
+      {{icon 'arrow-down'}}
     </div>
   </a>
   <ul class="dropdown-menu dropdown-menu-down expand-left dropdown-menu-list dropdown-sidebar-select">

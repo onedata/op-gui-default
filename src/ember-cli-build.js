@@ -35,6 +35,7 @@ module.exports = function(defaults) {
     'spin.js/spin.js',
     'animate.css/animate.min.css',
     'jquery-resizable/dist/jquery-resizable.min.js',
+    'df-visible/jquery.visible.min.js',
   ];
 
   BOWER_ASSETS.forEach(path => app.import(app.bowerDirectory + '/' + path));

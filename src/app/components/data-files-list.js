@@ -72,6 +72,39 @@ export default Ember.Component.extend({
    */
   dir: null,
 
+  /**
+   * If scrolling, how many files ahead we should invoke more files loading.
+   * @type {Number}
+   */
+  preloadAheadIndexes: 10,
+
+  /**
+   * True, if fetch more files has been requested but not completed.
+   * @type {Boolean} 
+   */
+  fetchMoreFilesRequested: false,
+
+  isLoadingMoreFiles: Ember.computed.alias('fetchMoreFilesRequested'),
+
+  /**
+   * Promise create when requested more files from backend.
+   * Not null if at least one request for fetching more files was made.
+   * @type {RSVP.Promise}
+   */
+  fetchMoreFilesPromise: null,
+
+  /**
+   * If fetching more files ended with an error, store it here.
+   * If it is not null, fetching more files will be disabled.
+   */
+  fetchMoreFilesError: null,
+
+  /**
+   * True if all children files of the ``dir`` are loaded (using backend paging).
+   * @type {Boolean}
+   */
+  allFilesLoaded: false,
+
   // TODO: sorting switch in GUI
   filesSorting: ['type:asc', 'name:asc'],
   files: Ember.computed.alias('dir.children'),
@@ -111,6 +144,14 @@ export default Ember.Component.extend({
     }
   })),
 
+  /**
+   * Which file with index should be watched for visibility.
+   * @type {Number}
+   */
+  indexToWatch: Ember.computed('visibleFiles.length', 'preloadAheadIndexes', function() {
+    return this.get('visibleFiles.length') - this.get('preloadAheadIndexes') - 1;
+  }),
+
   didInsertElement() {
     this.dirChanged();
     if (this.get('uploadEnabled')) {
@@ -119,14 +160,25 @@ export default Ember.Component.extend({
     }
   },
 
-  dirChanged: function() {
+  resetProperties() {
+    this.setProperties({
+      fetchMoreFilesRequested: false,
+      fetchMoreFilesError: null,
+      fetchMoreFilesPromise: null,
+      allFilesLoaded: false,
+    });
+  },
+
+  dirChanged: Ember.observer('dir', function() {
     const dir = this.get('dir');
     this.setProperties({
       'fileUpload.dir': dir,
       'fileBrowser.dir': dir
     });
     this.get('fileSystemTree').expandDir(dir);
-  }.observes('dir'),
+    this.resetProperties();
+    this.set('allFilesLoaded', this.get('dir.allChildrenLoaded') === true);
+  }),
 
   fileDownloadServerMethod: Ember.computed('downloadMode', function() {
     switch (this.get('downloadMode')) {
@@ -226,8 +278,58 @@ export default Ember.Component.extend({
       this.get('fileSystemTree').toggleMetadataEditor(file);
     },
 
-    fetchMoreFiles() {
-      this.get('server').fetchMoreChildren(this.get('dir.id'), this.get('files.count'));
+    fetchMoreFiles(resolve, reject) {
+      if (!this.get('fetchMoreFilesRequested')) {
+        const currentFilesCount = this.get('files.length');
+        this.set('fetchMoreFilesRequested', true);
+        try {
+          const fetchPromise = this.get('oneproviderServer').fetchMoreChildren(this.get('dir.id'), this.get('files.count'));
+          fetchPromise.then((data) => {
+            const filesCount = data.newChildrenCount;
+            if (filesCount <= currentFilesCount) {
+              this.set('allFilesLoaded', true);
+            }
+          });
+          fetchPromise.catch((error) => {
+            this.set('fetchMoreFilesError', error);
+            this.get('notify').error(this.get('i18n').t('components.dataFilesList.cannotFetchMoreFiles', {
+              errorMessage: error.message
+            }));
+          });
+          fetchPromise.finally(() => this.set('fetchMoreFilesRequested', false));
+          this.set('fetchMoreFilesPromise', fetchPromise);
+        } catch (error) {
+          this.set('fetchMoreFilesRequested', false);
+          throw error;
+        }
+      } else {
+        console.debug('Requested fetching more files, but already waiting...');
+      }
+
+      // get previously saved promise - this can be promise created in this or previous invocation
+      const promise = this.get('fetchMoreFilesPromise');
+      // handle resolve/reject passed to this action
+      promise.then((data) => {
+        if (resolve) {
+          resolve(data);
+        }
+      },
+      (error) => {
+        if (reject) {
+          reject(error);
+        }
+      });
+    },
+
+    fileAppeared(/*index*/) {
+      const props = this.getProperties(
+        'allFilesLoaded',
+        'fetchMoreFilesRequested',
+        'fetchMoreFilesError'
+      );
+      if (!props.allFilesLoaded && !props.fetchMoreFilesRequested && !props.fetchMoreFilesError) {
+        this.send('fetchMoreFiles');
+      }
     }
   }
 

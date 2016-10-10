@@ -327,6 +327,7 @@ export default {
       permissions: 'permissions',
       fileIsBroken: 'This file is not synced yet',
       updatingMessage: 'Updating files list...',
+      cannotFetchMoreFiles: 'Tried fetch to more files from server, but it failed: {{errorMessage}}',
       downloadError: {
         title: 'Cannot download file',
         message: 'File "{{fileName}}" cannot be downloaded because of server error: {{errorMessage}}'

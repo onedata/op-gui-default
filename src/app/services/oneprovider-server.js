@@ -136,7 +136,7 @@ export default Ember.Service.extend({
    *   - ``data.newChildrenCount`` (number) - new number of children of directory
    * - ``reject(object: error)`` on failure
    */
-  fetchMoreChildren(dirId, currentChildrenCount) {
+  fetchMoreDirChildren(dirId, currentChildrenCount) {
     return this.get('server').privateRPC('fetchMoreChildren', {
       dirId: dirId,
       currentChildrenCount: currentChildrenCount,

@@ -283,7 +283,7 @@ export default Ember.Component.extend({
         const currentFilesCount = this.get('files.length');
         this.set('fetchMoreFilesRequested', true);
         try {
-          const fetchPromise = this.get('oneproviderServer').fetchMoreChildren(this.get('dir.id'), this.get('files.count'));
+          const fetchPromise = this.get('oneproviderServer').fetchMoreDirChildren(this.get('dir.id'), this.get('files.length'));
           fetchPromise.then((data) => {
             const filesCount = data.newChildrenCount;
             if (filesCount <= currentFilesCount) {

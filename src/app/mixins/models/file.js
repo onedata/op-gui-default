@@ -32,7 +32,7 @@ export default Ember.Mixin.create({
    * If ``totalChildrenCount`` is more than actual ``children.length``, it means
    * that more children can be fetch from server.
    *  
-   * See also: ``oneproviderServer.fetchMoreChildren``.
+   * See also: ``oneproviderServer.fetchMoreDirChildren``.
    * 
    * See also: ``allChildrenLoaded`` computed property.
    */

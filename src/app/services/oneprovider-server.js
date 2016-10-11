@@ -117,7 +117,7 @@ export default Ember.Service.extend({
     */
   createFile(fileName, parentId, type) {
     return this.get('server').privateRPC('createFile', {
-      fileName: name,
+      fileName: fileName,
       parentId: parentId,
       type: type,
     });

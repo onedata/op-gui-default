@@ -120,12 +120,13 @@ export default Ember.Component.extend({
   /**
    * A file browser loading state. Not only checks if files model is loaded
    * but also checks if fileUpload is locked.
+   * It is used to toggle a loader indicator for files browser.
    */
-  isLoadingFiles: function() {
+  isLoadingFiles: Ember.computed('files.isUpdating', 'files', 'files.[]', 'files.@each.isLoaded', 'fileUpload.locked', function() {
     return this.get('fileUpload.locked') ||
       !!this.get('files').any((f) => !f.get('isLoaded')) ||
       this.get('files.isUpdating');
-  }.property('files.isUpdating', 'files', 'files.[]', 'files.@each.isLoaded', 'fileUpload.locked'),
+  }),
 
   toggleLoader: Ember.on('init', Ember.observer('isLoadingFiles', 'commonLoader.isLoading', 'commonLoader.type', function() {
     if (this.get('isLoadingFiles')) {
@@ -325,10 +326,14 @@ export default Ember.Component.extend({
       const props = this.getProperties(
         'allFilesLoaded',
         'fetchMoreFilesRequested',
-        'fetchMoreFilesError'
+        'fetchMoreFilesError',
+        'isLoadingFiles'
       );
-      if (!props.allFilesLoaded && !props.fetchMoreFilesRequested && !props.fetchMoreFilesError) {
-        this.send('fetchMoreFiles');
+      if (!props.isLoadingFiles &&
+        !props.allFilesLoaded &&
+        !props.fetchMoreFilesRequested &&
+        !props.fetchMoreFilesError) {
+          this.send('fetchMoreFiles');
       }
     }
   }

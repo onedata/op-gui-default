@@ -153,7 +153,8 @@ export default Ember.Component.extend({
    * @type {Number}
    */
   indexToWatch: Ember.computed('visibleFiles.length', 'preloadAheadIndexes', function() {
-    return this.get('visibleFiles.length') - this.get('preloadAheadIndexes') - 1;
+    let index = this.get('visibleFiles.length') - this.get('preloadAheadIndexes') - 1;
+    return index > 0 ? index : 0;
   }),
 
   didInsertElement() {

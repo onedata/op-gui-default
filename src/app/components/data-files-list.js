@@ -80,7 +80,7 @@ export default Ember.Component.extend({
 
   /**
    * True, if fetch more files has been requested but not completed.
-   * @type {Boolean} 
+   * @type {Boolean}
    */
   fetchMoreFilesRequested: false,
 
@@ -105,13 +105,16 @@ export default Ember.Component.extend({
    */
   allFilesLoaded: false,
 
-  // TODO: sorting switch in GUI
-  filesSorting: ['type:asc', 'name:asc'],
   files: Ember.computed.alias('dir.children'),
   visibleFiles: function() {
     return this.get('files').filter((f) => f.get('isLoaded') && !f.get('isBroken'));
   }.property('files', 'files.[]', 'files.@each.isLoaded'),
-  visibleFilesSorted: Ember.computed.sort('visibleFiles', 'filesSorting'),
+
+  /**
+   * Currently files are sorted by backend and we do not change this.
+   * @type {File[]}
+   */
+  visibleFilesSorted: Ember.computed.alias('visibleFiles'),
 
   dirIsEmpty: function() {
     return !this.get('visibleFiles') || this.get('visibleFiles.length') === 0;

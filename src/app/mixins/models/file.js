@@ -327,11 +327,7 @@ export default Ember.Mixin.create({
     const parentId = this.get('id');
 
     return new Ember.RSVP.Promise((resolve, reject) => {
-      const savePromise = this.get('oneproviderServer').createFile({
-        fileName: fileName,
-        parentId: parentId,
-        type: type
-      });
+      const savePromise = this.get('oneproviderServer').createFile(fileName, parentId, type);
       savePromise.then(
         (data) => {
           const fileId = data.fileId;

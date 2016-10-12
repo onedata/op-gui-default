@@ -8,12 +8,12 @@
   text-transform: uppercase;
   color: #56616E;
   background-color: transparent;
-  border: none;
+  border: 0;
   border-radius: 0;
 
   .form-control {
     font-size: inherit;
-    border: none;
+    border: 0;
     border-radius: none;
     -webkit-box-shadow: none;
     box-shadow: none;
@@ -262,8 +262,29 @@
   }
 }
 
-.file-upload {
+.data-files-list-loader {
+  // is floating above files list
+  position: absolute;
+  z-index: 1100;
+  left: 0;
+  right: 0;
+  background-color: rgba($onedata-light-gray, .5);
 
+  .data-files-list-loader-gradient {
+    min-height: 100px;
+    max-height: 100%;
+    @include linear-gradient($onedata-light-gray, rgba($onedata-light-gray, 0));
+
+    
+    .spinner-container {
+      width: 100%;
+    }
+
+  }
+
+  .spinner-container {
+    top: 30px;
+  }
 }
 
 .empty-dir-image {
@@ -274,6 +295,10 @@
   animation: azure-pulse 3s infinite;
 }
 
+.notice-background-pulse {
+  animation: light-azure-pulse-onetime 2s;
+}
+
 @keyframes azure-pulse {
   0% {
     background-color: $onedata-light-azure;
@@ -282,7 +307,19 @@
     background-color: $onedata-azure;
   }
   100% {
-    background-color: $onedata-light-azure;;
+    background-color: $onedata-light-azure;
+  }
+}
+
+@keyframes light-azure-pulse-onetime {
+  0% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: $onedata-light-azure;
+  }
+  100% {
+    background-color: transparent;
   }
 }
 

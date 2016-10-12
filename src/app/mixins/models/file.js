@@ -42,6 +42,7 @@ export default Ember.Mixin.create({
   isExpanded: false,
   isSelected: false,
   isEditingMetadata: false,
+  isNewlyCreated: false,
 
   /** @abstract */
   share: undefined,
@@ -332,7 +333,10 @@ export default Ember.Mixin.create({
         (data) => {
           const fileId = data.fileId;
           const findNewFile = this.get('store').findRecord('file', fileId);
-          findNewFile.then(record => resolve(record));
+          findNewFile.then(record => {
+            record.set('isNewlyCreated', true);
+            resolve(record);
+          });
           // FIXME: handle newly created file fetch failed
         },
         (error) => {

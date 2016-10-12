@@ -2,10 +2,12 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   tagName: 'tr',
-  classNames: ['first-level'],
+  classNames: ['first-level', 'file-row'],
   classNameBindings: [
     'highlightClass',
-    'isDownloading:selection-background-pulse'
+    'isDownloading:selection-background-pulse',
+    'indexClass',
+    'isNewlyCreated:notice-background-pulse'
   ],
 
   highlightClass: Ember.computed('file.isSelected', 'file.isEditingMetadata', function() {
@@ -13,6 +15,12 @@ export default Ember.Component.extend({
       this.get('file.isEditingMetadata') && 'metadata-opened' ||
       '';
   }),
+
+  indexClass: Ember.computed('listIndex', function() {
+    return `file-row-index-${this.get('listIndex')}`;
+  }),
+
+  isNewlyCreated: Ember.computed.alias('file.isNewlyCreated'),
 
   /**
    * To inject - a file that the row represents
@@ -73,7 +81,7 @@ export default Ember.Component.extend({
     const self = this;
     return function() {
       if (self.$().visible()) {
-        self.sendAction('onAppear', self.get('listIndex')); 
+        self.sendAction('onAppear', self.get('listIndex'));
       }
     };
   }),

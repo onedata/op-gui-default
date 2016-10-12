@@ -36,6 +36,7 @@ module.exports = function(defaults) {
     'animate.css/animate.min.css',
     'jquery-resizable/dist/jquery-resizable.min.js',
     'df-visible/jquery.visible.min.js',
+    'jquery-sticky/jquery.sticky.js',
   ];
 
   BOWER_ASSETS.forEach(path => app.import(app.bowerDirectory + '/' + path));

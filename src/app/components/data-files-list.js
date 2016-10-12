@@ -48,7 +48,7 @@ export default Ember.Component.extend({
    * One of: data, shared, public
    * @type {String}
    */
-  downloadMode: false,
+  downloadMode: 'data',
 
   /**
    * To inject.
@@ -99,11 +99,35 @@ export default Ember.Component.extend({
    */
   fetchMoreFilesError: null,
 
+  aheadFilesCount: 0,
+
+  currentFilesLoaded: Ember.computed('aheadFilesCount', 'visibleFiles.length', function() {
+    return this.get('aheadFilesCount') <= this.get('visibleFiles.length');
+  }),
+
   /**
    * True if all children files of the ``dir`` are loaded (using backend paging).
    * @type {Boolean}
    */
   allFilesLoaded: false,
+
+  // FIXME: doc
+  loadedFilesCount: null,
+
+  firstLoadDone: false,
+
+  /**
+   * An index of file row, which is a first of rows collection that
+   * is loading in latest ``fetchMoreFiles`` operation.
+   * The index is returned only if we are loading files.
+   * It is used to render a ``data-files-list-loader`` overlay on "loading" file rows.
+   * @type {Number}
+   */
+  loadingFileIndex: Ember.computed('currentFilesLoaded', 'isLoadingFiles', 'loadedFilesCount', function() {
+    if (this.get('isLoadingFiles') || !this.get('currentFilesLoaded')) {
+      return this.get('loadedFilesCount');
+    }
+  }),
 
   files: Ember.computed.alias('dir.children'),
   visibleFiles: function() {
@@ -131,8 +155,17 @@ export default Ember.Component.extend({
       this.get('files.isUpdating');
   }),
 
-  toggleLoader: Ember.on('init', Ember.observer('isLoadingFiles', 'commonLoader.isLoading', 'commonLoader.type', function() {
-    if (this.get('isLoadingFiles')) {
+  showGlobalLoader: Ember.computed('firstLoadDone', 'isLoadingFiles', 'isLoadingMoreFiles', function() {
+    if (!this.get('firstLoadDone') && this.get('isLoadingFiles') && !this.get('isLoadingMoreFiles')) {
+      this.set('firstLoadDone', true);
+      return true;
+    } else {
+      return false;
+    }
+  }),
+
+  toggleLoader: Ember.on('init', Ember.observer('showGlobalLoader', 'commonLoader.isLoading', 'commonLoader.type', function() {
+    if (this.get('showGlobalLoader')) {
       // prevent loader stealing
       if (!this.get('commonLoader.isLoading')) {
         this.get('commonLoader').setProperties({
@@ -170,9 +203,13 @@ export default Ember.Component.extend({
       fetchMoreFilesRequested: false,
       fetchMoreFilesError: null,
       fetchMoreFilesPromise: null,
-      allFilesLoaded: false,
+      loadedFilesCount: 0,
     });
   },
+
+  loadingFileIndexChanged: Ember.observer('loadingFileIndex', function() {
+    console.debug(`loadingFileIndex: ${this.get('loadingFileIndex')}`);
+  }),
 
   dirChanged: Ember.observer('dir', function() {
     const dir = this.get('dir');
@@ -183,6 +220,9 @@ export default Ember.Component.extend({
     this.get('fileSystemTree').expandDir(dir);
     this.resetProperties();
     this.set('allFilesLoaded', this.get('dir.allChildrenLoaded') === true);
+    dir.get('children').then(children =>
+      this.set('aheadFilesCount', children.get('length'))
+    );
   }),
 
   fileDownloadServerMethod: Ember.computed('downloadMode', function() {
@@ -286,6 +326,7 @@ export default Ember.Component.extend({
     fetchMoreFiles(resolve, reject) {
       if (!this.get('fetchMoreFilesRequested')) {
         const currentFilesCount = this.get('files.length');
+        this.set('loadedFilesCount', currentFilesCount);
         this.set('fetchMoreFilesRequested', true);
         try {
           const fetchPromise = this.get('oneproviderServer').fetchMoreDirChildren(this.get('dir.id'), this.get('files.length'));
@@ -294,6 +335,7 @@ export default Ember.Component.extend({
             if (filesCount <= currentFilesCount) {
               this.set('allFilesLoaded', true);
             }
+            this.set('aheadFilesCount', data.newChildrenCount);
           });
           fetchPromise.catch((error) => {
             this.set('fetchMoreFilesError', error);
@@ -341,5 +383,5 @@ export default Ember.Component.extend({
       }
     }
   }
-
+  
 });

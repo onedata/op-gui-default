@@ -275,7 +275,7 @@
     max-height: 100%;
     @include linear-gradient($onedata-light-gray, rgba($onedata-light-gray, 0));
 
-    
+
     .spinner-container {
       width: 100%;
     }
@@ -296,7 +296,7 @@
 }
 
 .notice-background-pulse {
-  animation: light-azure-pulse-onetime 2s;
+  animation: light-azure-pulse-onetime 0.75s;
 }
 
 @keyframes azure-pulse {
@@ -316,7 +316,7 @@
     background-color: transparent;
   }
   50% {
-    background-color: $onedata-light-azure;
+    background-color: $onedata-azure;
   }
   100% {
     background-color: transparent;

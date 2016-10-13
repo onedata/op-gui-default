@@ -171,7 +171,7 @@ export default Ember.Component.extend({
         this.get('commonLoader').setProperties({
           isLoading: true,
           message: this.get('i18n').t('components.dataFilesList.updatingMessage'),
-          area: 'content',
+          area: 'content-with-secondary-top',
           type: 'filesUpdate'
         });
       }
@@ -198,6 +198,21 @@ export default Ember.Component.extend({
     }
   },
 
+  willDestroyElement() {
+    this.setGlobalDir(null);
+  },
+
+  /**
+   * Sets global file browser state.
+   * @param {File} dir
+   */
+  setGlobalDir(dir) {
+    this.setProperties({
+      'fileUpload.dir': dir,
+      'fileBrowser.dir': dir
+    });
+  },
+
   resetProperties() {
     this.setProperties({
       fetchMoreFilesRequested: false,
@@ -213,10 +228,7 @@ export default Ember.Component.extend({
 
   dirChanged: Ember.observer('dir', function() {
     const dir = this.get('dir');
-    this.setProperties({
-      'fileUpload.dir': dir,
-      'fileBrowser.dir': dir
-    });
+    this.setGlobalDir(dir);
     this.get('fileSystemTree').expandDir(dir);
     this.resetProperties();
     this.set('allFilesLoaded', this.get('dir.allChildrenLoaded') === true);
@@ -383,5 +395,4 @@ export default Ember.Component.extend({
       }
     }
   }
-  
 });

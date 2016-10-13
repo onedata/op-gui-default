@@ -85,7 +85,7 @@ export default Ember.Route.extend(RouteRejectHandler, {
       this.get('commonLoader').setProperties({
         isLoading: true,
         message: this.get('i18n').t('data.dataSpace.dir.loaderMessage'),
-        area: 'content'
+        area: 'content-with-secondary-top'
       });
     },
 

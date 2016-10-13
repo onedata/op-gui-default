@@ -2,12 +2,18 @@
 {{page-title (t 'data.title')}}
 
 {{!-- Secondary sidebar --}}
+<div class="secondary-top-bar">
+  {{file-breadcrumbs file=dir changeDir="openDirInBrowser"}}
+</div>
+
+{{!-- Secondary sidebar --}}
 <nav class="secondary-sidebar">
   {{data-spaces-select spaces=model goToDataSpace="goToDataSpace"}}
   {{outlet "data-space"}}
 </nav>
 
-<div class="resize-handler transparent" id="data-sidebar-resize-handler">
+<div class="resize-handler data-sidebar-resize-handler transparent"
+  id="data-sidebar-resize-handler">
 </div>
 
 <div id="content-scroll">

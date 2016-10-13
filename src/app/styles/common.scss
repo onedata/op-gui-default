@@ -7,7 +7,7 @@ $global-min-width: 1000px !default;
 // $secondary-sidebar-width: 352px;
 $secondary-sidebar-width: 352px !default;
 $secondary-sidebar-width-max-addition: 400px;
-$secondary-sidebar-item-padding: $secondary-sidebar-width * 0.077 !default;
+$secondary-sidebar-item-padding: 22px !default;
 
 $content-padding: 12px !default;
 
@@ -25,6 +25,8 @@ $secondary-sidebar-icon-font-size: 38px !default;
 $top-bar-icon-font-size: 32px !default;
 
 $table-checkbox-size: 48px !default;
+
+$secondary-top-bar-height: 50px;
 
 $transition-time: 0.25s !default;
 
@@ -250,6 +252,21 @@ html, body {
       .transparent {
         color: transparent;
       }
+
+      &.data-sidebar-resize-hander {
+        top: $secondary-top-bar-height;
+      }
+    }
+
+    // an element that should be inside main content
+    // and is above sidebar and content-scroll
+    // is serves as a contextual navigation
+    .secondary-top-bar {
+      position: relative;
+      padding-top: 12px;
+      padding-left: 27px * $responsive-multiplier;
+      height: $secondary-top-bar-height;
+      border-bottom: $color-secondary-top-bar-separator solid 2px;
     }
 
     nav.secondary-sidebar {
@@ -263,7 +280,7 @@ html, body {
       width: $secondary-sidebar-width;
       min-width: $secondary-sidebar-width;
 
-      border-right: #E6E6E6 2px solid;
+      border-right: $color-secondary-sidebar-separator 2px solid;
 
       // TODO: responsive variables?
       .secondary-sidebar-header {

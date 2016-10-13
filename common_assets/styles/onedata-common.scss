@@ -97,6 +97,9 @@ $icomoon-font-path: 'fonts/oneicons';
     .visible-on-parent-hover, .transparent-not-hovered {
       color: transparent !important;
     }
+    .visible-on-parent-hover-25p {
+      opacity: 0.25;
+    }
   }
 }
 
@@ -112,9 +115,23 @@ $icomoon-font-path: 'fonts/oneicons';
 .spinner-container {
   position: relative;
 
+  &.spinner-32 {
+    width: 32px;
+    height: 32px;
+  }
+
   &.spinner-64 {
     width: 64px;
     height: 64px;
+  }
+
+  &.spinner-128 {
+    width: 128px;
+    height: 128px;
+  }
+
+  &.spinner-centered {
+    width: 100% !important;
   }
 }
 

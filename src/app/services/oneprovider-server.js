@@ -131,15 +131,17 @@ export default Ember.Service.extend({
    *                       children should be loaded
    * @param {Number} currentChildrenCount Current number of loaded directory
    *                                      children
+   * @param {String} fileModelType can be: file, file-shared, file-public
    * @returns {RSVP.Promise} A backend operation completion:
    * - ``resolve(object: data)`` when successfully created the share
    *   - ``data.newChildrenCount`` (number) - new number of children of directory
    * - ``reject(object: error)`` on failure
    */
-  fetchMoreDirChildren(dirId, currentChildrenCount) {
+  fetchMoreDirChildren(dirId, currentChildrenCount, fileModelType) {
     return this.get('server').privateRPC('fetchMoreDirChildren', {
       dirId: dirId,
       currentChildrenCount: currentChildrenCount,
+      fileModelType: fileModelType,
     });
   },
 

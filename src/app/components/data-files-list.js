@@ -50,6 +50,19 @@ export default Ember.Component.extend({
    */
   downloadMode: 'data',
 
+  fileModelType: Ember.computed('downloadMode', function() {
+    switch (this.get('downloadMode')) {
+      case 'data':
+        return 'file';
+      case 'shared':
+        return 'file-shared';
+      case 'public':
+        return 'file-public';
+      default:
+
+    }
+  }),
+
   /**
    * To inject.
    * Optional: if specified, breadcrumbs will have this dir as a root.
@@ -341,7 +354,12 @@ export default Ember.Component.extend({
         this.set('loadedFilesCount', currentFilesCount);
         this.set('fetchMoreFilesRequested', true);
         try {
-          const fetchPromise = this.get('oneproviderServer').fetchMoreDirChildren(this.get('dir.id'), this.get('files.length'));
+          const fetchPromise = this.get('oneproviderServer')
+            .fetchMoreDirChildren(
+              this.get('dir.id'),
+              this.get('files.length'),
+              this.get('fileModelType')
+            );
           fetchPromise.then((data) => {
             const filesCount = data.newChildrenCount;
             if (filesCount <= currentFilesCount) {

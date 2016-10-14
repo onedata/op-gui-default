@@ -57,7 +57,7 @@
       listIndex=index
       openFileShareModal='openFileShareModal'
       toggleFileMetadata='toggleFileMetadata'
-      watchAppear=(or (eq index indexToWatch) (eq index (dec visibleFiles.length)))
+      watchAppear=(or (eq index fileIndexToWatchVisibility) (eq index (dec visibleFiles.length)))
       onAppear=(action "fileAppeared" index)
       }}
     {{#if file.isEditingMetadata}}

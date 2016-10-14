@@ -96,6 +96,7 @@ export default Ember.Component.extend({
     if (this.get('watchAppear')) {
       this.disableVisibilityChecking();
     }
+    this.set('isNewlyCreated', false);
   },
 
   click() {

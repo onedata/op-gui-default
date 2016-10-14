@@ -4,6 +4,26 @@ import Ember from 'ember';
  * Files and subdirectories browser for single directory.
  * For file operations, see ``data-files-list-toolbar`` component.
  *
+ * ## Loading states
+ * Files list shows various loading indicators:
+ * - global loader
+ *   - blocks usage of whole data files list (currently blocks
+ *      whole content)
+ *   - it is turned on when loading children list of injected dir for
+ *     the first time
+ *   - see ``showGlobalLoader`` and ``toggleLoader`` method
+ * - more files requested loader
+ *   - is shown on the bottom of files list, can be not visible for user when
+ *     he scrolls the list
+ *   - is turned on when we reached some point in files list and we are making
+ *     request to fetch more files and new portion of files is not pushed yet
+ *   - see ``isLoadingMoreFiles`` property
+ * - last files push collection loading
+ *   - blocks usage of files fetched after last files push before alll files
+ *     from this push are loaded
+ *   - see ``data-files-list-loader`` component, which renders the loader
+ *   - see ``loadingFileIndex`` for row from what the loader begins on top
+ *
  * @module components/data-files-list
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
@@ -91,13 +111,6 @@ export default Ember.Component.extend({
   fetchMoreFilesRequested: false,
 
   /**
-   * True, if fetch more files has been requested but not completed.
-   * @private
-   * @type {Boolean}
-   */
-  isLoadingMoreFiles: Ember.computed.alias('fetchMoreFilesRequested'),
-
-  /**
    * Promise create when requested more files from backend.
    * Not null if at least one request for fetching more files was made.
    * @private
@@ -156,7 +169,16 @@ export default Ember.Component.extend({
    * Possible values: data, shared, public
    * @type {Computed<String>}
    */
-  browserLocation: Ember.alias('downloadMode'),
+  browserLocation: Ember.computed.alias('downloadMode'),
+
+  /**
+   * True, if fetch more files has been requested but not completed.
+   * @private
+   * @type {Boolean}
+   */
+  isLoadingMoreFiles: Ember.computed('fetchMoreFilesRequested', 'isPushAfterFetchMoreDone', function() {
+    return this.get('fetchMoreFilesRequested') || !this.get('isPushAfterFetchMoreDone');
+  }),
 
   /**
    * A type of used model of ``dir`` deduced from used file brower mode.
@@ -194,8 +216,12 @@ export default Ember.Component.extend({
    * need any loader.
    * @type {Computed<Boolean>}
    */
-  areCurrentFilesLoaded: Ember.computed('totalAheadFilesCount', 'files.length', function() {
-    return this.get('totalAheadFilesCount') <= this.get('files.length');
+  areCurrentFilesLoaded: Ember.computed('totalAheadFilesCount', 'loadedFiles.length', function() {
+    return this.get('totalAheadFilesCount') <= this.get('loadedFiles.length');
+  }),
+
+  isPushAfterFetchMoreDone: Ember.computed('totalAheadFilesCount', 'files.length', function() {
+    return this.get('totalAheadFilesCount') <= (this.get('files.length') || 0);
   }),
 
   /**
@@ -205,13 +231,17 @@ export default Ember.Component.extend({
    */
   files: Ember.computed.alias('dir.children'),
 
+  loadedFiles: Ember.computed('files.@each.isLoaded', function() {
+    return this.get('files').filter(f => f.get('isLoaded'));
+  }),
+
   /**
    * Collection of files that are displayed in files browser.
    * For order of display see ``visibleFilesSorted``.
    * @type {Computed<File[]>}
    */
-  visibleFiles: Ember.computed('files', 'files.[]', 'files.@each.isLoaded', function() {
-    return this.get('files').filter((f) => f.get('isLoaded') && !f.get('isBroken'));
+  visibleFiles: Ember.computed('loadedFiles', function() {
+    return this.get('loadedFiles').filter(f => !f.get('isBroken'));
   }),
 
   /**
@@ -234,7 +264,7 @@ export default Ember.Component.extend({
    * Checks if each in ``files`` collection is ready to read.
    * @type {Computed<Booblean>}
    */
-  isLoadingCurrentFiles: Ember.computed('files.isUpdating', 'files', 'files.[]', 'files.@each.isLoaded', 'fileUpload.locked', function() {
+  isLoadingCurrentFiles: Ember.computed('files.isUpdating', 'files.@each.isLoaded', 'fileUpload.locked', function() {
     return this.get('files.isUpdating') || this.get('files').any(f => !f.get('isLoaded'));
   }),
 
@@ -261,7 +291,6 @@ export default Ember.Component.extend({
     }
   }),
 
-  // FIXME: switch if not using "data" type
   toggleLoader: Ember.on('init', Ember.observer('showGlobalLoader', 'commonLoader.isLoading', 'commonLoader.type', function() {
     if (this.get('showGlobalLoader')) {
       // prevent loader stealing
@@ -328,10 +357,6 @@ export default Ember.Component.extend({
       firstLoadDone: false,
     });
   },
-
-  loadingFileIndexChanged: Ember.observer('loadingFileIndex', function() {
-    console.debug(`loadingFileIndex: ${this.get('loadingFileIndex')}`);
-  }),
 
   dirChanged: Ember.observer('dir', function() {
     const dir = this.get('dir');

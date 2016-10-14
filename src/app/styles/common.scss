@@ -269,6 +269,14 @@ html, body {
       border-bottom: $color-secondary-top-bar-separator solid 2px;
     }
 
+    .lower-main-content {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: $secondary-top-bar-height;
+      bottom: 0;
+    }
+
     nav.secondary-sidebar {
       position: relative;
       float: left;

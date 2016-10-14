@@ -138,7 +138,9 @@ export default Ember.Service.extend({
    * - ``reject(object: error)`` on failure
    */
   fetchMoreDirChildren(dirId, currentChildrenCount, fileModelType) {
-    return this.get('server').privateRPC('fetchMoreDirChildren', {
+    let methodScope = (fileModelType === 'file-public' ? 'public' : 'private');
+
+    return this.get('server')[methodScope + 'RPC']('fetchMoreDirChildren', {
       dirId: dirId,
       currentChildrenCount: currentChildrenCount,
       fileModelType: fileModelType,

@@ -111,35 +111,58 @@
         // make text in rows aligned vertically middle
         line-height: inherit;
 
+        &.file-list-col-text {
+          vertical-align: middle;
+        }
+
         &.col-permissions {
           font-family: monospace;
         }
 
         .file-icon {
-          float: left;
+          display: table-cell;
           width: 40px;
           margin-left: -6px;
           font-size: 32px !important;
           text-align: left;
         }
-        .file-label {
-          float: left;
-          margin-left: 20px;
+        .file-label-container {
+          display: table-cell;
+          position: relative;
+
+          .file-label {
+            position: absolute;
+            margin-left: 10px;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            @include vendor-prefix(user-select, none);
+          }
         }
         .file-row-tools {
           position: absolute;
+          top: 0;
           right: 0;
+          height: 100%;
           .oneicon {
             position: absolute;
             right: 0;
+            top: 50%;
+            transform: translateY(-50%);
             margin-right: 10px;
             font-size: 30px;
             cursor: pointer;
           }
 
+          .file-tool {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+          }
+
           // metadata tool is on the left of first right tool
           .file-tool-metadata {
-            position: relative;
             right: 32px;
 
             &.active {
@@ -158,15 +181,18 @@
   position: relative !important;
 }
 .file-list-col-size {
-  width: 140px;
-  max-width: 140px;
+  width: 70px;
+  min-width: 70px;
+  max-width: 70px;
 }
 .file-list-col-permissions {
   width: 140px;
+  min-width: 140px;
   max-width: 140px;
 }
 .file-list-col-modification {
   width: 140px;
+  min-width: 140px;
   max-width: 140px;
 }
 

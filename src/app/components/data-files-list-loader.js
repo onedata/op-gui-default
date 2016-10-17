@@ -15,16 +15,18 @@ export default Ember.Component.extend({
   rowsCount: null,
 
   style: Ember.computed('startRowTop', 'lastRowBottom', '$filesTable', function() {
+    let style;
+
     const startRow = this.get('startRow');
     if (this.get('$filesTable') && startRow != null) {
       const top = this.get('startRowTop');
       const bottom = this.get('lastRowBottom');
       if (top != null && bottom != null) {
-        return `display: block; top: ${top}px; bottom: ${bottom}px;`;
+        style = `display: block; top: ${top}px; bottom: ${bottom}px;`;
       }
     }
-
-    return 'display: none;';
+    style = 'display: none;';
+    return Ember.String.htmlSafe(style);
   }),
 
   stickyFun: null,
@@ -40,9 +42,6 @@ export default Ember.Component.extend({
 
     this.set('stickyFun', updateFun);
     this.$().closest('#content-scroll').on('scroll', updateFun);
-
-    // FIXME: debug code
-    window.stick = this.$().find('.spinner-container');
   },
 
   willDestroyElement() {

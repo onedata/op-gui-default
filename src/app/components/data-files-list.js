@@ -40,6 +40,7 @@ export default Ember.Component.extend({
   i18n: Ember.inject.service(),
   oneproviderServer: Ember.inject.service(),
   messageBox: Ember.inject.service(),
+  eventsBus: Ember.inject.service(),
 
   classNames: ['data-files-list'],
 
@@ -320,16 +321,50 @@ export default Ember.Component.extend({
     return index > 0 ? index : 0;
   }),
 
+  tableVisiblityChanged: Ember.observer('dirIsEmpty', function() {
+    Ember.run.scheduleOnce('afterRender', this, function() {
+      let tableIsVisible = !this.get('dirIsEmpty');
+      if (tableIsVisible) {
+        this.computeFileLabelMaxWidth();
+      }
+    });
+  }),
+
+  computeFileLabelMaxWidth() {
+    let firstColumn = this.$().find('table > thead > th:nth-child(1)');
+    let fileLabelMaxWidth = firstColumn.width() - 70;
+    fileLabelMaxWidth = fileLabelMaxWidth < 0 ? 0 : fileLabelMaxWidth;
+    this.set(
+      'fileLabelMaxWidth',
+      fileLabelMaxWidth
+    );
+  },
+
   didInsertElement() {
     this.dirChanged();
     if (this.get('uploadEnabled')) {
       console.debug('Binding upload area for files list');
       this.get('fileUpload').assignDrop(this.$());
     }
+
+    let __computeFileMaxWidthFun = () => this.computeFileLabelMaxWidth();
+    this.set('__computeFileMaxWidthFun', __computeFileMaxWidthFun);
+    this.get('eventsBus').on(
+      'secondarySidebar:resized',
+      this.get('__computeFileMaxWidthFun')
+    );
+    $(window).on('resize', __computeFileMaxWidthFun);
   },
 
   willDestroyElement() {
     this.setGlobalDir(null);
+
+    let __computeFileMaxWidthFun = this.get('__computeFileMaxWidthFun');
+    this.get('eventsBus').off(
+      'secondarySidebar:resized',
+      __computeFileMaxWidthFun
+    );
+    $(window).off('resize', __computeFileMaxWidthFun);
   },
 
   /**

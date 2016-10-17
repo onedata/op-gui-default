@@ -15,6 +15,10 @@ export default Ember.Controller.extend({
    */
   directory: null,
 
+  pageTitle: Ember.computed('model', function() {
+    return `"${this.get('model.name')}"`;
+  }),
+
   /**
    * Watch change of Share, because we want to change current directory in
    * files browser.

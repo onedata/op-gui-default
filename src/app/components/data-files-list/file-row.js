@@ -10,6 +10,11 @@ export default Ember.Component.extend({
     'isNewlyCreated:notice-background-pulse'
   ],
 
+  fileLabelStyle: Ember.computed('labelMaxWidth', function() {
+    let style = `max-width: ${this.get('labelMaxWidth')}px;`;
+    return Ember.String.htmlSafe(style);
+  }),
+
   highlightClass: Ember.computed('file.isSelected', 'file.isEditingMetadata', function() {
     return this.get('file.isSelected') && 'active' ||
       this.get('file.isEditingMetadata') && 'metadata-opened' ||
@@ -57,6 +62,12 @@ export default Ember.Component.extend({
    * @type {Boolean}
    */
   watchAppear: false,
+
+  /**
+   * To inject.
+   * @type {Number}
+   */
+  labelMaxWidth: null,
 
   visibilityCheckIntervalSeconds: 5,
 

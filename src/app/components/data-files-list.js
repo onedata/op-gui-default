@@ -258,7 +258,18 @@ export default Ember.Component.extend({
    * @type {Computed<Boolean>}
    */
   dirIsEmpty: Ember.computed('visibleFiles.length', function() {
-    return !this.get('visibleFiles') || this.get('visibleFiles.length') === 0;
+    let dirIsEmpty = !this.get('visibleFiles') || this.get('visibleFiles.length') === 0;
+    return dirIsEmpty;
+  }),
+
+  filesTableIsVisible: Ember.computed('dirIsEmpty', function() {
+    let filesTableIsVisible = !this.get('dirIsEmpty');
+    if (filesTableIsVisible) {
+      Ember.run.scheduleOnce('afterRender', this, function() {
+        this.computeFileLabelMaxWidth();
+      });
+    }
+    return filesTableIsVisible;
   }),
 
   /**
@@ -319,15 +330,6 @@ export default Ember.Component.extend({
   fileIndexToWatchVisibility: Ember.computed('visibleFiles.length', 'preloadAheadIndexes', function() {
     let index = this.get('visibleFiles.length') - this.get('preloadAheadIndexes') - 1;
     return index > 0 ? index : 0;
-  }),
-
-  tableVisiblityChanged: Ember.observer('dirIsEmpty', function() {
-    Ember.run.scheduleOnce('afterRender', this, function() {
-      let tableIsVisible = !this.get('dirIsEmpty');
-      if (tableIsVisible) {
-        this.computeFileLabelMaxWidth();
-      }
-    });
   }),
 
   computeFileLabelMaxWidth() {

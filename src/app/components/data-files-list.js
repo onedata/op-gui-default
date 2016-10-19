@@ -483,7 +483,6 @@ export default Ember.Component.extend({
       this.downloadFile(file, resolve, reject);
     },
 
-    // TODO: multiple select only with ctrl
     // TODO: select range with shift
     /**
      * Do something if user clicks on a file. Consider modifier keys
@@ -491,11 +490,10 @@ export default Ember.Component.extend({
     handleFileClicked(file, ctrlKey) {
       let files = this.get('files');
       let fileIsSelected = file.get('isSelected');
-      let multipleCount = fileIsSelected ? 2 : 1;
-      let multipleFilesSelected = files.filter(f => {
-        return f.get('isSelected').length >= multipleCount;
-      });
-      if (multipleFilesSelected) {
+      let otherFilesSelected = files.filter(f => {
+        return f !== file && f.get('isSelected');
+      }).length > 0;
+      if (otherFilesSelected) {
         if (fileIsSelected) {
           if (ctrlKey) {
             file.set('isSelected', false);

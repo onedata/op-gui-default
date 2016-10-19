@@ -27,28 +27,10 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     },
 
     submit() {
-      this.set('isLoading', true);
-      let model = this.get('model');
-      const modelName = model.get('name');
-
       this.promiseLoading(
-        model.destroyRecord()
-      ).then(
-        () => {
-          this.get('notify').info(this.get('i18n').t(
-            'components.modals.removeModal.removeSuccess', {
-              name: modelName
-            }
-          ));
-        },
-        (error) => {
-          this.get('notify').error(this.get('i18n').t(
-            'components.modals.removeModal.removeFailed', {
-              name: modelName
-            }
-          ) + ': ' + error.message);
-          model.rollbackAttributes();
-        }
+        new Ember.RSVP.Promise((resolve, reject) => {
+          this.sendAction('answered', true, this.get('model'), resolve, reject);
+        })
       ).finally(() => {
         this.setProperties({
           model: null,

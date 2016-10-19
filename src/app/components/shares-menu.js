@@ -121,6 +121,38 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
       this.set('modalShare', share);
       this.set('openedModal', modalName);
     },
+
+    /**
+     * Handle Yes/No answer of remove share modal.
+     * @param {Boolean} yesAnswer if user answered Yes to remove a share
+     * @param {Share} share a share which question was about
+     */
+    handleRemoveAnswer(yesAnswer, share, resolve, reject) {
+      let shareName = share.get('name');
+      let destroyPromise = share.destroyRecord();
+
+      destroyPromise.then(() => {
+        resolve();
+        if (share === this.get('activeShare')) {
+          this.sendAction('transitionTo', 'onedata.shares.index');
+        }
+        this.get('notify').info(this.get('i18n').t(
+          'components.modals.removeModal.removeSuccess', {
+            name: shareName
+          }
+        ));
+      });
+
+      destroyPromise.catch(error => {
+        reject();
+        this.get('notify').error(this.get('i18n').t(
+          'components.modals.removeModal.removeFailed', {
+            name: shareName
+          }
+        ) + ': ' + error.message);
+        share.rollbackAttributes();
+      });
+    },
   },
 
 });

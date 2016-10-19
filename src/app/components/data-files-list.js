@@ -128,21 +128,6 @@ export default Ember.Component.extend({
   fetchMoreFilesError: null,
 
   /**
-   * After invoking ``fetchMoreFiles`` we know how many files this list
-   * will contain after new model push. This variable contains this count.
-   * @private
-   * @type {Number}
-   */
-  totalAheadFilesCount: 0,
-
-  /**
-   * True if all children files of the ``dir`` are loaded (using backend paging).
-   * @private
-   * @type {Boolean}
-   */
-  areAllFilesLoaded: false,
-
-  /**
    * How many files are ready for user to use. This does not include files
    * that are fetched with last ``getMoreFiles`` and not all files from this
    * collection are loaded.
@@ -164,6 +149,19 @@ export default Ember.Component.extend({
     this._super(...arguments);
     this.resetProperties();
   },
+
+  /**
+   * After invoking ``fetchMoreFiles`` we know how many files this list
+   * will contain after new model push. This variable contains this count.
+   * @type {Computed<Number>}
+   */
+  totalAheadFilesCount: Ember.computed.alias('dir.totalChildrenCount'),
+
+  /**
+   * True if all children files of the ``dir`` are loaded (using backend paging).
+   * @type {Computed<Boolean>}
+   */
+  areAllFilesLoaded: Ember.computed.alias('dir.allChildrenLoaded'),
 
   /**
    * Where the browser is used.
@@ -387,8 +385,6 @@ export default Ember.Component.extend({
       fetchMoreFilesRequested: false,
       fetchMoreFilesPromise: null,
       fetchMoreFilesError: null,
-      totalAheadFilesCount: 0,
-      areAllFilesLoaded: false,
       readyFilesCount: 0,
       firstLoadDone: false,
     });
@@ -399,10 +395,6 @@ export default Ember.Component.extend({
     this.setGlobalDir(dir);
     this.get('fileSystemTree').expandDir(dir);
     this.resetProperties();
-    this.set('areAllFilesLoaded', this.get('dir.allChildrenLoaded') === true);
-    dir.get('children').then(children =>
-      this.set('totalAheadFilesCount', children.get('length'))
-    );
   }),
 
   fileDownloadServerMethod: Ember.computed('downloadMode', function() {
@@ -552,13 +544,6 @@ export default Ember.Component.extend({
               this.get('files.length'),
               this.get('fileModelType')
             );
-          fetchPromise.then((data) => {
-            const filesCount = data.newChildrenCount;
-            if (filesCount <= readyFilesCount) {
-              this.set('areAllFilesLoaded', true);
-            }
-            this.set('totalAheadFilesCount', data.newChildrenCount);
-          });
           fetchPromise.catch((error) => {
             this.set('fetchMoreFilesError', error);
             this.get('notify').error(this.get('i18n').t('components.dataFilesList.cannotFetchMoreFiles', {

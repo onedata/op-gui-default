@@ -15,7 +15,7 @@ export default Ember.Component.extend({
   rowsCount: null,
 
   style: Ember.computed('startRowTop', 'lastRowBottom', '$filesTable', function() {
-    let style;
+    let style = 'display: none;';
 
     const startRow = this.get('startRow');
     if (this.get('$filesTable') && startRow != null) {
@@ -25,7 +25,6 @@ export default Ember.Component.extend({
         style = `display: block; top: ${top}px; bottom: ${bottom}px;`;
       }
     }
-    style = 'display: none;';
     return Ember.String.htmlSafe(style);
   }),
 

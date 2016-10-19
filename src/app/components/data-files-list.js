@@ -282,14 +282,13 @@ export default Ember.Component.extend({
 
   /**
    * True if a "global loader" that blocks all
-   * @type {[type]}
+   * @type {Computed<Boolean>}
    */
   showGlobalLoader: Ember.computed('firstLoadDone', 'isLoadingCurrentFiles', 'isLoadingMoreFiles', function() {
     let props = this.getProperties(
       'firstLoadDone',
       'isLoadingCurrentFiles',
-      'isLoadingMoreFiles',
-      'firstLoadDone'
+      'isLoadingMoreFiles'
     );
     let fileUploadLocked = this.get('fileUpload.locked');
 

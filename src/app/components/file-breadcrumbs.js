@@ -12,6 +12,13 @@ export default Ember.Component.extend({
    */
   file: null,
 
+  /**
+   * Optional: if provided, breadcrumbs will use ``rootDir`` as a root of path
+   * (if provided)
+   * @type {File}
+   */
+  rootDir: null,
+
   dirsPath: Ember.computed('file.dirsPath.[]', 'rootDir', function() {
     const dpath = this.get('file.dirsPath');
     if (dpath) {
@@ -22,15 +29,9 @@ export default Ember.Component.extend({
     }
   }),
 
-  /**
-   * Optional: if provided, breadcrumbs will use ``rootDir`` as a root of path
-   * (if provided)
-   * @type {File}
-   */
-  rootDir: null,
-
   isLoading: Ember.computed('dirsPath', function() {
-    return !this.get('dirsPath');
+    let dirsPath = this.get('dirsPath');
+    return !dirsPath || !this.get('dirsPath').some(d => d.get('name'));
   }),
 
   actions: {

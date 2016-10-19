@@ -110,8 +110,12 @@ export default Ember.Component.extend({
     this.set('isNewlyCreated', false);
   },
 
-  click() {
-    this.sendAction('selectFile', this.get('file'));
+  click(clickEvent) {
+    this.sendAction(
+      'fileClicked',
+      this.get('file'),
+      clickEvent.ctrlKey || clickEvent.metaKey
+    );
   },
 
   doubleClick() {

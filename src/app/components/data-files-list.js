@@ -470,6 +470,10 @@ export default Ember.Component.extend({
     return !!this.get('metadataFile');
   }),
 
+  clearFilesSelection() {
+    this.get('files').forEach(f => f.set('isSelected', false));
+  },
+
   actions: {
     openDirInBrowser(file) {
       this.sendAction('openDirInBrowser', file);
@@ -481,8 +485,43 @@ export default Ember.Component.extend({
 
     // TODO: multiple select only with ctrl
     // TODO: select range with shift
-    selectFile(file) {
-      file.set('isSelected', !file.get('isSelected'));
+    /**
+     * Do something if user clicks on a file. Consider modifier keys
+     */
+    handleFileClicked(file, ctrlKey) {
+      let files = this.get('files');
+      let fileIsSelected = file.get('isSelected');
+      let multipleCount = fileIsSelected ? 2 : 1;
+      let multipleFilesSelected = files.filter(f => {
+        return f.get('isSelected').length >= multipleCount;
+      });
+      if (multipleFilesSelected) {
+        if (fileIsSelected) {
+          if (ctrlKey) {
+            file.set('isSelected', false);
+          } else {
+            this.clearFilesSelection();
+            file.set('isSelected', true);
+          }
+        } else {
+          if (ctrlKey) {
+            file.set('isSelected', true);
+          } else {
+            this.clearFilesSelection();
+            file.set('isSelected', true);
+          }
+        }
+      } else {
+        if (fileIsSelected) {
+          file.set('isSelected', false);
+        } else {
+          file.set('isSelected', true);
+        }
+      }
+    },
+
+    clearFilesSelection() {
+      this.clearFilesSelection();
     },
 
     openFileShareModal(file) {

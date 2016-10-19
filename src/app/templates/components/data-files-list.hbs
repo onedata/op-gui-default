@@ -52,7 +52,8 @@
   {{#each visibleFilesSorted as |file index|}}
   {{!-- TODO: open file when selected and enter pressed --}}
     {{data-files-list/file-row file=file openDirInBrowser='openDirInBrowser'
-      downloadFile='downloadFile' selectFile='selectFile'
+      downloadFile='downloadFile' fileClicked='handleFileClicked'
+      clearFilesSelection='clearFilesSelection'
       readOnly=readOnly
       listIndex=index
       labelMaxWidth=fileLabelMaxWidth

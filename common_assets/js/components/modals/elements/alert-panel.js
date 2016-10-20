@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import ModalMixin from 'op-worker-gui/mixins/components/modal';
+import ModalMixin from '../../../mixins/components/modal';
 
 /**
  * A small Bootstrap alert panel ("alert" class) which displays response status

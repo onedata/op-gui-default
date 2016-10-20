@@ -1,6 +1,7 @@
 .common-loader {
   position: fixed;
-  z-index: 9999;
+  // a hack to be above spinners
+  z-index: 10000000000;
   right: 0;
   bottom: 0;
 

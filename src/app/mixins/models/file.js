@@ -31,9 +31,9 @@ export default Ember.Mixin.create({
    * How many children this directory (it it is a directory-type) has.
    * If ``totalChildrenCount`` is more than actual ``children.length``, it means
    * that more children can be fetch from server.
-   *  
+   *
    * See also: ``oneproviderServer.fetchMoreDirChildren``.
-   * 
+   *
    * See also: ``allChildrenLoaded`` computed property.
    */
   totalChildrenCount: DS.attr('number'),
@@ -73,7 +73,7 @@ export default Ember.Mixin.create({
    */
   allChildrenLoaded: Ember.computed('totalChildrenCount', 'children.length', 'isDir', function() {
     if (this.get('isDir')) {
-      return this.get('totalChildrenCount') <= this.get('children.length'); 
+      return this.get('totalChildrenCount') <= this.get('children.length');
     }
   }),
 
@@ -328,6 +328,17 @@ export default Ember.Mixin.create({
     const parentId = this.get('id');
 
     return new Ember.RSVP.Promise((resolve, reject) => {
+      function handleFileCreationError(error) {
+        try {
+          console.error(
+`File with name "${fileName}" creation failed: ${JSON.stringify(error)};
+File parent id: ${parentId}`
+          );
+        } finally {
+          reject(error.message || error);
+        }
+      }
+
       const savePromise = this.get('oneproviderServer').createFile(fileName, parentId, type);
       savePromise.then(
         (data) => {
@@ -337,20 +348,9 @@ export default Ember.Mixin.create({
             record.set('isNewlyCreated', true);
             resolve(record);
           });
-          // FIXME: handle newly created file fetch failed
+          findNewFile.catch(error => handleFileCreationError(error));
         },
-        (error) => {
-          // advanced error notifier moved up
-          // this.get('errorNotifier').handle(failMessage);
-          try {
-            console.error(
-`File with name "${fileName}" creation failed: ${JSON.stringify(error)};
-File parent id: ${parentId}`
-            );
-          } finally {
-            reject(error.message || error);
-          }
-        }
+        (error) => handleFileCreationError(error)
       );
     });
   }

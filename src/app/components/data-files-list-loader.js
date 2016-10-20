@@ -10,28 +10,31 @@ export default Ember.Component.extend({
    * From which file-row the loader should start
    * @type {Number}
    */
-  // startRow: null,
+  startRow: null,
 
-  rowsCount: null,
+  /**
+   * Files table element (table)
+   * @private
+   * @type {jQuery}
+   */
+  $filesTable: null,
 
-  style: Ember.computed('startRowTop', 'lastRowBottom', '$filesTable', function() {
+  style: Ember.computed('top', '$filesTable', function() {
     let style = 'display: none;';
 
     const startRow = this.get('startRow');
     if (this.get('$filesTable') && startRow != null) {
-      const top = this.get('startRowTop');
-      const bottom = this.get('lastRowBottom');
-      if (top != null && bottom != null) {
-        style = `display: block; top: ${top}px; bottom: ${bottom}px;`;
+      const top = this.get('top');
+      if (top != null) {
+        style = `display: block; top: ${top}px;`;
       }
     }
     return Ember.String.htmlSafe(style);
   }),
 
-  stickyFun: null,
+  __stickyFun: null,
 
-  didInsertElement() {
-    this.set('$filesTable', this.$().closest('.data-files-list').find('.files-table'));
+  bindSticky() {
     let $spinner = this.$().find('.spinner-container');
     $spinner.sticky({topSpacing: 80});
 
@@ -39,35 +42,44 @@ export default Ember.Component.extend({
       $spinner.sticky('update');
     };
 
-    this.set('stickyFun', updateFun);
+    this.set('__stickyFun', updateFun);
     this.$().closest('#content-scroll').on('scroll', updateFun);
   },
 
-  willDestroyElement() {
-    this.$().closest('#content-scroll').off('scroll', this.get('stickyFun'));
+  unbindSticky() {
+    this.$().closest('#content-scroll').off('scroll', this.get('__stickyFun'));
   },
 
-  startRowTop: Ember.computed('rowsCount', 'rowIndex', function() {
-    const $filesTable = this.get('$filesTable');
-    const $row = $filesTable.find(`.file-row-index-${this.get('startRow')}`);
+  didInsertElement() {
+    this.set('$filesTable', this.$().closest('.data-files-list').find('.files-table'));
+    // TODO: Currently sticky spinner is disabled due to bugs
+    // this.bindSticky();
+  },
+
+  willDestroyElement() {
+    // TODO: Currently sticky spinner is disabled due to bugs
+    // this.unbindSticky();
+  },
+
+  top: Ember.computed('startRow', function() {
+    let startRow = this.get('startRow');
+    let $filesTable = this.get('$filesTable');
+    let $row = $filesTable.find(`.file-row-index-${startRow}`);
     if ($row.length === 1) {
       return $row.position().top;
-    }
-  }),
-
-  lastRowBottom: Ember.computed('rowsCount', '$filesTable', function() {
-    const $filesTable = this.get('$filesTable');
-    if ($filesTable) {
-      const $row = $filesTable.find('.file-row:last');
+    } else {
+      // if startRow is not rendered yet for loader, use last row's bottom
+      // so we have a small bottom loader no matter if there are loading rows
+      $row = $filesTable.find(`.file-row-index-${startRow-1}`);
       if ($row.length === 1) {
-        return $filesTable.height() - ($row.position().top + $row.height());
+        return $row.position().top + $row.height();
       }
     }
   }),
 
-  deb: Ember.observer('startRow', 'startRowTop', 'lastRowBottom', 'rowsCount', function() {
-    let p = this.getProperties('startRow', 'startRowTop', 'lastRowBottom', 'rowsCount');
-    console.debug(`sr: ${p.startRow}, srt: ${p.startRowTop}, lastRowBottom: ${p.lastRowBottom}, rc: ${p.rowsCount}`);
+  deb: Ember.observer('startRow', 'top', 'lastRowBottom', 'rowsCount', function() {
+    let p = this.getProperties('startRow', 'top', 'lastRowBottom', 'rowsCount');
+    console.debug(`sr: ${p.startRow}, srt: ${p.top}, lastRowBottom: ${p.lastRowBottom}, rc: ${p.rowsCount}`);
   }),
 
 });

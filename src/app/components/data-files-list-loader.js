@@ -1,6 +1,13 @@
 import Ember from 'ember';
 
-// FIXME: jsdoc
+/**
+ * A loader element that covers all files that are new in last ``fetchMoreFiles``
+ * request. It covers always from previous loaded files list to bottom of table.
+ * @module components/data-files-list-loader
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
   classNames: ['data-files-list-loader'],
   attributeBindings: ['style'],

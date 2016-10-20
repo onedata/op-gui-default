@@ -1,7 +1,8 @@
 import DS from 'ember-data';
 
 /**
- * // FIXME: description
+ * Represents a public handle for resource (currently a public shared dir).
+ * Version for public view.
  * @module models/handle-public
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH

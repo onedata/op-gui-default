@@ -28,6 +28,10 @@
     }
   }
 
+  &.solid-background {
+    background-color: $onedata-light-gray;
+  }
+
   &.semi-transparent {
     background-color: rgba($onedata-light-gray, 0.75);
   }

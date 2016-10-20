@@ -328,6 +328,7 @@ export default Ember.Component.extend({
 
         this.get('commonLoader').setProperties({
           isLoading: true,
+          solidBackground: true,
           message: this.get('i18n').t('components.dataFilesList.updatingMessage'),
           area: area,
           type: 'filesUpdate'

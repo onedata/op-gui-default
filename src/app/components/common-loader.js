@@ -12,8 +12,8 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   commonLoader: Ember.inject.service(),
 
-  classNames: ['common-loader', 'semi-transparent'],
-  classNameBindings: ['isLoading::hidden', 'areaClass'],
+  classNames: ['common-loader'],
+  classNameBindings: ['isLoading::hidden', 'areaClass', 'solidBackground:solid-background:semi-transparent'],
 
   areaClass: Ember.computed('commonLoader.area', function() {
     const _area = this.get('commonLoader.area');
@@ -21,6 +21,7 @@ export default Ember.Component.extend({
   }),
 
   area: Ember.computed.alias('commonLoader.area'),
+  solidBackground: Ember.computed.alias('commonLoader.solidBackground'),
   type: Ember.computed.alias('commonLoader.type'),
   isLoading: Ember.computed.alias('commonLoader.isLoading'),
   message: Ember.computed.alias('commonLoader.message'),
@@ -37,6 +38,7 @@ export default Ember.Component.extend({
     this.setProperties({
       message: null,
       messageSecondary: null,
+      solidBackground: false,
       area: null,
       type: null,
     });

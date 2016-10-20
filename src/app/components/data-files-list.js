@@ -19,7 +19,7 @@ import Ember from 'ember';
  *     request to fetch more files and new portion of files is not pushed yet
  *   - see ``isLoadingMoreFiles`` property
  * - last files push collection loading
- *   - blocks usage of files fetched after last files push before alll files
+ *   - blocks usage of files fetched after last files push before all files
  *     from this push are loaded
  *   - see ``data-files-list-loader`` component, which renders the loader
  *   - see ``loadingFileIndex`` for row from what the loader begins on top
@@ -153,9 +153,11 @@ export default Ember.Component.extend({
   /**
    * After invoking ``fetchMoreFiles`` we know how many files this list
    * will contain after new model push. This variable contains this count.
+   * This variable is set before a model push is done.
+   * @private
    * @type {Computed<Number>}
    */
-  totalAheadFilesCount: Ember.computed.alias('dir.totalChildrenCount'),
+  totalAheadFilesCount: 0,
 
   /**
    * True if all children files of the ``dir`` are loaded (using backend paging).
@@ -203,8 +205,8 @@ export default Ember.Component.extend({
    * It is used to render a ``data-files-list-loader`` overlay on "loading" file rows.
    * @type {Number}
    */
-  loadingFileIndex: Ember.computed('areCurrentFilesLoaded', 'isLoadingCurrentFiles', 'readyFilesCount', function() {
-    if (this.get('isLoadingCurrentFiles') || !this.get('areCurrentFilesLoaded')) {
+  loadingFileIndex: Ember.computed('areLastRequestedFilesLoaded', 'isFilesLoading', 'readyFilesCount', function() {
+    if (this.get('isFilesLoading') || !this.get('areLastRequestedFilesLoaded')) {
       return this.get('readyFilesCount');
     }
   }),
@@ -215,7 +217,7 @@ export default Ember.Component.extend({
    * need any loader.
    * @type {Computed<Boolean>}
    */
-  areCurrentFilesLoaded: Ember.computed('totalAheadFilesCount', 'loadedFiles.length', function() {
+  areLastRequestedFilesLoaded: Ember.computed('totalAheadFilesCount', 'loadedFiles.length', function() {
     return this.get('totalAheadFilesCount') <= this.get('loadedFiles.length');
   }),
 
@@ -230,6 +232,10 @@ export default Ember.Component.extend({
    */
   files: Ember.computed.alias('dir.children'),
 
+  /**
+   * Filtered collection of ``files`` that are loaded.
+   * @type {Computed<File[]>}
+   */
   loadedFiles: Ember.computed('files.@each.isLoaded', function() {
     return this.get('files').filter(f => f.get('isLoaded'));
   }),
@@ -274,7 +280,7 @@ export default Ember.Component.extend({
    * Checks if each in ``files`` collection is ready to read.
    * @type {Computed<Booblean>}
    */
-  isLoadingCurrentFiles: Ember.computed('files.isUpdating', 'files.@each.isLoaded', 'fileUpload.locked', function() {
+  isFilesLoading: Ember.computed('files.isUpdating', 'files.@each.isLoaded', function() {
     return this.get('files.isUpdating') || this.get('files').any(f => !f.get('isLoaded'));
   }),
 
@@ -282,21 +288,34 @@ export default Ember.Component.extend({
    * True if a "global loader" that blocks all
    * @type {Computed<Boolean>}
    */
-  showGlobalLoader: Ember.computed('firstLoadDone', 'isLoadingCurrentFiles', 'isLoadingMoreFiles', function() {
+  showGlobalLoader: Ember.computed('firstLoadDone', 'isFilesLoading', 'isLoadingMoreFiles', function() {
     let props = this.getProperties(
       'firstLoadDone',
-      'isLoadingCurrentFiles',
+      'isFilesLoading',
       'isLoadingMoreFiles'
     );
     let fileUploadLocked = this.get('fileUpload.locked');
 
     if (!props.firstLoadDone && !props.isLoadingMoreFiles &&
-      (props.isLoadingCurrentFiles || fileUploadLocked)) {
+      (props.isFilesLoading || fileUploadLocked)) {
 
       this.set('firstLoadDone', true);
       return true;
     } else {
       return false;
+    }
+  }),
+
+  /**
+   * When files push come, increase number of files in ``totalAheadFilesCount``
+   */
+  updateTotalAheadFilesCount: Ember.observer('files.length', function() {
+    let filesLength = this.get('files.length');
+    let totalAheadFilesCount = this.get('totalAheadFilesCount');
+    let fetchMoreFilesRequested = this.get('fetchMoreFilesRequested');
+    if (fetchMoreFilesRequested && filesLength > totalAheadFilesCount) {
+      console.debug(`Total ahead files count updated because files.length increased`);
+      this.set('totalAheadFilesCount', filesLength);
     }
   }),
 
@@ -386,6 +405,7 @@ export default Ember.Component.extend({
       fetchMoreFilesPromise: null,
       fetchMoreFilesError: null,
       readyFilesCount: 0,
+      totalAheadFilesCount: 0,
       firstLoadDone: false,
     });
   },
@@ -544,7 +564,11 @@ export default Ember.Component.extend({
               this.get('files.length'),
               this.get('fileModelType')
             );
-          fetchPromise.catch((error) => {
+          fetchPromise.then(data => {
+            console.debug('Fetch more files promise resolved, new count: ' + data.newChildrenCount);
+            this.set('totalAheadFilesCount', data.newChildrenCount);
+          });
+          fetchPromise.catch(error => {
             this.set('fetchMoreFilesError', error);
             this.get('notify').error(this.get('i18n').t('components.dataFilesList.cannotFetchMoreFiles', {
               errorMessage: error.message
@@ -584,9 +608,9 @@ export default Ember.Component.extend({
         'areAllFilesLoaded',
         'fetchMoreFilesRequested',
         'fetchMoreFilesError',
-        'isLoadingCurrentFiles'
+        'isFilesLoading'
       );
-      if (!props.isLoadingCurrentFiles &&
+      if (!props.isFilesLoading &&
         !props.areAllFilesLoaded &&
         !props.fetchMoreFilesRequested &&
         !props.fetchMoreFilesError) {

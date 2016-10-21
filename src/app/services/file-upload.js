@@ -3,6 +3,7 @@ import Ember from 'ember';
 
 /**
  * A global file.uniqueIdentifier -> parentDir.id, to remember upload mapping.
+ * @private
  */
 const filesParentDirs = {};
 
@@ -18,6 +19,8 @@ const filesParentDirs = {};
 export default Ember.Service.extend({
   component: null,
   session: Ember.inject.service(),
+  eventsBus: Ember.inject.service(),
+  oneproviderServer: Ember.inject.service(),
 
   /**
    * Current dir for upload - global for application!
@@ -66,10 +69,29 @@ export default Ember.Service.extend({
     }
   },
 
+  fileUploadSuccess(file) {
+    this.get('oneproviderServer').fileUploadSuccess(
+      file.uniqueIdentifier,
+      filesParentDirs[file.uniqueIdentifier]
+    );
+    this.fileUploadCompleted(file);
+  },
+
+  fileUploadFailure(file) {
+    this.get('oneproviderServer').fileUploadFailure(
+      file.uniqueIdentifier,
+      filesParentDirs[file.uniqueIdentifier]
+    );
+    this.fileUploadCompleted(file);
+  },
+
   /**
    * Handles the ResumableJS file upload finish events (when it succeeded or failed)
    */
   fileUploadCompleted(file) {
+    this.get('eventsBus').trigger('file-upload:file-upload-completed', file,
+      filesParentDirs[file.uniqueIdentifier]
+    );
     delete filesParentDirs[file.uniqueIdentifier];
   },
 
@@ -78,9 +100,12 @@ export default Ember.Service.extend({
    * Ivoking means that we finished adding files for single directory, so
    * we can "unlock" the service (see "locked" property).
    */
-  filesAdded(/*files*/) {
+  filesAdded(files) {
     // Ember.run is used because this fun is invoked from ResumableJS event
     Ember.run(() => this.set('locked', false));
+    this.get('eventsBus').trigger('file-upload:files-added', files,
+      files.map(f => filesParentDirs[f.uniqueIdentifier])
+    );
   },
 
   resumable: function() {
@@ -112,8 +137,8 @@ export default Ember.Service.extend({
     // event handlers mainly to prevent changing parent directory adding files to upload
     r.on('fileAdded', (file) => this.fileAdded(file));
     r.on('filesAdded', (files) => this.filesAdded(files));
-    r.on('fileSuccess', (file) => this.fileUploadCompleted(file));
-    r.on('fileError', (file) => this.fileUploadCompleted(file));
+    r.on('fileSuccess', (file) => this.fileUploadSuccess(file));
+    r.on('fileError', (file) => this.fileUploadFailure(file));
 
     return r;
   }.property(),

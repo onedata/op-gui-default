@@ -56,7 +56,10 @@ Router.map(function() {
     // onedata/shares/ - browse Shares reached from primary sidebar
     this.route('shares', function() {
         // onedata/shares/:share_id - show authenticated view for specified Share
-        this.route('show', {path: ':share_id'});
+        this.route('show', {path: ':share_id'}, function() {
+          // onedata/shares/:share_id/:dir - open file browser for dir within selected Share
+          this.route('dir', {path: ':shared_dir_id'});
+        });
     });
 
     // TODO: activate after routes implementation
@@ -70,8 +73,11 @@ Router.map(function() {
   this.route('public', {resetNamespace: true}, function() {
     // nothing here, TODO: redirect to index or something
     this.route('shares', function() {
-      // public/shares/:share_id - show public view of Share
-      this.route('show', {path: ':share_id'});
+      // public/shares/show/:share_id/:dir - open a public share
+      this.route('show', {path: ':share_id'}, function() {
+        // public/shares/:share_id/:dir - open file browser for dir within selected Share
+        this.route('dir', {path: ':public_dir_id'});
+      });
     });
 
   });

@@ -4,6 +4,14 @@
 $color-breadcrumbs-font: #768D9F;
 
 .file-breadcrumbs {
+  .spinner-container {
+    .spin-spinner {
+      .spinner {
+        z-index: 1000 !important;
+      }
+    }
+  }
+
   .file-breadcrumbs-list {
     width: 100%;
     .file-breadcrumbs-item {

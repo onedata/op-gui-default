@@ -546,7 +546,7 @@ export default Ember.Component.extend({
     },
 
     changeDir(dir) {
-      this.set('dir', dir);
+      this.sendAction('openDirInBrowser', dir);
     },
 
     toggleFileMetadata(file) {

@@ -342,13 +342,8 @@ File parent id: ${parentId}`
       const savePromise = this.get('oneproviderServer').createFile(fileName, parentId, type);
       savePromise.then(
         (data) => {
-          const fileId = data.fileId;
-          const findNewFile = this.get('store').findRecord('file', fileId);
-          findNewFile.then(record => {
-            record.set('isNewlyCreated', true);
-            resolve(record);
-          });
-          findNewFile.catch(error => handleFileCreationError(error));
+          console.debug(`File created with ID: ${data.fileId}`);
+          resolve();
         },
         (error) => handleFileCreationError(error)
       );

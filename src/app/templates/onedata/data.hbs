@@ -11,7 +11,7 @@
   {{!-- Secondary sidebar --}}
   <nav class="secondary-sidebar">
     {{data-spaces-select spaces=model goToDataSpace="goToDataSpace"}}
-    {{outlet "data-space"}}
+    {{outlet "data-space-sidebar"}}
   </nav>
 
   <div class="resize-handler data-sidebar-resize-handler transparent"
@@ -19,7 +19,7 @@
   </div>
 
   <div id="content-scroll">
-    {{outlet "dir"}}
+    {{outlet "data-content-scroll"}}
   </div>
 
 </div>

@@ -55,7 +55,7 @@ export default Ember.Route.extend(RouteRejectHandler, {
     if (this.get('invalid')) {
       this.render('onedata.data.dataSpace.dir.error', {
         into: 'onedata.data',
-        outlet: 'dir'
+        outlet: 'data-content-scroll'
       });
     } else {
       this.render('onedata.data.dataSpace.dir.dirToolbar', {
@@ -64,7 +64,7 @@ export default Ember.Route.extend(RouteRejectHandler, {
       });
       this.render({
         into: 'onedata.data',
-        outlet: 'dir'
+        outlet: 'data-content-scroll'
       });
     }
   },
@@ -81,13 +81,14 @@ export default Ember.Route.extend(RouteRejectHandler, {
   },
 
   actions: {
-    loading() {
-      this.get('commonLoader').setProperties({
-        isLoading: true,
-        message: this.get('i18n').t('data.dataSpace.dir.loaderMessage'),
-        area: 'content-with-secondary-top'
-      });
-    },
+    // Experimentally disabled - using loading route for dir
+    // loading() {
+    //   this.get('commonLoader').setProperties({
+    //     isLoading: true,
+    //     message: this.get('i18n').t('data.dataSpace.dir.loaderMessage'),
+    //     area: 'content-with-secondary-top'
+    //   });
+    // },
 
     /**
      * Open either create-file-share or share-info modal for specified

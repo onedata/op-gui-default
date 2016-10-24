@@ -2,12 +2,11 @@ import ENV from 'op-worker-gui/config/environment';
 
 export default {
   name: 'testing-model',
-  after: 'store',
-  initialize: function(container/*, application*/) {
-    if (ENV.environment !== 'development-localstorage') {
-      console.debug(`Skipping testing-model creation because environment is not development-localstorage`);
+  initialize: function(application) {
+    if (ENV.environment !== 'localstorage') {
+      console.debug(`Skipping testing-model creation because environment is not localstorage`);
     } else {
-      let store = container.lookup('service:store');
+      let store = application.lookup('service:store');
 
       /// spaces
 

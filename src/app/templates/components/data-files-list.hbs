@@ -10,7 +10,7 @@
   </div>
 {{/if}}
 
-{{#if dirIsEmpty}}
+{{#if (and dirIsEmpty (not currentlyUploadingCount))}}
 
 <div class="empty-model">
   <div class="empty-model-container">
@@ -49,6 +49,12 @@
   </th>
   </thead>
   <tbody>
+  {{#if currentlyUploadingCount}}
+    <tr class="file-row-uploading notice-background-pulse">
+      Uploading: {{currentlyUploadingCount}} files left...
+      {{!-- FIXME --}}
+    </tr>
+  {{/if}}
   {{#each visibleFilesSorted as |file index|}}
   {{!-- TODO: open file when selected and enter pressed --}}
     {{data-files-list/file-row file=file openDirInBrowser='openDirInBrowser'

@@ -148,16 +148,6 @@ export default Ember.Component.extend({
   init() {
     this._super(...arguments);
     this.resetProperties();
-
-    let ebus = this.get('eventsBus');
-
-    let __onFilesAddedFun = (files, parents) => this.onFilesAdded(files, parents);
-    let __onFileUploadCompletedFun = (file, parent) => this.onFileUploadCompleted(file, parent);
-    this.set('__onFilesAddedFun', __onFilesAddedFun);
-    this.set('__onFileUploadCompletedFun', __onFileUploadCompletedFun);
-
-    ebus.on('file-upload:files-added', __onFilesAddedFun);
-    ebus.on('file-upload:file-upload-completed', __onFileUploadCompletedFun);
   },
 
   /**
@@ -359,46 +349,11 @@ export default Ember.Component.extend({
     return index > 0 ? index : 0;
   }),
 
-  // FIXME: change placement
-  currentlyUploadingCount: 0,
-
-  /**
-   * Handle event of added multiple files to uploader
-   * @param {ResumableFile[]} resumableFiles
-   * @param {String[]} parentDirsIds array of parent dirs ids for resumableFiles
-   *                                 in order as in resumableFiles array
-   */
-  onFilesAdded(resumableFiles, parentDirsIds) {
-    let dirId = this.get('dir.id');
-    let files = [];
-    for (let i=0; i<parentDirsIds.length; ++i) {
-      let parentId = parentDirsIds[i];
-      if (parentId === dirId) {
-        files.push(resumableFiles[i]);
-      }
-    }
-    console.debug(`Added ${files.length} files to upload for dir ${this.get('dir.name')}`);
-    // FIXME: adding files to upload?
-    // FIXME: clear count on dir change
-    this.set('currentlyUploadingCount', files.length);
-  },
-
-  onFileUploadCompleted(resumableFile, parentId) {
-    let dirId = this.get('dir.id');
-    if (dirId === parentId) {
-      console.debug(`Decrementing upload count for dir ${this.get('dir.name')}`);
-      this.decrementProperty('currentlyUploadingCount');
-    } else {
-      console.debug(`Received upload completed event, but not for this files browser`);
-    }
-  },
-
-  // FIXME: change placement
+  // FIXME: don't know if this code works
   currentlyUploadingCountChanged: Ember.observer('currentlyUploadingCount', function() {
     let count = this.get('currentlyUploadingCount');
-    if (count <= 0) {
+    if (!count) {
       console.debug(`Batch upload finished for ${this.get('dir.name')}`);
-      this.get('oneproviderServer').fileBatchUploadComplete(this.get('dir.id'));
     }
   }),
 
@@ -433,17 +388,12 @@ export default Ember.Component.extend({
 
     let ebus = this.get('eventsBus');
 
-    ebus.off(this.get('__onFilesAddedFun'));
-    ebus.off(this.get('__onFileUploadCompletedFun'));
-
     let __computeFileMaxWidthFun = this.get('__computeFileMaxWidthFun');
     ebus.off(
       'secondarySidebar:resized',
       __computeFileMaxWidthFun
     );
     $(window).off('resize', __computeFileMaxWidthFun);
-
-
   },
 
   /**
@@ -476,6 +426,10 @@ export default Ember.Component.extend({
     this.setGlobalDir(dir);
     this.get('fileSystemTree').expandDir(dir);
     this.resetProperties();
+    let dirId = dir.get('id');
+    // FIXME: don't know if this code works
+    this['currentlyUploadingCount'] =
+      Ember.computed.alias(`fileUpload.dirUploads-${dirId}.length`);
   }),
 
   fileDownloadServerMethod: Ember.computed('downloadMode', function() {

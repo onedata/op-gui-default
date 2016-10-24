@@ -13,7 +13,6 @@ export default Ember.Component.extend({
   notify: Ember.inject.service(),
   oneproviderServer: Ember.inject.service(),
   session: Ember.inject.service(),
-  eventsBus: Ember.inject.service(),
 
   connectionRef: function() {
     return this.get('session.sessionDetails.connectionRef');
@@ -108,7 +107,6 @@ export default Ember.Component.extend({
       $('.resumable-error').show();
     }
 
-    r.on('filesAdded', this.get('onFilesAdded'));
     r.on('fileAdded', this.get('onFileAdded'));
     r.on('pause', this.get('onPause'));
     r.on('complete', this.get('onComplete'));

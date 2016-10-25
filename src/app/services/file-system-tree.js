@@ -1,5 +1,7 @@
 import Ember from 'ember';
 
+import getDefaultSpace from 'op-worker-gui/utils/get-default-space';
+
 /**
  * A global state of file browser
  * @module service/file-system-tree
@@ -74,18 +76,7 @@ export default Ember.Service.extend(Ember.Evented, {
     if (!this.get('prevSelectedSpace') && this.get('spaces.length') > 0 &&
       dataSpaces.get('isUpdating') === false) {
 
-      let defaultSpace = dataSpaces.find((s) => s.get('isDefault'));
-      if (defaultSpace) {
-        newSpaceToSelect = defaultSpace;
-      } else {
-        console.debug('No default data-space found - go to first data-space instead');
-        const firstSpace = dataSpaces.sortBy('name').objectAt(0);
-        if (firstSpace) {
-          newSpaceToSelect = firstSpace;
-        } else {
-          console.debug('no data-spaces exist');
-        }
-      }
+      newSpaceToSelect = getDefaultSpace(dataSpaces);
 
       this.set('prevSelectedSpace', this.get('selectedSpace'));
       this.set('selectedSpace', newSpaceToSelect);

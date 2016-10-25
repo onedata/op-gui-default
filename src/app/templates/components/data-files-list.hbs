@@ -10,9 +10,7 @@
   </div>
 {{/if}}
 
-Currently uploading count: {{currentlyUploadingCount}}
-
-{{#if (and dirIsEmpty (not currentlyUploadingCount))}}
+{{#unless filesTableIsVisible}}
 
 <div class="empty-model">
   <div class="empty-model-container">
@@ -88,4 +86,4 @@ Currently uploading count: {{currentlyUploadingCount}}
 {{data-files-list-loader startRow=loadingFileIndex
   rowsCount=visibleFilesSorted.length}}
 </table>
-{{/if}}
+{{/unless}}

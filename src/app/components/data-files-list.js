@@ -266,8 +266,9 @@ export default Ember.Component.extend({
     return dirIsEmpty;
   }),
 
-  filesTableIsVisible: Ember.computed('dirIsEmpty', function() {
-    let filesTableIsVisible = !this.get('dirIsEmpty');
+  filesTableIsVisible: Ember.computed('dirIsEmpty', 'currentlyUploadingCount', function() {
+    let props = this.getProperties('dirIsEmpty', 'currentlyUploadingCoung');
+    let filesTableIsVisible = !props.dirIsEmpty || props.currentlyUploadingCount;
     if (filesTableIsVisible) {
       Ember.run.scheduleOnce('afterRender', this, function() {
         this.computeFileLabelMaxWidth();
@@ -381,6 +382,7 @@ export default Ember.Component.extend({
       this.get('__computeFileMaxWidthFun')
     );
     $(window).on('resize', __computeFileMaxWidthFun);
+    setTimeout(__computeFileMaxWidthFun, 50);
   },
 
   willDestroyElement() {

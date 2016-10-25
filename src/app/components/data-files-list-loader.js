@@ -83,10 +83,4 @@ export default Ember.Component.extend({
       }
     }
   }),
-
-  deb: Ember.observer('startRow', 'top', 'lastRowBottom', 'rowsCount', function() {
-    let p = this.getProperties('startRow', 'top', 'lastRowBottom', 'rowsCount');
-    console.debug(`sr: ${p.startRow}, srt: ${p.top}, lastRowBottom: ${p.lastRowBottom}, rc: ${p.rowsCount}`);
-  }),
-
 });

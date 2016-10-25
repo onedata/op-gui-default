@@ -63,15 +63,13 @@ export default Ember.Service.extend({
    * @param {String} parentId
    */
   addUploadingFileInfo(resumableFile, parentId) {
-    console.debug(`Add uploading file info: ${resumableFile.uniqueIdentifier}`);
     if (this.get('dirUploads-' + parentId) == null) {
       this.get('dirsUploadIds').pushObject(parentId);
       this.set('dirUploads-' + parentId, Ember.A());
-      console.debug(`Creating new dirUploads for parent: ${parentId}`);
+      console.debug(`file-upload: Creating new dirUploads for parent: ${parentId}`);
     }
     let dirUploads = this.get('dirUploads-' + parentId); 
     dirUploads.pushObject(resumableFile);
-    console.debug(`dirUploads-${parentId} after add file: ${JSON.stringify(dirUploads.map(f => f.uniqueIdentifier))}`);
   },
 
   /**
@@ -100,13 +98,12 @@ export default Ember.Service.extend({
    *                            number of remain files in parent]
    */
   forgetUploadingFile(resumableFileId) {
-    console.debug(`Forgetting uploaded file: ${resumableFileId}`); 
+    console.debug(`file-upload: Forgetting uploaded file: ${resumableFileId}`); 
     let dirsUploadIds = this.get('dirsUploadIds');
     for (let parentId of dirsUploadIds) {
       /* jshint loopfunc: true */
       let propertyKey = 'dirUploads-' + parentId;
       let dirUploads = this.get(propertyKey);
-      console.debug(`Current uploading files for parent ${parentId}: ${JSON.stringify(dirUploads.toArray().map(f => f.uniqueIdentifier))}`);
       let resumableFile = findResumableFileByUuid(dirUploads, resumableFileId);
       if (resumableFile) {
         Ember.assert(
@@ -114,13 +111,10 @@ export default Ember.Service.extend({
           dirUploads.removeObject(resumableFile)
         );
         let remainUploadingFilesCount = dirUploads.get('length');
-        // FIXME cleaning up old dirUploads-... properties
         if (remainUploadingFilesCount === 0) {
           console.debug(`Removing uploading dir info: ${parentId}`);
           this.set(propertyKey, undefined);
           this.get('dirsUploadIds').removeObject(parentId);
-        } else {
-          console.debug(`Remain uploading files for parent ${parentId}: ${JSON.stringify(dirUploads.toArray().map(f => f.uniqueIdentifier))}`);
         }
         return [parentId, remainUploadingFilesCount];
       }
@@ -140,7 +134,7 @@ ${resumableFileId}, but it could not be found in any dir`);
   dirChanged: function() {
     if (!this.get('locked')) {
       this.set('lockedDir', this.get('dir'));
-      console.debug(`locked dir changed: ${this.get('lockedDir.id')}`);
+      console.debug(`file-upload: Locked dir changed: ${this.get('lockedDir.id')}`);
     }
   }.observes('dir', 'locked'),
 
@@ -177,10 +171,15 @@ ${resumableFileId}, but it could not be found in any dir`);
 
   /**
    * Handles the ResumableJS file upload finish events (when it succeeded or failed)
+   * Main function is invoked in timeout because we want to gather all added files.
+   * Sometimes when adding multiple files, upload of files added earlies is completed 
+   * before next file is even added. Then we wrongly assume, that all files for dir
+   * upload is completed. See ``WAIT_TIME`` const in this function body.
    */
   fileUploadCompleted(file) {
+    const WAIT_TIME = 500;
     let uuid = file.uniqueIdentifier;
-    console.debug(`File upload completed: ${uuid}`); 
+    console.debug(`file-upload: File upload completed: ${uuid}`);
     setTimeout(() => {
       let [parentId, filesLeft] = this.forgetUploadingFile(uuid);
       this.get('eventsBus').trigger(
@@ -191,7 +190,7 @@ ${resumableFileId}, but it could not be found in any dir`);
       if (filesLeft <= 0) {
         this.onAllFilesForDirUploaded(parentId);
       }
-    }, 1000);
+    }, WAIT_TIME);
     
   },
 
@@ -211,7 +210,7 @@ ${resumableFileId}, but it could not be found in any dir`);
   },
 
   onAllFilesForDirUploaded(dirId) {
-    console.debug(`Finished batch upload for dir: ${dirId}`);
+    console.debug(`file-upload: Finished batch upload for dir: ${dirId}`);
     if (!dirId) {
       console.warn('dirId in batch upload complete RPC is null - do not make RPC call');
     } else {
@@ -224,7 +223,7 @@ Directory content won't be updated!`);
   },
 
   resumable: function() {
-    console.debug(`Creating new Resumable`);
+    console.debug(`file-upload: Creating new Resumable`);
     const r = new Resumable({
       target: '/upload',
       chunkSize: 1*1024*1024,

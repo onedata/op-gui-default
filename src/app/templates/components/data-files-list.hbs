@@ -10,6 +10,8 @@
   </div>
 {{/if}}
 
+Currently uploading count: {{currentlyUploadingCount}}
+
 {{#if (and dirIsEmpty (not currentlyUploadingCount))}}
 
 <div class="empty-model">
@@ -51,8 +53,8 @@
   <tbody>
   {{#if currentlyUploadingCount}}
     <tr class="file-row-uploading notice-background-pulse">
+      {{!-- FIXME currently does not work --}}
       Uploading: {{currentlyUploadingCount}} files left...
-      {{!-- FIXME --}}
     </tr>
   {{/if}}
   {{#each visibleFilesSorted as |file index|}}

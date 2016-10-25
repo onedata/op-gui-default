@@ -12,6 +12,7 @@ import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mi
 export default Ember.Route.extend(ApplicationRouteMixin, {
   mainMenuService: Ember.inject.service('main-menu'),
   session: Ember.inject.service('session'),
+  loginRedirect: Ember.inject.service(),
 
   activate() {
     console.debug('app activate');
@@ -33,6 +34,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
     p.then(
       () => {
         console.debug('initSession resolved');
+        this.get('loginRedirect').clearTimeouts();
       },
       // TODO: translations
       () => {

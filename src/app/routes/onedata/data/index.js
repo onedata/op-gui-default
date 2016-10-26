@@ -20,6 +20,8 @@ export default Ember.Route.extend({
   setupController(controller, model) {
     this._super(controller, model);
     controller.onDataSpacesChange();
-    this.send('goToDataSpace', getDefaultSpace(model));
+    Ember.run.scheduleOnce('afterRender', () => {
+      this.send('goToDataSpace', getDefaultSpace(model));
+    });
   }
 });

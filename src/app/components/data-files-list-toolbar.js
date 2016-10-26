@@ -36,6 +36,8 @@ export default Ember.Component.extend({
     });
   },
 
+  selectedCount: Ember.computed.alias('dir.selectedFiles.length'),
+
   /**
    * Holds items of toolbar. Each item is a Object with properties:
    * - icon {String}
@@ -285,6 +287,7 @@ export default Ember.Component.extend({
      */
     handleRemoveAnswer(yesAnswer, _model, resolve, reject) {
       let removeResult = this.get('dir').removeSelectedFiles();
+      let i18n = this.get('i18n');
 
       if (yesAnswer) {
        if (typeof removeResult === 'string') {
@@ -303,10 +306,13 @@ export default Ember.Component.extend({
             if (singular) {
               let removedFile = fileDestroyPromises.keys().next().value;
               let onlyFileName = removedFile.get('name');
-              let type = removedFile.get('isDir') ? 'Directory' : 'File';
-              message = `${type} has been removed: ${onlyFileName}`;
+              message = i18n.t('components.dataFilesListToolbar.removeFilesModal.notify.singleRemoveSuccess', {
+                fileName: onlyFileName
+              });
             } else {
-              message = `${filesCount} files have been removed`;
+              message = i18n.t('components.dataFilesListToolbar.removeFilesModal.notify.multipleRemoveSuccess', {
+                filesCount: filesCount
+              });
             }
             notify.info(message);
           });
@@ -317,7 +323,11 @@ export default Ember.Component.extend({
               let removedFile = fileDestroyPromises.keys().next().value;
               fileDestroyPromises.values().next().value.catch(error => {
                 let onlyFileName = removedFile.get('name');
-                let message = `"${onlyFileName}" could not be removed: ${error.message}`;
+                // FIXME
+                let message = i18n.t('components.dataFilesListToolbar.removeFilesModal.notify.singleRemoveFailed', {
+                  fileName: onlyFileName,
+                  errorMessage: error.message,
+                });
                 notify.error(message);
               });            
             } else {
@@ -329,10 +339,13 @@ export default Ember.Component.extend({
                 if (successCount + failCount === filesCount) {
                   let message;
                   if (successCount > 0) {
-                    message = `${failCount} of ${filesCount} elements could not be removed`;
+                    message = i18n.t('components.dataFilesListToolbar.removeFilesModal.notify.multipleRemoveFailed', {
+                      failCount: failCount,
+                      filesCount: filesCount,
+                    });
                     notify.warning(message);
                   } else {
-                    message = `Failed to remove all selected elements`;
+                    message = i18n.t('components.dataFilesListToolbar.removeFilesModal.notify.allRemoveFailed');
                     notify.error(message); 
                   }
                 }

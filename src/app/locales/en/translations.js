@@ -372,7 +372,11 @@ export default {
       },
       removeFilesModal: {
         title: 'Remove files',
-        text: 'Do you want to remove selected files?'
+        text: 'Do you want to remove selected files?',
+        notify: {
+          success: 'Files removed ({{filesCount}})',
+          failed: 'Removing {{fileCount}} files failed: {{errorMessage}}'
+        }
       },
       // TODO: to remove
       editPermissionsModal: {

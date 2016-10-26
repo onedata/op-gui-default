@@ -278,13 +278,81 @@ export default Ember.Component.extend({
       });
     },
 
-    submitRemoveFiles() {
-      try {
-        this.get('dir').removeSelectedFiles();
-      } finally {
+    /**
+     * Handle Yes/No answer of remove files modal.
+     * @param {Boolean} yesAnswer if user answered Yes to remove selected files
+     * @param {undefined} _model ignored parameter
+     */
+    handleRemoveAnswer(yesAnswer, _model, resolve, reject) {
+      let removeResult = this.get('dir').removeSelectedFiles();
+
+      if (yesAnswer) {
+       if (typeof removeResult === 'string') {
+          this.set('isRemovingFiles', false);
+          reject({message: removeResult});
+        } else {
+          let fileDestroyPromises = removeResult;
+          let batchPromise = Ember.RSVP.Promise.all(Array.from(fileDestroyPromises.values()));
+          let filesCount = fileDestroyPromises.size;
+          let singular = fileDestroyPromises.size === 1;
+          let notify = this.get('notify');
+
+          batchPromise.then(() => {
+            // FIXME i18n
+            let message;
+            if (singular) {
+              let removedFile = fileDestroyPromises.keys().next().value;
+              let onlyFileName = removedFile.get('name');
+              let type = removedFile.get('isDir') ? 'Directory' : 'File';
+              message = `${type} has been removed: ${onlyFileName}`;
+            } else {
+              message = `${filesCount} files have been removed`;
+            }
+            notify.info(message);
+          });
+
+          batchPromise.catch(() => {
+            // some of file destroy promises failed - we need to check async status of all promises
+            if (singular) {
+              let removedFile = fileDestroyPromises.keys().next().value;
+              fileDestroyPromises.values().next().value.catch(error => {
+                let onlyFileName = removedFile.get('name');
+                let message = `"${onlyFileName}" could not be removed: ${error.message}`;
+                notify.error(message);
+              });            
+            } else {
+              let failCount = 0;
+              let successCount = 0;
+              let incFailCount = () => failCount += 1;
+              let incSuccessCount = () => successCount += 1;
+              let checkCompleted = () => {
+                if (successCount + failCount === filesCount) {
+                  let message;
+                  if (successCount > 0) {
+                    message = `${failCount} of ${filesCount} elements could not be removed`;
+                    notify.warning(message);
+                  } else {
+                    message = `Failed to remove all selected elements`;
+                    notify.error(message); 
+                  }
+                }
+              };
+              fileDestroyPromises.forEach((promise/*, file */) => {
+                promise.then(incSuccessCount);
+                promise.catch(incFailCount);
+                promise.finally(checkCompleted);
+              });
+            }
+          });
+
+          batchPromise.finally(() => {
+            resolve();
+            this.set('isRemovingFiles', false);
+          });
+        }
+      } else {
         this.set('isRemovingFiles', false);
       }
     },
-
   }
 });

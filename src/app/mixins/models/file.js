@@ -149,26 +149,30 @@ export default Ember.Mixin.create({
     return destroyPromise;
   },
 
-  // TODO: doc, destroy, not destroyRecord!
+  /**
+  * First, destroys this file.
+  * If it succeeds, delete (local cache) recursively all children.
+  * 
+  * @returns {RSVP.Promise} a promise from this file ``destroyRecord``
+  */
   destroyRecursive() {
-    // TODO: onsuccess onfailure...
     let children = this.get('children');
     let file = this;
     let deleteChildren = function() {
-      file.get('notify').success('File removed');
       if (children) {
         children.forEach((child) => {
           child.deleteRecursive();
         });
       } else {
-        console.debug('After destroy of ' + file.get('id') + ' there is no children');
+        console.debug('After destroy of ' + file.get('id') + ' there are no children');
       }
     };
 
-    this.destroyRecord().then(deleteChildren, (failMessage) => {
-      file.get('errorNotifier').handle(failMessage);
-      file.rollbackAttributes();
-    });
+    let destroyPromise = this.destroyRecord();
+    destroyPromise.then(deleteChildren);
+    destroyPromise.catch(() => file.rollbackAttributes());
+
+    return destroyPromise;
   },
 
   deleteRecursive() {
@@ -290,14 +294,23 @@ export default Ember.Mixin.create({
     }
   }.property('selectedFiles'),
 
+  /**
+   * If this file is a dir, remove its selected files.
+   * @returns {Map<RSVP.Promise>|String} Map: file -> destroy promise
+   *                                     or String with error (if whole procedure fails)  
+   */
   removeSelectedFiles() {
+    // file -> destroy promise
+    let fileDestroyPromises = new Map();
     if (this.get('isDir')) {
-      this.get('selectedFiles').forEach((file) => {
-        file.destroyRecursive();
+      this.get('selectedFiles').forEach(file => {
+        fileDestroyPromises.set(file, file.destroyRecursive());
       });
     } else {
       console.error(`Called removeSelectedFiles on file that is not a directory ${this.get('id')}`);
+      return 'Parent of files to remove is not a directory';
     }
+    return fileDestroyPromises;
   },
 
   setSelectedFilesPermissions(permissions) {

@@ -10,12 +10,18 @@
 
 import Ember from 'ember';
 
+import getDefaultSpace from 'op-worker-gui/utils/get-default-space';
+
 export default Ember.Route.extend({
   model() {
     return this.modelFor('onedata.data');
   },
 
-  activate() {
-    this.controllerFor(this.routeName).onDataSpacesChange();
+  setupController(controller, model) {
+    this._super(controller, model);
+    controller.onDataSpacesChange();
+    Ember.run.scheduleOnce('afterRender', () => {
+      this.send('goToDataSpace', getDefaultSpace(model));
+    });
   }
 });

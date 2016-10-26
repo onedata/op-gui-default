@@ -26,7 +26,8 @@ export default Ember.Route.extend(RouteRejectHandler, {
   },
 
   renderTemplate() {
-    this.render({outlet: 'data-space'});
+    this.render({outlet: 'data-space-sidebar'});
+    this.render('application-loading', {outlet: 'data-content-scroll'});
   },
 
   actions: {

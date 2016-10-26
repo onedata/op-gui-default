@@ -7,11 +7,12 @@
  */
 
 import Ember from 'ember';
-// import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
+import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(ApplicationRouteMixin, {
   mainMenuService: Ember.inject.service('main-menu'),
   session: Ember.inject.service('session'),
+  loginRedirect: Ember.inject.service(),
 
   activate() {
     console.debug('app activate');
@@ -27,12 +28,13 @@ export default Ember.Route.extend({
     }
   },
 
-  initSession: function () {
+  initSession: Ember.on('init', function() {
     let p = this.get('session').initSession();
 
     p.then(
       () => {
         console.debug('initSession resolved');
+        this.get('loginRedirect').clearTimeouts();
       },
       // TODO: translations
       () => {
@@ -46,5 +48,5 @@ export default Ember.Route.extend({
     );
 
     return p;
-  }.on('init'),
+  }),
 });

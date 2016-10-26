@@ -14,6 +14,7 @@ import octalPermissionsToString from 'op-worker-gui/utils/octal-permissions-to-s
 export default Ember.Mixin.create({
   errorNotifier: Ember.inject.service('errorNotifier'),
   notify: Ember.inject.service('notify'),
+  oneproviderServer: Ember.inject.service(),
 
   name: DS.attr('string'),
   /**
@@ -26,10 +27,22 @@ export default Ember.Mixin.create({
   size: DS.attr('number'),
   permissions: DS.attr('number'),
 
+  /**
+   * How many children this directory (it it is a directory-type) has.
+   * If ``totalChildrenCount`` is more than actual ``children.length``, it means
+   * that more children can be fetch from server.
+   *
+   * See also: ``oneproviderServer.fetchMoreDirChildren``.
+   *
+   * See also: ``allChildrenLoaded`` computed property.
+   */
+  totalChildrenCount: DS.attr('number'),
+
   /// Runtime fields used to store state of file in application
   isExpanded: false,
   isSelected: false,
   isEditingMetadata: false,
+  isNewlyCreated: false,
 
   /** @abstract */
   share: undefined,
@@ -52,6 +65,16 @@ export default Ember.Mixin.create({
   hasFileProperty: Ember.computed.reads('hasMetadata'),
   hasMetadata: Ember.computed('fileProperty.content', function() {
     return this.belongsTo('fileProperty').id() != null || !!this.get('fileProperty.content');
+  }),
+
+  /**
+   * Return true if this file is a dir and not all chilren are loaded from backend.
+   * If this is not a dir, return undefined.
+   */
+  allChildrenLoaded: Ember.computed('totalChildrenCount', 'children.length', 'isDir', function() {
+    if (this.get('isDir')) {
+      return this.get('totalChildrenCount') <= this.get('children.length');
+    }
   }),
 
   init() {
@@ -302,30 +325,27 @@ export default Ember.Mixin.create({
       console.error(`Called createFile on file that is not a directory: ${this.get('id')}`);
     }
 
-    let record = this.get('store').createRecord('file', {
-      name: fileName,
-      parent: this,
-      type: type
-    });
+    const parentId = this.get('id');
+
     return new Ember.RSVP.Promise((resolve, reject) => {
-      let savePromise = record.save();
-      savePromise.then(
-        () => {
-          resolve(record);
-        },
-        (error) => {
-          // advanced error notifier moved up
-          // this.get('errorNotifier').handle(failMessage);
-          try {
-            console.error(
-`File with name "${record.get('name')}" creation failed: ${JSON.stringify(error)};
-File parent id: ${this.get('id')}`
-            );
-            record.destroyRecord();
-          } finally {
-            reject(error.message || error);
-          }
+      function handleFileCreationError(error) {
+        try {
+          console.error(
+`File with name "${fileName}" creation failed: ${JSON.stringify(error)};
+File parent id: ${parentId}`
+          );
+        } finally {
+          reject(error.message || error);
         }
+      }
+
+      const savePromise = this.get('oneproviderServer').createFile(fileName, parentId, type);
+      savePromise.then(
+        (data) => {
+          console.debug(`File created with ID: ${data.fileId}`);
+          resolve();
+        },
+        (error) => handleFileCreationError(error)
       );
     });
   }

@@ -11,7 +11,11 @@ import LSAdapter from './application-localstorage';
 
 import ENV from 'op-worker-gui/config/environment';
 
-let ApplicationAdapter =
-  (ENV.environment === 'test' ? LSAdapter : OnedataAdapter);
+let ApplicationAdapter;
+if (['test', 'localstorage'].indexOf(ENV.environment) !== -1) {
+  ApplicationAdapter = LSAdapter;
+} else {
+  ApplicationAdapter = OnedataAdapter;
+}
 
 export default ApplicationAdapter;

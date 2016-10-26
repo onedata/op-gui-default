@@ -1,3 +1,5 @@
+{{page-title pageTitle}}
+
 {{!-- TODO: layout (public-top and public-content) should be in public route --}}
 <div class="public-top">
   <div class="container">
@@ -39,13 +41,7 @@
 
     <div class="op-panel op-panel-files op-panel-background">
       <div class="files-list">
-        {{#if directory}}
-          {{data-files-list dir=directory openDirInBrowser='openDirInBrowser'
-            openFileShareModal='openFileShareModal' breadcrumbsEnabled=true
-            uploadEnabled=false
-            readOnly=true
-            downloadMode='public'}}
-        {{/if}}
+        {{outlet}}
       </div>
     </div>
   </div>

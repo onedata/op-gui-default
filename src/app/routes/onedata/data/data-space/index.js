@@ -44,7 +44,7 @@ export default Ember.Route.extend({
     if (this.get('invalidRootDir')) {
       this.render('data.dataSpace.dir.error', {
         into: 'data',
-        outlet: 'dir'
+        outlet: 'data-content-scroll'
       });
     } else {
       this._super();

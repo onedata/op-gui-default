@@ -11,16 +11,21 @@ export default Ember.Controller.extend({
   /**
    * Can be both File or Ember.ObjectProxy of File.
    * Please do not use this - use ``directory`` property instead.
+   * @type {File}
    * @private
    */
   directory: null,
+
+  pageTitle: Ember.computed('model', function() {
+    return `"${this.get('model.name')}"`;
+  }),
 
   /**
    * Watch change of Share, because we want to change current directory in
    * files browser.
    */
-  modelChanged: Ember.observer('model', function() {
-    this.set('directory', this.get('model.containerDir'));
+  containerDirChanged: Ember.observer('model.containerDir.content', function() {
+    this.set('directory', this.get('model.containerDir.content'));
   }),
 
   actions: {

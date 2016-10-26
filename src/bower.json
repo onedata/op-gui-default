@@ -19,6 +19,12 @@
     "spin.js": "2.3.2",
     "select2": "3.5.2",
     "flow.js": "resumable.js#^2.11.2",
-    "animate.css": "animate-css#3.5.2"
+    "animate.css": "animate-css#3.5.2",
+    "jquery-resizable": "^0.18.0",
+    "df-visible": "jquery-visible#^1.2.0",
+    "jquery-sticky": "sticky-js#^1.0.3"
+  },
+  "resolutions": {
+    "jquery": "1.12.4"
   }
 }

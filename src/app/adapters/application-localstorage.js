@@ -12,7 +12,9 @@ import Ember from 'ember';
 
  export default LSA.extend({
   /** Called automatically on adapter init. */
-  init() {},
+  init() {
+    this._super(...arguments);
+  },
 
   /** Initializes the WebSocket */
   initWebSocket(onOpen, onError) {

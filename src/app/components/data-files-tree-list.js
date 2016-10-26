@@ -5,7 +5,7 @@ import Ember from 'ember';
  *
  * Sends actions:
  * - openDirInBrowser(file) - should open a dir in a browser (data-files-list)
- * @module components/data-files-tree-node
+ * @module components/data-files-tree-list
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
@@ -13,26 +13,20 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   fileBrowser: Ember.inject.service(),
 
+  tagName: 'ul',
+
+  classNames: ['data-files-tree-list'],
+
   /**
    * To inject - a dir which this node represents
    */
   rootDir: null,
 
   /**
-    Level of subdirectory in tree.
-    Currently only 6 levels are diplayed correctly!
-  */
-  level: null,
-
-  nextLevel: function() {
-    return this.get('level') + 1;
-  }.property('level'),
-
-  /** CSS class for node elements to apply proper padding */
-  levelClass: function() {
-    let level = this.get('level');
-    return level ? `level-${level}` : '';
-  }.property('level'),
+   * Level of subdirectory in tree.
+   * Currently only 6 levels are diplayed correctly!
+   * @type {Number}
+   */
 
   subdirsSorting: ['name:asc'],
   subdirs: Ember.computed.filterBy('rootDir.children', 'isDir', true),
@@ -40,19 +34,6 @@ export default Ember.Component.extend({
   visibleSubdirsSorted: Ember.computed.sort('visibleSubdirs', 'subdirsSorting'),
 
   actions: {
-    /** Expand/collapse a dir, showing/hiding its children */
-    toggleDir(dirFile) {
-      dirFile.set('isExpanded', !dirFile.get('isExpanded'));
-    },
-
-    browseDir(dirFile) {
-      if (dirFile.get('isDir')) {
-        this.sendAction('openDirInBrowser', dirFile);
-      } else {
-        console.error(`Tried to browse a file in file brower (should be dir): ${dirFile.get('id')}`);
-      }
-    },
-
     /** Pass the action up (action goes up from child dirs) */
     openDirInBrowser(file) {
       this.sendAction('openDirInBrowser', file);

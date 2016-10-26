@@ -12,9 +12,4 @@ export default Ember.Route.extend(RouteRejectHandler, {
   model(params) {
     return this.handleReject(this.store.find('share-public', params.share_id));
   },
-
-  setupController(controller, model) {
-    this._super(controller, model);
-    controller.modelChanged();
-  }
 });

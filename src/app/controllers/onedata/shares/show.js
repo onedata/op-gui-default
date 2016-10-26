@@ -4,7 +4,8 @@ export default Ember.Controller.extend({
   secondaryMenu: Ember.inject.service(),
 
   /**
-   * Can be both File or Ember.ObjectProxy of File.
+   * @type {File}
+   * @private
    */
   directory: null,
 
@@ -14,13 +15,17 @@ export default Ember.Controller.extend({
    */
   publishShareModalOpened: false,
 
+  pageTitle: Ember.computed('model', function() {
+    return `"${this.get('model.name')}"`;
+  }),
+
   /**
    * Watch change of Share, because we want to change current directory in
    * files browser.
    */
-  modelChanged: Ember.observer('model', function() {
-    this.set('directory', this.get('model.containerDir'));
-    if (this.get('model')) {
+  containerDirChanged: Ember.observer('model.containerDir.content', function() {
+    this.set('directory', this.get('model.containerDir.content'));
+    if (this.get('directory')) {
       this.changeMenuActiveItem();
     }
   }),

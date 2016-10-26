@@ -36,7 +36,7 @@ export default Ember.Component.extend({
       $('.resumable-list').append('<li class="resumable-file-'+file.uniqueIdentifier+'">Uploading <span class="resumable-file-name"></span> <span class="resumable-file-progress"></span>');
       $('.resumable-file-'+file.uniqueIdentifier+' .resumable-file-name').html(file.fileName);
 
-      this.get('notify').info('Starting file upload: ' + file.fileName);
+      console.debug('Starting file upload: ' + file.fileName);
       this.get('resumable').upload();
     };
   }.property(),
@@ -61,7 +61,6 @@ export default Ember.Component.extend({
     return (file/*, message*/) => {
       $('.resumable-file-'+file.uniqueIdentifier+' .resumable-file-progress').html('(completed)');
       this.get('notify').info(`File "${file.fileName}" uploaded successfully!`);
-      this.get('oneproviderServer').fileUploadSuccess(file.uniqueIdentifier, this.get('connectionRef'));
     };
   }.property(),
 
@@ -69,7 +68,6 @@ export default Ember.Component.extend({
     return (file, message) => {
       $('.resumable-file-'+file.uniqueIdentifier+' .resumable-file-progress').html('(file could not be uploaded: '+message+')');
       this.get('notify').error(`File "${file.fileName}" upload failed: ${message}`);
-      this.get('oneproviderServer').fileUploadFailure(file.uniqueIdentifier, this.get('connectionRef'));
     };
   }.property(),
 

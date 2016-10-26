@@ -6,7 +6,8 @@ $top-bar-height: 72px !default;
 $global-min-width: 1000px !default;
 // $secondary-sidebar-width: 352px;
 $secondary-sidebar-width: 352px !default;
-$secondary-sidebar-item-padding: $secondary-sidebar-width * 0.077 !default;
+$secondary-sidebar-width-max-addition: 400px;
+$secondary-sidebar-item-padding: 22px !default;
 
 $content-padding: 12px !default;
 
@@ -25,6 +26,8 @@ $top-bar-icon-font-size: 32px !default;
 
 $table-checkbox-size: 48px !default;
 
+$secondary-top-bar-height: 50px;
+
 $transition-time: 0.25s !default;
 
 // TODO: should be used with Bootstrap SASS
@@ -35,6 +38,7 @@ $font-family-sans-serif: 'Open Sans';
 @import 'public';
 @import 'data';
 @import 'groups';
+@import 'shares';
 
 html, body {
   font-family: $font-family-sans-serif !important;
@@ -237,16 +241,54 @@ html, body {
 
     background: $content-background-color;
 
+    .resize-handler {
+      position: absolute;
+      z-index: 1000;
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      cursor: ew-resize;
+
+      .transparent {
+        color: transparent;
+      }
+
+      &.data-sidebar-resize-hander {
+        top: $secondary-top-bar-height;
+      }
+    }
+
+    // an element that should be inside main content
+    // and is above sidebar and content-scroll
+    // is serves as a contextual navigation
+    .secondary-top-bar {
+      position: relative;
+      padding-top: 12px;
+      padding-left: 27px * $responsive-multiplier;
+      height: $secondary-top-bar-height;
+      border-bottom: $color-secondary-top-bar-separator solid 2px;
+    }
+
+    .lower-main-content {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: $secondary-top-bar-height;
+      bottom: 0;
+    }
+
     nav.secondary-sidebar {
+      position: relative;
       float: left;
       overflow-x: hidden;
       overflow-y: auto;
       height: 100%;
 
-      max-width: $secondary-sidebar-width;
+      max-width: $secondary-sidebar-width + $secondary-sidebar-width-max-addition;
+      width: $secondary-sidebar-width;
       min-width: $secondary-sidebar-width;
 
-      border-right: #E6E6E6 2px solid;
+      border-right: $color-secondary-sidebar-separator 2px solid;
 
       // TODO: responsive variables?
       .secondary-sidebar-header {
@@ -316,7 +358,9 @@ html, body {
 
         .item-icon {
           display: table-cell;
-          width: 1.5em;
+          min-width: 32px;
+          width: 32px;
+          max-width: 32px;
           vertical-align: middle;
           font-size: $secondary-sidebar-icon-font-size;
           text-align: center;
@@ -324,7 +368,6 @@ html, body {
 
         .item-label {
           display: table-cell;
-          width: 100%;
           vertical-align: middle;
           font-size: $secondary-sidebar-font-size;
           padding-left: 1em;
@@ -533,34 +576,6 @@ html, body {
 
 .truncate-secondary-sidebar-select {
   max-width: $secondary-sidebar-width - 110px;
-}
-
-.truncate-secondary-sidebar-item {
-  max-width: $secondary-sidebar-width - 70px;
-
-  &.level-1 {
-    max-width: $secondary-sidebar-width - 100px;
-  }
-
-  &.level-2 {
-    max-width: $secondary-sidebar-width - 120px;
-  }
-
-  &.level-3 {
-    max-width: $secondary-sidebar-width - 140px;
-  }
-
-  &.level-4 {
-    max-width: $secondary-sidebar-width - 160px;
-  }
-
-  &.level-5 {
-    max-width: $secondary-sidebar-width - 180px;
-  }
-
-  &.level-6 {
-    max-width: $secondary-sidebar-width - 200px;
-  }
 }
 
 .truncate-drop {

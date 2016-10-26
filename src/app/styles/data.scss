@@ -8,12 +8,12 @@
   text-transform: uppercase;
   color: #56616E;
   background-color: transparent;
-  border: none;
+  border: 0;
   border-radius: 0;
 
   .form-control {
     font-size: inherit;
-    border: none;
+    border: 0;
     border-radius: none;
     -webkit-box-shadow: none;
     box-shadow: none;
@@ -72,26 +72,6 @@
     padding-left: ($secondary-sidebar-item-padding + 44px) !important;
   }
 
-  .level-3 .secondary-sidebar-item {
-    padding-left: ($secondary-sidebar-item-padding + 66px) !important;
-  }
-
-  .level-4 .secondary-sidebar-item {
-    padding-left: ($secondary-sidebar-item-padding + 88px) !important;
-  }
-
-  .level-5 .secondary-sidebar-item {
-    padding-left: ($secondary-sidebar-item-padding + 110px) !important;
-  }
-
-  .level-6 .secondary-sidebar-item {
-    padding-left: ($secondary-sidebar-item-padding + 132px) !important;
-  }
-
-  .level-7 .secondary-sidebar-item {
-    padding-left: ($secondary-sidebar-item-padding + 154px) !important;
-  }
-
 }
 
 // TODO
@@ -131,35 +111,58 @@
         // make text in rows aligned vertically middle
         line-height: inherit;
 
+        &.file-list-col-text {
+          vertical-align: middle;
+        }
+
         &.col-permissions {
           font-family: monospace;
         }
 
         .file-icon {
-          float: left;
+          display: table-cell;
           width: 40px;
           margin-left: -6px;
           font-size: 32px !important;
           text-align: left;
         }
-        .file-label {
-          float: left;
-          margin-left: 20px;
+        .file-label-container {
+          display: table-cell;
+          position: relative;
+
+          .file-label {
+            position: absolute;
+            margin-left: 10px;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            @include vendor-prefix(user-select, none);
+          }
         }
         .file-row-tools {
           position: absolute;
+          top: 0;
           right: 0;
+          height: 100%;
           .oneicon {
             position: absolute;
             right: 0;
+            top: 50%;
+            transform: translateY(-50%);
             margin-right: 10px;
             font-size: 30px;
             cursor: pointer;
           }
 
+          .file-tool {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+          }
+
           // metadata tool is on the left of first right tool
           .file-tool-metadata {
-            position: relative;
             right: 32px;
 
             &.active {
@@ -178,15 +181,18 @@
   position: relative !important;
 }
 .file-list-col-size {
-  width: 140px;
-  max-width: 140px;
+  width: 70px;
+  min-width: 70px;
+  max-width: 70px;
 }
 .file-list-col-permissions {
   width: 140px;
+  min-width: 140px;
   max-width: 140px;
 }
 .file-list-col-modification {
   width: 140px;
+  min-width: 140px;
   max-width: 140px;
 }
 
@@ -280,10 +286,37 @@
   .data-files-list {
     height: 100%;
   }
+
+  .file-row-load-more {
+    height: 64px;
+  }
 }
 
-.file-upload {
+.data-files-list-loader {
+  // is floating above files list
+  position: absolute;
+  z-index: 1100;
+  left: 0;
+  right: 0;
+  // render always to the bottom of its parent (which should be files list table)
+  bottom: 0;
+  background-color: rgba($onedata-light-gray, .5);
 
+  .data-files-list-loader-gradient {
+    min-height: 100px;
+    max-height: 100%;
+    @include linear-gradient($onedata-light-gray, rgba($onedata-light-gray, 0));
+
+
+    .spinner-container {
+      width: 100%;
+    }
+
+  }
+
+  .spinner-container {
+    top: 30px;
+  }
 }
 
 .empty-dir-image {
@@ -294,6 +327,10 @@
   animation: azure-pulse 3s infinite;
 }
 
+.notice-background-pulse {
+  animation: light-azure-pulse-onetime 0.75s;
+}
+
 @keyframes azure-pulse {
   0% {
     background-color: $onedata-light-azure;
@@ -302,7 +339,19 @@
     background-color: $onedata-azure;
   }
   100% {
-    background-color: $onedata-light-azure;;
+    background-color: $onedata-light-azure;
+  }
+}
+
+@keyframes light-azure-pulse-onetime {
+  0% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: $onedata-azure;
+  }
+  100% {
+    background-color: transparent;
   }
 }
 

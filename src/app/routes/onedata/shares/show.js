@@ -10,6 +10,6 @@ export default Ember.Route.extend(RouteRejectHandler, {
 
   setupController(controller, model) {
     this._super(controller, model);
-    controller.modelChanged();
+    controller.containerDirChanged();
   }
 });

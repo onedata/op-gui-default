@@ -1,15 +1,23 @@
 import Ember from 'ember';
 /* globals Resumable */
 
-/**
- * A global file.uniqueIdentifier -> parentDir.id, to remember upload mapping.
- */
-const filesParentDirs = {};
+function matchResumableFileByUuid(rf, resumableFileId) {
+  return rf.uniqueIdentifier === resumableFileId;
+}
+
+function findResumableFileByUuid(collection, uuid) {
+  return collection.find(rf => matchResumableFileByUuid(rf, uuid));
+}
 
 /**
  * Enables global usage of file upload.
  * Uses ResumableJS and exposes its object.
  * Exposes jquery assign methods to bind file browser drop and upload button events.
+ *
+ * ## EventsBus events triggered
+ * - file-upload:file-upload-completed(ResumableFile: file, String: parentId)
+ * - file-upload:files-added(ResumableFile[]: files, String[]: parentIds)
+ *
  * @module services/file-upload
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
@@ -18,6 +26,8 @@ const filesParentDirs = {};
 export default Ember.Service.extend({
   component: null,
   session: Ember.inject.service(),
+  eventsBus: Ember.inject.service(),
+  oneproviderServer: Ember.inject.service(),
 
   /**
    * Current dir for upload - global for application!
@@ -36,8 +46,83 @@ export default Ember.Service.extend({
    * True means that we started adding files to ResumableJS, but we don't
    * finished adding a set of files (the set == files uploaded into single dir).
    * We should not add files to ResumableJS when this flag is true.
+   * @private
    */
   locked: false,
+
+  /**
+   * Stores list of computed properties names, that store lists for directory uploads.
+   * @type {Computed<Ember.Array>}
+   */
+  dirsUploadIds: Ember.A(),
+
+  /**
+   * Add ResumableFile to mapping parentId -> file
+   * See also: ``getParentIdOfUploadingFile`` and ``forgetUploadingFile``.
+   * @param {ResumableFile} resumableFile
+   * @param {String} parentId
+   */
+  addUploadingFileInfo(resumableFile, parentId) {
+    if (this.get('dirUploads-' + parentId) == null) {
+      this.get('dirsUploadIds').pushObject(parentId);
+      this.set('dirUploads-' + parentId, Ember.A());
+      console.debug(`file-upload: Creating new dirUploads for parent: ${parentId}`);
+    }
+    let dirUploads = this.get('dirUploads-' + parentId); 
+    dirUploads.pushObject(resumableFile);
+  },
+
+  /**
+   * Provides global file.uniqueIdentifier -> parentDir.id, to get upload mapping.
+   * @param {String} resumableFileId
+   * @return {String} parentId
+   */
+  getParentIdOfUploadingFile(resumableFileId) {
+    let dirsUploadIds = this.get('dirsUploadIds');
+
+    for (let parentId of dirsUploadIds) {
+      let dirUploads = this.get('dirUploads-' + parentId);
+      let resumableFile = findResumableFileByUuid(dirUploads, resumableFileId);
+      if (resumableFile) {
+        return parentId;
+      }
+    }
+
+    return null;
+  },
+
+  /**
+   * Remove entry of ResumableFile from parent -> uploading files mapping.
+   * @param {String} resumableFileId
+   * @return {[String, Number]} [parentId of removed ResumableFile entry,
+   *                            number of remain files in parent]
+   */
+  forgetUploadingFile(resumableFileId) {
+    console.debug(`file-upload: Forgetting uploaded file: ${resumableFileId}`); 
+    let dirsUploadIds = this.get('dirsUploadIds');
+    for (let parentId of dirsUploadIds) {
+      /* jshint loopfunc: true */
+      let propertyKey = 'dirUploads-' + parentId;
+      let dirUploads = this.get(propertyKey);
+      let resumableFile = findResumableFileByUuid(dirUploads, resumableFileId);
+      if (resumableFile) {
+        Ember.assert(
+          'ResumableFile not removed from dirUploads',
+          dirUploads.removeObject(resumableFile)
+        );
+        let remainUploadingFilesCount = dirUploads.get('length');
+        if (remainUploadingFilesCount === 0) {
+          console.debug(`Removing uploading dir info: ${parentId}`);
+          this.set(propertyKey, undefined);
+          this.get('dirsUploadIds').removeObject(parentId);
+        }
+        return [parentId, remainUploadingFilesCount];
+      }
+    }
+    console.warn(`Tried to remove info about resumable file upload:
+${resumableFileId}, but it could not be found in any dir`);
+    return [null, null];
+  },
 
   /**
    * The lockedDir property should be an alias for dir, but we do not want
@@ -49,28 +134,64 @@ export default Ember.Service.extend({
   dirChanged: function() {
     if (!this.get('locked')) {
       this.set('lockedDir', this.get('dir'));
-      console.debug(`locked dir changed: ${this.get('lockedDir.id')}`);
+      console.debug(`file-upload: Locked dir changed: ${this.get('lockedDir.id')}`);
     }
   }.observes('dir', 'locked'),
 
   /**
-   * Handles fileaAdded even of ResumableJS. Adds an entry to file -> parentDir
+   * Handles fileaAdded event of ResumableJS. Adds an entry to file -> parentDir
    * map and sets a service into locked state (see "locked" property).
    */
   fileAdded(file, parentId) {
-    parentId = parentId || this.get('lockedDir.id');
-    filesParentDirs[file.uniqueIdentifier] = parentId;
     if (!this.get('locked')) {
       // Ember.run is used because this fun is invoked from ResumableJS event
       Ember.run(() => this.set('locked', true));
     }
+    Ember.run(() => {
+      parentId = parentId || this.get('lockedDir.id');
+      this.addUploadingFileInfo(file, parentId);
+    });
+  },
+
+  fileUploadSuccess(file) {
+    this.get('oneproviderServer').fileUploadSuccess(
+      file.uniqueIdentifier,
+      this.getParentIdOfUploadingFile(file.uniqueIdentifier)
+    );
+    this.fileUploadCompleted(file);
+  },
+
+  fileUploadFailure(file) {
+    this.get('oneproviderServer').fileUploadFailure(
+      file.uniqueIdentifier,
+      this.getParentIdOfUploadingFile(file.uniqueIdentifier)
+    );
+    this.fileUploadCompleted(file);
   },
 
   /**
    * Handles the ResumableJS file upload finish events (when it succeeded or failed)
+   * Main function is invoked in timeout because we want to gather all added files.
+   * Sometimes when adding multiple files, upload of files added earlies is completed 
+   * before next file is even added. Then we wrongly assume, that all files for dir
+   * upload is completed. See ``WAIT_TIME`` const in this function body.
    */
   fileUploadCompleted(file) {
-    delete filesParentDirs[file.uniqueIdentifier];
+    const WAIT_TIME = 500;
+    let uuid = file.uniqueIdentifier;
+    console.debug(`file-upload: File upload completed: ${uuid}`);
+    setTimeout(() => {
+      let [parentId, filesLeft] = this.forgetUploadingFile(uuid);
+      this.get('eventsBus').trigger(
+        'file-upload:file-upload-completed',
+        file,
+        parentId
+      );
+      if (filesLeft <= 0) {
+        this.onAllFilesForDirUploaded(parentId);
+      }
+    }, WAIT_TIME);
+    
   },
 
   /**
@@ -78,13 +199,31 @@ export default Ember.Service.extend({
    * Ivoking means that we finished adding files for single directory, so
    * we can "unlock" the service (see "locked" property).
    */
-  filesAdded(/*files*/) {
+  filesAdded(files) {
     // Ember.run is used because this fun is invoked from ResumableJS event
-    Ember.run(() => this.set('locked', false));
+    Ember.run(() => {
+      this.set('locked', false);
+      this.get('eventsBus').trigger('file-upload:files-added', files,
+        files.map(f => this.getParentIdOfUploadingFile[f.uniqueIdentifier])
+      );
+    });
+  },
+
+  onAllFilesForDirUploaded(dirId) {
+    console.debug(`file-upload: Finished batch upload for dir: ${dirId}`);
+    if (!dirId) {
+      console.warn('dirId in batch upload complete RPC is null - do not make RPC call');
+    } else {
+      let rpc = this.get('oneproviderServer').fileBatchUploadComplete(dirId);
+          rpc.catch(error => {
+            console.error(`fileBatchUploadComplete RPC failed: ${error.message},
+Directory content won't be updated!`);
+          });
+    }
   },
 
   resumable: function() {
-    console.debug(`Creating new Resumable`);
+    console.debug(`file-upload: Creating new Resumable`);
     const r = new Resumable({
       target: '/upload',
       chunkSize: 1*1024*1024,
@@ -94,8 +233,7 @@ export default Ember.Service.extend({
       permanentErrors: [400, 404, 405, 415, 500, 501],
       query: (file) => {
         return {
-          parentId: filesParentDirs[file.uniqueIdentifier],
-          connectionRef: this.get('session.sessionDetails.connectionRef')
+          parentId: this.getParentIdOfUploadingFile(file.uniqueIdentifier)
         };
       },
       generateUniqueIdentifier: function() {
@@ -112,8 +250,8 @@ export default Ember.Service.extend({
     // event handlers mainly to prevent changing parent directory adding files to upload
     r.on('fileAdded', (file) => this.fileAdded(file));
     r.on('filesAdded', (files) => this.filesAdded(files));
-    r.on('fileSuccess', (file) => this.fileUploadCompleted(file));
-    r.on('fileError', (file) => this.fileUploadCompleted(file));
+    r.on('fileSuccess', (file) => this.fileUploadSuccess(file));
+    r.on('fileError', (file) => this.fileUploadFailure(file));
 
     return r;
   }.property(),

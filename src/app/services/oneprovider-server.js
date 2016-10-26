@@ -24,14 +24,13 @@ export default Ember.Service.extend({
    *
    * @param {String} uploadId An ID of file, which upload has been completed.
    * See {@link service/file-upload} to find out more about file IDs.
-   * @param {String} connectionRef An ID session
    * @returns {RSVP.Promise} A backend operation completion:
    * - ``resolve()`` - always after completion, no reject in this method
    */
-  fileUploadSuccess(uploadId, connectionRef) {
+  fileUploadSuccess(uploadId, parentId) {
     return this.get('server').privateRPC('fileUploadSuccess', {
       uploadId: uploadId,
-      connectionRef: connectionRef
+      parentId: parentId,
     });
   },
 
@@ -40,16 +39,33 @@ export default Ember.Service.extend({
    *
    * @param {String} uploadId An ID of file, which upload has been completed.
    * See {@link service/file-upload} to find out more about file IDs.
-   * @param {String} connectionRef An ID session
    * @returns {RSVP.Promise} A backend operation completion:
    * - ``resolve()`` - always after completion, no reject in this method
    */
-  fileUploadFailure(uploadId, connectionRef) {
+  fileUploadFailure(uploadId, parentId) {
     return this.get('server').privateRPC('fileUploadFailure', {
       uploadId: uploadId,
-      connectionRef: connectionRef
+      parentId: parentId,
     });
   },
+
+  /**
+   * Notify the backend, that batch file upload has been completed.
+   * It means, that we can close upload progress for directory.
+   *
+   * @param {String} parentId An ID of directory (File), to which upload has
+   * been completed.
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve(object: data)`` - always after completion, no reject in this method
+   *  - ``data.newChildrenCount`` - (number) new count of cached children files
+   *    in parent directory. Note, that this is not total number of files in parent.
+   */
+  fileBatchUploadComplete(parentId) {
+    return this.get('server').privateRPC('fileBatchUploadComplete', {
+      parentId: parentId
+    });
+  },
+
 
   /**--------------------------------------------------------------------
    File download related procedures
@@ -103,6 +119,49 @@ export default Ember.Service.extend({
   /**--------------------------------------------------------------------
    Files/directories operations
    -------------------------------------------------------------------- */
+
+   /**
+    * Request creation of a File for given parent directory.
+    *
+    * @param {String} fileName Name of new File
+    * @param {String} parentId ID of File record that is a parent dir for new file
+    * @param {String} type Type-string of file object: "file" or "dir"
+    * @returns {RSVP.Promise} A backend operation completion:
+    * - ``resolve(object: data)`` when successfully created the share
+    *   - ``data.fileId`` (string) - an ID of the created File record
+    * - ``reject(object: error)`` on failure
+    */
+  createFile(fileName, parentId, type) {
+    return this.get('server').privateRPC('createFile', {
+      fileName: fileName,
+      parentId: parentId,
+      type: type,
+    });
+  },
+
+  /**
+   * Request backend to send more children files for given directory.
+   * Used for dynamically load more files for directory.
+   *
+   * @param {String} dirId ID of File record which is a directory whose
+   *                       children should be loaded
+   * @param {Number} currentChildrenCount Current number of loaded directory
+   *                                      children
+   * @param {String} fileModelType can be: file, file-shared, file-public
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - ``resolve(object: data)`` when successfully created the share
+   *   - ``data.newChildrenCount`` (number) - new number of children of directory
+   * - ``reject(object: error)`` on failure
+   */
+  fetchMoreDirChildren(dirId, currentChildrenCount, fileModelType) {
+    let methodScope = (fileModelType === 'file-public' ? 'public' : 'private');
+
+    return this.get('server')[methodScope + 'RPC']('fetchMoreDirChildren', {
+      dirId: dirId,
+      currentChildrenCount: currentChildrenCount,
+      fileModelType: fileModelType,
+    });
+  },
 
   /**
    * Request creation of a Share for given directory.

@@ -372,7 +372,14 @@ export default {
       },
       removeFilesModal: {
         title: 'Remove files',
-        text: 'Do you want to remove selected files?'
+        text: 'Do you want to remove {{selectedCount}} selected element(s)?',
+        notify: {
+          singleRemoveSuccess: '"{{fileName}}" has been removed',
+          multipleRemoveSuccess: '{{filesCount}} elements have been removed',
+          singleRemoveFailed: '"{{fileName}}" could not be removed: {{errorMessage}}',
+          multipleRemoveFailed: 'Failed to remove {{failCount}} out of {{filesCount}} elements',
+          allRemoveFailed: 'Failed to remove all selected elements',
+        }
       },
       // TODO: to remove
       editPermissionsModal: {

@@ -193,7 +193,11 @@ export default Ember.Component.extend({
 
     // TODO: error handling
     removeSelectedFiles() {
-      this.set('isRemovingFiles', true);
+      let selectedToRemoveCount = this.get('selectedCount');
+      this.setProperties({
+        isRemovingFiles: true,
+        selectedToRemoveCount: selectedToRemoveCount
+      });
     },
 
     editPermissions() {
@@ -360,7 +364,10 @@ export default Ember.Component.extend({
 
           batchPromise.finally(() => {
             resolve();
-            this.set('isRemovingFiles', false);
+            this.setProperties({
+              isRemovingFiles: false,
+              selectedToRemoveCount: null,
+            });
           });
         }
       } else {

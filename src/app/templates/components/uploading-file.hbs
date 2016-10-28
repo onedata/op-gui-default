@@ -1,0 +1,16 @@
+{{!-- FIXME: i18n --}}
+<span class="resumable-file-prefix">
+  {{yield}}
+</span>
+<span class="resumable-file-name">
+  "{{resumableFile.fileName}}":
+</span>
+<span class="resumable-file-progress">
+  {{#if error}}
+    Error: {{error}}
+  {{else if completed}}
+    Completed!
+  {{else}}
+    {{percentageProgress}}%  
+  {{/if}}
+</span>

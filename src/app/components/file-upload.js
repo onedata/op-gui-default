@@ -1,5 +1,41 @@
 import Ember from 'ember';
 
+const {
+  computed
+} = Ember;
+
+const UploadingFile = Ember.Object.extend({
+  uuid: computed('resumableFile', function() {
+    return this.get('resumableFile').uniqueIdentifier;
+  }),
+  resumableFile: null,
+
+  /**
+   * Should be updated on resumable js progress events MANUALLY.
+   * Range: 0..1
+   * @type {Number}
+   */
+  progress: null,
+  completed: computed('progress', function() {
+    return this.get('progress') >= 1;
+  }),
+  error: null,
+
+  init() {
+    this._super(...arguments);
+    let rfile = this.get('resumableFile');
+    Ember.assert(
+      'resumableFile injected to UploadingFile cannot be null',
+      rfile
+    );
+    this.setProperties({
+      progress: rfile.progress(),
+    });
+  }
+});
+
+const HIDE_AFTER_COMPLETE_TIMEOUT_MS = 2000;
+
 /**
  * A file upload status container. When no file is uploaded, it is hidden.
  * It requires a file-upload-service to run, which hosts a ResumableJS instance.
@@ -14,107 +50,242 @@ export default Ember.Component.extend({
   oneproviderServer: Ember.inject.service(),
   session: Ember.inject.service(),
 
-  connectionRef: function() {
-    return this.get('session.sessionDetails.connectionRef');
-  }.property('session', 'sessions.sessionDetails', 'session.sessionDetails.connectionRef'),
+  classNames: ['file-upload'],
+  classNameBindings: ['visible:file-upload-visible:file-upload-hidden'],
 
   uploadAddress: '/upload',
+
+  /**
+   * If true, the panel is shown.
+   * @type {Boolean}
+   */
+  visible: false,
+
+  /**
+   * @private
+   * @type {UploadingFile[]}
+   */
+  uploadingFiles: Ember.A(),
+
+  /**
+   * Range: 0..1
+   * @type {Nubmer}
+   */
+  progress: 0,
+
+   /**
+   * @private
+   * @type {UploadingFile[]}
+   */
+  uploadingFilesNotStarted: computed('uploadingFiles.@each.progress', function() {
+    return this.get('uploadingFiles').filter((ufile) => {
+      let progress = ufile.get('progress');
+      return progress <= 0;
+    });
+  }),
+
+  /**
+   * @private
+   * @type {UploadingFile[]}
+   */
+  uploadingFilesInProgress: computed('uploadingFiles.@each.progress', function() {
+    return this.get('uploadingFiles').filter((ufile) => {
+      let progress = ufile.get('progress');
+      return progress > 0 && progress < 1;
+    });
+  }),
+
+  /**
+   * @private
+   * @type {UploadingFile[]}
+   */
+  uploadingFilesDone: computed('uploadingFiles.@each.{error,completed}', function() {
+    return this.get('uploadingFiles').filter((ufile) => {
+      return ufile.get('completed') && !ufile.get('error');
+    });
+  }),
+
+    /**
+   * @private
+   * @type {UploadingFile[]}
+   */
+  uploadingFilesFailed: computed('uploadingFiles.@each.error', function() {
+    return this.get('uploadingFiles').filter((ufile) => {
+      return ufile.get('error') != null;
+    });
+  }),
+
+  init() {
+    this._super(...arguments);
+    this._resetProperties();
+  },
+
+  clearFiles() {
+    this.set('uploadingFiles', Ember.A());
+  },
+
+  _resetProperties() {
+    this.setProperties({
+      uploadingFiles: Ember.A(),
+      visible: false,
+    });
+  },
 
   resumable: function() {
     return this.get('fileUploadService.resumable');
   }.property('fileUploadService.resumable'),
 
-  onFileAdded: function() {
+  getUploadingFile(resumableFile) {
+    let ufiles = this.get('uploadingFiles');
+    return ufiles.filter(uf => uf.get('uuid') === resumableFile.uniqueIdentifier).get('firstObject');
+  },
+
+  addUploadingFile(resumableFile) {
+    let uploadingFiles = this.get('uploadingFiles');
+    console.debug('components/file-upload: File added: ' + resumableFile.fileName);
+    let ufile = UploadingFile.create({
+      resumableFile: resumableFile
+    });
+    uploadingFiles.pushObject(ufile);
+    return ufile;
+  },
+
+  /**
+   * Adds instance of UploadingFile corresponding to given resumableFile.
+   * @param {ResumableFile} resumableFile
+   * @returns {UploadingFile} uploading file that is in uploadingFiles
+   *                          (added or found exisiting)
+   */
+  addOrGetUploadingFile(resumableFile) {
+    let ufile = this.getUploadingFile(resumableFile);
+    if (!ufile) {
+      ufile = this.addUploadingFile(resumableFile);
+    }
+    return ufile;
+  },
+
+  /**
+   * @type {Function}
+   */
+  onFileAdded: computed(function() {
     return (file) => {
-      this.$().show();
-      // Show progress bar
-      $('.resumable-progress, .resumable-list').show();
-      // Show pause, hide resume
-      $('.resumable-progress .progress-resume-link').hide();
-      $('.resumable-progress .progress-pause-link').show();
+      this.set('visible', true);
       // Add the file to the list
-      $('.resumable-list').append('<li class="resumable-file-'+file.uniqueIdentifier+'">Uploading <span class="resumable-file-name"></span> <span class="resumable-file-progress"></span>');
-      $('.resumable-file-'+file.uniqueIdentifier+' .resumable-file-name').html(file.fileName);
-
-      console.debug('Starting file upload: ' + file.fileName);
-      this.get('resumable').upload();
+      this.addOrGetUploadingFile(file);
     };
-  }.property(),
+  }),
 
-  onPause: function() {
-    return function() {
-      // Show resume, hide pause
-      $('.resumable-progress .progress-resume-link').show();
-      $('.resumable-progress .progress-pause-link').hide();
-    };
-  }.property(),
+  // TODO: pausing support
+  // onPause: computed(function() {
+  //   return function() {
+  //     // TODO: Show resume, hide pause
+  //   };
+  // }),
 
-  onComplete: function() {
+  onComplete: computed(function() {
     return () => {
-      // Hide pause/resume when the upload has completed
-      $('.resumable-progress .progress-resume-link, .resumable-progress .progress-pause-link').hide();
-      this.$().hide();
+      // TODO: Hide pause/resume when the upload has completed
+      // FIXME: experimental one notify
+      let notify = this.get('notify');
+      let filesCount = this.get('uploadingFiles.length');
+      let failedFilesCount = this.get('uploadingFilesFailed.length');
+      if (failedFilesCount === 0) {
+        notify.info(`Completed upload of ${filesCount} file(s)`);
+      } else if (failedFilesCount < filesCount) {
+        notify.warning(`${failedFilesCount} of ${filesCount} file(s) cannot be uploaded`);
+      } else {
+        notify.error(`Files upload failed!`);
+      }
+      
+      // FIXME: experimental - close upload component after some time
+      // FIXME: make class with close/show animation?
+      setTimeout(() => {
+        this.set('visible', false);
+        this.clearFiles();
+        this.set('progress', 0);
+        // FIXME: reset of ResumableJS must be done to reset progress!
+        // this.get('fileUploadService').resetResumableInstance();
+      }, HIDE_AFTER_COMPLETE_TIMEOUT_MS);
     };
-  }.property(),
+  }),
 
-  onFileSuccess: function() {
-    return (file/*, message*/) => {
-      $('.resumable-file-'+file.uniqueIdentifier+' .resumable-file-progress').html('(completed)');
-      this.get('notify').info(`File "${file.fileName}" uploaded successfully!`);
+  onFileSuccess: computed(function() {
+    return (/*file, message*/) => {
+      // FIXME: make one notify after batch files upload
+      // FIXME: i18n
+      // this.get('notify').info(`File "${file.fileName}" uploaded successfully!`);
     };
-  }.property(),
+  }),
 
-  onFileError: function() {
+  onFileError: computed(function() {
     return (file, message) => {
-      $('.resumable-file-'+file.uniqueIdentifier+' .resumable-file-progress').html('(file could not be uploaded: '+message+')');
-      this.get('notify').error(`File "${file.fileName}" upload failed: ${message}`);
+      let ufile = this.addOrGetUploadingFile(file);
+      ufile.set('error', message || "unknown error");
     };
-  }.property(),
+  }),
 
-  onFileProgress: function() {
+  percentageProgress: computed('progress', function() {
+    let p = this.get('progress');
+    return Math.floor(p*100 || 0);
+  }),
+
+  // TODO: make progress bar component
+  progressBarStyle: computed('percentageProgress', function() {
+    let pp = this.get('percentageProgress');
+    Ember.assert(
+      'file-upload percentage progress should be between 0..100',
+      pp >= 0 && pp <= 100
+    );
+    return Ember.String.htmlSafe(
+      `width:${pp}%;`
+    );
+  }),
+
+  onFileProgress: computed(function() {
     let r = this.get('resumable');
-    return function(file) {
+    return (file) => {
       // Handle progress for both the file and the overall upload
-      $('.resumable-file-'+file.uniqueIdentifier+' .resumable-file-progress').html(Math.floor(file.progress()*100) + '%');
-      $('.progress-bar').css({width:Math.floor(r.progress()*100) + '%'});
+      let ufile = this.addOrGetUploadingFile(file);
+      ufile.set('progress', file.progress());
+      this.set('progress', r.progress());
     };
-  }.property(),
+  }),
 
-  onCancel: function() {
-    return function() {
-      $('.resumable-file-progress').html('canceled');
-    };
-  }.property(),
+  // TODO: cancel support
+  // onCancel: function() {
+  //   return function() {
+  //     $('.resumable-file-progress').html('canceled');
+  //   };
+  // }.property(),
 
-  onUploadStart: function() {
-    return () => {
-      // Show pause, hide resume
-      $('.resumable-progress .progress-resume-link').hide();
-      $('.resumable-progress .progress-pause-link').show();
-    };
-  }.property(),
+  // TODO: start/pause support
+  // onUploadStart: computed(function() {
+  //   return () => {
+  //     // Show pause, hide resume
+  //     $('.resumable-progress .progress-resume-link').hide();
+  //     $('.resumable-progress .progress-pause-link').show();
+  //   };
+  // }),
 
   didInsertElement() {
-    this.$().hide();
-
     let r = this.get('fileUploadService.resumable');
 
     // TODO: use component selector this.$().find(...)
 
     if (!r.support) {
-      // TODO: transalte or other message
-      this.get('notify').warning('ResumableJS is not supported in this browser!');
-      $('.resumable-error').show();
+      // TODO: transalte or other message, this should be blocking error
+      this.get('notify').error('ResumableJS is not supported in this browser!');
     }
 
+    // FIXME: getProperties instead of each get
     r.on('fileAdded', this.get('onFileAdded'));
-    r.on('pause', this.get('onPause'));
+    // r.on('pause', this.get('onPause'));
     r.on('complete', this.get('onComplete'));
     r.on('fileSuccess', this.get('onFileSuccess'));
     r.on('fileError', this.get('onFileError'));
     r.on('fileProgress', this.get('onFileProgress'));
-    r.on('cancel', this.get('onCancel'));
-    r.on('uploadStart', this.get('onUploadStart'));
+    // r.on('cancel', this.get('onCancel'));
+    // r.on('uploadStart', this.get('onUploadStart'));
   },
 
   registerComponentInService: function() {

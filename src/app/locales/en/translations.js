@@ -399,6 +399,7 @@ export default {
     },
     fileUpload: {
       titleUpload: 'Uploading {{count}} file(s)',
+      uploading: 'Uploading',
       cancelAll: 'Cancel all',
     },
     tokenModals: {

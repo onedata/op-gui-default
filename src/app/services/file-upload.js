@@ -56,6 +56,11 @@ export default Ember.Service.extend({
    */
   dirsUploadIds: Ember.A(),
 
+  init() {
+    this._super(...arguments);
+    this.resetResumableInstance();
+  },
+
   /**
    * Add ResumableFile to mapping parentId -> file
    * See also: ``getParentIdOfUploadingFile`` and ``forgetUploadingFile``.
@@ -150,6 +155,7 @@ ${resumableFileId}, but it could not be found in any dir`);
     Ember.run(() => {
       parentId = parentId || this.get('lockedDir.id');
       this.addUploadingFileInfo(file, parentId);
+      this.get('resumable').upload();
     });
   },
 
@@ -222,7 +228,7 @@ Directory content won't be updated!`);
     }
   },
 
-  resumable: function() {
+  getNewResumable() {
     console.debug(`file-upload: Creating new Resumable`);
     const r = new Resumable({
       target: '/upload',
@@ -254,7 +260,13 @@ Directory content won't be updated!`);
     r.on('fileError', (file) => this.fileUploadFailure(file));
 
     return r;
-  }.property(),
+  },
+
+  resetResumableInstance() {
+    this.set('resumable', this.getNewResumable());
+  },
+
+  resumable: null,
 
   /**
    * Pass a jQuery element to make it a drop area for files uploading.

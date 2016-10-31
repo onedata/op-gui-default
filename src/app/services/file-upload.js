@@ -58,7 +58,7 @@ export default Ember.Service.extend({
 
   init() {
     this._super(...arguments);
-    this.resetResumableInstance();
+    this.resetResumableState();
   },
 
   /**
@@ -228,7 +228,13 @@ Directory content won't be updated!`);
     }
   },
 
-  getNewResumable() {
+  resetResumableState() {
+    let r = this.get('resumable');
+    r.files = [];
+    r.chunks = [];
+  },
+
+  resumable: Ember.computed(function() {
     console.debug(`file-upload: Creating new Resumable`);
     const r = new Resumable({
       target: '/upload',
@@ -250,7 +256,8 @@ Directory content won't be updated!`);
             date = Math.floor(date / 16);
             return (character === 'x' ? random : (random & 0x7 | 0x8)).toString(16);
           });
-      }
+      },
+      minFileSize: 0,
     });
 
     // event handlers mainly to prevent changing parent directory adding files to upload
@@ -260,13 +267,7 @@ Directory content won't be updated!`);
     r.on('fileError', (file) => this.fileUploadFailure(file));
 
     return r;
-  },
-
-  resetResumableInstance() {
-    this.set('resumable', this.getNewResumable());
-  },
-
-  resumable: null,
+  }),
 
   /**
    * Pass a jQuery element to make it a drop area for files uploading.

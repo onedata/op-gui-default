@@ -1,4 +1,3 @@
-{{!-- TODO: move on... events to file-upload.js --}}
 {{!-- TODO: translations --}}
 {{!-- TODO: styles --}}
 
@@ -8,8 +7,20 @@
     {{t 'components.fileUpload.titleUpload' count=uploadingFiles.length}}
   </div>
   <div class="panel-body">
-
-    {{!-- TODO: make component for various list types --}}
+    
+    <div class="resumable-progress">
+      <table>
+        <tr>
+          <td width="100%">
+            <div class="progress-container">
+              <div class="progress-bar" style={{progressBarStyle}}></div>
+            </div>
+          </td>
+          <td class="progress-text" nowrap="nowrap"></td>
+          {{!-- TODO: buttons, cancel etc. --}}
+        </tr>
+      </table>
+    </div>
 
     {{#if (gt uploadingFilesInProgress.length 0)}}
       <div>Currently uploading:</div>
@@ -26,10 +37,12 @@
       </ul>
     {{/if}}
 
-    <div>Done: {{uploadingFilesDone.length }} of {{uploadingFiles.length}} files</div>
+    {{#if (gt uploadingFilesDone.length 0)}}
+      <div>Done: {{uploadingFilesDone.length}} of {{uploadingFiles.length}} files</div>
+    {{/if}}
 
     {{#if (gt uploadingFilesFailed.length 0)}}
-      <div>Failed:</div>
+      <div>Failed: {{uploadingFilesFailed.length }} of {{uploadingFiles.length}} files</div>
       <ul class="resumable-list">
         {{#each uploadingFilesFailed as |ufile|}}
           {{uploading-file resumableFile=ufile.resumableFile
@@ -37,20 +50,6 @@
         {{/each}}
       </ul>
     {{/if}}
-
-    <div class="resumable-progress">
-      <table>
-        <tr>
-          <td width="100%">
-            <div class="progress-container">
-              <div class="progress-bar" style={{progressBarStyle}}></div>
-            </div>
-          </td>
-          <td class="progress-text" nowrap="nowrap"></td>
-          {{!-- TODO: buttons, cancel etc. --}}
-        </tr>
-      </table>
-    </div>
 
   </div>
 </div>

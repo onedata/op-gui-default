@@ -10,12 +10,6 @@ const UploadingFile = Ember.Object.extend({
   }),
   resumableFile: null,
 
-  /**
-   * Should be updated on resumable js progress events MANUALLY.
-   * Range: 0..1
-   * @type {Number}
-   */
-  progress: null,
   completed: computed('progress', function() {
     return this.get('progress') >= 1;
   }),
@@ -51,15 +45,9 @@ export default Ember.Component.extend({
   session: Ember.inject.service(),
 
   classNames: ['file-upload'],
-  classNameBindings: ['visible:file-upload-visible:file-upload-hidden'],
+  classNameBindings: ['visibleClass:file-upload-visible:file-upload-hidden'],
 
   uploadAddress: '/upload',
-
-  /**
-   * If true, the panel is shown.
-   * @type {Boolean}
-   */
-  visible: false,
 
   /**
    * @private
@@ -68,12 +56,23 @@ export default Ember.Component.extend({
   uploadingFiles: Ember.A(),
 
   /**
-   * Range: 0..1
-   * @type {Nubmer}
+   * If true, the panel is shown.
+   * @type {Boolean}
    */
-  progress: 0,
+  visibleClass: computed('uploadingFiles.[]', function() {
+    let filesCount = this.get('uploadingFiles.length'); 
+    return filesCount && filesCount > 0;
+  }),
 
-   /**
+  progress: computed('visible', 'uploadingFiles.@each.progress', function() {
+    let r = this.get('resumable');
+    let progress = r.progress();
+    // uncomment for verbose:
+    // console.debug(`components/file-upload progress changed to: ${progress}`);
+    return progress;
+  }),
+
+  /**
    * @private
    * @type {UploadingFile[]}
    */
@@ -127,7 +126,6 @@ export default Ember.Component.extend({
   _resetProperties() {
     this.setProperties({
       uploadingFiles: Ember.A(),
-      visible: false,
     });
   },
 
@@ -169,8 +167,6 @@ export default Ember.Component.extend({
    */
   onFileAdded: computed(function() {
     return (file) => {
-      this.set('visible', true);
-      // Add the file to the list
       this.addOrGetUploadingFile(file);
     };
   }),
@@ -185,7 +181,6 @@ export default Ember.Component.extend({
   onComplete: computed(function() {
     return () => {
       // TODO: Hide pause/resume when the upload has completed
-      // FIXME: experimental one notify
       let notify = this.get('notify');
       let filesCount = this.get('uploadingFiles.length');
       let failedFilesCount = this.get('uploadingFilesFailed.length');
@@ -197,24 +192,27 @@ export default Ember.Component.extend({
         notify.error(`Files upload failed!`);
       }
       
-      // FIXME: experimental - close upload component after some time
-      // FIXME: make class with close/show animation?
+      let props = this.getProperties('uploadingFilesDone', 'uploadingFilesFailed');
+      let finishedUploadingFiles = props.uploadingFilesDone.concat(props.uploadingFilesFailed);
+      let finishedResumableFiles = finishedUploadingFiles.map(uf => uf.get('resumableFile'));
+
       setTimeout(() => {
-        this.set('visible', false);
-        this.clearFiles();
-        this.set('progress', 0);
-        // FIXME: reset of ResumableJS must be done to reset progress!
-        // this.get('fileUploadService').resetResumableInstance();
+        let uploadingFiles = this.get('uploadingFiles');
+        let resumable = this.get('resumable');
+        this.set(
+          'uploadingFiles',
+          uploadingFiles.filter(uf => !finishedUploadingFiles.includes(uf))
+        );
+        resumable.files = resumable.files.filter(rf => !finishedResumableFiles.includes(rf));
+        // HACK: forcing ResumableJS to forget last progress - not very safe, but should work
+        resumable._prevProgress = 0;
       }, HIDE_AFTER_COMPLETE_TIMEOUT_MS);
     };
   }),
 
   onFileSuccess: computed(function() {
-    return (/*file, message*/) => {
-      // FIXME: make one notify after batch files upload
-      // FIXME: i18n
-      // this.get('notify').info(`File "${file.fileName}" uploaded successfully!`);
-    };
+    // nothing here, because we do not need to handle this event in this component
+    return (/*file, message*/) => {};
   }),
 
   onFileError: computed(function() {
@@ -242,12 +240,10 @@ export default Ember.Component.extend({
   }),
 
   onFileProgress: computed(function() {
-    let r = this.get('resumable');
     return (file) => {
       // Handle progress for both the file and the overall upload
       let ufile = this.addOrGetUploadingFile(file);
       ufile.set('progress', file.progress());
-      this.set('progress', r.progress());
     };
   }),
 

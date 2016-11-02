@@ -4,6 +4,13 @@ const {
   computed
 } = Ember;
 
+/**
+ * Ember Class for storing "model" of file that is for upload.
+ * Each ``UploadingFile`` shoud have reference to corresponding ``ResumableFile``
+ * that is used by ResumableJS. ``UploadingFile`` instances are used widely in
+ * file-upload component (code and template).
+ * ``UploadingFile`` instances are rendered with ``uploading-file`` components.
+ */
 const UploadingFile = Ember.Object.extend({
   uuid: computed('resumableFile', function() {
     return this.get('resumableFile').uniqueIdentifier;

@@ -2,6 +2,14 @@ import Ember from 'ember';
 
 const { computed } = Ember;
 
+/**
+ * A file entry in ``file-upload`` component.
+ * See also private class ``UploadingFile`` in ``FileUpload`` component.
+ * @module components/uploading-file
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
   tagName: 'li',
   classNameBindings: ['resumableFileClass'],

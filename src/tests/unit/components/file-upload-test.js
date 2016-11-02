@@ -12,6 +12,7 @@ class FakeResumableFile {
     this.uniqueIdentifier = uuid;
     this._progress = 0;
   }
+  /// return progress basing on mocked _progress property 
   progress() {
     return this._progress;
   }
@@ -35,16 +36,6 @@ describeComponent(
     }
   },
   function() {
-    // FIXME: unresolved dependencies
-    // it('renders', function() {
-    //   // creates the component instance
-    //   let component = this.subject();
-    //   // renders the component on the page
-    //   this.render();
-    //   expect(component).to.be.ok;
-    //   expect(this.$()).to.have.length(1);
-    // });
-
     // checks: getUploadingFile, addOrGetUploadingFile, addUploadingFile methods
     it('can store UploadingFile for corresponding ResumableFile', function() {
       const F_UUID = 'dkasd9ahsdf7s8fgt67atgdefdus8fs9-fdsfij8ds9f';
@@ -70,22 +61,23 @@ describeComponent(
       expect(component.get('uploadingFiles.length')).to.equal(1);
     });
 
-    // FIXME: changed behaviour
-    // it('should filter visible uploading files by progress', function() {
-    //   let comp = this.subject();
-    //   let rfiles = ['a', 'b', 'c'].map(name => new FakeResumableFile(name, name + '_id'));
+    it('should filter visible uploading files by progress', function() {
+      let comp = this.subject();
+      let rfiles = ['a', 'b', 'c'].map(name => new FakeResumableFile(name, name + '_id'));
       
-    //   rfiles.forEach(rf => comp.addUploadingFile(rf));
-    //   expect(comp.get('visibleUploadingFiles.length')).to.equal(0);
+      rfiles.forEach(rf => comp.addUploadingFile(rf));
+      expect(comp.get('uploadingFilesInProgress.length'), 'initially no files in progress')
+        .to.equal(0);
 
-    //   // change progress manually and notify
-    //   rfiles[0]._progress = 0;
-    //   rfiles[1]._progress = 30;
-    //   rfiles[2]._progress = 100;
-    //   let onFileProgress = comp.get('onFileProgress'); 
-    //   rfiles.forEach(rf => onFileProgress(rf));
+      // change progress manually (using mocked _progress) and notify
+      rfiles[0]._progress = 0;
+      rfiles[1]._progress = 0.3;
+      rfiles[2]._progress = 1;
+      let onFileProgress = comp.get('onFileProgress'); 
+      rfiles.forEach(rf => onFileProgress(rf));
 
-    //   expect(comp.get('visibleUploadingFiles.length')).to.equal(1);
-    // });
+      expect(comp.get('uploadingFilesInProgress.length'), 'one uploading file in progress')
+        .to.equal(1);
+    });
   }
 );

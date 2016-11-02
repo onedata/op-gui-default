@@ -104,10 +104,10 @@ export default Ember.Component.extend({
     });
   }),
 
-    /**
-   * @private
-   * @type {UploadingFile[]}
-   */
+  /**
+  * @private
+  * @type {UploadingFile[]}
+  */
   uploadingFilesFailed: computed('uploadingFiles.@each.error', function() {
     return this.get('uploadingFiles').filter((ufile) => {
       return ufile.get('error') != null;
@@ -171,13 +171,6 @@ export default Ember.Component.extend({
     };
   }),
 
-  // TODO: pausing support
-  // onPause: computed(function() {
-  //   return function() {
-  //     // TODO: Show resume, hide pause
-  //   };
-  // }),
-
   onComplete: computed(function() {
     return () => {
       // TODO: Hide pause/resume when the upload has completed
@@ -208,11 +201,6 @@ export default Ember.Component.extend({
         resumable._prevProgress = 0;
       }, HIDE_AFTER_COMPLETE_TIMEOUT_MS);
     };
-  }),
-
-  onFileSuccess: computed(function() {
-    // nothing here, because we do not need to handle this event in this component
-    return (/*file, message*/) => {};
   }),
 
   onFileError: computed(function() {
@@ -247,22 +235,6 @@ export default Ember.Component.extend({
     };
   }),
 
-  // TODO: cancel support
-  // onCancel: function() {
-  //   return function() {
-  //     $('.resumable-file-progress').html('canceled');
-  //   };
-  // }.property(),
-
-  // TODO: start/pause support
-  // onUploadStart: computed(function() {
-  //   return () => {
-  //     // Show pause, hide resume
-  //     $('.resumable-progress .progress-resume-link').hide();
-  //     $('.resumable-progress .progress-pause-link').show();
-  //   };
-  // }),
-
   didInsertElement() {
     let r = this.get('fileUploadService.resumable');
 
@@ -273,15 +245,20 @@ export default Ember.Component.extend({
       this.get('notify').error('ResumableJS is not supported in this browser!');
     }
 
-    // FIXME: getProperties instead of each get
-    r.on('fileAdded', this.get('onFileAdded'));
-    // r.on('pause', this.get('onPause'));
-    r.on('complete', this.get('onComplete'));
-    r.on('fileSuccess', this.get('onFileSuccess'));
-    r.on('fileError', this.get('onFileError'));
-    r.on('fileProgress', this.get('onFileProgress'));
-    // r.on('cancel', this.get('onCancel'));
-    // r.on('uploadStart', this.get('onUploadStart'));
+    let callbacks = this.getProperties(
+      'onFileAdded',
+      'onComplete',
+      'onFileError',
+      'onFileProgress'
+    );
+
+    // bind some callbacks for ResumableJS events
+    // events not bound: onPause, onFileSuccess, onCancel, onUploadStart
+
+    r.on('fileAdded', callbacks.onFileAdded);
+    r.on('complete', callbacks.onComplete);
+    r.on('fileError', callbacks.onFileError);
+    r.on('fileProgress', callbacks.onFileProgress);
   },
 
   registerComponentInService: function() {

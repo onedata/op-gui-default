@@ -402,6 +402,10 @@ export default {
       uploading: 'Uploading',
       cancelAll: 'Cancel all',
     },
+    uploadingFile: {
+      error: "Error:",
+      completed: "Completed!"
+    },
     tokenModals: {
       userJoinSpace: {
         title: 'Invite user to the space',

@@ -305,7 +305,6 @@ export default Ember.Component.extend({
           let notify = this.get('notify');
 
           batchPromise.then(() => {
-            // FIXME i18n
             let message;
             if (singular) {
               let removedFile = fileDestroyPromises.keys().next().value;
@@ -327,7 +326,6 @@ export default Ember.Component.extend({
               let removedFile = fileDestroyPromises.keys().next().value;
               fileDestroyPromises.values().next().value.catch(error => {
                 let onlyFileName = removedFile.get('name');
-                // FIXME
                 let message = i18n.t('components.dataFilesListToolbar.removeFilesModal.notify.singleRemoveFailed', {
                   fileName: onlyFileName,
                   errorMessage: error.message,

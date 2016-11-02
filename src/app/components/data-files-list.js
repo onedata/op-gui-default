@@ -350,7 +350,7 @@ export default Ember.Component.extend({
     return index > 0 ? index : 0;
   }),
 
-  // FIXME: don't know if this code works
+  // TODO VFS-2753: don't know if this code works
   currentlyUploadingCountChanged: Ember.observer('currentlyUploadingCount', function() {
     let count = this.get('currentlyUploadingCount');
     if (!count) {
@@ -429,7 +429,7 @@ export default Ember.Component.extend({
     this.get('fileSystemTree').expandDir(dir);
     this.resetProperties();
     let dirId = dir.get('id');
-    // FIXME: don't know if this code works
+    // TODO VFS-2753: don't know if this code works
     this['currentlyUploadingCount'] =
       Ember.computed.alias(`fileUpload.dirUploads-${dirId}.length`);
   }),

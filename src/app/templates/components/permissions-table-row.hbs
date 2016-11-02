@@ -5,21 +5,39 @@
 <div class="one-td one-first hidden-xs hidden-sm" {{action 'activate'}}>
   {{#link-to 'onedata.groups.show' perm.owner.id class="full-size"}}
     {{#truncated-string parentSelector=".one-first" shrinkBy=20}}
-      {{perm.owner.name}}
+      {{#if (or (not perm.owner) perm.owner.isLoading)}}
+        <div class="spinner-container spinner-32">
+          {{spin-spinner scale=0.2 lines=12 length=20 width=10}}
+        </div>
+      {{else}}
+        {{perm.owner.name}}
+      {{/if}}
     {{/truncated-string}}
   {{/link-to}}
 </div>
 {{else}}
   <div class="one-td one-first hidden-xs hidden-sm" {{action 'activate'}}>
     {{#truncated-string parentSelector=".one-first" shrinkBy=20}}
-      {{perm.owner.name}}
+      {{#if (or (not perm.owner) perm.owner.isLoading)}}
+        <div class="spinner-container spinner-32">
+          {{spin-spinner scale=0.2 lines=12 length=20 width=10}}
+        </div>
+      {{else}}
+        {{perm.owner.name}}
+      {{/if}}
     {{/truncated-string}}
   </div>
 {{/if}}
 
 <div class="one-td one-first hidden-md hidden-lg" {{action 'activate'}}>
   {{#truncated-string parentSelector=".one-first" shrinkBy=20}}
-    {{perm.owner.name}}
+    {{#if (or (not perm.owner) perm.owner.isLoading)}}
+      <div class="spinner-container spinner-32">
+        {{spin-spinner scale=0.2 lines=12 length=20 width=10}}
+      </div>
+    {{else}}
+      {{perm.owner.name}}
+    {{/if}}
   {{/truncated-string}}
 </div>
 

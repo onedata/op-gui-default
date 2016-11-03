@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import getDefaultSpace from 'op-worker-gui/utils/get-default-space';
 
 /**
  * Controller used to redirect to default space on model load.
@@ -11,25 +12,8 @@ import Ember from 'ember';
  */
 export default Ember.Controller.extend({
   goToDefaultSpace() {
-    console.debug(`spaces.index: Will try to go to default space`);
-    let spaces = this.get('model').filterBy('isDeleted', false);
-    if (spaces) {
-      if (spaces.get('isUpdating') === false) {
-        let defaultSpace = spaces.find((space) => space.get('isDefault'));
-        if (defaultSpace) {
-          console.debug(`spaces.index: Transition to default space ${defaultSpace.get('id')}`);
-          this.transitionToRoute('onedata.spaces.show', defaultSpace);
-        } else {
-          console.debug('spaces.index: No default space found - go to first space instead');
-          const firstSpace = spaces.sortBy('name').objectAt(0);
-          if (firstSpace) {
-            this.transitionToRoute('onedata.spaces.show', firstSpace);
-          } else {
-            console.debug('no spaces exist');
-          }
-        }
-      }
-    }
+    console.debug(`controllers/onedata/spaces/index: Will try to go to default space`);
+    this.transitionToRoute('onedata.spaces.show', getDefaultSpace(this.get('model')));
   },
 
   /**
@@ -37,7 +21,7 @@ export default Ember.Controller.extend({
     When found - show this space.
     This is a workaround for afterModel, which does not recieve ready spaces list.
   */
-  onModelChange: Ember.observer('model.[]', 'model.@each.isDefault', 'model.isUpdating',
+  onModelChange: Ember.observer('model.@each.isLoaded', 'model.isUpdating',
     function() {
       if (this.get('isActive')) {
         this.goToDefaultSpace();

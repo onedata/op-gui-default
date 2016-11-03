@@ -17,6 +17,8 @@ export default Ember.Service.extend({
   errorNotifier: Ember.inject.service('error-notifier'),
   fileSystemTree: Ember.inject.service('file-system-tree'),
 
+  invalidRootDir: false,
+
   /**
    * Current dir opened in file browser.
    */

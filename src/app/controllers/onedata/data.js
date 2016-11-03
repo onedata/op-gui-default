@@ -11,5 +11,6 @@ import Ember from 'ember';
 export default Ember.Controller.extend({
   fileBrowser: Ember.inject.service(),
 
+  invalidRootDir: Ember.computed.alias('fileBrowser.invalidRootDir'),
   dir: Ember.computed.alias('fileBrowser.dir'),
 });

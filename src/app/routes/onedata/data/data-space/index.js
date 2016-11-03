@@ -9,6 +9,9 @@ import Ember from 'ember';
  */
 export default Ember.Route.extend({
   fileSystemTree: Ember.inject.service(),
+  fileBrowser: Ember.inject.service(),
+
+  invalidRootDir: Ember.computed.alias('fileBrowser.invalidRootDir'),
 
   model() {
     return this.modelFor('onedata.data.data-space');
@@ -42,8 +45,8 @@ export default Ember.Route.extend({
 
   renderTemplate() {
     if (this.get('invalidRootDir')) {
-      this.render('data.dataSpace.dir.error', {
-        into: 'data',
+      this.render('onedata.data.data-space.dir.error', {
+        into: 'onedata.data',
         outlet: 'data-content-scroll'
       });
     } else {

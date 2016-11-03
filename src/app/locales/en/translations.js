@@ -399,7 +399,12 @@ export default {
     },
     fileUpload: {
       titleUpload: 'Uploading {{count}} file(s)',
+      uploading: 'Uploading',
       cancelAll: 'Cancel all',
+    },
+    uploadingFile: {
+      error: "Error:",
+      completed: "Completed!"
     },
     tokenModals: {
       userJoinSpace: {

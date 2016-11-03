@@ -35,7 +35,7 @@ const UploadingFile = Ember.Object.extend({
   }
 });
 
-const HIDE_AFTER_COMPLETE_TIMEOUT_MS = 2000;
+const CLEAR_AFTER_COMPLETE_TIMEOUT_MS = 250;
 
 /**
  * A file upload status container. When no file is uploaded, it is hidden.
@@ -52,7 +52,7 @@ export default Ember.Component.extend({
   session: Ember.inject.service(),
 
   classNames: ['file-upload'],
-  classNameBindings: ['visibleClass:file-upload-visible:file-upload-hidden'],
+  classNameBindings: ['isPanelVisible:file-upload-visible:file-upload-hidden'],
 
   uploadAddress: '/upload',
 
@@ -63,13 +63,10 @@ export default Ember.Component.extend({
   uploadingFiles: Ember.A(),
 
   /**
-   * If true, the panel is shown.
+   * If true, panel is visible
    * @type {Boolean}
    */
-  visibleClass: computed('uploadingFiles.[]', function() {
-    let filesCount = this.get('uploadingFiles.length'); 
-    return filesCount && filesCount > 0;
-  }),
+  isPanelVisible: false,
 
   progress: computed('visible', 'uploadingFiles.@each.progress', function() {
     let r = this.get('resumable');
@@ -152,6 +149,10 @@ export default Ember.Component.extend({
       resumableFile: resumableFile
     });
     uploadingFiles.pushObject(ufile);
+    let uploadingFilesCount = this.get('uploadingFiles.length');
+    if (uploadingFilesCount >= 0) {
+      this.set('isPanelVisible', true);
+    }
     return ufile;
   },
 
@@ -196,6 +197,8 @@ export default Ember.Component.extend({
       let finishedUploadingFiles = props.uploadingFilesDone.concat(props.uploadingFilesFailed);
       let finishedResumableFiles = finishedUploadingFiles.map(uf => uf.get('resumableFile'));
 
+      this.set('isPanelVisible', false);
+
       setTimeout(() => {
         let uploadingFiles = this.get('uploadingFiles');
         let resumable = this.get('resumable');
@@ -206,7 +209,7 @@ export default Ember.Component.extend({
         resumable.files = resumable.files.filter(rf => !finishedResumableFiles.includes(rf));
         // HACK: forcing ResumableJS to forget last progress - not very safe, but should work
         resumable._prevProgress = 0;
-      }, HIDE_AFTER_COMPLETE_TIMEOUT_MS);
+      }, CLEAR_AFTER_COMPLETE_TIMEOUT_MS);
     };
   }),
 

@@ -11,45 +11,24 @@
     <div class="resumable-progress">
       <table>
         <tr>
-          <td width="100%">
+          <td>
             <div class="progress-container">
               <div class="progress-bar" style={{progressBarStyle}}></div>
             </div>
           </td>
-          <td class="progress-text" nowrap="nowrap"></td>
+          <td class="progress-text" nowrap="nowrap">{{percentageProgress}}%</td>
           {{!-- TODO: buttons, cancel etc. --}}
         </tr>
       </table>
     </div>
 
-    {{#if (gt uploadingFilesInProgress.length 0)}}
-      <div>Currently uploading:</div>
-      <ul class="resumable-list">
-        {{#each uploadingFilesInProgress as |ufile index|}}
-          {{#uploading-file resumableFile=ufile.resumableFile
-            progress=ufile.progress completed=ufile.completed
-            error=ufile.error}}
-            
-            ({{inc (inc index) uploadingFilesDone.length }} of {{uploadingFiles.length}})
-          
-          {{/uploading-file}}
-        {{/each}}
-      </ul>
-    {{/if}}
-
-    {{#if (gt uploadingFilesDone.length 0)}}
-      <div>Done: {{uploadingFilesDone.length}} of {{uploadingFiles.length}} files</div>
-    {{/if}}
-
-    {{#if (gt uploadingFilesFailed.length 0)}}
-      <div>Failed: {{uploadingFilesFailed.length }} of {{uploadingFiles.length}} files</div>
-      <ul class="resumable-list">
-        {{#each uploadingFilesFailed as |ufile|}}
-          {{uploading-file resumableFile=ufile.resumableFile
-            progress=ufile.progress completed=ufile.completed error=ufile.error}}
-        {{/each}}
-      </ul>
-    {{/if}}
+    <ul class="resumable-list">
+      {{#each uploadingFiles as |ufile index|}}
+        {{uploading-file resumableFile=ufile.resumableFile
+          progress=ufile.progress completed=ufile.completed
+          error=ufile.error}}
+      {{/each}}
+    </ul>
 
   </div>
 </div>

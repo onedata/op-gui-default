@@ -53,12 +53,12 @@ export default Ember.Route.extend(RouteRejectHandler, {
   */
   renderTemplate() {
     if (this.get('invalid')) {
-      this.render('onedata.data.dataSpace.dir.error', {
+      this.render('onedata.data.data-space.dir.error', {
         into: 'onedata.data',
         outlet: 'data-content-scroll'
       });
     } else {
-      this.render('onedata.data.dataSpace.dir.dirToolbar', {
+      this.render('onedata.data.data-space.dir.dirToolbar', {
         into: 'onedata',
         outlet: 'toolbar'
       });

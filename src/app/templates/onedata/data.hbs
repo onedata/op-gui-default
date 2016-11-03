@@ -3,7 +3,9 @@
 
 {{!-- Secondary top bar --}}
 <div class="secondary-top-bar">
-  {{file-breadcrumbs file=dir changeDir="openDirInBrowser"}}
+  {{#unless invalidRootDir}}
+    {{file-breadcrumbs file=dir changeDir="openDirInBrowser"}}
+  {{/unless}}
 </div>
 
 <div class="lower-main-content">

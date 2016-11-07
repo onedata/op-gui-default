@@ -35,8 +35,7 @@ describe('addEllipsisBreadcrumbsItem', function() {
     let itemIndex = 3;
     let item = bitems.objectAt(itemIndex);
     let parentFile = item.get('file.parent');
-    let updatedItems =
-      addEllipsisBreadcrumbsItem(this.bitems, item);
+    let updatedItems = addEllipsisBreadcrumbsItem(bitems, item);
     let ellipsisItem = updatedItems.objectAt(itemIndex);
 
     expect(updatedItems.length).to.equal(number_of_files+1);

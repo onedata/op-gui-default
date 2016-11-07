@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import addEllipsisItem from './add-ellipsis-breadcrumbs-item';
+import addEllipsisBreadcrumbsItem from './add-ellipsis-breadcrumbs-item';
 
 /**
  * A function for reducing number of breadcrumbs items (for long paths).
@@ -32,7 +32,8 @@ import addEllipsisItem from './add-ellipsis-breadcrumbs-item';
  * @param {Ember.A<FileBreadcrumbsItem>} items
  * @param {Number} count max. number of dir names from ``items`` that should be included
  *                       in result array
- * @returns {Ember.A<FileBreadcrumbsItem>} reduced breadcrumbs items array;
+ * @returns {RSVP.Promise<Ember.A<FileBreadcrumbsItem>>} resolves with reduced breadcrumbs
+ *                                         items array;
  *                                         max. lenght of the array is ``count+1``
  *                                         or ``items`` length
  */
@@ -40,42 +41,42 @@ function filterBreadcrumbsItems(items, count) {
   let resultArray = Ember.A();
   let itemsCount = items.get('length');
   // at least 1
-  if (count > 0) {
+  if (count > 0 && itemsCount > 0) {
     // add last element (current dir)
     // [current_dir]
     resultArray.push(items.get('lastObject'));
   } else {
     // return empty array
     // []
-    return resultArray;
+    return new Ember.RSVP.Promise(resolve => resolve(resultArray));
   }
   // 2 or more: []
-  if (count > 1) {
+  if (count > 1 && itemsCount > 1) {
     // add root item at the front of items
     // [root > pwd]
     resultArray.splice(0, 0, items.get('firstObject'));
   } else {
     // only one element, but add ellipsis item if can
     // [... > pwd]
-    return addEllipsisItem(resultArray, resultArray.get('firstObject'));
+    return addEllipsisBreadcrumbsItem(resultArray, resultArray.get('firstObject'));
   }
   // 3 or more
-  if (count > 2 ) {
+  if (count > 2 && itemsCount > 2) {
     // add parent of current dir before current dir
     // [root > pwd_parent > pwd]
-    resultArray.splice(1, 0, (items.get('lastObject')));
+    resultArray.splice(1, 0, items.objectAt(items.length-2));
   } else {
     // [root > ... > pwd]
-    return addEllipsisItem(resultArray, resultArray.get('lastObject'));
+    return addEllipsisBreadcrumbsItem(resultArray, resultArray.get('lastObject'));
   }
   // 4 or more
-  if (count > 3) {
+  if (count > 3 && itemsCount > 3) {
     // add first child of root
     // [root > root_child > pwd_parent > pwd]
     resultArray.splice(1, 0, items.objectAt(1));
   } else {
     // [root > ... > pwd_parent > pwd]
-    return addEllipsisItem(resultArray, resultArray.objectAt(1));
+    return addEllipsisBreadcrumbsItem(resultArray, resultArray.objectAt(1));
   }
   // 5 or more
   if (count > 4 && itemsCount >= 4) {
@@ -84,17 +85,16 @@ function filterBreadcrumbsItems(items, count) {
     // first item should not be lower than first child of root
     // because we already added it earlier
     firstItemToAddIndex = Math.max(2, firstItemToAddIndex);
+    let frontArray = resultArray.slice(0, 2);
+    let middleItems = items.slice(firstItemToAddIndex, lastItemToAddIndex);
+    let tailArray = resultArray.slice(2, 5);   
+
     resultArray = Ember.A(
-      resultArray.slice(0, 2).concat(
-        items.slice(firstItemToAddIndex, lastItemToAddIndex).concat(
-          resultArray.slice(resultArray(3, 5))
-        )
-      )
+      frontArray.concat(middleItems, tailArray)
     );
   }
-  // FIXME: probably there will be bug with 4 elements (additional ellipsis)
-  // FIXME: add last ellipsis element addEllipsisElement()
-  return resultArray;
+
+  return addEllipsisBreadcrumbsItem(resultArray, resultArray.objectAt(2));
 }
 
 export default filterBreadcrumbsItems;

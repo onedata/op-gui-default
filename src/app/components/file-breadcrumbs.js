@@ -4,6 +4,8 @@ import cutDirsPath from 'op-worker-gui/utils/cut-dirs-path';
 import FileBreadcrumbsItem from 'op-worker-gui/utils/file-breadcrumbs-item';
 import filterBreadcrumbsItems from 'op-worker-gui/utils/filter-breadcrumbs-items';
 
+const ObjectPromiseProxy = Ember.ObjectProxy.extend(Ember.PromiseProxyMixin);
+
 export default Ember.Component.extend({
   classNames: ['file-breadcrumbs'],
 
@@ -27,7 +29,7 @@ export default Ember.Component.extend({
    * so there will be N+1 elements visible.
    * @type {Number}
    */
-  elementsToShow: 4,
+  elementsToShow: 6,
 
   // FIXME: a function/observer/whatever to set elementsToShow
   // based on available space in breadcrumbs
@@ -39,21 +41,33 @@ export default Ember.Component.extend({
     if (!this.get('isLoading')) {
       let dirsPath = this.get('dirsPath');
       if (dirsPath) {
-        let rootId = this.get('rootDir.id');
+        let rootId = this.get('rootDir.id') || dirsPath.get('firstObject.id');
         let items = dirsPath.map(file => {
-          return FileBreadcrumbsItem.create({
+          let fbi = FileBreadcrumbsItem.create({
             file: file,
-            name: file.get('name'),
+            // isRoot: rootId ? file.get('id') === rootId : undefined
+            // FIXME: forcing use of predefined isRoot flag
             isRoot: file.get('id') === rootId
           });
+          return fbi;
         });
-        return filterBreadcrumbsItems(items, this.get('elementsToShow'));
+        return items;
       } else {
         return null;
       }
     } else {
       return null;
     }
+  }),
+
+  filteredBreadcrumbsItems: Ember.computed('breadcrumbsItems', 'elementsToShow', function() {
+    let props = this.getProperties('breadcrumbsItems', 'elementsToShow');
+    return ObjectPromiseProxy.create({
+      promise: new Ember.RSVP.Promise(resolve => {
+        filterBreadcrumbsItems(props.breadcrumbsItems, props.elementsToShow)
+          .then(items => resolve(items));
+      })
+    });
   }),
 
   dirsPath: Ember.computed('file.dirsPath.[]', 'rootDir', function() {

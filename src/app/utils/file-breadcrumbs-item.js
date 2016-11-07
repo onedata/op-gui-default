@@ -33,7 +33,7 @@ const FileBreadcrumbsItem = Ember.Object.extend({
    * 
    * NOTE that it can be shortened with CSS ellipsis later before rendering.
    */
-  name: Ember.computed({
+  name: Ember.computed('__name', 'file.name', {
     get() {
       return this.get('__name') || this.get('file.name');
     },
@@ -43,7 +43,23 @@ const FileBreadcrumbsItem = Ember.Object.extend({
     }
   }),
 
-  isRoot: false,
+  __isRoot: undefined,
+
+  // FIXME: automatic isRoot detection seems not to work with template
+  isRoot: Ember.computed('__isRoot', 'file.hasParent', {
+    get() {
+      let __isRoot = this.get('__isRoot');
+      if (this.get('__isRoot') === undefined) {
+        return this.get('file.hasParent') === false;
+      } else {
+        return __isRoot;
+      }
+    },
+    set(key, value) {
+      this.set('__isRoot', value);
+      return this.get('__isRoot');
+    }
+  }),
 });
 
 export default FileBreadcrumbsItem;

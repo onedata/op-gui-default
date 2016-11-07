@@ -2,43 +2,49 @@
 import { expect } from 'chai';
 import {
   describe,
-  it,
-  beforeEach,
+  it
 } from 'mocha';
 import addEllipsisBreadcrumbsItem from 'op-worker-gui/utils/add-ellipsis-breadcrumbs-item';
-import Ember from 'ember';
-import FileBreadcrumbsItem from 'op-worker-gui/utils/file-breadcrumbs-item';
-
-function generateBreadcrumbsItems(number_of_files) {
-  let result = {};
-  result.fileNames = [...Array(number_of_files).keys()].map(i => `file-${i}`);
-  result.files = result.fileNames.map(name => Ember.Object.create({
-    name: name
-  }));
-  for (let i=0; i<result.files.length; i+=1) {
-    result.files[i].set('parent', result.files[i-1]);
-  }
-  result.bitems = Ember.A(result.files.map(file => FileBreadcrumbsItem.create({
-    file: file
-  })));
-  return result;
-}
+import generateBreadcrumbsItems from 'op-worker-gui/tests/helpers/generate-breadcrumbs-items';
 
 describe('addEllipsisBreadcrumbsItem', function() {
-  beforeEach(function() {
-
+  it('adds ellipsis item whose file point to parent of its right neighbour', function(done) {
+    let numberOfFiles = 10;
+    let { bitems } = generateBreadcrumbsItems(numberOfFiles);
+    let itemIndex = 5;
+    let item = bitems.objectAt(itemIndex);
+    // remove original parent of item
+    bitems.removeAt(itemIndex-1);
+    item.get('file.parent').then(parentFile => {
+      addEllipsisBreadcrumbsItem(bitems, item).then(updatedItems => {
+        let ellipsisItem = updatedItems.objectAt(itemIndex-1);
+        expect(updatedItems.length).to.equal(numberOfFiles);
+        expect(ellipsisItem.get('file.id')).to.equal(parentFile.get('id'));
+        done();
+      });
+    });
   });
 
-  it('adds ellipsis item whose file point to parent of its right neighbour', function() {
-    let number_of_files = 10;
-    let { bitems } = generateBreadcrumbsItems(number_of_files);
-    let itemIndex = 3;
-    let item = bitems.objectAt(itemIndex);
-    let parentFile = item.get('file.parent');
-    let updatedItems = addEllipsisBreadcrumbsItem(bitems, item);
-    let ellipsisItem = updatedItems.objectAt(itemIndex);
+  it('does not add ellipsis for item that has no parent', function(done) {
+    let { bitems } = generateBreadcrumbsItems(1);
+    let item = bitems.get('firstObject');
 
-    expect(updatedItems.length).to.equal(number_of_files+1);
-    expect(ellipsisItem.get('file')).to.equal(parentFile);
+    addEllipsisBreadcrumbsItem(bitems, item).then(updatedItems => {
+      expect(updatedItems.length).to.equal(1);
+      expect(updatedItems.get('firstObject')).to.equal(item);
+      done();
+    });
+  });
+
+  it('does not add ellipsis for item if item parent is already predecessor of item in original array', function(done) {
+    let numberOfFiles = 10;
+    let { bitems } = generateBreadcrumbsItems(numberOfFiles);
+    let item = bitems.objectAt(5);
+
+    addEllipsisBreadcrumbsItem(bitems, item).then(updatedItems => {
+      expect(updatedItems.length).to.equal(numberOfFiles);
+      expect(updatedItems.objectAt(5)).to.equal(item);
+      done();
+    });
   });
 });

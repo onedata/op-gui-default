@@ -3,11 +3,15 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   classNames: ['file-breadcrumbs-item'],
 
-  useAsRoot: undefined,
+  /**
+   * @required
+   * @type {FileBreadcrumbsItem}
+   */
+  item: undefined,
 
-  isRoot: Ember.computed('file.hasParent', 'useAsRoot', function() {
-    return this.get('useAsRoot') || !this.get('file.hasParent');
-  }),
+  file: Ember.computed.alias('item.file'),
+  name: Ember.computed.alias('item.name'),
+  isRoot: Ember.computed.alias('item.isRoot'),
 
   anchorId: Ember.computed('elementId', 'file.id', function() {
     return `${this.get('elementId')}-bclink-${this.get('file.id')}`;

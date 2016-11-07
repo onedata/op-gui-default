@@ -4,9 +4,8 @@
   </div>
 {{else}}
   <div class="file-breadcrumbs-list">
-    {{#each breadcrumbsItems as |bitem|}}
-      {{file-breadcrumbs-item file=bitem.file changeDir="changeDir"
-        useAsRoot=bitem.isRoot}}
+    {{#each filteredBreadcrumbsItems.content as |bitem|}}
+      {{file-breadcrumbs-item item=bitem changeDir="changeDir"}}
     {{/each}}
   </div>
 {{/if}}

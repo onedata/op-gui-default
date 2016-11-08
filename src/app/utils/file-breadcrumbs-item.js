@@ -45,7 +45,7 @@ const FileBreadcrumbsItem = Ember.Object.extend({
 
   __isRoot: undefined,
 
-  // FIXME: automatic isRoot detection seems not to work with template
+  // TODO: automatic isRoot detection seems not to work with template
   isRoot: Ember.computed('__isRoot', 'file.hasParent', {
     get() {
       let __isRoot = this.get('__isRoot');

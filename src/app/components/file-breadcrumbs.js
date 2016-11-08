@@ -6,6 +6,14 @@ import filterBreadcrumbsItems from 'op-worker-gui/utils/filter-breadcrumbs-items
 
 const ObjectPromiseProxy = Ember.ObjectProxy.extend(Ember.PromiseProxyMixin);
 
+/**
+ * A container for ``file-breadcrumbs-item`` items.
+ * It displays a breadcrumbs path and dynamically adjusts number of breadcrumbs items.
+ * @module components/file-breadcrumbs
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
   classNames: ['file-breadcrumbs'],
 
@@ -29,15 +37,57 @@ export default Ember.Component.extend({
    * so there will be N+1 elements visible.
    * @type {Number}
    */
-  elementsToShow: 6,
+  elementsToShow: Infinity,
 
-  // FIXME: a function/observer/whatever to set elementsToShow
-  // based on available space in breadcrumbs
+  didInsertElement() {
+    this.checkWidth();
+    this.set('__checkWidthFun', () => {
+      this.set('elementsToShow', Infinity);
+      this.checkWidth();
+    });
+    $(window).on('resize', this.get('__checkWidthFun'));
+  },
+
+  willDestroyElement() {
+    $(window).off('resize', this.get('__checkWidthFun'));
+  },
 
   /**
-   * @type {Ember.A<FileBreadcrumbsItem>}
+   * Watch changes on properites that can cause change of width of file-breadcrumbs-list.
+   * As file-breadcrumbs-list can overflow its parent, thus it can have width greater than
+   * file-breadcrumbs, decrement ``elementsToShow`` count to try to fit file-breadcrumbs-list
+   * into its container.
    */
-  breadcrumbsItems: Ember.computed('dirsPath.[]', 'isLoading', 'elementsToShow', function() {
+  checkWidth: Ember.observer('isLoading', 'filteredBreadcrumbsItems.content.[]',
+    function() {
+      Ember.run.scheduleOnce('afterRender', this, () => {
+        console.debug(`components/file-breadcrumbs: checking file breadcrumbs list width`);
+        let $fileBreadcrumbs = this.$();
+        if ($fileBreadcrumbs && $fileBreadcrumbs.length > 0) {
+          let $fileBreadcrumbsList = $fileBreadcrumbs.find('.file-breadcrumbs-list');
+          if ($fileBreadcrumbsList.length > 0) {
+            let listWidth = $fileBreadcrumbsList.width();
+            let containerWidth = $fileBreadcrumbs.width();
+            let elementsToShow = this.get('elementsToShow');
+            let itemsCount = this.get('filteredBreadcrumbsItems.content.length');
+            if (listWidth > containerWidth) {
+              if (itemsCount) {
+                if (elementsToShow > itemsCount) {
+                  this.set('elementsToShow', itemsCount);
+                } else {
+                  this.decrementProperty('elementsToShow');
+                }
+              }
+            }
+          }
+        }
+      });
+  }),
+
+  /**
+   * @type {Ember.Array<FileBreadcrumbsItem>}
+   */
+  breadcrumbsItems: Ember.computed('dirsPath.[]', 'isLoading', function() {
     if (!this.get('isLoading')) {
       let dirsPath = this.get('dirsPath');
       if (dirsPath) {
@@ -45,8 +95,6 @@ export default Ember.Component.extend({
         let items = dirsPath.map(file => {
           let fbi = FileBreadcrumbsItem.create({
             file: file,
-            // isRoot: rootId ? file.get('id') === rootId : undefined
-            // FIXME: forcing use of predefined isRoot flag
             isRoot: file.get('id') === rootId
           });
           return fbi;
@@ -60,12 +108,20 @@ export default Ember.Component.extend({
     }
   }),
 
+  /**
+   * BreadcrumbsItems filtered with ``filterBreadcrumbsItems`` function.
+   * It should contain max. ``elementsToShow`` + ellipsis elements. 
+   * @type {ObjectPromiseProxy<Ember.Array<FileBreadcrumbsItem>>}
+   */
   filteredBreadcrumbsItems: Ember.computed('breadcrumbsItems', 'elementsToShow', function() {
     let props = this.getProperties('breadcrumbsItems', 'elementsToShow');
     return ObjectPromiseProxy.create({
       promise: new Ember.RSVP.Promise(resolve => {
         filterBreadcrumbsItems(props.breadcrumbsItems, props.elementsToShow)
-          .then(items => resolve(items));
+          .then(items => {
+            // new list of breadcrumbs items has been prepared, so we can reset 
+            resolve(items);
+          });
       })
     });
   }),
@@ -80,7 +136,7 @@ export default Ember.Component.extend({
     }
   }),
 
-  isLoading: Ember.computed('dirsPath', function() {
+  isLoading: Ember.computed('dirsPath.@each.name', function() {
     let dirsPath = this.get('dirsPath');
     return !dirsPath || !this.get('dirsPath').some(d => d.get('name'));
   }),

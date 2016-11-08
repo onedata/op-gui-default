@@ -118,7 +118,7 @@ export default {
         selectHandleServicePlaceholder: "Choose a handle service",
         publishButton: "Publish",
         noHandleServices: 'Unfortunately, currently you do not have access to any handle service.',
-        dublinCoreLabel: 'Please eneter Dublin Core metadata here:',
+        dublinCoreLabel: 'Please enter Dublin Core metadata here:',
         publishFailure: 'Publishing share "{{shareName}}" failed: {{errorMessage}}',
         publishSuccess: 'Share "{{shareName}}" has been published successfully!',
       },

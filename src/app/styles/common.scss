@@ -132,8 +132,8 @@ html, body {
         // TODO: probably > li can be used... consider it
         // TODO: .top-bar-item
         > li > a {
-          // important because we want all items height to fit bar height
-          min-height: $top-bar-height !important;
+          padding-top: $top-bar-height * .25;
+          padding-bottom: 0px;
         }
 
         .profile-dropdown {

@@ -19,17 +19,19 @@ export default Ember.Component.extend({
 
   /**
    * To inject - a dir which this node represents
+   * @required
+   * @type {File}
    */
   rootDir: null,
 
-  /**
-   * Level of subdirectory in tree.
-   * Currently only 6 levels are diplayed correctly!
-   * @type {Number}
-   */
+  isLoading: Ember.computed('rootDir.isLoaded', 'children.@each.isLoaded', function() {
+    let children = this.get('children');
+    return !this.get('rootDir.isLoaded') || !children.every(c => c.get('isLoaded'));
+  }),
 
+  children: Ember.computed.alias('rootDir.children'),
   subdirsSorting: ['name:asc'],
-  subdirs: Ember.computed.filterBy('rootDir.children', 'isDir', true),
+  subdirs: Ember.computed.filterBy('children', 'isDir', true),
   visibleSubdirs: Ember.computed.filter('subdirs', (sd) => sd.get('id') && sd.get('name')),
   visibleSubdirsSorted: Ember.computed.sort('visibleSubdirs', 'subdirsSorting'),
 

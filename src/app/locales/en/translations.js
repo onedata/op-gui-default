@@ -311,6 +311,9 @@ export default {
         users: 'Users',
         groups: 'Groups'
       },
+      noUsers: {
+        group: 'This group has no users',
+      },
       noGroups: {
         group: 'This group has no subgroups',
         space: 'This space does not belong to any group'

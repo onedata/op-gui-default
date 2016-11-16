@@ -30,7 +30,7 @@
       {{#bs-tooltip id=item.id tagName='a' title=item.tooltip
         class=(concat "top-bar-item toolbar-icon " (if item.disabled 'disabled'))
         disabled=item.disabled
-        action=(if item.action item.action (action (mut undefProp)))
+        click=(action (if item.action item.action (action (mut undefProp))))
         }}
           {{icon item.icon 'top-bar-icon'}}
       {{/bs-tooltip}}

@@ -226,6 +226,30 @@
   }
 }
 
+.data-files-list-toolbar {
+  .dropdown .dropdown-menu {
+    // correct X of dropdown for toolbar
+    transform: translateX(5px);
+
+    &.dropdown-menu-list {
+      > li:not(.divider) {
+        > a {
+          padding-top: 5px;
+          padding-bottom: 5px;
+          padding-right: 15px;
+
+          font-size: 0.9em;
+
+          .item-icon {
+            font-size: 28px;
+          }
+        }
+      }
+    }
+  }
+}
+
+
 // modals
 
 // file chunks

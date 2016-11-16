@@ -353,7 +353,7 @@ export default {
         createFile: 'Create file',
         shareFile: 'Share element',
         uploadFile: 'Upload file',
-        rename: 'Rename element',
+        renameFile: 'Rename element',
         permissions: 'Change element permissions',
         copy: 'Copy element',
         cut: 'Cut element',

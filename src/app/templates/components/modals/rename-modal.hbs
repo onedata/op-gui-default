@@ -16,16 +16,16 @@
 
     {{input type="text" value=renameName autofocus=true
       class="form-control"
-      enter=(if (and renameName (not isLoading)) "submit")
-      disabled=isLoading}}
+      enter=(if canSubmit "submit")
+      disabled=(or isLoading (not open))}}
 
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata buttonType="submit"
-      action=(action "submit")
+      action=(if canSubmit "submit")
       class="btn btn-primary no-outline" spinnerColor="#fff"
       inFlight=isLoading
-      disabled=(or (not renameName) isLoading)
+      disabled=(not canSubmit)
     }}
       {{t "common.modal.ok"}}
     {{/spin-button-onedata}}

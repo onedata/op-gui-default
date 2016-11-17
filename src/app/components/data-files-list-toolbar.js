@@ -113,9 +113,7 @@ export default Ember.Component.extend({
         id: 'rename-file-tool',
         icon: 'rename',
         action: 'renameSelectedFile',
-        // TODO: feature not implemented yet
-        //disabled: !isSingleFileSelected,
-        disabled: true,
+        disabled: !isSingleFileSelected,
         tooltip: i18n.t('components.dataFilesListToolbar.tooltip.renameFile')
       },
       {
@@ -195,7 +193,6 @@ export default Ember.Component.extend({
 
     renameSelectedFile() {
       if (this.get('dir.singleSelectedFile')) {
-        this.set('renameFileName', '');
         this.set('isRenamingFile', true);
       }
     },
@@ -278,24 +275,6 @@ export default Ember.Component.extend({
 
     /// Actions for modals
     // TODO: move modals to separate components? (they have some state)
-
-    submitRenameSelectedFile() {
-      try {
-        let file = this.get('dir.singleSelectedFile');
-        if (file) {
-          if (this.get('renameFileName')) {
-            file.set('name', this.get('renameFileName') || '');
-            file.save();
-          } else {
-            console.error('Please enter non-blank file name');
-          }
-        } else {
-          console.error('No file selected to rename or multiple selected');
-        }
-      } finally {
-        this.set('isRenamingFile', false);
-      }
-    },
 
     submitCreateFile(type) {
       this.set('isCreatingFileWorking', true);
@@ -404,5 +383,24 @@ export default Ember.Component.extend({
         this.set('isRemovingFiles', false);
       }
     },
+
+    /**
+     * Handle result of file rename (action from ``rename-modal``)
+     * @param {Boolean} success if rename was done
+     * @param {File} model file that has been renamed
+     * @param {String} oldName a former name of file to rename
+     * @param {BackendError} error has ``message`` property
+     */
+    renameDone({success, model, oldName, error}) {
+      let file = model;
+      let notify = this.get('notify');
+      let type = file.get('isDir') ? 'File' : 'Directory';
+      if (success) {
+        notify.info(`${type} "${oldName}" has been renamed to "${file.get('name')}"`);
+      } else {
+        notify.error(`${type} "${oldName}" could not be renamed due to an error: ${error.message}`);
+      }
+      
+    }
   }
 });

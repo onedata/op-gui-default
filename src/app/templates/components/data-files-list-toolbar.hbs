@@ -51,25 +51,11 @@
 
 {{!-- RENAME FILE --}}
 
-{{#bs-modal openedAction='renameModalOpened' open=isRenamingFile body=false footer=false
-    title=(t "components.dataFilesListToolbar.renameFileModal.title")
-    id="rename-file"}}
-  {{#bs-modal-body}}
-    {{#bs-form action=(action "submitRenameSelectedFile") model=this}}
-      {{bs-form-element controlType="text" property="renameFileName" autofocus=true
-        label=(t 'components.dataFilesListToolbar.renameFileModal.enterName'
-          currentName=dir.singleSelectedFile.name)}}
-    {{/bs-form}}
-  {{/bs-modal-body}}
-  {{#bs-modal-footer as |footer|}}
-    {{#bs-button buttonType="submit" type="primary"}}
-      {{t "common.modal.ok"}}
-    {{/bs-button}}
-    {{#bs-button action=(action "close" target=footer) type="default"}}
-      {{t "common.modal.cancel"}}
-    {{/bs-button}}
-  {{/bs-modal-footer}}
-{{/bs-modal}}
+{{modals/rename-modal model=dir.singleSelectedFile open=isRenamingFile modalId="rename-file"
+  title=(t "components.dataFilesListToolbar.renameFileModal.title")
+  label=(t 'components.dataFilesListToolbar.renameFileModal.enterName' currentName=dir.singleSelectedFile.name)
+  done="renameDone" useNotify=false
+  }}
 
 {{!-- CREATE DIRECTORY --}}
 

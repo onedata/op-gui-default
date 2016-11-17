@@ -7,8 +7,8 @@ import PromiseLoadingMixin from 'op-worker-gui/mixins/promise-loading';
  * that will be changed with submit of this modal.
  * 
  * It sends actions:
- * - ``done(submitSuccess: Boolean, model: TheModelWithName)`` - sent after rename submit
- *                                                               promise resolve/reject
+ * - ``renameDone({success, oldName, model, error})`` - sent after rename submit
+ *                                                      promise resolve/reject
  * @module components/modals/rename-modal
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
@@ -74,7 +74,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
                 }
               ));
             }
-            this.sendAction('done', {
+            this.sendAction('renameDone', {
               success: true,
               model: model,
               oldName: oldName
@@ -90,8 +90,9 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
               ) + ': ' + error.message);
             }
             model.rollbackAttributes();
-            this.sendAction('done', {
+            this.sendAction('renameDone', {
               success: false,
+              oldName: oldName,
               model: model,
               error: error
             });

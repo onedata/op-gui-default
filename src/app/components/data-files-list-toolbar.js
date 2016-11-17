@@ -33,6 +33,7 @@ export default Ember.Component.extend({
       isEditingPermissions: false,
       isFileChunksModal: false,
       isNotImplementedModal: false,
+      fileToRename: null,
     });
   },
 
@@ -59,6 +60,22 @@ export default Ember.Component.extend({
     }
   }),
 
+  isSingleFileSelected: Ember.computed('dir.singleSelectedFile', function() {
+    return this.get('dir.singleSelectedFile') != null;
+  }),
+
+  isSingleSelectedFileAFile: Ember.computed('isSingleFileSelected', 'dir.singleSelectedFile.isDir', function() {
+    return this.get('isSingleFileSelected') && !this.get('dir.singleSelectedFile.isDir');
+  }),
+
+  isSomeFileSelected: Ember.computed('dir.isSomeFileSelected', function() {
+    return this.get('dir.isSomeFileSelected');
+  }),
+
+  isMixedTypesSelected: Ember.computed('dir.selectedFilesType', function() {
+    return this.get('dir.selectedFilesType') === 'mixed';
+  }),
+
   /**
    * Holds items of toolbar. Each item is a Object with properties:
    * - icon {String}
@@ -67,96 +84,112 @@ export default Ember.Component.extend({
    * - disabled {Boolean}
    * - tooltip {String} - message in tooltip (on hover)
    */
-  items: function() {
-    const i18n = this.get('i18n');
-    const isSingleFileSelected = this.get('dir.singleSelectedFile');
-    const isSingleSelectedFileAFile = isSingleFileSelected && !this.get('dir.singleSelectedFile.isDir');
-    const isSomeFileSelected = this.get('dir.isSomeFileSelected');
-    const isMixedTypesSelected = (this.get('dir.selectedFilesType') === 'mixed');
-    return [
-      {
-        id: 'create-dir-tool',
-        icon: 'folder-new',
-        action: 'createDir',
-        tooltip: i18n.t('components.dataFilesListToolbar.tooltip.createDir')
-      },
-      // TODO: temporary, to decide
-      {
-        id: 'create-file-tool',
-        icon: 'file',
-        action: 'createFile',
-        tooltip: i18n.t('components.dataFilesListToolbar.tooltip.createFile')
-      },
-      {
-        id: 'share-file-tool',
-        icon: 'share',
-        action: 'shareFile',
-        disabled: !isSingleFileSelected || isSingleSelectedFileAFile,
-        tooltip: i18n.t('components.dataFilesListToolbar.tooltip.shareFile')
-      },
-      {
-        id: 'file-metadata-tool',
-        icon: 'metadata',
-        action: 'editFileMetadata',
-        disabled: !isSingleFileSelected,
-        tooltip: i18n.t('components.dataFilesListToolbar.tooltip.metadata')
-      },
-      // using fileUpload service binding
-      {
-        id: 'upload-file-tool',
-        icon: 'upload',
-        action: 'uploadBrowse',
-        disabled: this.get('fileUpload.locked'),
-        tooltip: i18n.t('components.dataFilesListToolbar.tooltip.uploadFile')
-      },
-      {
-        id: 'rename-file-tool',
-        icon: 'rename',
-        action: 'renameSelectedFile',
-        disabled: !isSingleFileSelected,
-        tooltip: i18n.t('components.dataFilesListToolbar.tooltip.renameFile')
-      },
-      {
-        id: 'lock-file-tool',
-        icon: 'lock',
-        action: 'editPermissions',
-        disabled: !isSomeFileSelected || isMixedTypesSelected,
-        tooltip: i18n.t('components.dataFilesListToolbar.tooltip.permissions')
-      },
-      {
-        id: 'copy-file-tool',
-        icon: 'copy',
-        action: 'notImplemented',
-        // TODO: feature not implemented yet
-        //disabled: !isSomeFileSelected,
-        disabled: true,
-        tooltip: i18n.t('components.dataFilesListToolbar.tooltip.copy')
-      },
-      {
-        id: 'cut-file-tool',
-        icon: 'cut',
-        action: 'notImplemented',
-        // TODO: feature not implemented yet
-        //disabled: !isSomeFileSelected,
-        disabled: true,
-        tooltip: i18n.t('components.dataFilesListToolbar.tooltip.cut')
-      },
-      {
-        id: 'remove-file-tool',
-        icon: 'remove',
-        action: 'removeSelectedFiles',
-        disabled: !isSomeFileSelected,
-        tooltip: i18n.t('components.dataFilesListToolbar.tooltip.remove')
-      },
-      {
-        id: 'file-chunks-tool',
-        icon: 'provider',
-        action: 'showChunks',
-        disabled: !(isSingleFileSelected && isSingleSelectedFileAFile),
-        tooltip: i18n.t('components.dataFilesListToolbar.tooltip.chunks')
-      },
-    ];
-  }.property('dir.isSomeFileSelected', 'dir.singleSelectedFile', 'fileUpload.locked'),
+  items: Ember.computed(
+    'isSingleFileSelected',
+    'isSingleSelectedFileAFile',
+    'isSomeFileSelected',
+    'isMixedTypesSelected',
+    'fileUpload.locked',
+    
+    function() {
+      let {
+        i18n,
+        isSingleFileSelected,
+        isSingleSelectedFileAFile,
+        isSomeFileSelected,
+        isMixedTypesSelected
+      } = this.getProperties(
+        'i18n',
+        'isSingleFileSelected',
+        'isSingleSelectedFileAFile',
+        'isSomeFileSelected',
+        'isMixedTypesSelected'
+      );
+
+      return [
+        {
+          id: 'create-dir-tool',
+          icon: 'folder-new',
+          action: 'createDir',
+          tooltip: i18n.t('components.dataFilesListToolbar.tooltip.createDir')
+        },
+        // TODO: temporary, to decide
+        {
+          id: 'create-file-tool',
+          icon: 'file',
+          action: 'createFile',
+          tooltip: i18n.t('components.dataFilesListToolbar.tooltip.createFile')
+        },
+        {
+          id: 'share-file-tool',
+          icon: 'share',
+          action: 'shareFile',
+          disabled: !isSingleFileSelected || isSingleSelectedFileAFile,
+          tooltip: i18n.t('components.dataFilesListToolbar.tooltip.shareFile')
+        },
+        {
+          id: 'file-metadata-tool',
+          icon: 'metadata',
+          action: 'editFileMetadata',
+          disabled: !isSingleFileSelected,
+          tooltip: i18n.t('components.dataFilesListToolbar.tooltip.metadata')
+        },
+        // using fileUpload service binding
+        {
+          id: 'upload-file-tool',
+          icon: 'upload',
+          action: 'uploadBrowse',
+          disabled: this.get('fileUpload.locked'),
+          tooltip: i18n.t('components.dataFilesListToolbar.tooltip.uploadFile')
+        },
+        {
+          id: 'rename-file-tool',
+          icon: 'rename',
+          action: 'renameSelectedFile',
+          disabled: !isSingleFileSelected,
+          tooltip: i18n.t('components.dataFilesListToolbar.tooltip.renameFile')
+        },
+        {
+          id: 'lock-file-tool',
+          icon: 'lock',
+          action: 'editPermissions',
+          disabled: !isSomeFileSelected || isMixedTypesSelected,
+          tooltip: i18n.t('components.dataFilesListToolbar.tooltip.permissions')
+        },
+        {
+          id: 'copy-file-tool',
+          icon: 'copy',
+          action: 'notImplemented',
+          // TODO: feature not implemented yet
+          //disabled: !isSomeFileSelected,
+          disabled: true,
+          tooltip: i18n.t('components.dataFilesListToolbar.tooltip.copy')
+        },
+        {
+          id: 'cut-file-tool',
+          icon: 'cut',
+          action: 'notImplemented',
+          // TODO: feature not implemented yet
+          //disabled: !isSomeFileSelected,
+          disabled: true,
+          tooltip: i18n.t('components.dataFilesListToolbar.tooltip.cut')
+        },
+        {
+          id: 'remove-file-tool',
+          icon: 'remove',
+          action: 'removeSelectedFiles',
+          disabled: !isSomeFileSelected,
+          tooltip: i18n.t('components.dataFilesListToolbar.tooltip.remove')
+        },
+        {
+          id: 'file-chunks-tool',
+          icon: 'provider',
+          action: 'showChunks',
+          disabled: !(isSingleFileSelected && isSingleSelectedFileAFile),
+          tooltip: i18n.t('components.dataFilesListToolbar.tooltip.chunks')
+        },
+      ];
+  }),
 
   fileBlocksProviders: Ember.computed('fileBlocks.@each.provider', function() {
     return this.get('fileBlocks').mapBy('provider');
@@ -193,7 +226,10 @@ export default Ember.Component.extend({
 
     renameSelectedFile() {
       if (this.get('dir.singleSelectedFile')) {
-        this.set('isRenamingFile', true);
+        this.setProperties({
+          fileToRename: this.get('dir.singleSelectedFile'),
+          isRenamingFile: true
+        });
       }
     },
 
@@ -392,13 +428,22 @@ export default Ember.Component.extend({
      * @param {BackendError} error has ``message`` property
      */
     renameDone({success, model, oldName, error}) {
+      let {i18n, notify} = this.getProperties('i18n', 'notify');
       let file = model;
-      let notify = this.get('notify');
-      let type = file.get('isDir') ? 'File' : 'Directory';
+      let type = i18n.t('common.' + (file.get('isDir') ? 'directory' : 'file'));
+      type = Ember.String.capitalize(type.toString());
       if (success) {
-        notify.info(`${type} "${oldName}" has been renamed to "${file.get('name')}"`);
+        notify.info(i18n.t('components.dataFilesListToolbar.renameFileModal.success', {
+          type: type,
+          oldName: oldName,
+          newName: file.get('name')
+        }));
       } else {
-        notify.error(`${type} "${oldName}" could not be renamed due to an error: ${error.message}`);
+        notify.error(i18n.t('components.dataFilesListToolbar.renameFileModal.failure'), {
+          type: type,
+          oldName: oldName,
+          errorMessage: error.message
+        });
       }
       
     }

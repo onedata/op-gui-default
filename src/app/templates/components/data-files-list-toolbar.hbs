@@ -51,10 +51,10 @@
 
 {{!-- RENAME FILE --}}
 
-{{modals/rename-modal model=dir.singleSelectedFile open=isRenamingFile modalId="rename-file"
+{{modals/rename-modal model=fileToRename open=isRenamingFile modalId="rename-file"
   title=(t "components.dataFilesListToolbar.renameFileModal.title")
-  label=(t 'components.dataFilesListToolbar.renameFileModal.enterName' currentName=dir.singleSelectedFile.name)
-  done="renameDone" useNotify=false
+  label=(t 'components.dataFilesListToolbar.renameFileModal.enterName' currentName=fileToRename.name)
+  renameDone="renameDone" useNotify=false
   }}
 
 {{!-- CREATE DIRECTORY --}}

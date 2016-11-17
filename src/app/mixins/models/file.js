@@ -251,48 +251,50 @@ export default Ember.Mixin.create({
   // TODO: move directory utils to mixin
   /// Directory utils
 
-  hasSubDirs: function() {
+  hasSubDirs: Ember.computed('children.@each.isDir', function() {
     if (this.get('isDir')) {
-      return this.get('children').filter((child) => child.get('isDir'))
-        .length > 0;
-    } else {
+      return this.get('children').some(c => c.get('isDir'));
+  } else {
       return false;
     }
-  }.property('children.@each.isDir'),
+  }),
 
-  selectedFiles: function() {
+  selectedFiles: Ember.computed('isDir', 'children.@each.isSelected', function() {
     if (this.get('isDir')) {
-      return this.get('children').filter((file) => file.get('isSelected'));
+      return this.get('children').filterBy('isSelected');
     } else {
       return null;
     }
-  }.property('children.@each.isSelected'),
+  }),
 
-  selectedFilesType: function() {
+  selectedFilesType: Ember.computed('selectedFiles.@each.type', function() {
     const sf = this.get('selectedFiles');
-    if (sf.length > 0 && sf.every(f => f.get('type') === sf[0].get('type'))) {
-      return sf[0].get('type');
+    let firstType = sf.length > 0 ? sf[0].get('type') : undefined;
+    if (sf.length > 0 && sf.every(f => f.get('type') === firstType)) {
+      return firstType;
     } else {
       return 'mixed';
     }
-  }.property('selectedFiles.@each.type'),
+  }),
 
-  singleSelectedFile: function() {
-    if (this.get('isDir')) {
-      let selected = this.get('selectedFiles');
-      return selected.length === 1 ? selected[0] : null;
-    } else {
-      return null;
+  singleSelectedFile: Ember.computed('isDir', 'selectedFiles.[]', 'selectedFiles.firstObject',
+    function() {
+      if (this.get('isDir')) {
+        let selected = this.get('selectedFiles');
+        return selected.length === 1 ? selected.get('firstObject') : null;
+      } else {
+        return null;
+      }
     }
-  }.property('selectedFiles'),
+  ),
 
-  isSomeFileSelected: function() {
+  isSomeFileSelected: Ember.computed('isDir', 'selectedFiles.[]', function() {
     if (this.get('isDir')) {
       return this.get('selectedFiles.length') > 0;
     } else {
       return false;
     }
-  }.property('selectedFiles'),
+  }),
 
   /**
    * If this file is a dir, remove its selected files.

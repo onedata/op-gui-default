@@ -99,6 +99,7 @@ export default {
         permissionsType: 'Permissions type',
         mixedPermissionsMessage: 'Selected files have mixed permission types (POSIX/ACL). ' +
           'Please select new permissions type in top of this modal if tou want to set all permissions to common value.',
+        aclEaccessMessage: 'You have no permissions to view some of selected files ACLs',
         submitSuccess: 'New permissions for selected files have been set',
         submitFailed: 'Setting new permissions for selected files failed!',
         types: {

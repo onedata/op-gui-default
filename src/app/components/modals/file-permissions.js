@@ -3,13 +3,6 @@ import PromiseLoadingMixin from 'op-worker-gui/mixins/promise-loading';
 import { mergeAcls } from 'op-worker-gui/utils/acl-utils';
 import { POSIX_SPECIAL_DIFFERENT } from 'op-worker-gui/components/file-permissions/posix';
 
-/**
- * Report error when removing ACL failed
- */
-const removeAclError = function(fileName) {
-  console.error(`Removing ACL record for file ${fileName} failed!`);
-};
-
 export default Ember.Component.extend(PromiseLoadingMixin, {
   notify: Ember.inject.service(),
   store: Ember.inject.service(),
@@ -101,10 +94,14 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
    */
   fetchFileAclRecord(file) {
     return new Ember.RSVP.Promise((resolve, reject) => {
-      const findPromise = this.get('store').find('file-acl', file.get('id'));
+      const findPromise = file.get('fileAcl');
       findPromise.then(fileAcl => {
-        console.debug(`Fetched FileAcl for file ${file.get('id')}`);
-        resolve(fileAcl);
+        if (fileAcl == null || fileAcl.get('notExists')) {
+          resolve(null);
+        } else {
+          console.debug(`Fetched FileAcl for file ${file.get('id')}`);
+          resolve(fileAcl);
+        }
       });
       findPromise.catch(error => {
         if (error.message === 'No ACL defined.') {
@@ -158,7 +155,8 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
    * Fetches FileAcl records for all ``files`` and sets ``filesToFileAcl`` map.
    * Resolved array could have null elements - it indicates, that some files
    * have no ACL at all.
-   * @returns {Ember.RSVP.Promise} promise resolving with FileAcl[]
+   * @returns {Ember.RSVP.Promise<FileAcl[]>} promise resolving with FileAcl[]
+   *                                          (each fileAcl for files)
    */
   fetchAllFileAclRecords() {
     const fileAclPromises = [];
@@ -209,14 +207,9 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   },
 
   doNotSupportMixedPermissionsType: Ember.observer('permissionsType', 'mixedLock', function() {
-    if (this.get('permissionsType') === 'm') {
-      this.setProperties({
-        statusMeta: 'mixedLock',
-        statusBlocked: true,
-        statusType: 'warning',
-        statusMessage: this.get('i18n').t('components.modals.filePermissions.mixedPermissionsMessage')
-      });
-    } else if (this.get('statusMeta') === 'mixedLock') {
+    let {permissionsType, statusMeta} = this.getProperties('permissionsType', 'statusMeta');
+
+    if (permissionsType !== 'm' && statusMeta === 'mixedLock') {
       // changing permissionsType from mixed to posix/acl
       this.setProperties({
         statusMeta: null,
@@ -224,6 +217,26 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
         statusType: null,
         statusMessage: null
       });
+    }
+
+    if (permissionsType === 'm') {
+      this.setProperties({
+        statusMeta: 'mixedLock',
+        statusBlocked: true,
+        statusType: 'warning',
+        statusMessage: this.get('i18n').t('components.modals.filePermissions.mixedPermissionsMessage')
+      });
+    } else if (permissionsType === 'a') {
+      let acls = Array.from(this.get('filesToFileAcl').keys());
+
+      if (acls.some(a => a.get('accessDenied'))) {
+        this.setProperties({
+          statusMeta: 'aclEaccess',
+          statusBlocked: true,
+          statusType: 'warning',
+          statusMessage: this.get('i18n').t('components.modals.filePermissions.aclEaccessMessage')
+        });
+      }
     }
   }),
 
@@ -234,7 +247,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
    * **Sets values of ``permissionsType`` property**
    */
   handleRejectedAcls(error) {
-    console.debug(`Some FileAcl records cannot be fetched by current user: ${error.message}`);
+    console.debug(`components/file-permissions: Some FileAcl records cannot be fetched by current user: ${error.message}`);
     this.set('permissionsType', 'a');
   },
 
@@ -256,7 +269,6 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
         // all ACLs can be fetched or currently don't exist
         .then((acls) => this.handleResolvedAcls(acls))
         // there is at least one ACL that cannot be fetched
-        // because of permission denied etc.
         .catch(error => this.handleRejectedAcls(error))
         .finally(() => {
           this.set('isLoadingType', false);
@@ -270,29 +282,23 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
    * Destroys all FileAcl records associated with files (``filesToFileAcl`` map)
    */
   submitPosix() {
-    const posixCache = this.get('posixCache');
-    const filesToFileAcl = this.get('filesToFileAcl');
-    const files = this.get('files');
+    let {posixCache, filesToFileAcl} = this.getProperties(
+      'posixCache', 'filesToFileAcl'
+    );
 
-    const promises = [];
+    let promises = [];
 
-    // each file's permissions should be set to one stored in posixCache
-    files.forEach(f => f.set('permissions', posixCache));
     // all files ACL's should be removed
     filesToFileAcl.forEach((fileAcl, file) => {
-      if (fileAcl) {
-        fileAcl.deleteRecord();
-        // ACL is currently saved - so push delete
-        if (fileAcl.get('id')) {
-          let destroyAclPromise = fileAcl.save();
-          promises.push(destroyAclPromise);
-          destroyAclPromise.catch(() => removeAclError(file.get('name')));
-        }
+      if (fileAcl && fileAcl.get('status') === 'ok') {
+        // each file's permissions should be set to one stored in posixCache
+        file.set('permissions', posixCache);
+        promises.push(file.save());
+        // only set file.fileAcl to "not exists" status
+        fileAcl.set('status', 'ne');
+        promises.push(fileAcl.save());
       }
     });
-
-    const filesSavePromises = Ember.RSVP.all(files.map(f => f.save()));
-    promises.push(filesSavePromises);
 
     return Ember.RSVP.all(promises);
   },
@@ -313,6 +319,13 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
       if (fileAcl == null) {
         // this file did not have ACL before, create it
         fileAcl = filesToFileAcl[file] = this.get('store').createRecord('file-acl', {
+          file: file,
+          acl: aclCache
+        });
+        file.set('fileAcl', fileAcl);
+      } else if (fileAcl.get('notExists')) {
+        fileAcl.setProperties({
+          status: 'ok',
           file: file,
           acl: aclCache
         });

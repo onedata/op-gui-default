@@ -19,12 +19,29 @@ export default DS.Model.extend({
   /**
    * A file for which permissions is this AC about
    */
-  file: DS.belongsTo('file', {inverse: null, async: true}),
+  file: DS.belongsTo('file', {inverse: 'fileAcl', async: true}),
 
   /**
    * @type Ember.Array of AccessControlEntity
    */
   acl: DS.attr('acl-array', {defaultValue: Ember.A()}),
+
+  /**
+   * Possible values:
+   * - ok - the proper ACL record exists
+   * - ne - not exits
+   * - ea - eaccess
+   * @type {String}
+   */
+  status: DS.attr('string', {defaultValue: 'ne'}),
+
+  notExists: Ember.computed('status', function() {
+    return this.get('status') === 'ne';
+  }).readOnly(),
+
+  accessDenied: Ember.computed('status', function() {
+    return this.get('status') === 'ea';
+  }).readOnly(),
 
   // HACK: force update of acl attribute as it is not managed by Ember
   // TODO: this should really detect changes in acl

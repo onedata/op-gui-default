@@ -16,4 +16,5 @@ export default DS.Model.extend(FileMixin, {
   parent: DS.belongsTo('file', {inverse: 'children', async: true}),
   children: DS.hasMany('file', {inverse: 'parent', async: true}),
   fileProperty: DS.belongsTo('file-property', {inverse: 'file', async: true}),
+  fileAcl: DS.belongsTo('fileAcl', {inverse: 'file', async: true}),
 });

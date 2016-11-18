@@ -439,11 +439,11 @@ export default Ember.Component.extend({
           newName: file.get('name')
         }));
       } else {
-        notify.error(i18n.t('components.dataFilesListToolbar.renameFileModal.failure'), {
+        notify.error(i18n.t('components.dataFilesListToolbar.renameFileModal.failure', {
           type: type,
           oldName: oldName,
           errorMessage: error.message
-        });
+        }));
       }
       
     }

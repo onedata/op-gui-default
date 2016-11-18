@@ -267,7 +267,7 @@ export default Ember.Component.extend({
   }),
 
   filesTableIsVisible: Ember.computed('dirIsEmpty', 'currentlyUploadingCount', function() {
-    let props = this.getProperties('dirIsEmpty', 'currentlyUploadingCoung');
+    let props = this.getProperties('dirIsEmpty', 'currentlyUploadingCount');
     let filesTableIsVisible = !props.dirIsEmpty || props.currentlyUploadingCount;
     if (filesTableIsVisible) {
       Ember.run.scheduleOnce('afterRender', this, function() {
@@ -385,14 +385,31 @@ export default Ember.Component.extend({
       this.get('fileUpload').assignDrop(this.$());
     }
 
+    let eventsBus = this.get('eventsBus');
+
     let __computeFileMaxWidthFun = () => this.computeFileLabelMaxWidth();
     this.set('__computeFileMaxWidthFun', __computeFileMaxWidthFun);
-    this.get('eventsBus').on(
+    eventsBus.on(
       'secondarySidebar:resized',
       this.get('__computeFileMaxWidthFun')
     );
     $(window).on('resize', __computeFileMaxWidthFun);
     setTimeout(__computeFileMaxWidthFun, 50);
+
+    // FIXME: on init, we should read current dirUploads from service
+    // and reset currentlyUploadingCount property value
+    let __handleDirUploadsChanged = ({parentId, dirUploads}) => {
+      if (this.get('dir.id') === parentId) {
+        this.set('currentlyUploadingCount', dirUploads.get('length')); 
+      }
+    };
+
+    this.set('__handleDirUploadsChanged', __handleDirUploadsChanged);
+
+    eventsBus.on(
+      'fileUpload:dirUploadsChanged',
+      __handleDirUploadsChanged
+    );
   },
 
   willDestroyElement() {
@@ -405,6 +422,11 @@ export default Ember.Component.extend({
       'secondarySidebar:resized',
       __computeFileMaxWidthFun
     );
+    ebus.off(
+      'fileUpload:dirUploadsChanged',
+      this.get('__handleDirUploadsChanged')
+    );
+    
     $(window).off('resize', __computeFileMaxWidthFun);
   },
 
@@ -438,10 +460,6 @@ export default Ember.Component.extend({
     this.setGlobalDir(dir);
     this.get('fileSystemTree').expandDir(dir);
     this.resetProperties();
-    let dirId = dir.get('id');
-    // TODO VFS-2753: don't know if this code works
-    this['currentlyUploadingCount'] =
-      Ember.computed.alias(`fileUpload.dirUploads-${dirId}.length`);
   }),
 
   fileDownloadServerMethod: Ember.computed('downloadMode', function() {

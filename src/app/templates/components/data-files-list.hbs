@@ -51,8 +51,9 @@
   <tbody>
   {{#if currentlyUploadingCount}}
     <tr class="file-row-uploading notice-background-pulse">
-      {{!-- TODO: VFS-2753  currently does not work --}}
-      Uploading: {{currentlyUploadingCount}} files left...
+      <td colspan=99 class="file-list-col-file">
+        Uploading: {{currentlyUploadingCount}} files left...
+      </td>
     </tr>
   {{/if}}
   {{#each visibleFilesSorted as |file index|}}

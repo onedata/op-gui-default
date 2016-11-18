@@ -68,13 +68,17 @@ export default Ember.Service.extend({
    * @param {String} parentId
    */
   addUploadingFileInfo(resumableFile, parentId) {
-    if (this.get('dirUploads-' + parentId) == null) {
+    if (this.get('dirUploads' + parentId) == null) {
       this.get('dirsUploadIds').pushObject(parentId);
-      this.set('dirUploads-' + parentId, Ember.A());
+      this.set('dirUploads' + parentId, Ember.A());
       console.debug(`file-upload: Creating new dirUploads for parent: ${parentId}`);
     }
-    let dirUploads = this.get('dirUploads-' + parentId); 
+    let dirUploads = this.get('dirUploads' + parentId); 
     dirUploads.pushObject(resumableFile);
+    this.get('eventsBus').trigger('fileUpload:dirUploadsChanged', {
+      parentId: parentId,
+      dirUploads: dirUploads
+    });
   },
 
   /**
@@ -86,7 +90,7 @@ export default Ember.Service.extend({
     let dirsUploadIds = this.get('dirsUploadIds');
 
     for (let parentId of dirsUploadIds) {
-      let dirUploads = this.get('dirUploads-' + parentId);
+      let dirUploads = this.get('dirUploads' + parentId);
       let resumableFile = findResumableFileByUuid(dirUploads, resumableFileId);
       if (resumableFile) {
         return parentId;
@@ -107,7 +111,7 @@ export default Ember.Service.extend({
     let dirsUploadIds = this.get('dirsUploadIds');
     for (let parentId of dirsUploadIds) {
       /* jshint loopfunc: true */
-      let propertyKey = 'dirUploads-' + parentId;
+      let propertyKey = 'dirUploads' + parentId;
       let dirUploads = this.get(propertyKey);
       let resumableFile = findResumableFileByUuid(dirUploads, resumableFileId);
       if (resumableFile) {
@@ -115,6 +119,10 @@ export default Ember.Service.extend({
           'ResumableFile not removed from dirUploads',
           dirUploads.removeObject(resumableFile)
         );
+        this.get('eventsBus').trigger('fileUpload:dirUploadsChanged', {
+          parentId: parentId,
+          dirUploads: dirUploads
+        });
         let remainUploadingFilesCount = dirUploads.get('length');
         if (remainUploadingFilesCount === 0) {
           console.debug(`Removing uploading dir info: ${parentId}`);
@@ -189,7 +197,7 @@ ${resumableFileId}, but it could not be found in any dir`);
     setTimeout(() => {
       let [parentId, filesLeft] = this.forgetUploadingFile(uuid);
       this.get('eventsBus').trigger(
-        'file-upload:file-upload-completed',
+        'fileUpload:fileUploadCompleted',
         file,
         parentId
       );
@@ -209,7 +217,7 @@ ${resumableFileId}, but it could not be found in any dir`);
     // Ember.run is used because this fun is invoked from ResumableJS event
     Ember.run(() => {
       this.set('locked', false);
-      this.get('eventsBus').trigger('file-upload:files-added', files,
+      this.get('eventsBus').trigger('fileUpload:filesAdded', files,
         files.map(f => this.getParentIdOfUploadingFile[f.uniqueIdentifier])
       );
     });

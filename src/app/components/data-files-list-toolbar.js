@@ -15,7 +15,7 @@ export default Ember.Component.extend({
   fileSystemTree: Ember.inject.service(),
 
   tagName: 'ul',
-  classNames: ['nav', 'navbar-nav', 'navbar-right', 'toolbar-group'],
+  classNames: ['data-files-list-toolbar', 'nav', 'navbar-nav', 'navbar-right', 'toolbar-group'],
 
   fileForChunks: null,
   fileBlocksSorting: ['provider.name'],
@@ -37,6 +37,27 @@ export default Ember.Component.extend({
   },
 
   selectedCount: Ember.computed.alias('dir.selectedFiles.length'),
+  
+  /**
+   * A width of its element. Updated on window resize (see ``didInsertElement``).
+   * @type {Number}
+   */
+  width: undefined,
+
+  // TODO: compute or detect dynamically, when the toolbar should collapse
+  /**
+   * If true, the toolbar should be collapsed to menu width dropdown.
+   * Make full toolbar otherwise.
+   * @type {Boolean}
+   */
+  collapsed: Ember.computed('navbarWidth', function() {
+    let width = this.get('navbarWidth');
+    if (width != null) {
+      return width < 880;
+    } else {
+      return undefined;
+    }
+  }),
 
   /**
    * Holds items of toolbar. Each item is a Object with properties:
@@ -156,6 +177,17 @@ export default Ember.Component.extend({
     // so data-files-list _must_ be used when using this toolbar
     // if this changes - please copy "dirChanged" method from files-list here
     this.get('fileUpload').assignBrowse(this.$().find('#toolbar-file-browse'), true);
+
+    let __windowResizeFun = () => {
+      this.set('navbarWidth', this.$().closest('nav.navbar').width());
+    };
+    __windowResizeFun();
+    this.set('__windowResizeFun', __windowResizeFun);
+    $(window).on('resize', __windowResizeFun);
+  },
+
+  willDestroyElement() {
+    $(window).off('resize', this.get('__windowResizeFun'));
   },
 
   actions: {

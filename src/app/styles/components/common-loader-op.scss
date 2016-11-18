@@ -26,4 +26,9 @@
     left: $sidebar-width + $secondary-sidebar-width;
     top: $top-bar-height + $secondary-top-bar-height;
   }
+
+  &.loader-area-public-content {
+    left: 0;
+    top: $public-top-height;
+  }
 }

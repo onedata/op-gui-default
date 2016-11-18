@@ -1,16 +1,42 @@
 {{!-- TODO: icons hide when too small size of screen --}}
 {{!-- TODO: toolbar icon component --}}
-{{#each items as |item|}}
-  <li>
-    {{!-- TODO refactor --}}
-    <a id="{{item.id}}" class="top-bar-item toolbar-icon {{if item.disabled 'disabled'}}"
-       disabled={{item.disabled}} data-toggle="tooltip" data-placement="bottom"
-       title={{item.tooltip}}
-      {{action (if item.action item.action (action (mut undefProp)))}}>
-      {{icon item.icon 'top-bar-icon'}}
+{{#if collapsed}}
+
+  <li class="dropdown">
+    <a class="top-bar-item toolbar-icon dropdown-toggle" type="button" data-toggle="dropdown">
+      {{icon 'settings' 'top-bar-icon'}}
     </a>
+    <ul class="dropdown-menu dropdown-menu-down expand-left dropdown-menu-list dropdown-sidebar-select">
+      {{#each items as |item|}}
+        {{#unless item.disabled}}
+          <li>
+            <a id="{{item.id}}" class="clickable"
+              {{action (if item.action item.action (action (mut undefProp)))}}>
+              <div class="item-icon">
+                {{icon item.icon}}
+              </div>
+              <div class="item-label">
+                {{item.tooltip}}
+              </div>
+            </a>
+          </li>
+        {{/unless}}
+      {{/each}}
+    </ul>
   </li>
-{{/each}}
+{{else}}
+  {{#each items as |item|}}
+    <li>
+      {{#bs-tooltip id=item.id tagName='a' title=item.tooltip
+        class=(concat "top-bar-item toolbar-icon " (if item.disabled 'disabled'))
+        disabled=item.disabled
+        click=(action (if item.action item.action (action (mut undefProp))))
+        }}
+          {{icon item.icon 'top-bar-icon'}}
+      {{/bs-tooltip}}
+    </li>
+  {{/each}}
+{{/if}}
 
 {{!-- File upload browse element - hidden, used by upload button --}}
 {{!-- TODO: respect maxFiles like in Resumable.js bind --}}

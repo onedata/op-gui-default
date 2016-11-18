@@ -19,6 +19,11 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   model: null,
   renameName: null,
 
+  canSubmit: Ember.computed('renameName', 'isLoading', 'open', function() {
+    let props = this.getProperties('renameName', 'isLoading', 'open');
+    return props.renameName && !props.isLoading && props.open;
+  }),
+
   actions: {
     open() {
       this.set('renameName', this.get('model.name'));
@@ -29,38 +34,43 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     },
 
     submit() {
-      this.set('isLoading', true);
-      let model = this.get('model');
-      let oldName = model.get('name');
-      let newName = this.get('renameName');
-      model.set('name', this.get('renameName'));
+      if (this.get('open')) {
+        this.set('isLoading', true);
+        let model = this.get('model');
+        let oldName = model.get('name');
+        let newName = this.get('renameName');
+        model.set('name', this.get('renameName'));
 
-      this.promiseLoading(
-        model.save()
-      ).then(
-        () => {
-          this.get('notify').info(this.get('i18n').t(
-            'components.modals.renameModal.renameSuccess', {
-              oldName: oldName,
-              newName: newName
-            }
-          ));
-        },
-        (error) => {
-          this.get('notify').error(this.get('i18n').t(
-            'components.modals.renameModal.renameFailed', {
-              oldName: oldName,
-              newName: newName
-            }
-          ) + ': ' + error.message);
-          model.rollbackAttributes();
-        }
-      ).finally(() => {
-        this.setProperties({
-          model: null,
-          open: false
-        });
-      });
+        this.promiseLoading(
+          model.save()
+        ).then(
+          () => {
+            this.get('notify').info(this.get('i18n').t(
+              'components.modals.renameModal.renameSuccess', {
+                oldName: oldName,
+                newName: newName
+              }
+            ));
+          },
+          (error) => {
+            this.get('notify').error(this.get('i18n').t(
+              'components.modals.renameModal.renameFailed', {
+                oldName: oldName,
+                newName: newName
+              }
+            ) + ': ' + error.message);
+            model.rollbackAttributes();
+          }
+          ).finally(() => {
+            this.setProperties({
+              model: null,
+              open: false
+            });
+          });
+      } else {
+        console.warn(`rename-modal: submit invoked when open === false - ignoring`);
+      }
+
     },
   }
 

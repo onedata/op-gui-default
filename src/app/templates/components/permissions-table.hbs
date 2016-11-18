@@ -22,7 +22,7 @@
 
 <table class="one-table normal {{if isLocked 'is-loading'}}">
 
-  {{#if usersPermissions}}
+  {{#if (not (eq usersPermissions null))}}
 
     <thead class="one-thead">
       <th class="one-th one-first">
@@ -70,6 +70,19 @@
       {{/if}}
     </thead>
 
+    {{#if (eq usersPermissions.length 0)}}
+
+    <tbody class="one-tbody">
+      <tr class="one-tr">
+        {{!-- A magic number to colspan all columns :) --}}
+        <td class="one-td info-cell" colspan="42">
+          {{t (concat 'components.permissionsTable.noUsers.' subjectType)}}
+        </td>
+      </tr>
+    </tbody>
+
+    {{else}}
+
     <tbody class="one-tbody">
       {{#each usersPermissionsSorted as |perm|}}
         {{permissions-table-row type='users' subjectType=subjectType
@@ -77,6 +90,8 @@
           activatePermissions="activatePermissions" togglePermission="togglePermission"}}
       {{/each}}
     </tbody>
+
+    {{/if}}
 
   {{/if}}
 

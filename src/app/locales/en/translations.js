@@ -118,7 +118,7 @@ export default {
         selectHandleServicePlaceholder: "Choose a handle service",
         publishButton: "Publish",
         noHandleServices: 'Unfortunately, currently you do not have access to any handle service.',
-        dublinCoreLabel: 'Please eneter Dublin Core metadata here:',
+        dublinCoreLabel: 'Please enter Dublin Core metadata here:',
         publishFailure: 'Publishing share "{{shareName}}" failed: {{errorMessage}}',
         publishSuccess: 'Share "{{shareName}}" has been published successfully!',
       },
@@ -311,6 +311,9 @@ export default {
         users: 'Users',
         groups: 'Groups'
       },
+      noUsers: {
+        group: 'This group has no users',
+      },
       noGroups: {
         group: 'This group has no subgroups',
         space: 'This space does not belong to any group'
@@ -350,7 +353,7 @@ export default {
         createFile: 'Create file',
         shareFile: 'Share element',
         uploadFile: 'Upload file',
-        rename: 'Rename element',
+        renameFile: 'Rename element',
         permissions: 'Change element permissions',
         copy: 'Copy element',
         cut: 'Cut element',

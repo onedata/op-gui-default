@@ -67,10 +67,11 @@ export default Ember.Component.extend({
 
   /**
    * To inject.
-   * One of: data, shared, public
+   * Where the browser is used.
+   * Possible values: data, shared, public
    * @type {String}
    */
-  downloadMode: 'data',
+  browserLocation: 'data',
 
   /**
    * To inject.
@@ -166,11 +167,10 @@ export default Ember.Component.extend({
   areAllFilesLoaded: Ember.computed.alias('dir.allChildrenLoaded'),
 
   /**
-   * Where the browser is used.
-   * Possible values: data, shared, public
+   * One of: data, shared, public
    * @type {Computed<String>}
    */
-  browserLocation: Ember.computed.alias('downloadMode'),
+  downloadMode: Ember.computed.alias('browserLocation'),
 
   /**
    * True, if fetch more files has been requested but not completed.
@@ -324,8 +324,18 @@ export default Ember.Component.extend({
     if (this.get('showGlobalLoader')) {
       // prevent loader stealing
       if (!this.get('commonLoader.isLoading')) {
-        let area = this.get('browserLocation') === 'data' ?
-          'content-with-secondary-top' : 'content';
+        let area;
+        switch (this.get('browserLocation')) {
+          case 'data':
+            area = 'content-with-secondary-top';
+            break;
+          case 'public':
+            area = 'public-content';
+            break;
+          default:
+            area = 'content';
+            break;
+        }
 
         this.get('commonLoader').setProperties({
           isLoading: true,

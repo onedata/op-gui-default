@@ -12,6 +12,8 @@ import {
 import startApp from 'op-worker-gui/tests/helpers/start-app';
 import hbs from 'htmlbars-inline-precompile';
 
+import FileBreadcrumbsItem from 'op-worker-gui/utils/file-breadcrumbs-item';
+
 describeComponent(
   'file-breadcrumbs-item',
   'Integration: FileBreadcrumbsItemComponent',
@@ -47,14 +49,19 @@ describeComponent(
         id: 'hello-file',
       });
 
-      this.set('file', file);
+      const fbi = FileBreadcrumbsItem.create({
+        file: file
+      });
+
+      this.set('item', fbi);
+
       this.on('externalChangeDir', (file) => {
         expect(file).to.be.ok;
         expect(file.get('id')).to.be.equal(file.get('id'));
         done();
       });
 
-      this.render(hbs`{{file-breadcrumbs-item file=file changeDir="externalChangeDir"}}`);
+      this.render(hbs`{{file-breadcrumbs-item item=item changeDir="externalChangeDir"}}`);
 
       this.$().find('.file-breadcrumb-item-link').click();
     });
@@ -68,9 +75,13 @@ describeComponent(
         parent: f0,
       });
 
-      this.set('file', f1);
+      const fbi = FileBreadcrumbsItem.create({
+        file: f1
+      });
 
-      this.render(hbs`{{file-breadcrumbs-item file=file}}`);
+      this.set('item', fbi);
+
+      this.render(hbs`{{file-breadcrumbs-item item=item}}`);
 
       expect(this.$().find('.file-breadcrumbs-next-icon')).to.exist;
     });
@@ -80,9 +91,13 @@ describeComponent(
         name: 'file-0',
       });
 
-      this.set('file', f0);
+      const fbi = FileBreadcrumbsItem.create({
+        file: f0
+      });
 
-      this.render(hbs`{{file-breadcrumbs-item file=file}}`);
+      this.set('item', fbi);
+
+      this.render(hbs`{{file-breadcrumbs-item item=item}}`);
 
       expect(this.$().find('.file-breadcrumbs-next-icon')).not.to.exist;
     });

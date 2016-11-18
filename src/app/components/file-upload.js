@@ -181,6 +181,7 @@ export default Ember.Component.extend({
 
   onComplete: computed(function() {
     return () => {
+      // TODO: i18n
       // TODO: Hide pause/resume when the upload has completed
       let notify = this.get('notify');
       let filesCount = this.get('uploadingFiles.length');

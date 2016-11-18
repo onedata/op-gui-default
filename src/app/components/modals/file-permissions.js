@@ -96,19 +96,10 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     return new Ember.RSVP.Promise((resolve, reject) => {
       const findPromise = file.get('fileAcl');
       findPromise.then(fileAcl => {
-        if (fileAcl == null || fileAcl.get('notExists')) {
-          resolve(null);
-        } else {
-          console.debug(`Fetched FileAcl for file ${file.get('id')}`);
-          resolve(fileAcl);
-        }
+        resolve(fileAcl);
       });
       findPromise.catch(error => {
-        if (error.message === 'No ACL defined.') {
-          resolve(null);
-        } else {
-          reject(error);
-        }
+        reject(error);
       });
     });
   },
@@ -177,10 +168,9 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
    *    elements can be null!
    */
   handleResolvedAcls(fileAcls) {
-    const acls = fileAcls.map(fa => fa ? fa.get('acl') : null);
-    const atLeastOneWithoutAcl = acls.any(a => a == null);
+    const atLeastOneWithoutAcl = fileAcls.any(a => a.get('notExists'));
     if (atLeastOneWithoutAcl) {
-      const noFileWithAcl = acls.every(a => a == null);
+      const noFileWithAcl = fileAcls.every(a => a.get('notExists'));
       if (noFileWithAcl) {
         // there is no ACL at all, set editor mode to POSIX
         this.set('permissionsType', 'p');
@@ -194,6 +184,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     }
 
     // create aclCache from available ACLs to show something in ACL editor
+    const acls = fileAcls.map(fa => fa ? fa.get('acl') : null);
     const mergedAcls = mergeAcls(acls);
 
     // not very efficient...
@@ -206,7 +197,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     });
   },
 
-  doNotSupportMixedPermissionsType: Ember.observer('permissionsType', 'mixedLock', function() {
+  handlePermissionsTypeChange: Ember.observer('permissionsType', 'mixedLock', function() {
     let {permissionsType, statusMeta} = this.getProperties('permissionsType', 'statusMeta');
 
     if (permissionsType !== 'm' && statusMeta === 'mixedLock') {
@@ -295,7 +286,10 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
         file.set('permissions', posixCache);
         promises.push(file.save());
         // only set file.fileAcl to "not exists" status
-        fileAcl.set('status', 'ne');
+        fileAcl.setProperties({
+          status: 'ne',
+          acl: Ember.A(),
+        });
         promises.push(fileAcl.save());
       }
     });
@@ -316,14 +310,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
     // set the edited ACL to all ACLs (for each file)
     filesToFileAcl.forEach((fileAcl, file) => {
-      if (fileAcl == null) {
-        // this file did not have ACL before, create it
-        fileAcl = filesToFileAcl[file] = this.get('store').createRecord('file-acl', {
-          file: file,
-          acl: aclCache
-        });
-        file.set('fileAcl', fileAcl);
-      } else if (fileAcl.get('notExists')) {
+      if (fileAcl.get('notExists')) {
         fileAcl.setProperties({
           status: 'ok',
           file: file,

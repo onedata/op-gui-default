@@ -50,9 +50,16 @@
   </thead>
   <tbody>
   {{#if currentlyUploadingCount}}
-    <tr class="file-row-uploading notice-background-pulse">
+    <tr class="file-row-uploading selection-background-pulse first-level">
       <td colspan=99 class="file-list-col-file">
-        Uploading: {{currentlyUploadingCount}} files left...
+        <div class="file-icon">
+          {{icon 'upload'}}
+        </div>
+        <div class="file-label-container">
+          <div class="file-label truncate">
+            Uploading: {{currentlyUploadingCount}} files left...
+          </div>
+        </div>
       </td>
     </tr>
   {{/if}}

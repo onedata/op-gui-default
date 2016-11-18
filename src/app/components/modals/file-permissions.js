@@ -198,9 +198,9 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   },
 
   handlePermissionsTypeChange: Ember.observer('permissionsType', 'mixedLock', function() {
-    let {permissionsType, statusMeta} = this.getProperties('permissionsType', 'statusMeta');
+    let {permissionsType} = this.getProperties('permissionsType');
 
-    if (permissionsType !== 'm' && statusMeta === 'mixedLock') {
+    if (permissionsType !== 'm') {
       // changing permissionsType from mixed to posix/acl
       this.setProperties({
         statusMeta: null,
@@ -218,7 +218,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
         statusMessage: this.get('i18n').t('components.modals.filePermissions.mixedPermissionsMessage')
       });
     } else if (permissionsType === 'a') {
-      let acls = Array.from(this.get('filesToFileAcl').keys());
+      let acls = Array.from(this.get('filesToFileAcl').values());
 
       if (acls.some(a => a.get('accessDenied'))) {
         this.setProperties({
@@ -281,14 +281,16 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
     // all files ACL's should be removed
     filesToFileAcl.forEach((fileAcl, file) => {
-      if (fileAcl && fileAcl.get('status') === 'ok') {
+      if (fileAcl && fileAcl.get('status') !== 'ne') {
         // each file's permissions should be set to one stored in posixCache
         file.set('permissions', posixCache);
-        promises.push(file.save());
-        // only set file.fileAcl to "not exists" status
+        if (file.get('hasDirtyAttributes')) {
+          promises.push(file.save());
+        }
+        // only set file.fileAcl to "not exists" status, do not destroy it
         fileAcl.setProperties({
           status: 'ne',
-          acl: Ember.A(),
+          acl: null,
         });
         promises.push(fileAcl.save());
       }

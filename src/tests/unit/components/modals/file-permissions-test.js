@@ -30,19 +30,21 @@ describeComponent(
     }
   },
   function() {
-    it('sets permissionsType to ACL and sets aclCache when every ACL is non-empty using handleResolvedAcls', function() {
+    it('sets permissionsType to ACL and sets aclCache when every file has ACL permissions', function() {
       const component = this.subject();
       // fake FileAcl list
-      const acls = [
+      let filesPermissions = [
         Ember.Object.create({
-          acl: Ember.A([ACE.create({subject: 'user', user: 'u1'})])
+          type: 'acl',
+          aclValue: Ember.A([ACE.create({subject: 'user', user: 'u1'})])
         }),
         Ember.Object.create({
-          acl: Ember.A([ACE.create({subject: 'group', user: 'g2'})])
+          type: 'acl',
+          aclValue: Ember.A([ACE.create({subject: 'group', user: 'g2'})])
         })
       ];
 
-      component.handleResolvedAcls(acls);
+      component.handleResolvedPermissions(filesPermissions);
 
       expect(component.get('permissionsType')).to.be.equal('a');
     });

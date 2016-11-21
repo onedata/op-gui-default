@@ -23,9 +23,10 @@ export default Ember.Mixin.create({
   */
   type: DS.attr('string'),
 
+  filePermission: DS.belongsTo('file-permission', {inverse: 'file', async: true}),
+
   modificationTime: DS.attr('number'),
   size: DS.attr('number'),
-  permissions: DS.attr('number'),
 
   /**
    * How many children this directory (it it is a directory-type) has.

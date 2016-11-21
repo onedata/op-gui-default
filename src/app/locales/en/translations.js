@@ -102,6 +102,7 @@ export default {
         aclEaccessMessage: 'You have no permissions to view some of selected files ACLs',
         submitSuccess: 'New permissions for selected files have been set',
         submitFailed: 'Setting new permissions for selected files failed!',
+        errorMessage: 'An unexpected error occured',
         types: {
           posix: 'POSIX',
           acl: 'ACL'

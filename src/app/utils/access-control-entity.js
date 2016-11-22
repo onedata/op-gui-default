@@ -75,7 +75,7 @@ const ACE = Ember.Object.extend(Ember.Comparable, {
 
   /**
    * Return a JSON representation, that is used when serializing object to
-   * FileAcl.acl array element. Values of object are get from this Ember.Object.
+   * FilePermission.aclValue array element. Values of object are get from this Ember.Object.
    * @returns {object} backend ACL element containg attributes:
    *  - type
    *  - subject

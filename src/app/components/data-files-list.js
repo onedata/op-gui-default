@@ -256,6 +256,8 @@ export default Ember.Component.extend({
    */
   visibleFilesSorted: Ember.computed.alias('visibleFiles'),
 
+  selectedFiles: Ember.computed.filterBy('visibleFiles', 'isSelected', true),
+
   /**
    * True if there is nothing to display in files browser.
    * However, there can be some children files, but they cannot be displayed.
@@ -512,6 +514,47 @@ export default Ember.Component.extend({
     this.get('files').forEach(f => f.set('isSelected', false));
   },
 
+  findNearestSelectedIndex(fileIndex) {
+    let {visibleFilesSorted, selectedFiles} =
+      this.getProperties('visibleFilesSorted', 'selectedFiles');
+
+    // [index: Number, distanceFromFile: Number]
+    let selectedFilesIndexes = selectedFiles.map(sf => {
+      let index = visibleFilesSorted.indexOf(sf);
+      return [index, Math.abs(index-fileIndex)];
+    });
+    let nearest = selectedFilesIndexes.reduce((prev, current) => {
+      return current[1] < prev[1] ? current : prev;
+    }, [-1, Infinity]);
+    let [nearestIndex, nearestDist] = nearest;
+    if (nearestDist === Infinity) {
+      nearestIndex = fileIndex;
+    }
+    return nearestIndex;
+  },
+
+  /**
+   * Select files range using shift.
+   * Use nearest selected file as range start.
+   * @param {File} file
+   */
+  selectRangeToFile(file) {
+    let {visibleFilesSorted, lastSelectedFile} =
+      this.getProperties('visibleFilesSorted', 'lastSelectedFile');
+    let fileIndex = visibleFilesSorted.indexOf(file);
+
+    let startIndex;
+    if (lastSelectedFile) {
+      startIndex = visibleFilesSorted.indexOf(lastSelectedFile);
+    } else {
+      startIndex = this.findNearestSelectedIndex(fileIndex);
+    }   
+
+    let indexA = Math.min(startIndex, fileIndex);
+    let indexB = Math.max(startIndex, fileIndex);
+    visibleFilesSorted.slice(indexA, indexB+1).forEach(f => f.set('isSelected', true));
+  },
+
   actions: {
     openDirInBrowser(file) {
       this.sendAction('openDirInBrowser', file);
@@ -525,7 +568,7 @@ export default Ember.Component.extend({
     /**
      * Do something if user clicks on a file. Consider modifier keys
      */
-    handleFileClicked(file, ctrlKey) {
+    handleFileClicked(file, ctrlKey, shiftKey) {
       let files = this.get('files');
       let fileIsSelected = file.get('isSelected');
       let otherFilesSelected = files.filter(f => {
@@ -535,23 +578,33 @@ export default Ember.Component.extend({
         if (fileIsSelected) {
           if (ctrlKey) {
             file.set('isSelected', false);
+            this.set('lastSelectedFile', null);
           } else {
             this.clearFilesSelection();
             file.set('isSelected', true);
+            this.set('lastSelectedFile', file);
           }
         } else {
           if (ctrlKey) {
             file.set('isSelected', true);
+            this.set('lastSelectedFile', file);
           } else {
-            this.clearFilesSelection();
-            file.set('isSelected', true);
+            if (shiftKey) {
+              this.selectRangeToFile(file);
+            } else {
+              this.clearFilesSelection();
+              file.set('isSelected', true);
+              this.set('lastSelectedFile', file);
+            }
           }
         }
       } else {
         if (fileIsSelected) {
           file.set('isSelected', false);
+          this.set('lastSelectedFile', null);
         } else {
           file.set('isSelected', true);
+          this.set('lastSelectedFile', file);
         }
       }
     },

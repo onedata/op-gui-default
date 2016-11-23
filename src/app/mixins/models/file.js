@@ -25,7 +25,6 @@ export default Ember.Mixin.create({
 
   modificationTime: DS.attr('number'),
   size: DS.attr('number'),
-  permissions: DS.attr('number'),
 
   /**
    * How many children this directory (it it is a directory-type) has.

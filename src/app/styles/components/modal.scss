@@ -1,6 +1,8 @@
 .modal {
   $control-label-margin-bottom: 10px;
 
+  word-wrap: break-word;
+
   .control-label {
     margin-bottom: $control-label-margin-bottom;
     font-weight: bold;

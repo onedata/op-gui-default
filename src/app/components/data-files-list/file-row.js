@@ -1,5 +1,16 @@
 import Ember from 'ember';
 
+/**
+ * Represents a row with file in files list.
+ * 
+ * ## Component actions sent
+ * - fileClicked(file: File, ctrlOrCmdKey: Boolean, shiftKey: Boolean)
+ * 
+ * @module components/file-row
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 export default Ember.Component.extend({
   tagName: 'tr',
   classNames: ['first-level', 'file-row'],
@@ -114,7 +125,8 @@ export default Ember.Component.extend({
     this.sendAction(
       'fileClicked',
       this.get('file'),
-      clickEvent.ctrlKey || clickEvent.metaKey
+      clickEvent.ctrlKey || clickEvent.metaKey,
+      clickEvent.shiftKey
     );
   },
 

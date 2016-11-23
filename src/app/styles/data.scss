@@ -78,6 +78,9 @@
 .table.files-table {
   position: relative;
 
+  @include vendor-prefix(user-select, none);
+  cursor: default;
+
   thead {
     th {
       height: $secondary-sidebar-item-height;

@@ -12,6 +12,8 @@ import filePermissions from './file-permissions';
 */
 export default {
   common: {
+    file: 'file',
+    directory: 'directory',
     unknown: 'unknown',
     unknownError: 'Unknown error',
     modal: {
@@ -363,7 +365,9 @@ export default {
       },
       renameFileModal: {
         title: 'Rename file or directory',
-        enterName: 'Rename the item "{{currentName}}" to:'
+        enterName: 'Rename the item "{{currentName}}" to:',
+        success: '{{type}} "{{oldName}}" has been renamed to "{{newName}}"',
+        failure: '{{type}} "{{oldName}}" could not be renamed due to an error: {{errorMessage}}'
       },
       createDirModal: {
         title: 'New directory',

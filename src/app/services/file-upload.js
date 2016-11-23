@@ -15,8 +15,9 @@ function findResumableFileByUuid(collection, uuid) {
  * Exposes jquery assign methods to bind file browser drop and upload button events.
  *
  * ## EventsBus events triggered
- * - file-upload:file-upload-completed(ResumableFile: file, String: parentId)
- * - file-upload:files-added(ResumableFile[]: files, String[]: parentIds)
+ * - fileUpload:fileUploadCompleted(ResumableFile: file, String: parentId)
+ * - fileUpload:filesAdded(ResumableFile[]: files, String[]: parentIds)
+ * - fileUpload:dirUploadsChanged({parentId: String, dirUploads: Ember.Array<File>})
  *
  * @module services/file-upload
  * @author Jakub Liput
@@ -59,6 +60,20 @@ export default Ember.Service.extend({
   init() {
     this._super(...arguments);
     this.resetResumableState();
+
+    let eventsBus = this.get('eventsBus');
+    eventsBus.on('dataFilesList:dirChanged', this, 'handleDataFilesListDirChanged');
+  },
+
+  handleDataFilesListDirChanged({dir}) {
+    let dirId = dir.get('id');
+    let dirUploads = this.get('dirUploads' + dirId);
+    if (dirUploads) {
+      this.get('eventsBus').trigger('fileUpload:dirUploadsChanged', {
+        parentId: dirId,
+        dirUploads: dirUploads
+      });
+    }
   },
 
   /**

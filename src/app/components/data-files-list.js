@@ -24,6 +24,9 @@ import Ember from 'ember';
  *   - see ``data-files-list-loader`` component, which renders the loader
  *   - see ``loadingFileIndex`` for row from what the loader begins on top
  *
+ * ## EventsBus events emitted
+ * - dataFilesList:dirChanged({dir: File})
+ * 
  * @module components/data-files-list
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
@@ -378,38 +381,29 @@ export default Ember.Component.extend({
     );
   },
 
+  // FIXME: on init, we should read current dirUploads from service
+  // and reset currentlyUploadingCount property value
+  handleDirUploadsChanged({parentId, dirUploads}) {
+    if (this.get('dir.id') === parentId) {
+      this.set('currentlyUploadingCount', dirUploads.get('length')); 
+    }
+  },
+
   didInsertElement() {
+    let eventsBus = this.get('eventsBus');
+
+    let __computeFileLabelMaxWidth = this.computeFileLabelMaxWidth.bind(this);
+    eventsBus.on('secondarySidebar:resized', this, 'computeFileLabelMaxWidth');
+    $(window).on('resize.dataFilesList', __computeFileLabelMaxWidth);
+    setTimeout(__computeFileLabelMaxWidth, 50);
+
+    eventsBus.on('fileUpload:dirUploadsChanged', this, 'handleDirUploadsChanged');
+
     this.dirChanged();
     if (this.get('uploadEnabled')) {
       console.debug('Binding upload area for files list');
       this.get('fileUpload').assignDrop(this.$());
     }
-
-    let eventsBus = this.get('eventsBus');
-
-    let __computeFileMaxWidthFun = () => this.computeFileLabelMaxWidth();
-    this.set('__computeFileMaxWidthFun', __computeFileMaxWidthFun);
-    eventsBus.on(
-      'secondarySidebar:resized',
-      this.get('__computeFileMaxWidthFun')
-    );
-    $(window).on('resize', __computeFileMaxWidthFun);
-    setTimeout(__computeFileMaxWidthFun, 50);
-
-    // FIXME: on init, we should read current dirUploads from service
-    // and reset currentlyUploadingCount property value
-    let __handleDirUploadsChanged = ({parentId, dirUploads}) => {
-      if (this.get('dir.id') === parentId) {
-        this.set('currentlyUploadingCount', dirUploads.get('length')); 
-      }
-    };
-
-    this.set('__handleDirUploadsChanged', __handleDirUploadsChanged);
-
-    eventsBus.on(
-      'fileUpload:dirUploadsChanged',
-      __handleDirUploadsChanged
-    );
   },
 
   willDestroyElement() {
@@ -417,17 +411,10 @@ export default Ember.Component.extend({
 
     let ebus = this.get('eventsBus');
 
-    let __computeFileMaxWidthFun = this.get('__computeFileMaxWidthFun');
-    ebus.off(
-      'secondarySidebar:resized',
-      __computeFileMaxWidthFun
-    );
-    ebus.off(
-      'fileUpload:dirUploadsChanged',
-      this.get('__handleDirUploadsChanged')
-    );
+    ebus.off('secondarySidebar:resized', this, 'computeFileLabelMaxWidth');
+    ebus.off('fileUpload:dirUploadsChanged', this, 'handleDirUploadsChanged');
     
-    $(window).off('resize', __computeFileMaxWidthFun);
+    $(window).off('.dataFilesList');
   },
 
   /**
@@ -456,10 +443,13 @@ export default Ember.Component.extend({
   },
 
   dirChanged: Ember.observer('dir', function() {
-    const dir = this.get('dir');
+    this.set('currentlyUploadingCount', 0);
+    let {dir, eventsBus} = this.getProperties('dir', 'eventsBus');
     this.setGlobalDir(dir);
     this.get('fileSystemTree').expandDir(dir);
     this.resetProperties();
+
+    eventsBus.trigger('dataFilesList:dirChanged', {dir: dir});
   }),
 
   fileDownloadServerMethod: Ember.computed('downloadMode', function() {

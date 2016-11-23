@@ -231,11 +231,16 @@ ${resumableFileId}, but it could not be found in any dir`);
   filesAdded(files) {
     // Ember.run is used because this fun is invoked from ResumableJS event
     Ember.run(() => {
-      this.set('locked', false);
+      // TODO: unlocking on filesAdded disabled due to problems with multiple files upload
+      // this.set('locked', false);
       this.get('eventsBus').trigger('fileUpload:filesAdded', files,
         files.map(f => this.getParentIdOfUploadingFile[f.uniqueIdentifier])
       );
     });
+  },
+
+  complete() {
+    Ember.run(() => this.set('locked', false));
   },
 
   onAllFilesForDirUploaded(dirId) {
@@ -288,6 +293,7 @@ Directory content won't be updated!`);
     r.on('filesAdded', (files) => this.filesAdded(files));
     r.on('fileSuccess', (file) => this.fileUploadSuccess(file));
     r.on('fileError', (file) => this.fileUploadFailure(file));
+    r.on('complete', this.complete.bind(this));
 
     return r;
   }),
@@ -297,6 +303,12 @@ Directory content won't be updated!`);
    * For more information, see ResumableJS docs.
    */
   assignDrop(jqDropElement) {
+    jqDropElement.on('drag dragend dragenter dragexit dragleave dragstart drop', e => {
+      if (this.get('locked')) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+      }
+    });
     this.get('resumable').assignDrop(jqDropElement);
 
     let lastEnter;

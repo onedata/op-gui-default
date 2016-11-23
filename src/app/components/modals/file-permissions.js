@@ -3,12 +3,11 @@ import PromiseLoadingMixin from 'op-worker-gui/mixins/promise-loading';
 import { mergeAcls } from 'op-worker-gui/utils/acl-utils';
 import { POSIX_SPECIAL_DIFFERENT } from 'op-worker-gui/components/file-permissions/posix';
 
-/**
- * Report error when removing ACL failed
- */
-const removeAclError = function(fileName) {
-  console.error(`Removing ACL record for file ${fileName} failed!`);
-};
+const PT_ACL = 'a';
+const PT_POSIX = 'p';
+const PT_MIXED = 'm';
+const PT_DENIED = 'd';
+const PT_ERROR = 'e';
 
 export default Ember.Component.extend(PromiseLoadingMixin, {
   notify: Ember.inject.service(),
@@ -26,12 +25,10 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   files: null,
 
   /**
-   * Maps ``File`` -> ``FileAcl``
-   * FileAcl value can be null if the file currently does not have ACL.
-   * It will be created on submit with ACL set on.
-   * @type Map
+   * Collection of resolved ``FilePermissions`` records
+   * @type {Ember.Array<FilePermission>}
    */
-  filesToFileAcl: null,
+  permissions: null,
 
   /**
    * Indicates that ``submit`` action is pending.
@@ -46,8 +43,11 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   error: null,
 
   /**
-   * Type of permissions to set: "p" for POSIX or "a" for ACL.
-   * "m" for "mixed" - we have mixed POSIX/ACL permissions for selected ``files``.
+   * Type of permissions to set: 
+   * * "p" for POSIX
+   * * "a" for ACL.
+   * * "m" for "mixed" - we have mixed POSIX/ACL permissions for selected ``files``.
+   * * "d" for access denied for at least one permission
    * Set the proper value to switch permissions panel type.
    * It is bound with "permissions type" option on top of modal.
    *
@@ -55,7 +55,16 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
    * (indicated by ``isLoadingType`` attr).
    * @type string
    */
-  permissionsType: null,
+  permissionsType: Ember.computed({
+    get() {
+      return this.get('__permissionsType');
+    },
+    set(key, value) {
+      this.set('prevPermissionsType', this.get('__permissionsType'));
+      this.set('__permissionsType', value);
+      return value;
+    }
+  }),
 
   /**
    * Currently edited POSIX permissions codes - can be saved to all selected files on submit.
@@ -90,29 +99,24 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
       aclCache: null,
       error: null,
       permissionsType: null,
-      filesToFileAcl: new Map(),
+      permissions: new Ember.A(),
     });
+  },
+
+  reloadPermissions() {
+    this.get('permissions').forEach(perm => perm && perm.reload());
   },
 
   /**
    * Tries to fetch FileAcl record for currently set file.
    * If ACL exists for file, it sets the ``aclCache`` property and sets
-   * permissions type to ACL ('a'), because we want to set a proper view.
+   * permissions type to ACL (PT_ACL), because we want to set a proper view.
    */
-  fetchFileAclRecord(file) {
+  fetchFilePermissionRecord(file) {
     return new Ember.RSVP.Promise((resolve, reject) => {
-      const findPromise = this.get('store').find('file-acl', file.get('id'));
-      findPromise.then(fileAcl => {
-        console.debug(`Fetched FileAcl for file ${file.get('id')}`);
-        resolve(fileAcl);
-      });
-      findPromise.catch(error => {
-        if (error.message === 'No ACL defined.') {
-          resolve(null);
-        } else {
-          reject(error);
-        }
-      });
+      const findPromise = file.get('filePermission');
+      findPromise.then(fileAcl => resolve(fileAcl));
+      findPromise.catch(error => reject(error));
     });
   },
 
@@ -121,9 +125,11 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
       return false;
     } else {
       switch (this.get('permissionsType')) {
-        case 'p':
+        case PT_POSIX:
+          // TODO: data down, actions up (send notify from posix component)
           return this.get('posixComponent.isReadyToSubmit');
-        case 'a':
+        case PT_ACL:
+          // TODO: data down, actions up (send notify from acl component)
           return this.get('aclComponent.isReadyToSubmit');
         default:
           return false;
@@ -136,16 +142,11 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     'aclComponent.isReadyToSubmit'
   ).readOnly(),
 
-  filesPermissionsChanged: Ember.observer('open', 'files.@each.permissions', function() {
-    if (this.get('open')) {
-      this.updatePosixCache();
-    }
-  }),
-
   updatePosixCache() {
-    const posixes = this.get('files').map(f => f.get('permissions'));
+    let perms = this.get('permissions');
+    let posixes = perms.map(perm => perm.get('posixValue'));
 
-    const allPosixesAreSame = posixes.every(p => p === posixes[0]);
+    let allPosixesAreSame = posixes.every(p => p === posixes[0]);
     if (allPosixesAreSame) {
       this.set('posixCache', posixes[0]);
     } else {
@@ -155,75 +156,109 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   },
 
   /**
-   * Fetches FileAcl records for all ``files`` and sets ``filesToFileAcl`` map.
+   * Fetches FileAcl records for all ``files`` and sets ``permissions`` map.
    * Resolved array could have null elements - it indicates, that some files
    * have no ACL at all.
-   * @returns {Ember.RSVP.Promise} promise resolving with FileAcl[]
+   * @returns {Ember.RSVP.Promise<FileAcl[]>} promise resolving with FileAcl[]
+   *                                          (each fileAcl for files)
    */
-  fetchAllFileAclRecords() {
-    const fileAclPromises = [];
+  fetchAllFilePermissionRecords() {
+    const filePermissionsPromises = [];
     this.get('files').forEach(f => {
-      let promise = this.fetchFileAclRecord(f);
-      fileAclPromises.push(promise);
-      promise.then(acl => {
-        this.get('filesToFileAcl').set(f, acl);
+      let promise = this.fetchFilePermissionRecord(f);
+      filePermissionsPromises.push(promise);
+      promise.then(perm => {
+        this.get('permissions').pushObject(perm);
       });
     });
 
-    return Ember.RSVP.all(fileAclPromises);
+    return Ember.RSVP.all(filePermissionsPromises);
   },
 
   /**
-   *  @param {(FileAcl[])} fileAcls
-   *    result array from ``fetchAllFileAclRecords`` promise resolve;
-   *    elements can be null!
+   * Handle resolved FilePermissions - used after FilePermissions fetch.
+   *  @param {(FilePermissions[])} filePermissions
+   *    result array from ``fetchAllFilePermissionsRecords`` promise resolve
    */
-  handleResolvedAcls(fileAcls) {
-    const acls = fileAcls.map(fa => fa ? fa.get('acl') : null);
-    const atLeastOneWithoutAcl = acls.any(a => a == null);
-    if (atLeastOneWithoutAcl) {
-      const noFileWithAcl = acls.every(a => a == null);
-      if (noFileWithAcl) {
-        // there is no ACL at all, set editor mode to POSIX
-        this.set('permissionsType', 'p');
-      } else {
-        // some files have POSIX and some have ACLs
-        this.set('permissionsType', 'm');
-      }
+  handleResolvedPermissions(filePermissions) {
+    let atLeastOneAccessDenied =
+      filePermissions.any(a => a.get('type') === 'eaccess');
+    if (atLeastOneAccessDenied) {
+      this.set('permissionsType', PT_DENIED);
     } else {
-      // every file has a non-empty ACL
-      this.set('permissionsType', 'a');
+      let atLeastOneWithoutAcl = filePermissions.any(a => a.get('type') !== 'acl');
+      if (atLeastOneWithoutAcl) {
+        let noFileWithAcl = filePermissions.every(a => a.get('type') !== 'acl');
+        if (noFileWithAcl) {
+          // there is no ACL at all, set editor mode to POSIX
+          this.set('permissionsType', PT_POSIX);
+        } else {
+          // some files have POSIX and some have ACLs
+          this.set('permissionsType', PT_MIXED);
+        }
+      } else {
+        // every file has a non-empty ACL
+        this.set('permissionsType', PT_ACL);
+      }
+
+      // create aclCache from available ACLs to show something in ACL editor
+      let acls = filePermissions.map(perm => perm ? perm.get('aclValue') : null);
+      let mergedAcls = mergeAcls(acls);
+
+      // not very efficient...
+      let mixedAcl = mergedAcls && mergedAcls.length > 0 &&
+        (JSON.stringify(mergedAcls) !== JSON.stringify(acls[0]));
+
+      this.setProperties({
+        aclCache: mergedAcls,
+        mixedAcl: mixedAcl
+      });
     }
 
-    // create aclCache from available ACLs to show something in ACL editor
-    const mergedAcls = mergeAcls(acls);
-
-    // not very efficient...
-    const mixedAcl = mergedAcls && mergedAcls.length > 0 &&
-      (JSON.stringify(mergedAcls) !== JSON.stringify(acls[0]));
-
-    this.setProperties({
-      aclCache: mergedAcls,
-      mixedAcl: mixedAcl
-    });
+    this.updatePosixCache();
   },
 
-  doNotSupportMixedPermissionsType: Ember.observer('permissionsType', 'mixedLock', function() {
-    if (this.get('permissionsType') === 'm') {
-      this.setProperties({
-        statusMeta: 'mixedLock',
-        statusBlocked: true,
-        statusType: 'warning',
-        statusMessage: this.get('i18n').t('components.modals.filePermissions.mixedPermissionsMessage')
-      });
-    } else if (this.get('statusMeta') === 'mixedLock') {
-      // changing permissionsType from mixed to posix/acl
-      this.setProperties({
-        statusMeta: null,
-        statusBlocked: false,
-        statusType: null,
-        statusMessage: null
-      });
+  handlePermissionsTypeChange: Ember.observer('permissionsType', 'mixedLock', function() {
+    let {prevPermissionsType, permissionsType, i18n} =
+      this.getProperties('prevPermissionsType', 'permissionsType', 'i18n');
+
+    if (prevPermissionsType === PT_DENIED && permissionsType === PT_ACL) {
+      this.set('aclCache', []);
+    }
+    
+    switch (permissionsType) {
+      case PT_MIXED:
+        this.setProperties({
+          statusMeta: 'mixedLock',
+          statusBlocked: true,
+          statusType: 'warning',
+          statusMessage: i18n.t('components.modals.filePermissions.mixedPermissionsMessage')
+        });
+        break;
+      case PT_DENIED:
+        this.setProperties({
+          statusMeta: 'aclEaccess',
+          statusBlocked: true,
+          statusType: 'warning',
+          statusMessage: i18n.t('components.modals.filePermissions.eaccessMessage')
+        });
+        break;
+      case PT_ERROR:
+        this.setProperties({
+          statusMeta: 'permissionsError',
+          statusBlocked: true,
+          statusType: 'warning',
+          statusMessage: i18n.t('components.modals.filePermissions.errorMessage')
+        });
+        break;
+      default:
+        this.setProperties({
+          statusMeta: null,
+          statusBlocked: false,
+          statusType: null,
+          statusMessage: null
+        });
+        break;
     }
   }),
 
@@ -233,31 +268,28 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
    *
    * **Sets values of ``permissionsType`` property**
    */
-  handleRejectedAcls(error) {
-    console.debug(`Some FileAcl records cannot be fetched by current user: ${error.message}`);
-    this.set('permissionsType', 'a');
+  handleRejectedPermissions(error) {
+    console.warn(`components/file-permissions: Some permissions records cannot be fetched by current user: ${error.message}`);
+    this.setProperties({
+      permissionsType: PT_ERROR,
+      error: error.message
+    });
   },
 
   /**
-   * Sets new content of ``aclCache``.
-   * **This function sets ``isLoadingType`` to true when working**
-   *
-   *
+   * This function sets ``isLoadingType`` to true when working
    */
-  updateAclCache: Ember.observer('open', 'files.@each.id', function() {
+  updatePermissionsCache: Ember.observer('open', 'files.@each.id', function() {
     this.setProperties({
       isLoadingType: true,
       permissionsType: null,
     });
 
-    const ps = this.getProperties('files', 'open');
-    if (ps.open && ps.files) {
-      this.fetchAllFileAclRecords()
-        // all ACLs can be fetched or currently don't exist
-        .then((acls) => this.handleResolvedAcls(acls))
-        // there is at least one ACL that cannot be fetched
-        // because of permission denied etc.
-        .catch(error => this.handleRejectedAcls(error))
+    let {files, open} = this.getProperties('files', 'open');
+    if (open && files) {
+      this.fetchAllFilePermissionRecords()
+        .then(perms => this.handleResolvedPermissions(perms))
+        .catch(error => this.handleRejectedPermissions(error))
         .finally(() => {
           this.set('isLoadingType', false);
         });
@@ -266,65 +298,59 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
   /**
    * Uses ``posixCache`` (POSIX permissions in editor) to set POSIX permissions
-   * in all files in ``files`` property.
-   * Destroys all FileAcl records associated with files (``filesToFileAcl`` map)
+   * in all filePermissions.
+   * 
+   * @returns {RSVP.Promise}
    */
   submitPosix() {
-    const posixCache = this.get('posixCache');
-    const filesToFileAcl = this.get('filesToFileAcl');
-    const files = this.get('files');
+    let {posixCache, permissions} = this.getProperties(
+      'posixCache', 'permissions'
+    );
 
-    const promises = [];
+    let promises = [];
 
-    // each file's permissions should be set to one stored in posixCache
-    files.forEach(f => f.set('permissions', posixCache));
     // all files ACL's should be removed
-    filesToFileAcl.forEach((fileAcl, file) => {
-      if (fileAcl) {
-        fileAcl.deleteRecord();
-        // ACL is currently saved - so push delete
-        if (fileAcl.get('id')) {
-          let destroyAclPromise = fileAcl.save();
-          promises.push(destroyAclPromise);
-          destroyAclPromise.catch(() => removeAclError(file.get('name')));
-        }
+    permissions.forEach(permission => {
+      if (permission) {
+        // each file's permissions should be set to one stored in posixCache
+        permission.setProperties({
+          type: 'posix',
+          posixValue: posixCache,
+        });
+        promises.push(permission.save());
       }
     });
 
-    const filesSavePromises = Ember.RSVP.all(files.map(f => f.save()));
-    promises.push(filesSavePromises);
-
-    return Ember.RSVP.all(promises);
+    return promises;
   },
 
   /**
    * Uses ``aclCache`` (ACL permissions in editor) to create/modify FileAcl
-   * records for all files in ``filesToFileAcl`` map.
+   * records for all files in ``permissions`` map.
    * It doesn't modify POSIX permissions for files.
+   * 
+   * @return {RSVP.Promise[]} array of save promises for all permissions
    */
   submitAcl() {
-    const aclCache = this.get('aclCache');
-    const filesToFileAcl = this.get('filesToFileAcl');
-
-    const savePromises = [];
+    let {aclCache, permissions} = this.getProperties('aclCache', 'permissions');
 
     // set the edited ACL to all ACLs (for each file)
-    filesToFileAcl.forEach((fileAcl, file) => {
-      if (fileAcl == null) {
-        // this file did not have ACL before, create it
-        fileAcl = filesToFileAcl[file] = this.get('store').createRecord('file-acl', {
-          file: file,
-          acl: aclCache
-        });
-      } else {
-        // this file had an ACL before - update its "acl" list to the edited one
-        fileAcl.set('acl', aclCache);
-      }
+    let savePromises = permissions.map(perm => {
+      perm.setProperties({
+        type: 'acl',
+        aclValue: aclCache
+      });
 
-      savePromises.push(fileAcl.save());
+      let savePromise = perm.save();
+      savePromise.catch(error => {
+        console.debug(`modals/file-permissions: failed to save permissions with id: ${perm.get('id')}: ${error.message}`);
+        perm.rollbackAttributes();
+      });
+
+      return savePromise;
     });
 
-    return Ember.RSVP.all(savePromises);
+    return savePromises;
   },
 
   actions: {
@@ -335,32 +361,33 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     },
 
     closed() {
+      this.reloadPermissions();
       this.resetProperties();
     },
 
     /**
      * Saves permissions changes in all files.
      * It uses ``this.submitPosix()`` or ``this.submitAcl()``
-     * basing on ``permissionsType`` ('p' or 'a').
+     * basing on ``permissionsType`` (PT_POSIX or PT_ACL).
      *
      * It binds a generic submission handlers on specific submit promises.
      */
     submit() {
       this.set('isSubmitting', true);
 
-      let submitPromise;
+      let submitPromises;
       switch (this.get('permissionsType')) {
-        case 'p':
-          submitPromise = this.submitPosix();
+        case PT_POSIX:
+          submitPromises = this.submitPosix();
           break;
-        case 'a':
-          submitPromise = this.submitAcl();
+        case PT_ACL:
+          submitPromises = this.submitAcl();
           break;
       }
 
-      submitPromise
+      Ember.RSVP.Promise.all(submitPromises)
         .then(() => this.submitSucceed())
-        .catch(() => this.submitFailed())
+        .catch(() => this.submitFailed(submitPromises))
         .finally(() => this.submitCompleted());
     },
 
@@ -372,10 +399,25 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     this.get('notify').info(msg);
   },
 
-  submitFailed() {
+  // FIXME: count resolved promises
+  /**
+   * @param {RSVP.Promise[]} submitPromises
+   */
+  submitFailed(submitPromises) {
     // TODO: maybe this should be displayed in modal as an alert panel
-    const msg = this.get('i18n').t('components.modals.filePermissions.submitFailed');
-    this.get('notify').error(msg);
+    let {i18n, notify} = this.getProperties('i18n', 'notify');
+    Ember.RSVP.allSettled(submitPromises).then(promiseStates => {
+      let rejectedPromises = promiseStates.filter(({state}) => state === 'rejected');
+      if (rejectedPromises.length === promiseStates.length) {
+        notify.error(i18n.t('components.modals.filePermissions.submitFailed'));
+      } else {
+        notify.warning(i18n.t('components.modals.filePermissions.submitFailedSome', {
+          failedCount: rejectedPromises.length,
+          filesCount: promiseStates.length
+        }));
+      }
+      
+    });
   },
 
   submitCompleted() {

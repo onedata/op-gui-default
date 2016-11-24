@@ -49,7 +49,7 @@
   </th>
   </thead>
   <tbody>
-  {{#if currentlyUploadingCount}}
+  {{#if (or currentlyUploadingCount isWaitingForPushAfterUpload)}}
     <tr class="file-row-uploading selection-background-pulse first-level">
       <td colspan=99 class="file-list-col-file">
         <div class="file-icon">
@@ -57,9 +57,13 @@
         </div>
         <div class="file-label-container">
           <div class="file-label truncate">
-            {{t 'components.dataFilesList.uploadIndicator'
-              currentlyUploadingCount=currentlyUploadingCount
-            }}
+            {{#if currentlyUploadingCount}}
+              {{t 'components.dataFilesList.uploadIndicator'
+                currentlyUploadingCount=currentlyUploadingCount
+              }}
+            {{else if isWaitingForPushAfterUpload}}
+              {{t 'components.dataFilesList.uploadFinishedWait'}}
+            {{/if}}
           </div>
         </div>
       </td>

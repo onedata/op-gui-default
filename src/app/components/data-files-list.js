@@ -23,7 +23,9 @@ import Ember from 'ember';
  *     from this push are loaded
  *   - see ``data-files-list-loader`` component, which renders the loader
  *   - see ``loadingFileIndex`` for row from what the loader begins on top
- *
+ * - waiting for new files list push after upload finished
+ *   - see ``isWaitingForPushAfterUpload`` property and its setting and getting
+ * 
  * ## EventsBus events emitted
  * - dataFilesList:dirChanged({dir: File})
  * 
@@ -162,6 +164,12 @@ export default Ember.Component.extend({
    * @type {Computed<Number>}
    */
   totalAheadFilesCount: 0,
+
+  /**
+   * Set to true, if finished upload but not yet received push with new files list.
+   * @private
+   */
+  isWaitingForPushAfterUpload: false,
 
   /**
    * True if all children files of the ``dir`` are loaded (using backend paging).
@@ -311,6 +319,19 @@ export default Ember.Component.extend({
     }
   }),
 
+  // TODO: there is an assumption that the push brings at least one visible file
+  // if there will be problems with push, please fix this by watching if push failed
+  filesListChanged: Ember.observer('visibleFiles.length', function() {
+    let visibleFilesLength = this.get('visibleFiles.length');
+    let __prevVisibleFilesLength = this.get('__prevVisibleFilesLength');
+    if (!__prevVisibleFilesLength || __prevVisibleFilesLength < visibleFilesLength) {
+      // files count have been increased, so any wait for upload results should finish 
+      this.set('isWaitingForPushAfterUpload', false); 
+    }
+    
+    this.set('__prevVisibleFilesLength', visibleFilesLength);
+  }),
+
   /**
    * When files push come, increase number of files in ``totalAheadFilesCount``
    */
@@ -364,11 +385,40 @@ export default Ember.Component.extend({
     return index > 0 ? index : 0;
   }),
 
+  // FIXME
+  // visibleFilesCount: Ember.computed({
+  //   get() {
+  //     this.get('__visibleFilesCount');
+  //   },
+  //   set(key, value) {
+  //     this.setProperties({
+  //       __prevVisibleFilesCount: this.get('__visibleFilesCount'),
+  //       __visibleFilesCount: value
+  //     });
+  //     return value;
+  //   }
+  // }),
+
+  currentlyUploadingCount: Ember.computed({
+    get() {
+      this.get('__currentlyUploadingCount');
+    },
+    set(key, value) {
+      this.setProperties({
+        __prevCurrentlyUploadingCount: this.get('__currentlyUploadingCount'),
+        __currentlyUploadingCount: value
+      });
+      return value;
+    }
+  }),
+
   // TODO VFS-2753: don't know if this code works
   currentlyUploadingCountChanged: Ember.observer('currentlyUploadingCount', function() {
-    let count = this.get('currentlyUploadingCount');
-    if (!count) {
+    let {count, __prevCurrentlyUploadingCount} =
+      this.getProperties('currentlyUploadingCount', '__prevCurrentlyUploadingCount');
+    if (!count && __prevCurrentlyUploadingCount) {
       console.debug(`Batch upload finished for ${this.get('dir.name')}`);
+      this.set('isWaitingForPushAfterUpload', true);
     }
   }),
 

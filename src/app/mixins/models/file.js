@@ -27,6 +27,12 @@ export default Ember.Mixin.create({
   size: DS.attr('number'),
 
   /**
+   * ID of Oneprovider that stores this file.
+   * @type {Ember.computed<String>}
+   */
+  provider: DS.attr('string'),
+
+  /**
    * How many children this directory (it it is a directory-type) has.
    * If ``totalChildrenCount`` is more than actual ``children.length``, it means
    * that more children can be fetch from server.

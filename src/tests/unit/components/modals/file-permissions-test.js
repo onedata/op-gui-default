@@ -12,7 +12,7 @@ import {
 
 import Ember from 'ember';
 import ACE from 'op-worker-gui/utils/access-control-entity';
-import { resolvePromise, rejectPromise } from 'op-worker-gui/tests/test-helper';
+import { rejectPromise } from 'op-worker-gui/tests/test-helper';
 
 import { POSIX_SPECIAL_DIFFERENT } from 'op-worker-gui/components/file-permissions/posix';
 
@@ -30,49 +30,59 @@ describeComponent(
     }
   },
   function() {
-    it('sets permissionsType to ACL and sets aclCache when every ACL is non-empty using handleResolvedAcls', function() {
+    it('sets permissionsType to ACL and sets aclCache when every file has ACL permissions', function() {
       const component = this.subject();
       // fake FileAcl list
-      const acls = [
+      let filesPermissions = [
         Ember.Object.create({
-          acl: Ember.A([ACE.create({subject: 'user', user: 'u1'})])
+          type: 'acl',
+          aclValue: Ember.A([ACE.create({subject: 'user', user: 'u1'})])
         }),
         Ember.Object.create({
-          acl: Ember.A([ACE.create({subject: 'group', user: 'g2'})])
+          type: 'acl',
+          aclValue: Ember.A([ACE.create({subject: 'group', user: 'g2'})])
         })
       ];
 
-      component.handleResolvedAcls(acls);
+      component.handleResolvedPermissions(filesPermissions);
 
       expect(component.get('permissionsType')).to.be.equal('a');
     });
 
-    it('sets permissionsType to POSIX when no File has FileACL using handleResolvedAcls', function() {
+    it('sets permissionsType to POSIX when no File has FileACL using handleResolvedPermissions', function() {
       const component = this.subject();
       // fake FileAcl list
-      const acls = [
-        null,
-        null,
-        null
+      const permissions = [
+        Ember.Object.create({
+          type: 'posix',
+          posixValue: 777
+        }),
+        Ember.Object.create({
+          type: 'posix',
+          posixValue: 777
+        })
       ];
 
-      component.handleResolvedAcls(acls);
+      component.handleResolvedPermissions(permissions);
 
       expect(component.get('permissionsType')).to.be.equal('p');
     });
 
-    it('sets permissionsType to mixed when not all files has FileACL using handleResolvedAcls', function() {
+    it('sets permissionsType to mixed when not all files has acl type using handleResolvedPermissions', function() {
       const component = this.subject();
       // fake FileAcl list
-      const acls = [
+      const permissions = [
         Ember.Object.create({
-          acl: Ember.A([ACE.create({subject: 'user', user: 'u1'})])
+          type: 'acl',
+          aclValue: Ember.A()
         }),
-        null,
-        null
+        Ember.Object.create({
+          type: 'posix',
+          posixValue: 644
+        }),
       ];
 
-      component.handleResolvedAcls(acls);
+      component.handleResolvedPermissions(permissions);
 
       expect(component.get('permissionsType')).to.be.equal('m');
     });
@@ -89,52 +99,44 @@ describeComponent(
       const component = this.subject();
       const posixValue = 777;
       const file1 = Ember.Object.create({id: '1', name: '2', save: function(){}});
-      const fileAcl1 = Ember.Object.create({id: '1', deleteRecord: function(){}, save: function(){}});
+      const filePermission1 = Ember.Object.create({id: '1', deleteRecord: function(){}, save: function(){}});
       const files = [
         file1
       ];
-      const fileAcls = [
-        fileAcl1
+      const filePermissions = [
+        filePermission1
       ];
-      const filesToFileAcl = new Map();
-      filesToFileAcl.set(files[0], fileAcls[0]);
 
       component.set('posixCache', posixValue);
       component.set('files', files);
-      component.set('filesToFileAcl', filesToFileAcl);
+      component.set('permissions', filePermissions);
 
-      let saveFile1 = sinon.stub(file1, 'save', () => resolvePromise);
-      let deleteFileAcl1 = sinon.stub(fileAcl1, 'deleteRecord');
-      let saveFileAcl1 = sinon.stub(fileAcl1, 'save', () => rejectPromise);
+      let saveFilePermission1 = sinon.stub(filePermission1, 'save', () => rejectPromise);
 
       component.submitPosix();
 
-      expect(saveFile1).to.have.been.calledOnce;
-      expect(deleteFileAcl1).to.have.been.calledOnce;
-      expect(saveFileAcl1).to.have.been.calledOnce;
-      expect(file1.get('permissions')).to.be.equal(posixValue);
+      expect(saveFilePermission1).to.have.been.calledOnce;
+      expect(filePermission1.get('posixValue')).to.be.equal(posixValue);
 
-      saveFile1.restore();
-      deleteFileAcl1.restore();
-      saveFileAcl1.restore();
+      saveFilePermission1.restore();
     });
 
     it('updatePosixCache should set POSIX_SPECIAL_DIFFERENT code when posixes are different', function() {
       const comp = this.subject();
 
-      const files = Ember.A([
+      let permissions = Ember.A([
         Ember.Object.create({
-          permissions: 644
+          posixValue: 644
         }),
         Ember.Object.create({
-          permissions: 644
+          posixValue: 644
         }),
         Ember.Object.create({
-          permissions: 777
+          posixValue: 777
         }),
       ]);
       comp.setProperties({
-        files: files
+        permissions: permissions
       });
 
       comp.updatePosixCache();
@@ -146,19 +148,19 @@ describeComponent(
       const comp = this.subject();
       const P_CODE = 644;
 
-      const files = Ember.A([
+      const perms = Ember.A([
         Ember.Object.create({
-          permissions: P_CODE
+          posixValue: P_CODE
         }),
         Ember.Object.create({
-          permissions: P_CODE
+          posixValue: P_CODE
         }),
         Ember.Object.create({
-          permissions: P_CODE
+          posixValue: P_CODE
         }),
       ]);
       comp.setProperties({
-        files: files
+        permissions: perms
       });
 
       comp.updatePosixCache();
@@ -166,27 +168,5 @@ describeComponent(
       expect(comp.get('posixCache')).to.be.equal(P_CODE);
     });
 
-    it('updatePosixCache should detect POSIX equality after ACL to POSIX changes', function() {
-      const P_CODE = 777;
-
-      const comp = this.subject();
-      const file1 = Ember.Object.create({save: function(){}});
-      const file1Acl = Ember.Object.create();
-      const filesToFileAcl = new Map();
-
-      filesToFileAcl.set(file1, file1Acl);
-      comp.set('posixCache', P_CODE);
-      comp.set('files', [file1]);
-      comp.submitPosix();
-
-      const file2 = Ember.Object.create({
-        permissions: P_CODE
-      });
-      // do not invoke observers
-      comp.get('files').push(file2);
-
-      comp.updatePosixCache();
-      expect(comp.get('posixCache')).to.be.equal(P_CODE);
-    });
   }
 );

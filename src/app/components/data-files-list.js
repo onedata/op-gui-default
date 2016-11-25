@@ -279,9 +279,9 @@ export default Ember.Component.extend({
     return dirIsEmpty;
   }),
 
-  filesTableIsVisible: Ember.computed('dirIsEmpty', 'currentlyUploadingCount', function() {
-    let props = this.getProperties('dirIsEmpty', 'currentlyUploadingCount');
-    let filesTableIsVisible = !props.dirIsEmpty || props.currentlyUploadingCount;
+  filesTableIsVisible: Ember.computed('dirIsEmpty', 'currentlyUploadingCount', 'isWaitingForPushAfterUpload', function() {
+    let props = this.getProperties('dirIsEmpty', 'currentlyUploadingCount', 'isWaitingForPushAfterUpload');
+    let filesTableIsVisible = !props.dirIsEmpty || props.currentlyUploadingCount || props.isWaitingForPushAfterUpload;
     if (filesTableIsVisible) {
       Ember.run.scheduleOnce('afterRender', this, function() {
         this.computeFileLabelMaxWidth();
@@ -414,9 +414,9 @@ export default Ember.Component.extend({
 
   // TODO VFS-2753: don't know if this code works
   currentlyUploadingCountChanged: Ember.observer('currentlyUploadingCount', function() {
-    let {count, __prevCurrentlyUploadingCount} =
+    let {currentlyUploadingCount, __prevCurrentlyUploadingCount} =
       this.getProperties('currentlyUploadingCount', '__prevCurrentlyUploadingCount');
-    if (!count && __prevCurrentlyUploadingCount) {
+    if (!currentlyUploadingCount && __prevCurrentlyUploadingCount) {
       console.debug(`Batch upload finished for ${this.get('dir.name')}`);
       this.set('isWaitingForPushAfterUpload', true);
     }

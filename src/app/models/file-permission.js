@@ -23,8 +23,6 @@ export default DS.Model.extend({
    */
   type: DS.attr('string'),
 
-
-  // FIXME: hack to work with buggy-backend
   posixValue: DS.attr('number'),
   aclValue: DS.attr('acl-array', {defaultValue: Ember.A()}),
 

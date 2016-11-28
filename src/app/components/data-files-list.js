@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import conflictProviderId from 'op-worker-gui/utils/conflict-provider-id';
 
 /**
  * Files and subdirectories browser for single directory.
@@ -46,6 +47,7 @@ export default Ember.Component.extend({
   oneproviderServer: Ember.inject.service(),
   messageBox: Ember.inject.service(),
   eventsBus: Ember.inject.service(),
+  session: Ember.inject.service(),
 
   classNames: ['data-files-list'],
 
@@ -266,6 +268,65 @@ export default Ember.Component.extend({
    * @type {Computed<File[]>}
    */
   visibleFilesSorted: Ember.computed.alias('visibleFiles'),
+
+  /**
+   * An information about File for displaying it on files list.
+   * @typedef {Object} FileRowInfo
+   * @property {File} file - a File model instance
+   * @property {String} providerLabel - a distinguishable ID of provider
+   * @property {String} label - a label diplayed in GUI
+   */
+
+  /**
+   * A final model for displaying ``fileRow``.
+   * Generates objects of type ``FileRowInfo`` for each File
+   * in visibleFilesSorted that contain ``file`` a reference to File model
+   * and ``providerLabel`` - only if the file has conflicting name and provider ID
+   * that is _not_ the current provider.
+   * @type {Computed<FileRowInfo>}
+   */
+  fileRows: Ember.computed('visibleFilesSorted.@each.{name,provider}',
+    'session.sessionDetails.providerId', function() {
+    
+    let visibleFilesSorted = this.get('visibleFilesSorted');
+    let providerId = this.get('session.sessionDetails.providerId');
+    
+    if (!visibleFilesSorted) {
+      return Ember.A();
+    }
+
+    let filesMap = new Map();
+    visibleFilesSorted.forEach(f => {
+      let name = f.get('name');
+      if (filesMap.has(name)) {
+        filesMap.get(name).push(f);
+      } else {
+        filesMap.set(name, [f]);
+      }
+    });
+    
+    let fileRows = [];
+    
+    filesMap.forEach(files => {
+      if (files.length > 1) {
+        let providerLabels = conflictProviderId(files.mapBy('provider'));
+        for (let i=0; i<files.length; i+=1) {
+          let file = files[i];
+          fileRows.push(Ember.Object.create({
+            providerLabel: file.get('provider') === providerId ? null : providerLabels[i],
+            file: files[i]
+          }));
+        }
+
+      } else {
+        fileRows.push(Ember.create({
+          file: files[0]
+        }));
+      }
+    });
+
+    return Ember.A(fileRows);
+  }),
 
   selectedFiles: Ember.computed.filterBy('visibleFiles', 'isSelected', true),
 

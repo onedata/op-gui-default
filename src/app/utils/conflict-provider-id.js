@@ -12,12 +12,13 @@
  * for naming conflicting files.
  *  
  * @export
+ * @param {String[]} names
  * @returns {[String, String]} [minimal id for A, minimal id for B]
  */
-export default function conflictProviderId(names) {
-  let maxLen = Math.max(...names.map(name => name.length));
+export default function conflictProviderId(providerNames) {
+  let maxLen = Math.max(...providerNames.map(name => name.length));
 
-  let bufs = names.map(name => ({name: name, buf: [], differs: false}));
+  let bufs = providerNames.map(name => ({name: name, buf: [], differs: false}));
   for (let i=0; i<maxLen; i+=1) {
     /* jshint loopfunc:true */ 
     let currentLetters = bufs.map(({name}) => name[i]);

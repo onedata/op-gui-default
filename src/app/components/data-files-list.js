@@ -324,7 +324,7 @@ export default Ember.Component.extend({
   filesListChanged: Ember.observer('visibleFiles.length', function() {
     let visibleFilesLength = this.get('visibleFiles.length');
     let __prevVisibleFilesLength = this.get('__prevVisibleFilesLength');
-    if (!__prevVisibleFilesLength || __prevVisibleFilesLength < visibleFilesLength) {
+    if (__prevVisibleFilesLength == null || __prevVisibleFilesLength < visibleFilesLength) {
       // files count have been increased, so any wait for upload results should finish 
       this.set('isWaitingForPushAfterUpload', false); 
     }

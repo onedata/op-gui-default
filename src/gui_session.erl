@@ -15,7 +15,7 @@
 %%% done by the application that uses gui.
 %%% @end
 %%%-------------------------------------------------------------------
--module(g_session).
+-module(gui_session).
 -author("Lukasz Opiola").
 
 -include("gui.hrl").
@@ -30,7 +30,7 @@
 -export([init/0, finish/0]).
 -export([log_in/1, log_in/2, log_out/0, is_logged_in/0]).
 -export([get_session_id/0, get_user_id/0]).
--export([put_value/2, get_value/1, get_value/2]).
+-export([put_value/2, get_value/1, get_value/2, update_value/3]).
 
 %%%===================================================================
 %%% API
@@ -43,15 +43,15 @@
 %%--------------------------------------------------------------------
 -spec init() -> ok.
 init() ->
-    SessionId = g_ctx:get_cookie(?SESSION_COOKIE_KEY),
+    SessionId = gui_ctx:get_cookie(?SESSION_COOKIE_KEY),
     case call_lookup_session(SessionId) of
         undefined ->
             set_logged_in(false),
             set_session_id(?NO_SESSION_COOKIE);
-        Memory ->
+        _ ->
             set_logged_in(true),
             % Updating session will refresh its expiration time
-            ok = call_update_session(SessionId, Memory),
+            ok = call_update_session(SessionId, fun(M) -> M end),
             set_session_id(SessionId)
     end,
     ok.
@@ -91,13 +91,13 @@ finish() ->
                 ],
                 {SID, Opts}
         end,
-    g_ctx:set_resp_cookie(?SESSION_COOKIE_KEY, SessionId, Options),
+    gui_ctx:set_resp_cookie(?SESSION_COOKIE_KEY, SessionId, Options),
     ok.
 
 
 %%--------------------------------------------------------------------
 %% @doc
-%% @equiv g_session:log_in/2
+%% @equiv gui_session:log_in/2
 %% @end
 %%--------------------------------------------------------------------
 -spec log_in(UserId :: term()) -> {ok, SessionId :: binary()}.
@@ -201,7 +201,7 @@ get_user_id() ->
         false ->
             throw(user_not_logged_in);
         true ->
-            get_value(g_session_user_id)
+            get_value(gui_session_user_id)
     end.
 
 
@@ -214,7 +214,7 @@ get_user_id() ->
 %%--------------------------------------------------------------------
 -spec set_user_id(UserId :: term()) -> ok.
 set_user_id(UserId) ->
-    put_value(g_session_user_id, UserId).
+    put_value(gui_session_user_id, UserId).
 
 
 %%--------------------------------------------------------------------
@@ -228,9 +228,11 @@ put_value(Key, Value) ->
     case call_lookup_session(SessionId) of
         undefined ->
             throw(user_not_logged_in);
-        Memory ->
-            NewMemory = [{Key, Value} | proplists:delete(Key, Memory)],
-            ok = call_update_session(SessionId, NewMemory)
+        _ ->
+            MemoryUpdateFun = fun(Memory) ->
+                maps:put(Key, Value, Memory)
+            end,
+            ok = call_update_session(SessionId, MemoryUpdateFun)
     end.
 
 
@@ -256,7 +258,28 @@ get_value(Key, Default) ->
         undefined ->
             throw(user_not_logged_in);
         Memory ->
-            proplists:get_value(Key, Memory, Default)
+            maps:get(Key, Memory, Default)
+    end.
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Atomically updates a value in session memory.
+%% @end
+%%--------------------------------------------------------------------
+-spec update_value(Key :: term(), UpdateFun :: fun((term()) -> term()),
+    InitialValue :: term()) -> Value :: term().
+update_value(Key, UpdateFun, InitialValue) ->
+    SessionId = get_session_id(),
+    case call_lookup_session(SessionId) of
+        undefined ->
+            throw(user_not_logged_in);
+        _ ->
+            MemoryUpdateFun = fun(Memory) ->
+                OldValue = maps:get(Key, Memory, InitialValue),
+                maps:put(Key, UpdateFun(OldValue), Memory)
+            end,
+            ok = call_update_session(SessionId, MemoryUpdateFun)
     end.
 
 
@@ -288,9 +311,10 @@ call_create_session(UserId, CustomArgs) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec call_update_session(SessionId :: binary(),
-    Memory :: proplists:proplist()) -> ok | {error, term()}.
-call_update_session(SessionId, Memory) ->
-    case ?GUI_SESSION_PLUGIN:update_session(SessionId, Memory) of
+    MemoryUpdateFun :: fun((maps:map()) -> maps:map())) ->
+    ok | {error, term()}.
+call_update_session(SessionId, MemoryUpdateFun) ->
+    case ?GUI_SESSION_PLUGIN:update_session(SessionId, MemoryUpdateFun) of
         ok ->
             ok;
         {error, Error} ->
@@ -307,7 +331,7 @@ call_update_session(SessionId, Memory) ->
 %% @end
 %%--------------------------------------------------------------------
 -spec call_lookup_session(SessionId :: binary()) ->
-    proplists:proplist() | undefined.
+    Memory :: maps:map() | undefined.
 call_lookup_session(SessionId) ->
     case SessionId of
         undefined ->

@@ -16,7 +16,12 @@ export default Ember.Component.extend({
   */
   showTooltip: false,
 
-  // FIXME: should register and deregister window resize event
+  /**
+   * Function for updating max width
+   * @private
+   */
+  __changeMaxWidthFun: null,
+
   didInsertElement() {
     let parentSelector = this.get('parentSelector');
     let parent = parentSelector ? this.$().closest(parentSelector) : this.$().parent();
@@ -28,13 +33,25 @@ export default Ember.Component.extend({
         maxWidth: (parseInt(maxWidth) - shrinkBy)
       });
     };
+
+    this.set('__changeMaxWidthFun', changeMaxWidth);
+
     $(window).resize(changeMaxWidth);
-    // FIXME: should register and deregister sidebar resize event
-    this.get('eventsBus').on('secondarySidebar:resized', changeMaxWidth);
+    if (this.get('eventsBus')) {
+      this.get('eventsBus').on('secondarySidebar:resized', changeMaxWidth);
+    }
 
     changeMaxWidth();
 
     this.updateTooltipText();
+  },
+
+  willDestroyElement() {
+    let changeMaxWidth = this.get('__changeMaxWidthFun');
+    $(window).off('resize', changeMaxWidth);
+    if (this.get('eventsBus')) {
+      this.get('eventsBus').off('secondarySidebar:resized', changeMaxWidth);
+    }
   },
 
   updateTooltipText() {

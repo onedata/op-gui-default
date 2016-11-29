@@ -37,6 +37,7 @@
 %%--------------------------------------------------------------------
 %% @doc
 %% Should create a new session under SessionId key.
+%% Must initialize the session memory as an empty map.
 %% The session is valid up to given moment (Expires).
 %% Expires is expressed in number of seconds since epoch.
 %% CustomArgs are the args that are passed to g_session:log_in/1 function,
@@ -50,11 +51,13 @@
 %%--------------------------------------------------------------------
 %% @doc
 %% Should save session data under SessionId key. Updates the session memory.
+%% The update must be atomic.
 %% If there is no record of session
 %% with id SessionId, error atom should be returned.
 %% @end
 %%--------------------------------------------------------------------
--callback update_session(SessId :: binary(), Memory :: proplists:proplist()) ->
+-callback update_session(SessId :: binary(),
+    MemoryUpdateFun :: fun((maps:map()) -> maps:map())) ->
     ok | {error, term()}.
 
 
@@ -66,7 +69,7 @@
 %% @end
 %%--------------------------------------------------------------------
 -callback lookup_session(SessionId :: binary()) ->
-    {ok, Memory :: proplists:proplist()} | undefined.
+    {ok, Memory :: maps:map()} | undefined.
 
 
 %%--------------------------------------------------------------------

@@ -134,12 +134,12 @@ maybe_handle_html_req(Req) ->
     {continue | finish, NewReq :: cowboy_req:req()}.
 handle_html_req(Req) ->
     % Initialize request context
-    g_ctx:init(Req, true),
+    gui_ctx:init(Req, true),
     % Check if the user is permitted to see the page
     % If so, call page_init/0 callback
     % If not, redirect to another page
-    ReqrsSess = g_ctx:session_requirements(),
-    LoggedIn = g_session:is_logged_in(),
+    ReqrsSess = gui_ctx:session_requirements(),
+    LoggedIn = gui_session:is_logged_in(),
     PageInitResult =
         case {ReqrsSess, LoggedIn} of
             {?SESSION_ANY, _} ->
@@ -163,14 +163,14 @@ handle_html_req(Req) ->
             {serve_body, Bd, Hdrs} ->
                 {reply, 200, Hdrs, Bd};
             display_404_page ->
-                g_ctx:set_html_file(?GUI_ROUTE_PLUGIN:error_404_html_file()),
+                gui_ctx:set_html_file(?GUI_ROUTE_PLUGIN:error_404_html_file()),
                 {serve_html, []};
             display_500_page ->
-                g_ctx:set_html_file(?GUI_ROUTE_PLUGIN:error_500_html_file()),
+                gui_ctx:set_html_file(?GUI_ROUTE_PLUGIN:error_500_html_file()),
                 {serve_html, []};
             {redirect_relative, URL} ->
                 % @todo https should be detected automatically, not hardcoded
-                FullURL = <<"https://", (g_ctx:get_requested_hostname())/binary,
+                FullURL = <<"https://", (gui_ctx:get_requested_hostname())/binary,
                 URL/binary>>,
                 {reply, 307, [{<<"location">>, FullURL}], <<"">>};
             {redirect_absolute, AbsURL} ->
@@ -186,25 +186,25 @@ handle_html_req(Req) ->
     Result =
         case CoalescedResult of
             {serve_html, Headers} ->
-                case g_ctx:get_html_file() of
+                case gui_ctx:get_html_file() of
                     undefined ->
                         ?error("HTML file for page ~p is not defined.",
-                            [g_ctx:get_path()]),
+                            [gui_ctx:get_path()]),
                         Page500Path = ?GUI_ROUTE_PLUGIN:error_500_html_file(),
                         HtmlFileToServe = <<"/", (Page500Path)/binary>>,
-                        g_ctx:set_path(HtmlFileToServe),
+                        gui_ctx:set_path(HtmlFileToServe),
                         continue;
                     Path ->
                         HtmlFileToServe = <<"/", (Path)/binary>>,
-                        g_ctx:set_path(HtmlFileToServe),
-                        g_ctx:set_resp_headers(Headers),
+                        gui_ctx:set_path(HtmlFileToServe),
+                        gui_ctx:set_resp_headers(Headers),
                         continue
                 end;
             {reply, Code, Headers, Body} ->
-                g_ctx:reply(Code, Headers, Body),
+                gui_ctx:reply(Code, Headers, Body),
                 finish
         end,
-    NewReq = g_ctx:finish(),
+    NewReq = gui_ctx:finish(),
     {Result, NewReq}.
 
 
@@ -217,7 +217,7 @@ handle_html_req(Req) ->
 %%--------------------------------------------------------------------
 -spec page_init_callback() -> page_init_result().
 page_init_callback() ->
-    case g_ctx:get_page_backend() of
+    case gui_ctx:get_page_backend() of
         undefined ->
             % No backend specified - just serve the HTML.
             {serve_html, []};

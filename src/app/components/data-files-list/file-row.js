@@ -45,6 +45,22 @@ export default Ember.Component.extend({
   file: null,
 
   /**
+   * To inject, optional.
+   * A label that should be shown. If is null, use file.name.
+   * For final computed label in GUI, see: ``displayedFileLabel``.
+   * @type {String}
+   */
+  label: null,
+
+  /**
+   * To inject, optional.
+   * A distinguishable ID of provider to display
+   * for distinguishing conflicting files.
+   * @type {String}
+   */
+  providerLabel: null,
+
+  /**
    * If true, the file is currently downloaded, so it will be indicated in GUI.
    * @type {Boolean}
    */
@@ -106,6 +122,14 @@ export default Ember.Component.extend({
         self.sendAction('onAppear', self.get('listIndex'));
       }
     };
+  }),
+
+  /**
+   * A label that is actually displayed in GUI.
+   * @type {String}
+   */
+  displayedFileLabel: Ember.computed('label', 'file.name', function() {
+    return this.get('label') || this.get('file.name');
   }),
 
   didInsertElement() {

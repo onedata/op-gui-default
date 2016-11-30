@@ -399,7 +399,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     this.get('notify').info(msg);
   },
 
-  // FIXME: count resolved promises
+  // TODO: count resolved promises
   /**
    * @param {RSVP.Promise[]} submitPromises
    */

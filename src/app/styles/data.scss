@@ -139,6 +139,14 @@
             top: 50%;
             transform: translateY(-50%);
             @include vendor-prefix(user-select, none);
+
+            .file-provider-label {
+              color: $onedata-red;
+            }
+            .file-provider-label-name {
+              color: $onedata-red;
+              font-weight: bold;
+            }
           }
         }
         .file-row-tools {

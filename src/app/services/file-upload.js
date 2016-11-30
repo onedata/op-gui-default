@@ -15,8 +15,9 @@ function findResumableFileByUuid(collection, uuid) {
  * Exposes jquery assign methods to bind file browser drop and upload button events.
  *
  * ## EventsBus events triggered
- * - file-upload:file-upload-completed(ResumableFile: file, String: parentId)
- * - file-upload:files-added(ResumableFile[]: files, String[]: parentIds)
+ * - fileUpload:fileUploadCompleted(ResumableFile: file, String: parentId)
+ * - fileUpload:filesAdded(ResumableFile[]: files, String[]: parentIds)
+ * - fileUpload:dirUploadsChanged({parentId: String, dirUploads: Ember.Array<File>})
  *
  * @module services/file-upload
  * @author Jakub Liput
@@ -59,6 +60,20 @@ export default Ember.Service.extend({
   init() {
     this._super(...arguments);
     this.resetResumableState();
+
+    let eventsBus = this.get('eventsBus');
+    eventsBus.on('dataFilesList:dirChanged', this, 'handleDataFilesListDirChanged');
+  },
+
+  handleDataFilesListDirChanged({dir}) {
+    let dirId = dir.get('id');
+    let dirUploads = this.get('dirUploads' + dirId);
+    if (dirUploads) {
+      this.get('eventsBus').trigger('fileUpload:dirUploadsChanged', {
+        parentId: dirId,
+        dirUploads: dirUploads
+      });
+    }
   },
 
   /**
@@ -68,13 +83,17 @@ export default Ember.Service.extend({
    * @param {String} parentId
    */
   addUploadingFileInfo(resumableFile, parentId) {
-    if (this.get('dirUploads-' + parentId) == null) {
+    if (this.get('dirUploads' + parentId) == null) {
       this.get('dirsUploadIds').pushObject(parentId);
-      this.set('dirUploads-' + parentId, Ember.A());
+      this.set('dirUploads' + parentId, Ember.A());
       console.debug(`file-upload: Creating new dirUploads for parent: ${parentId}`);
     }
-    let dirUploads = this.get('dirUploads-' + parentId); 
+    let dirUploads = this.get('dirUploads' + parentId); 
     dirUploads.pushObject(resumableFile);
+    this.get('eventsBus').trigger('fileUpload:dirUploadsChanged', {
+      parentId: parentId,
+      dirUploads: dirUploads
+    });
   },
 
   /**
@@ -86,7 +105,7 @@ export default Ember.Service.extend({
     let dirsUploadIds = this.get('dirsUploadIds');
 
     for (let parentId of dirsUploadIds) {
-      let dirUploads = this.get('dirUploads-' + parentId);
+      let dirUploads = this.get('dirUploads' + parentId);
       let resumableFile = findResumableFileByUuid(dirUploads, resumableFileId);
       if (resumableFile) {
         return parentId;
@@ -107,7 +126,7 @@ export default Ember.Service.extend({
     let dirsUploadIds = this.get('dirsUploadIds');
     for (let parentId of dirsUploadIds) {
       /* jshint loopfunc: true */
-      let propertyKey = 'dirUploads-' + parentId;
+      let propertyKey = 'dirUploads' + parentId;
       let dirUploads = this.get(propertyKey);
       let resumableFile = findResumableFileByUuid(dirUploads, resumableFileId);
       if (resumableFile) {
@@ -115,6 +134,10 @@ export default Ember.Service.extend({
           'ResumableFile not removed from dirUploads',
           dirUploads.removeObject(resumableFile)
         );
+        this.get('eventsBus').trigger('fileUpload:dirUploadsChanged', {
+          parentId: parentId,
+          dirUploads: dirUploads
+        });
         let remainUploadingFilesCount = dirUploads.get('length');
         if (remainUploadingFilesCount === 0) {
           console.debug(`Removing uploading dir info: ${parentId}`);
@@ -189,7 +212,7 @@ ${resumableFileId}, but it could not be found in any dir`);
     setTimeout(() => {
       let [parentId, filesLeft] = this.forgetUploadingFile(uuid);
       this.get('eventsBus').trigger(
-        'file-upload:file-upload-completed',
+        'fileUpload:fileUploadCompleted',
         file,
         parentId
       );
@@ -208,11 +231,16 @@ ${resumableFileId}, but it could not be found in any dir`);
   filesAdded(files) {
     // Ember.run is used because this fun is invoked from ResumableJS event
     Ember.run(() => {
-      this.set('locked', false);
-      this.get('eventsBus').trigger('file-upload:files-added', files,
+      // TODO: unlocking on filesAdded disabled due to problems with multiple files upload
+      // this.set('locked', false);
+      this.get('eventsBus').trigger('fileUpload:filesAdded', files,
         files.map(f => this.getParentIdOfUploadingFile[f.uniqueIdentifier])
       );
     });
+  },
+
+  complete() {
+    Ember.run(() => this.set('locked', false));
   },
 
   onAllFilesForDirUploaded(dirId) {
@@ -265,6 +293,7 @@ Directory content won't be updated!`);
     r.on('filesAdded', (files) => this.filesAdded(files));
     r.on('fileSuccess', (file) => this.fileUploadSuccess(file));
     r.on('fileError', (file) => this.fileUploadFailure(file));
+    r.on('complete', this.complete.bind(this));
 
     return r;
   }),
@@ -274,6 +303,12 @@ Directory content won't be updated!`);
    * For more information, see ResumableJS docs.
    */
   assignDrop(jqDropElement) {
+    jqDropElement.on('drag dragend dragenter dragexit dragleave dragstart drop', e => {
+      if (this.get('locked')) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+      }
+    });
     this.get('resumable').assignDrop(jqDropElement);
 
     let lastEnter;

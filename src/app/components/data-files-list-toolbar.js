@@ -76,6 +76,8 @@ export default Ember.Component.extend({
     return this.get('dir.selectedFilesType') === 'mixed';
   }),
 
+  fileUploadLocked: Ember.computed.alias('fileUpload.locked'),
+
   /**
    * Holds items of toolbar. Each item is a Object with properties:
    * - icon {String}
@@ -89,7 +91,7 @@ export default Ember.Component.extend({
     'isSingleSelectedFileAFile',
     'isSomeFileSelected',
     'isMixedTypesSelected',
-    'fileUpload.locked',
+    'fileUploadLocked',
     
     function() {
       let {
@@ -97,13 +99,15 @@ export default Ember.Component.extend({
         isSingleFileSelected,
         isSingleSelectedFileAFile,
         isSomeFileSelected,
-        isMixedTypesSelected
+        isMixedTypesSelected,
+        fileUploadLocked
       } = this.getProperties(
         'i18n',
         'isSingleFileSelected',
         'isSingleSelectedFileAFile',
         'isSomeFileSelected',
-        'isMixedTypesSelected'
+        'isMixedTypesSelected',
+        'fileUploadLocked'
       );
 
       return [
@@ -139,7 +143,7 @@ export default Ember.Component.extend({
           id: 'upload-file-tool',
           icon: 'upload',
           action: 'uploadBrowse',
-          disabled: this.get('fileUpload.locked'),
+          disabled: fileUploadLocked,
           tooltip: i18n.t('components.dataFilesListToolbar.tooltip.uploadFile')
         },
         {

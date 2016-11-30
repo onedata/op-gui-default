@@ -344,6 +344,8 @@ export default {
         metadataDeleteFailed: 'Could not delete metadata for file "{{fileName}": {{errorMessage}}',
         metadataDeleteSuccess: 'Deleted metadata for file "{{fileName}}"',
       },
+      uploadIndicator: 'Uploading: {{currentlyUploadingCount}} file(s) left...',
+      uploadFinishedWait: 'Finalizing the upload...'
     },
     metadataPanel: {
       saveAllChanges: 'Save all changes',

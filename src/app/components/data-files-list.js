@@ -23,7 +23,12 @@ import Ember from 'ember';
  *     from this push are loaded
  *   - see ``data-files-list-loader`` component, which renders the loader
  *   - see ``loadingFileIndex`` for row from what the loader begins on top
- *
+ * - waiting for new files list push after upload finished
+ *   - see ``isWaitingForPushAfterUpload`` property and its setting and getting
+ * 
+ * ## EventsBus events emitted
+ * - dataFilesList:dirChanged({dir: File})
+ * 
  * @module components/data-files-list
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
@@ -161,6 +166,12 @@ export default Ember.Component.extend({
   totalAheadFilesCount: 0,
 
   /**
+   * Set to true, if finished upload but not yet received push with new files list.
+   * @private
+   */
+  isWaitingForPushAfterUpload: false,
+
+  /**
    * True if all children files of the ``dir`` are loaded (using backend paging).
    * @type {Computed<Boolean>}
    */
@@ -268,9 +279,9 @@ export default Ember.Component.extend({
     return dirIsEmpty;
   }),
 
-  filesTableIsVisible: Ember.computed('dirIsEmpty', 'currentlyUploadingCount', function() {
-    let props = this.getProperties('dirIsEmpty', 'currentlyUploadingCoung');
-    let filesTableIsVisible = !props.dirIsEmpty || props.currentlyUploadingCount;
+  filesTableIsVisible: Ember.computed('dirIsEmpty', 'currentlyUploadingCount', 'isWaitingForPushAfterUpload', function() {
+    let props = this.getProperties('dirIsEmpty', 'currentlyUploadingCount', 'isWaitingForPushAfterUpload');
+    let filesTableIsVisible = !props.dirIsEmpty || props.currentlyUploadingCount || props.isWaitingForPushAfterUpload;
     if (filesTableIsVisible) {
       Ember.run.scheduleOnce('afterRender', this, function() {
         this.computeFileLabelMaxWidth();
@@ -297,16 +308,28 @@ export default Ember.Component.extend({
       'isFilesLoading',
       'isLoadingMoreFiles'
     );
-    let fileUploadLocked = this.get('fileUpload.locked');
 
     if (!props.firstLoadDone && !props.isLoadingMoreFiles &&
-      (props.isFilesLoading || fileUploadLocked)) {
+      (props.isFilesLoading)) {
 
       this.set('firstLoadDone', true);
       return true;
     } else {
       return false;
     }
+  }),
+
+  // TODO: there is an assumption that the push brings at least one visible file
+  // if there will be problems with push, please fix this by watching if push failed
+  filesListChanged: Ember.observer('visibleFiles.length', function() {
+    let visibleFilesLength = this.get('visibleFiles.length');
+    let __prevVisibleFilesLength = this.get('__prevVisibleFilesLength');
+    if (__prevVisibleFilesLength != null && __prevVisibleFilesLength < visibleFilesLength) {
+      // files count have been increased, so any wait for upload results should finish 
+      this.set('isWaitingForPushAfterUpload', false); 
+    }
+    
+    this.set('__prevVisibleFilesLength', visibleFilesLength);
   }),
 
   /**
@@ -362,11 +385,40 @@ export default Ember.Component.extend({
     return index > 0 ? index : 0;
   }),
 
+  // FIXME
+  // visibleFilesCount: Ember.computed({
+  //   get() {
+  //     this.get('__visibleFilesCount');
+  //   },
+  //   set(key, value) {
+  //     this.setProperties({
+  //       __prevVisibleFilesCount: this.get('__visibleFilesCount'),
+  //       __visibleFilesCount: value
+  //     });
+  //     return value;
+  //   }
+  // }),
+
+  currentlyUploadingCount: Ember.computed({
+    get() {
+      this.get('__currentlyUploadingCount');
+    },
+    set(key, value) {
+      this.setProperties({
+        __prevCurrentlyUploadingCount: this.get('__currentlyUploadingCount'),
+        __currentlyUploadingCount: value
+      });
+      return value;
+    }
+  }),
+
   // TODO VFS-2753: don't know if this code works
   currentlyUploadingCountChanged: Ember.observer('currentlyUploadingCount', function() {
-    let count = this.get('currentlyUploadingCount');
-    if (!count) {
+    let {currentlyUploadingCount, __prevCurrentlyUploadingCount} =
+      this.getProperties('currentlyUploadingCount', '__prevCurrentlyUploadingCount');
+    if (!currentlyUploadingCount && __prevCurrentlyUploadingCount) {
       console.debug(`Batch upload finished for ${this.get('dir.name')}`);
+      this.set('isWaitingForPushAfterUpload', true);
     }
   }),
 
@@ -380,21 +432,29 @@ export default Ember.Component.extend({
     );
   },
 
+  // FIXME: on init, we should read current dirUploads from service
+  // and reset currentlyUploadingCount property value
+  handleDirUploadsChanged({parentId, dirUploads}) {
+    if (this.get('dir.id') === parentId) {
+      this.set('currentlyUploadingCount', dirUploads.get('length')); 
+    }
+  },
+
   didInsertElement() {
+    let eventsBus = this.get('eventsBus');
+
+    let __computeFileLabelMaxWidth = this.computeFileLabelMaxWidth.bind(this);
+    eventsBus.on('secondarySidebar:resized', this, 'computeFileLabelMaxWidth');
+    $(window).on('resize.dataFilesList', __computeFileLabelMaxWidth);
+    setTimeout(__computeFileLabelMaxWidth, 50);
+
+    eventsBus.on('fileUpload:dirUploadsChanged', this, 'handleDirUploadsChanged');
+
     this.dirChanged();
     if (this.get('uploadEnabled')) {
       console.debug('Binding upload area for files list');
       this.get('fileUpload').assignDrop(this.$());
     }
-
-    let __computeFileMaxWidthFun = () => this.computeFileLabelMaxWidth();
-    this.set('__computeFileMaxWidthFun', __computeFileMaxWidthFun);
-    this.get('eventsBus').on(
-      'secondarySidebar:resized',
-      this.get('__computeFileMaxWidthFun')
-    );
-    $(window).on('resize', __computeFileMaxWidthFun);
-    setTimeout(__computeFileMaxWidthFun, 50);
   },
 
   willDestroyElement() {
@@ -402,12 +462,10 @@ export default Ember.Component.extend({
 
     let ebus = this.get('eventsBus');
 
-    let __computeFileMaxWidthFun = this.get('__computeFileMaxWidthFun');
-    ebus.off(
-      'secondarySidebar:resized',
-      __computeFileMaxWidthFun
-    );
-    $(window).off('resize', __computeFileMaxWidthFun);
+    ebus.off('secondarySidebar:resized', this, 'computeFileLabelMaxWidth');
+    ebus.off('fileUpload:dirUploadsChanged', this, 'handleDirUploadsChanged');
+    
+    $(window).off('.dataFilesList');
   },
 
   /**
@@ -436,14 +494,13 @@ export default Ember.Component.extend({
   },
 
   dirChanged: Ember.observer('dir', function() {
-    const dir = this.get('dir');
+    this.set('currentlyUploadingCount', 0);
+    let {dir, eventsBus} = this.getProperties('dir', 'eventsBus');
     this.setGlobalDir(dir);
     this.get('fileSystemTree').expandDir(dir);
     this.resetProperties();
-    let dirId = dir.get('id');
-    // TODO VFS-2753: don't know if this code works
-    this['currentlyUploadingCount'] =
-      Ember.computed.alias(`fileUpload.dirUploads-${dirId}.length`);
+
+    eventsBus.trigger('dataFilesList:dirChanged', {dir: dir});
   }),
 
   fileDownloadServerMethod: Ember.computed('downloadMode', function() {

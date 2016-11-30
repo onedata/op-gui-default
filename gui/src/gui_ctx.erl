@@ -13,7 +13,7 @@
 %%% it back into the dicitonary.
 %%% @end
 %%%-------------------------------------------------------------------
--module(g_ctx).
+-module(gui_ctx).
 -author("Lukasz Opiola").
 
 -include("gui.hrl").
@@ -71,14 +71,14 @@ init(Req, UseGUIRouting) ->
                 set_gui_route(?GUI_ROUTE_PLUGIN:route(Path))
         end,
         % Initialize session
-        g_session:init(),
+        gui_session:init(),
         ok
     catch
         error:function_clause ->
             % No such route was found - serve page 404.
             Page404File = ?GUI_ROUTE_PLUGIN:error_404_html_file(),
             set_gui_route(#gui_route{html_file = Page404File}),
-            g_session:init(),
+            gui_session:init(),
             ok;
         error:undef ->
             ?error(
@@ -100,7 +100,7 @@ init(Req, UseGUIRouting) ->
 -spec finish() -> cowboy_req:req().
 finish() ->
     % Sets proper response cookie
-    g_session:finish(),
+    gui_session:finish(),
     Req = get_cowboy_req(),
     % Check if something was staged for reply
     case get_reply() of

@@ -1,0 +1,1 @@
+../../../gui/common_assets/js/initializers/fetch-config.js

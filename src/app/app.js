@@ -31,12 +31,7 @@ if (config.environment === 'development') {
   script.src = location.protocol + '//' + (location.host || 'localhost').split(':')[0] +
     ':35729/livereload.js?snipver=1';
   head.appendChild(script);
-  console.log("Loaded livereload script");
-}
-
-if (config.environment === 'production') {
-  // silent debug in production env (pseudo-logger)
-  console.debug = function() {};
+  console.debug("Loaded livereload script");
 }
 
 export default App;

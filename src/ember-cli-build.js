@@ -1,6 +1,7 @@
 /*jshint node:true*/
 /* global require, module */
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
+var fs = require('fs');
 
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
@@ -13,6 +14,17 @@ module.exports = function(defaults) {
       'importBootstrapFont': false,
       'importBootstrapCSS': false,
       'importBootstrapTheme': false,
+    }
+  });
+
+  // Generate app-config.json for environment that is used.
+  // Currently app-config.json is always overwritten on build.
+  var onedataAppConfig = {
+    debug: !app.isProduction
+  };
+  fs.writeFile("public/app-config.json", JSON.stringify(onedataAppConfig), function(err) {
+    if (err) {
+      return console.error('Error on writing app-config.json: ' + err);
     }
   });
 

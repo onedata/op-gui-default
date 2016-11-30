@@ -9,7 +9,13 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand top-bar-item" href="#"></a>
+      {{#link-to "index" class="navbar-brand top-bar-item clickable" tagName="div"}}
+        <div class="provider-name-container">
+          <div class="oneicon oneicon-provider top-bar-icon"></div>
+          <div class="label-provider">{{t 'components.topBar.provider'}}:</div>
+          <div class="provider-name truncate">{{session.sessionDetails.providerName}}</div>
+        </div>
+      {{/link-to}}
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->

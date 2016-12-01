@@ -85,8 +85,8 @@
       watchAppear=(or (eq index fileIndexToWatchVisibility) (eq index (dec visibleFiles.length)))
       onAppear=(action "fileAppeared" index)
       }}
-    {{#if file.isEditingMetadata}}
-      {{data-files-list/file-metadata-row file=file readOnly=readOnly}}
+    {{#if fileRow.file.isEditingMetadata}}
+      {{data-files-list/file-metadata-row file=fileRow.file readOnly=readOnly}}
     {{/if}}
   {{/each}}
     <tr class="file-row-load-more">

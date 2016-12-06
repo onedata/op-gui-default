@@ -20,7 +20,7 @@ describeComponent(
     unit: true
   },
   function() {
-    it('srakes', function() {
+    it('renders', function() {
       // creates the component instance
       let component = this.subject();
       // renders the component on the page

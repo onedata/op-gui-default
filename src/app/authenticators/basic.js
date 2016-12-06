@@ -1,1 +1,0 @@
-../../../gui/common_assets/js/authenticators/basic-auth-1.0.0.js

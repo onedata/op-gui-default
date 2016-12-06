@@ -1,1 +1,0 @@
-../../../../../gui/common_assets/js/components/modals/elements/alert-panel.js

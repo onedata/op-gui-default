@@ -65,5 +65,10 @@
     "livereload": "0.5.0",
     "loader.js": "4.0.11",
     "sinon-chai": "2.8.0"
+  },
+  "ember-addon": {
+    "paths": [
+      "lib/ember-cli-onedata-common"
+    ]
   }
 }

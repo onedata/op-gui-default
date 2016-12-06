@@ -14,13 +14,13 @@ describeComponent(
   'StatusPanelComponent',
   {
     // Specify the other units that are required for this test
-    needs: ['component:spin-spinner', 'component:modals/elements/alert-panel',
-      'template:components/modals/elements/alert-panel',
+    needs: ['component:spin-spinner',
+      'component:modals/elements/alert-panel',
       'helper:eq', 'helper:and', 'helper:or'],
     unit: true
   },
   function() {
-    it('renders', function() {
+    it('srakes', function() {
       // creates the component instance
       let component = this.subject();
       // renders the component on the page
@@ -38,7 +38,8 @@ describeComponent(
       });
       this.render();
 
-      expect(this.$()).to.contain('hello world 1');
+      expect(this.$(), `html: ${this.$().html()}`)
+        .to.contain('hello world 1');
     });
 
     it('displays message if blocking is false', function() {
@@ -50,7 +51,8 @@ describeComponent(
       });
       this.render();
 
-      expect(this.$()).to.contain('hello world 2');
+      expect(this.$(), `html: ${this.$().html()}`)
+        .to.contain('hello world 2');
     });
 
     it('does not display message if type is null', function() {

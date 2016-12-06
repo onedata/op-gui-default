@@ -1,1 +1,0 @@
-../../../gui/common_assets/js/initializers/configure-console.js

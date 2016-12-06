@@ -1,4 +1,4 @@
-import SessionOnedata from './session-onedata';
+import SessionOnedata from 'ember-cli-onedata-common/services/session';
 import SessionFake from './session-fake';
 
 import ENV from 'op-worker-gui/config/environment';

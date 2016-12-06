@@ -1,14 +1,14 @@
 /*jshint node:true*/
 /* global require, module */
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
+var EmberAddon = require('ember-cli/lib/broccoli/ember-addon');
 var fs = require('fs');
 
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
     sassOptions: {
       includePaths: ['app/styles', 'app/styles/media-styles',
-        'app/styles/media-variables', 'app/styles/components',
-        'app/styles/oneicons']
+        'app/styles/media-variables', 'app/styles/components']
     },
     'ember-bootstrap': {
       'importBootstrapFont': false,

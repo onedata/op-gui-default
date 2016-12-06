@@ -1,1 +1,0 @@
-../../../gui/common_assets/js/utils/snake-to-camel.js

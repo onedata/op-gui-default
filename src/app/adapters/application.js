@@ -6,8 +6,8 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-import OnedataAdapter from './application-onedata';
-import LSAdapter from './application-localstorage';
+import OnedataWebsocketAdapter from 'op-worker-gui/adapters/onedata-websocket';
+import LSAdapter from 'op-worker-gui/adapters/application-localstorage';
 
 import ENV from 'op-worker-gui/config/environment';
 
@@ -15,7 +15,7 @@ let ApplicationAdapter;
 if (['test', 'localstorage'].indexOf(ENV.environment) !== -1) {
   ApplicationAdapter = LSAdapter;
 } else {
-  ApplicationAdapter = OnedataAdapter;
+  ApplicationAdapter = OnedataWebsocketAdapter;
 }
 
 export default ApplicationAdapter;

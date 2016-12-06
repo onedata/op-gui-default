@@ -1,4 +1,4 @@
-import sessionLocales from './session';
+import sessionLocales from 'ember-cli-onedata-common/locales/en/session';
 import filePermissions from './file-permissions';
 
 /**

@@ -1,0 +1,11 @@
+{
+  "name": "ember-cli-onedata-common",
+  "keywords": [
+    "ember-addon"
+  ],
+  "dependencies": { 
+    "ember-cli-babel": "5.1.6",
+    "ember-cli-htmlbars": "1.1.0",
+    "ember-cli-htmlbars-inline-precompile": "0.3.5"
+  }
+}

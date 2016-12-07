@@ -1,0 +1,16 @@
+{{#if (or message messagePrefix)}}
+  <div class="alert {{alertClass}}">
+    {{#if closeButton}}
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    {{/if}}
+    {{#if messagePrefix}}
+      <strong>{{messagePrefix}}</strong>
+    {{/if}}
+    {{#if message}}
+      {{#if messagePrefix}}
+        &ensp;
+      {{/if}}
+      {{message}}
+    {{/if}}
+  </div>
+{{/if}}

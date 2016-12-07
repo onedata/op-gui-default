@@ -5,7 +5,7 @@
  * @param {Boolean} value - true/false state as in checkbox (checked/unchecked)
  * @param {Boolean} isModified - true indicates that the value of checkbox
  *   was modified without saving
- * @returns {string} an icon span
+ * @returns {Handlebars.SafeString} an icon span
  *
  * @module helpers/bool-option
  * @todo maybe it should be a Component

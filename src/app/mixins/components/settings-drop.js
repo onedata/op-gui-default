@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import bindFloater from 'op-worker-gui/utils/bind-floater';
+import bindFloater from 'ember-cli-onedata-common/utils/bind-floater';
 
 /**
  * Common functions for settings-drop components (space-settings-drop, group-settings-drop, etc.)

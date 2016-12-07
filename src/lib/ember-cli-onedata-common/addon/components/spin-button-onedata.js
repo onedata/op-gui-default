@@ -4,7 +4,7 @@
  * Currently copying instead of extending original component because of
  * problems with extending addon (component files are not in addon/ dir).
  * @todo Maybe try to extend original component instead of copying code
- * @module components/spin-button
+ * @module components/spin-button-onedata
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @author Hakim El Hattab, http://hakim.se
@@ -13,6 +13,7 @@
  */
 
 import Ember from 'ember';
+import layout from 'ember-cli-onedata-common/templates/components/spin-button-onedata';
 /* global Spinner */
 
 function createSpinner( button ) {
@@ -60,6 +61,8 @@ function createSpinner( button ) {
 }
 
 export default Ember.Component.extend({
+  layout,
+
   tagName: 'button',
   type: 'submit',
   inFlight: false,

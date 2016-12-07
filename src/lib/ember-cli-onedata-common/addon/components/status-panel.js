@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import layout from 'ember-cli-onedata-common/templates/components/status-panel';
 
 /**
  * A container for a content, that can be set to display:
@@ -12,6 +13,8 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
+  layout,
+
   /**
    * Indicate if status should be only content of this widget.
    * If true, only status and message will be rendered.

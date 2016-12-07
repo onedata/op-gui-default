@@ -1,6 +1,9 @@
 import Ember from 'ember';
+import layout from 'ember-cli-onedata-common/templates/components/common-loader';
 
 export default Ember.Component.extend({
+  layout,
+
   commonLoader: Ember.inject.service(),
 
   classNames: ['common-loader'],

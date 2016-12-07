@@ -1,5 +1,3 @@
-// jshint esnext: true
-
 /**
  * Convert string to safe element id for HTML.
  * @module utils/safe-element-id

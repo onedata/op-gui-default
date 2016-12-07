@@ -1,5 +1,3 @@
-// jshint esnext: true
-
 /**
  * Provides communication with Server.
  * @module services/server

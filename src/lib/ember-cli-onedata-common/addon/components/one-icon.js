@@ -1,6 +1,5 @@
-// jshint esnext: true
-
 import Ember from 'ember';
+import layout from 'ember-cli-onedata-common/templates/components/one-icon';
 
 // TODO: make a common component with op-worker; not there are component and helpers
 /**
@@ -12,6 +11,8 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
+  layout,
+
   tagName: 'span',
   classNames: ['one-icon'],
   classNameBindings: ['iconClass', 'colorClass', 'additionalClasses'],

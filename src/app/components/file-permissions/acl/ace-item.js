@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import { iconHTML } from 'op-worker-gui/helpers/icon';
+import { iconHTML } from 'ember-cli-onedata-common/helpers/icon';
 
 /**
  * A graphical representation of single ``AccessControlEntity``.

@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import layout from 'ember-cli-onedata-common/templates/components/modals/message-box';
 
 /**
  * A global component for displaying a simple modal with information and
@@ -9,6 +10,8 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
+  layout,
+
   messageBox: Ember.inject.service(),
 
   allowClose: Ember.computed.alias('messageBox.allowClose'),

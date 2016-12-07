@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import safeElementIdUtil from 'op-worker-gui/utils/safe-element-id';
+import safeElementIdUtil from 'ember-cli-onedata-common/utils/safe-element-id';
 
 /**
  * Using safeElementId util, convert string to safe element id.

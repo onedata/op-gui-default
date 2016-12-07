@@ -1,5 +1,3 @@
-// jshint esnext: true
-
 /**
  * Custom adapter that handles model synchronization between client and server
  * using a websocket connection.

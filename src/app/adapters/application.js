@@ -6,7 +6,7 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-import OnedataWebsocketAdapter from 'op-worker-gui/adapters/onedata-websocket';
+import OnedataWebsocketAdapter from 'ember-cli-onedata-common/adapters/onedata-websocket';
 import LSAdapter from 'op-worker-gui/adapters/application-localstorage';
 
 import ENV from 'op-worker-gui/config/environment';

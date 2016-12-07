@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import layout from 'ember-cli-onedata-common/templates/components/one-radio-button';
 
 /**
  * Custom single radio button for use in ``one-radio-group``.
@@ -14,6 +15,8 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
+  layout,
+
   classNames: ['one-option-button', 'col-xs-4'],
 
   checked: function() {

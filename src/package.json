@@ -71,8 +71,5 @@
     "paths": [
       "lib/ember-cli-onedata-common"
     ]
-  },
-  "dependencies": {
-    "chai-jquery": "^2.0.0"
   }
 }

@@ -31,6 +31,7 @@
     "ember-cli-app-version": "2.0.0",
     "ember-cli-babel": "5.1.6",
     "ember-cli-bootstrap-sassy": "0.5.3",
+    "ember-cli-chai": "0.3.0",
     "ember-cli-clipboard": "0.4.1",
     "ember-cli-code-coverage": "0.2.2",
     "ember-cli-content-security-policy": "0.5.0",
@@ -39,7 +40,7 @@
     "ember-cli-htmlbars": "1.1.0",
     "ember-cli-htmlbars-inline-precompile": "0.3.5",
     "ember-cli-inject-live-reload": "1.4.0",
-    "ember-cli-mocha": "0.10.4",
+    "ember-cli-mocha": "0.13",
     "ember-cli-release": "1.0.0-beta.2",
     "ember-cli-sass": "5.5.1",
     "ember-cli-sri": "2.1.1",
@@ -70,5 +71,8 @@
     "paths": [
       "lib/ember-cli-onedata-common"
     ]
+  },
+  "dependencies": {
+    "chai-jquery": "^2.0.0"
   }
 }

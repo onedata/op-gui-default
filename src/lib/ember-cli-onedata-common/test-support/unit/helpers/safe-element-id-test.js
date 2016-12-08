@@ -9,9 +9,8 @@ import {
 } from 'op-worker-gui/helpers/safe-element-id';
 
 describe('SafeElementIdHelper', function() {
-  // Replace this with your real tests.
-  it('works', function() {
-    let result = safeElementId(42);
-    expect(result).to.be.ok;
+  it('accepts an original id as a first array argument and returns converted id without forbidden chars', function() {
+    let result = safeElementId(['#$@$#*RYEdsffdsuhg37q3a-d#-a3-efajf983q$']);
+    expect(result).to.be.equal('RYEdsffdsuhg37q3a-d-a3-efajf983q');
   });
 });

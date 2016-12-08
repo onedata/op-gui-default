@@ -13,18 +13,10 @@ describeComponent(
     integration: true
   },
   function() {
-    it('renders', function() {
-      // Set any properties with this.set('myProperty', 'value');
-      // Handle any actions with this.on('myAction', function(val) { ... });
-      // Template block usage:
-      // this.render(hbs`
-      //   {{#one-icon}}
-      //     template content
-      //   {{/one-icon}}
-      // `);
-
-      this.render(hbs`{{one-icon}}`);
-      expect(this.$()).to.have.length(1);
+    it('renders element with oneicon-<name> provided with icon property', function() {
+      this.render(hbs`{{one-icon icon="space"}}`);
+      let $oneicon = this.$().find('.one-icon');
+      expect($oneicon).to.have.class('oneicon-space');
     });
   }
 );

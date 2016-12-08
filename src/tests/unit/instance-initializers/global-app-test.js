@@ -18,11 +18,9 @@ describe('GlobalAppInstanceInitializer', function() {
     });
   });
 
-  // Replace this with your real tests.
-  it('works', function() {
+  it('exposes window.App variable which is a reference to appInstance', function() {
     initialize(appInstance);
 
-    // you would normally confirm the results of the initializer here
-    expect(true).to.be.ok;
+    expect(window.App).to.be.equal(appInstance);
   });
 });

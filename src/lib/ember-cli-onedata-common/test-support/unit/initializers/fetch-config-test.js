@@ -18,11 +18,23 @@ describe('FetchConfigInitializer', function() {
     });
   });
 
-  // Replace this with your real tests.
-  it('works', function() {
+  it('adds a getOnedataConfig method to application', function() {
     initialize(application);
 
-    // you would normally confirm the results of the initializer here
-    expect(true).to.be.ok;
+    expect(typeof(application.getOnedataConfig)).to.be.equal('function');
+  });
+
+  it('creates application.getOnedataConfig method which resolves with an object', function(done) {
+    initialize(application);
+
+    let configPromise = application.getOnedataConfig();
+
+    configPromise.then(config => {
+      expect(typeof(config)).to.be.equal('object');
+    });
+    configPromise.catch(() => {
+      expect(false, 'getOnedataConfig promise rejected').to.be.ok;
+    });
+    configPromise.finally(done);
   });
 });

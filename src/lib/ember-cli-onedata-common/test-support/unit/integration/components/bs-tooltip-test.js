@@ -13,18 +13,25 @@ describeComponent(
     integration: true
   },
   function() {
-    it('renders', function() {
-      // Set any properties with this.set('myProperty', 'value');
-      // Handle any actions with this.on('myAction', function(val) { ... });
-      // Template block usage:
-      // this.render(hbs`
-      //   {{#bs-tooltip}}
-      //     template content
-      //   {{/bs-tooltip}}
-      // `);
+    it('generates element with data-toggle and data-original-title', function() {
+      this.render(hbs`
+        {{#bs-tooltip class="test-bs-tooltip" title="Hello world"}}
+          Something different
+        {{/bs-tooltip}}
+      `);
+      let $tooltip = this.$().find('.test-bs-tooltip');
+      expect($tooltip).to.have.attr('data-toggle', 'tooltip');
+      expect($tooltip).to.have.attr('data-original-title', 'Hello world');
+    });
 
-      this.render(hbs`{{bs-tooltip}}`);
-      expect(this.$()).to.have.length(1);
+    it('yields inner content without modifications', function() {
+      this.render(hbs`
+        {{#bs-tooltip class="test-bs-tooltip" title="Hello world"}}
+          <div>inner content</div>
+        {{/bs-tooltip}}
+      `);
+      let $tooltip = this.$().find('.test-bs-tooltip');
+      expect($tooltip.html()).to.match(/\s*<div>inner content<\/div>\s*/);
     });
   }
 );

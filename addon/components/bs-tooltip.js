@@ -1,5 +1,3 @@
-// jshint esnext: true
-
 import Ember from 'ember';
 
 /**
@@ -17,6 +15,9 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
+  // does not have a template
+  // layout,
+
   attributeBindings: ['dataToggle:data-toggle', 'placement:data-placement'],
   dataToggle: 'tooltip',
   // default

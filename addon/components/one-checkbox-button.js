@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import layout from 'ember-cli-onedata-common/templates/components/one-checkbox-button';
 
 /**
  * Custom single checkbox for use in ``one-checkbox-group``.
@@ -30,6 +31,8 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
+  layout,
+
   classNames: ['one-option-button'],
 
   /**

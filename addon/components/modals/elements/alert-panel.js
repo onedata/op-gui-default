@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import ModalMixin from 'ember-cli-onedata-common/mixins/components/modal';
+import layout from 'ember-cli-onedata-common/templates/components/modals/elements/alert-panel';
 
 /**
  * A small Bootstrap alert panel ("alert" class) which displays response status
@@ -10,6 +11,8 @@ import ModalMixin from 'ember-cli-onedata-common/mixins/components/modal';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend(ModalMixin, {
+  layout,
+
   /**
    * A ``<strong>`` part of displayed essage - can be a only message or a prefix for "message"
    * @abstract

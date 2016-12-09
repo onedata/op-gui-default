@@ -89,7 +89,3 @@ They can be also used in pure HTML:
 ### Tests
 
 Currently, GUI front-end JS files have no tests in this repo - the tests can be found in specific projects that uses them.
-
-## Support
-
-For more information visit project *Confluence* or write to <wrzeszcz@agh.edu.pl>.

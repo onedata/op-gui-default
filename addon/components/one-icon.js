@@ -1,6 +1,8 @@
-// jshint esnext: true
-
-import Ember from 'ember';
+import {
+  Component,
+  computed
+} from 'ember';
+import layout from 'ember-cli-onedata-common/templates/components/one-icon';
 
 // TODO: make a common component with op-worker; not there are component and helpers
 /**
@@ -11,23 +13,26 @@ import Ember from 'ember';
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default Ember.Component.extend({
+export default Component.extend({
+  layout,
+
   tagName: 'span',
   classNames: ['one-icon'],
   classNameBindings: ['iconClass', 'colorClass', 'additionalClasses'],
 
-  iconClass: function() {
+  iconClass: computed('icon', function() {
     return `oneicon-${this.get('icon')}`;
-  }.property('icon'),
+  }),
 
-  colorClass: function() {
+  colorClass: computed('color', function() {
     let color = this.get('color');
     return color ? `color-${this.get('color')}` : '';
-  }.property('color'),
+  }),
 
-  additionalClasses: function() {
+  // TODO: this should be removed in favor of "class" property
+  additionalClasses: computed('addClass', function() {
     return this.get('addClass');
-  }.property('addClass'),
+  }),
 
   // defaults
   icon: 'checkbox-x',

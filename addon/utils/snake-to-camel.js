@@ -1,5 +1,3 @@
-// jshint esnext: true
-
 /**
  * Converts some-string string to someString (snake case to camel case).
  * @module utils/snake-to-camel

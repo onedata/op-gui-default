@@ -1,6 +1,9 @@
 import Ember from 'ember';
+import layout from 'ember-cli-onedata-common/templates/components/truncated-string';
 
 export default Ember.Component.extend({
+  layout,
+
   eventsBus: Ember.inject.service(),
 
   tagName: 'div',

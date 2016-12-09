@@ -27,7 +27,7 @@ describeComponent(
 
       expect($radioButton).to.have.class(CHECKED_CLASS);
       expect($radioButton).to.not.have.class(NOT_CHECKED_CLASS);
-      expect($radioButton.find('.oneicon-' + CHECKED_ICON), $radioButton.html()).to.be.not.empty;
+      expect($radioButton.find('.oneicon-' + CHECKED_ICON).length).to.equal(1);
     });
     it('has not-checked class and icon when value is not the same as injected groupValue', function() {
       this.render(hbs`
@@ -37,7 +37,7 @@ describeComponent(
 
       expect($radioButton).to.have.class(NOT_CHECKED_CLASS);
       expect($radioButton).to.not.have.class(CHECKED_CLASS);
-      expect($radioButton.find('.oneicon-' + NOT_CHECKED_ICON)).to.be.not.empty;
+      expect($radioButton.find('.oneicon-' + NOT_CHECKED_ICON).length).to.equal(1);
     });
     it('changes groupValue to its value then clicked', function() {
       this.set('groupValue', 'one');

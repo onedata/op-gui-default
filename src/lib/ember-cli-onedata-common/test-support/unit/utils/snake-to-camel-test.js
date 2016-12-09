@@ -4,7 +4,7 @@ import {
   describe,
   it
 } from 'mocha';
-import snakeToCamel from 'op-worker-gui/utils/snake-to-camel';
+import snakeToCamel from 'ember-cli-onedata-common/utils/snake-to-camel';
 
 describe('snakeToCamel', function() {
   it('converts snake-case to camelCase by default', function() {

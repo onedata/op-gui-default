@@ -6,7 +6,7 @@ import {
 } from 'mocha';
 import {
   safeElementId
-} from 'op-worker-gui/helpers/safe-element-id';
+} from 'ember-cli-onedata-common/helpers/safe-element-id';
 
 describe('SafeElementIdHelper', function() {
   it('accepts an original id as a first array argument and returns converted id without forbidden chars', function() {

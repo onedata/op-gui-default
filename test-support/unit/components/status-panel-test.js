@@ -5,10 +5,6 @@ import {
   it
 } from 'ember-mocha';
 
-import chaiJquery from 'op-worker-gui/hacks/chai-jquery';
-import chai from 'chai';
-chai.use(chaiJquery);
-
 describeComponent(
   'status-panel',
   'StatusPanelComponent',

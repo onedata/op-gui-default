@@ -6,7 +6,7 @@ import {
   beforeEach
 } from 'mocha';
 import Ember from 'ember';
-import { initialize } from 'op-worker-gui/initializers/fetch-config';
+import { initialize } from 'ember-cli-onedata-common/initializers/fetch-config';
 
 describe('FetchConfigInitializer', function() {
   let application;

@@ -6,7 +6,7 @@ import {
 } from 'mocha';
 import {
   trimString
-} from 'op-worker-gui/helpers/trim-string';
+} from 'ember-cli-onedata-common/helpers/trim-string';
 
 describe('TrimStringHelper', function() {
   it('leaves short strings in original form if max length is the same as string length', function() {

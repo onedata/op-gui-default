@@ -4,7 +4,7 @@ import {
   describe,
   it
 } from 'mocha';
-import safeElementId from 'op-worker-gui/utils/safe-element-id';
+import safeElementId from 'ember-cli-onedata-common/utils/safe-element-id';
 
 describe('safeElementId', function() {
   it('returns id with only alphanumerical chars and dashes', function() {

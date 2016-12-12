@@ -60,36 +60,6 @@
   right: 0;
 }
 
-.loading-throbber {
-  width: 32px;
-  height: 32px;
-  background-image: url("/assets/images/loading-32.gif");
-  background-position: center;
-  background-repeat: no-repeat;
-
-  &.small {
-    width: 24px;
-    height: 24px;
-  }
-
-  &.inverted {
-    background-image: url("/assets/images/loading-32-inverted.gif");
-
-    &.with-background {
-      background-color: black;
-    }
-  }
-
-  &.with-background {
-    background-size: 24px 24px;
-    border-radius: 4px;
-    background-color: white;
-  }
-}
-.loading-label {
-  padding-left: 15px;
-}
-
 .hover-parent {
   &:not(:hover) {
     .visible-on-parent-hover, .transparent-not-hovered {
@@ -109,6 +79,23 @@
   left: auto;
 }
 
+
+// to use with spinner-contaier
+.spinner-label {
+  padding-left: 8px;
+
+  &.spinner-label-32 {
+    line-height: 32px;
+  }
+
+  &.spinner-label-64 {
+    line-height: 64px;
+  }
+
+  &.spinner-label-128 {
+    line-height: 128px;
+  }
+}
 
 .spinner-container {
   position: relative;

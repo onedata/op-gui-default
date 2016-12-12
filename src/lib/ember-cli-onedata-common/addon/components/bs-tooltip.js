@@ -9,6 +9,7 @@ import Ember from 'ember';
  * {{/bs-tooltip}}
  * ```
  * The default placement is "bottom".
+ * @todo remove this component and use ember-bootstrap tooltip component (needs projects refactoring)
  * @module components/bs-tooltip
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH

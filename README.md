@@ -14,7 +14,7 @@ Onedata web applications:
 Use this repo as a subtree in Ember application ``lib`` directory, which in case of Onedata apps is placed in: ``src/lib/``.
 If you want to modify this addon from specific Onedata project, do from project's root:
 - add a remote: ``git remote add ember-cli-onedata-common git@github.com:kliput/ember-cli-onedata-common.git``
-- pull recent changes: ``git subtree pull --squash --prefix=src/lib/ember-cli-onedata-common ember-cli-onedatada-common develop`` (you can use other branch name than ``develop``)
+- pull recent changes: ``git subtree pull --squash --prefix=src/lib/ember-cli-onedata-common ember-cli-onedata-common develop`` (you can use other branch name than ``develop``)
 - make changes in ``src/lib/ember-cli-onedata-common`` and commit them
 - push changes to project's repo: ``git push``
 - push changes to addon repo: ``git subtree push --squash --prefix=src/lib/ember-cli-onedata-common ember-cli-onedata-common <branch_name>``

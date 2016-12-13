@@ -4,7 +4,7 @@
 
   <li class="dropdown">
     <a class="top-bar-item toolbar-icon dropdown-toggle" type="button" data-toggle="dropdown">
-      {{icon 'settings' 'top-bar-icon'}}
+      {{one-icon icon='settings' class='top-bar-icon'}}
     </a>
     <ul class="dropdown-menu dropdown-menu-down expand-left dropdown-menu-list dropdown-sidebar-select">
       {{#each items as |item|}}
@@ -13,7 +13,7 @@
             <a id="{{item.id}}" class="clickable"
               {{action (if item.action item.action (action (mut undefProp)))}}>
               <div class="item-icon">
-                {{icon item.icon}}
+                {{one-icon icon=item.icon}}
               </div>
               <div class="item-label">
                 {{item.tooltip}}
@@ -32,7 +32,7 @@
         disabled=item.disabled
         click=(action (if item.action item.action (action (mut undefProp))))
         }}
-          {{icon item.icon 'top-bar-icon'}}
+          {{one-icon icon=item.icon class='top-bar-icon'}}
       {{/bs-tooltip}}
     </li>
   {{/each}}

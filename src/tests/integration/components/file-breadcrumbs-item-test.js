@@ -30,20 +30,6 @@ describeComponent(
       Ember.run(this.application, 'destroy');
     });
 
-    it('renders', function() {
-      // Set any properties with this.set('myProperty', 'value');
-      // Handle any actions with this.on('myAction', function(val) { ... });
-      // Template block usage:
-      // this.render(hbs`
-      //   {{#file-breadcrumbs-item}}
-      //     template content
-      //   {{/file-breadcrumbs-item}}
-      // `);
-
-      this.render(hbs`{{file-breadcrumbs-item}}`);
-      expect(this.$()).to.have.length(1);
-    });
-
     it('has a link that clicked sends changeDir action', function(done) {
       const file = Ember.Object.create({
         id: 'hello-file',

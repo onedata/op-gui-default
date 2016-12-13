@@ -40,7 +40,7 @@
           <div class="item-element item-icon item-tool"
             {{action (if (eq subjectType 'space') 'inviteUserToSpace' 'inviteUserToGroup')}}>
             <figure class="icon">
-              {{icon 'user-add'}}
+              {{one-icon icon='user-add'}}
               <figcaption>{{t 'components.permissionsTable.inviteButton.user'}}</figcaption>
             </figure>
           </div>
@@ -113,7 +113,7 @@
           <div class="item-element item-icon item-tool"
             {{action (if (eq subjectType 'space') 'inviteGroupToSpace' 'inviteGroupToGroup')}}>
             <figure class="icon">
-              {{icon 'group-invite'}}
+              {{one-icon icon='group-invite'}}
               <figcaption>{{t 'components.permissionsTable.inviteButton.group'}}</figcaption>
             </figure>
           </div>

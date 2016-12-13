@@ -12,7 +12,7 @@
             cssClass="permission-subject-select2"
           }}
         {{else}}
-          {{icon subjectTypeIcon "no-select"}}
+          {{one-icon icon=subjectTypeIcon class="no-select"}}
         {{/if}}
       </div>
       <div class="col-permission-subject-select">
@@ -43,13 +43,13 @@
   <div class="col-xs-3 col-permission-tool">
     <div class="permission-tools">
       <a {{action 'removeSelf'}} class="permission-tool-icon remove">
-        {{icon 'remove'}}
+        {{one-icon icon='remove'}}
       </a>
       <a {{action 'moveUp'}} class="permission-tool-icon move-up">
-        {{icon 'move-up'}}
+        {{one-icon icon='move-up'}}
       </a>
       <a {{action 'moveDown'}} class="permission-tool-icon move-down">
-        {{icon 'move-down'}}
+        {{one-icon icon='move-down'}}
       </a>
     </div>
   </div>

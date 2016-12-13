@@ -4,14 +4,14 @@
   <div href="#" class="dropdown-toggle" data-toggle="dropdown"
     role="button" aria-haspopup="true" aria-expanded="false">
     <span class="item-element item-icon settings-icon {{if isLoading 'non-clickable disabled' 'transparent-not-hovered clickable'}}">
-      {{icon 'settings' (if isLoading 'rotating')}}
+      {{one-icon icon='settings' class=(if isLoading 'rotating')}}
     </span>
   </div>
   <ul class="dropdown-menu dropdown-menu-right dropdown-menu-list space-dropdown-menu dropdown-menu-settings">
     {{#each menuItemsCurrentUser as |item|}}
       <li {{action item.action space}} class="clickable">
         <span class="item-icon">
-          {{icon item.icon}}
+          {{one-icon icon=item.icon}}
         </span>
         <span class="item-label">
           {{item.label}}
@@ -27,7 +27,7 @@
     {{#each menuItemsGroup as |item|}}
       <li {{action item.action space}} class="clickable">
         <span class="item-icon">
-          {{icon item.icon}}
+          {{one-icon icon=item.icon}}
         </span>
         <span class="item-label">
           {{item.label}}

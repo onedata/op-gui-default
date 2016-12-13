@@ -13,20 +13,6 @@ describeComponent(
     integration: true
   },
   function() {
-    it('renders', function() {
-      // Set any properties with this.set('myProperty', 'value');
-      // Handle any actions with this.on('myAction', function(val) { ... });
-      // Template block usage:
-      // this.render(hbs`
-      //   {{#share-info-head}}
-      //     template content
-      //   {{/share-info-head}}
-      // `);
-
-      this.render(hbs`{{share-info-head}}`);
-      expect(this.$()).to.have.length(1);
-    });
-
     it('displays the share name', function() {
       const share = {
         name: 'Hello share'

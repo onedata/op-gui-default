@@ -15,7 +15,7 @@ export default Ember.Component.extend({
   layout,
 
   tagName: 'span',
-  classNames: ['one-icon'],
+  classNames: ['one-icon', 'oneicon'],
   classNameBindings: ['iconClass'],
 
   // defaults

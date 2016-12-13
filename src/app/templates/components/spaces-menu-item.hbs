@@ -2,8 +2,8 @@
   <span class="item-element item-click-area"
     {{action (unless isExpanded 'expand' (action (mut undefProp)))}}>
     <span class="item-element item-icon">
-      {{icon (if space.isDefault 'space-home' 'space')
-        (if space.isDefault 'color-space-default' 'color-space')}}
+      {{one-icon icon=(if space.isDefault 'space-home' 'space')
+        class=(if space.isDefault 'color-space-default' 'color-space')}}
     </span>
 
     <span class="item-element item-label" title="{{space.name}}">

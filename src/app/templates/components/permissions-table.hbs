@@ -20,7 +20,14 @@
   {{/spin-button-onedata}}
 </div>
 
-<table class="one-table normal {{if isLocked 'is-loading'}}">
+{{!-- FIXME: isLocked support --}}
+
+<table class="one-table normal permissions">
+  {{#if isLocked}}
+    {{#one-overlay}}
+      Hello world!
+    {{/one-overlay}}
+  {{/if}}
 
   {{#if (not (eq usersPermissions null))}}
 

@@ -648,24 +648,6 @@ html, body {
   outline: none !important;
 }
 
-// DEPRECATED
-.is-loading {
-  position: relative;
-
-  &::after {
-    position: absolute;
-    background-repeat: no-repeat;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(white, 0.5);
-    background-image: url("/assets/images/loading-128.gif");
-    background-position: center 30px;
-    content: ' ';
-  }
-}
-
 .relative {
   position: relative !important;
 }

@@ -26,7 +26,7 @@ export default Ember.Component.extend({
   */
   subject: null,
 
-  /** If true, then table will has is-loading class */
+  // FIXME: overlay on true
   isLocked: false,
 
   /** Unfortunately, some colors are used by spin.js and must be passed from JS code

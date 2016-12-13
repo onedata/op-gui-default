@@ -328,7 +328,7 @@ export default DS.RESTAdapter.extend({
         operation: operation
       });
       console.debug('registerPromise: ' + JSON.stringify(payload));
-      setTimeout(() => adapter.send(payload), 1000);
+      adapter.send(payload);
     });
   },
 

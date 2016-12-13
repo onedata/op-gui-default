@@ -18,12 +18,6 @@ describeModule(
     // needs: ['service:foo']
   },
   function() {
-    // Replace this with your real tests.
-    it('exists', function() {
-      let service = this.subject();
-      expect(service).to.be.ok;
-    });
-
     it('allows to register an event handler which will be triggered on event', function() {
       const service = this.subject();
       const eventName = 'hello-world';

@@ -26,8 +26,11 @@ export default Ember.Component.extend({
   */
   subject: null,
 
-  // FIXME: overlay on true
-  isLocked: false,
+  isLoading: Ember.computed('isLocked', 'users.@each.isLoaded', 'groups.@each.isLoaded', function() {
+    let {isLocked, users, groups} =
+      this.getProperties('isLocked', 'users', 'groups');
+    return isLocked || users.some(p => !p.get('isLoaded')) || groups.some(p => !p.get('isLoaded'));
+  }),
 
   /** Unfortunately, some colors are used by spin.js and must be passed from JS code
     should be the same as $onedata-gray **/
@@ -54,9 +57,11 @@ export default Ember.Component.extend({
    */
   usersPermissions: null,
   usersPermissionsSorted: Ember.computed.sort('usersPermissions', 'permissionsSorting'),
+  users: Ember.computed.mapBy('usersPermissions', 'owner'),
 
   groupsPermissions: null,
   groupsPermissionsSorted: Ember.computed.sort('groupsPermissions', 'permissionsSorting'),
+  groups: Ember.computed.mapBy('groupsPermissions', 'owner'),
 
   availableGroups: function() {
     if (this.get('groupsPermissions')) {

@@ -16,7 +16,7 @@ export default Ember.Component.extend({
 
   tagName: 'span',
   classNames: ['one-icon'],
-  classNameBindings: ['iconClass', 'colorClass', 'additionalClasses'],
+  classNameBindings: ['iconClass'],
 
   // defaults
   icon: 'checkbox-x',

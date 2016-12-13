@@ -1,0 +1,188 @@
+<div class="secondary-sidebar-header">
+  <div class="title">
+    {{t 'components.groupsMenu.title'}}
+  </div>
+  <figure class="icon" {{action 'startCreateGroup'}}>
+    {{one-icon icon='group-add'}}
+    <figcaption>{{t 'components.groupsMenu.create'}}</figcaption>
+  </figure>
+  <figure class="icon" {{action 'startJoinGroup'}}>
+    {{one-icon icon='join'}}
+    <figcaption>{{t 'components.groupsMenu.join'}}</figcaption>
+  </figure>
+</div>
+
+<ul class="groups-list">
+  {{#each validGroupsSorted as |group|}}
+    {{groups-menu-item group=group isExpanded=(eq activeGroup.id group.id)
+      openSettingsModal='openSettingsModal' openSubmenuEntry='openSubmenuEntry'
+      collapseAllGroups='collapseAllGroups'}}
+  {{/each}}
+</ul>
+
+{{!-- CREATE GROUP --}}
+
+{{#bs-modal openedAction='createGroupModalOpened' open=isCreatingGroup body=false footer=false
+    title=(t "components.groupsMenu.createModal.title")
+    id="create-group"}}
+  {{#bs-modal-body}}
+    <div class="control-label">
+      {{t 'components.groupsMenu.createModal.enterName'}}
+    </div>
+
+    {{input type="text" value=newGroupName autofocus=true
+      class="form-control"
+      enter=(if (and newGroupName (not isSavingGroup)) "submitCreateGroup")}}
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#spin-button-onedata
+      action=(unless isSavingGroup "submitCreateGroup")
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isSavingGroup disabled=(or (unless newGroupName true) isSavingGroup)}}
+      {{t "common.modal.create"}}
+    {{/spin-button-onedata}}
+
+    {{#bs-button action=(action "close" target=footer) type="default" disabled=isSavingGroup
+      class="no-outline"}}
+      {{t "common.modal.cancel"}}
+    {{/bs-button}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}
+
+{{!-- JOIN GROUP --}}
+
+{{#bs-modal open=isJoiningGroup body=false footer=false
+    title=(t "components.groupsMenu.joinModal.title")
+    id="join-group"}}
+  {{#bs-modal-body}}
+    {{#bs-form action=(action "submitJoinGroup") model=this}}
+      {{bs-form-element controlType="text" property="inputToken" autofocus=true
+        label=(t 'components.groupsMenu.joinModal.label')}}
+    {{/bs-form}}
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#spin-button-onedata buttonType="submit"
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isJoiningGroupWorking disabled=(unless inputToken true)}}
+      {{t "common.modal.join"}}
+    {{/spin-button-onedata}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}
+
+{{!-- group operations --}}
+
+{{!-- RENAME GROUP --}}
+
+{{modals/rename-modal model=modalGroup open=isRenameModalOpened modalId="rename-group"
+  title=(t "components.groupsMenu.renameModal.title")
+  label=(t 'components.groupsMenu.renameModal.label')}}
+
+{{!-- LEAVE GROUP --}}
+
+{{#bs-modal open=isLeaveModalOpened body=false footer=false
+    title=(t "components.groupsMenu.leaveModal.title")
+    submitAction="submitLeaveGroup" id="leave-group"}}
+  {{#bs-modal-body}}
+    {{t 'components.groupsMenu.leaveModal.label' groupName=modalGroup.name}}
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#bs-button buttonType="submit" type="primary"}}
+      {{t "common.modal.yes"}}
+    {{/bs-button}}
+    {{#bs-button action=(action "close" target=footer) type="default"}}
+      {{t "common.modal.no"}}
+    {{/bs-button}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}
+
+{{!-- TODO: use modals/remove-modal component --}}
+{{!-- REMOVE GROUP --}}
+
+{{#bs-modal open=isRemoveModalOpened body=false footer=false
+    title=(t "components.groupsMenu.removeModal.title")
+    submitAction="submitRemoveGroup" id="remove-group"}}
+  {{#bs-modal-body}}
+    {{t 'components.groupsMenu.removeModal.label' groupName=modalGroup.name}}
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#bs-button buttonType="submit" type="primary"}}
+      {{t "common.modal.yes"}}
+    {{/bs-button}}
+    {{#bs-button action=(action "close" target=footer) type="default"}}
+      {{t "common.modal.no"}}
+    {{/bs-button}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}
+
+{{!-- JOIN SELECTED GROUP TO OTHER GROUP (JOIN AS SUBGROUP) --}}
+
+{{#bs-modal open=isJoinAsSubgroupModalOpened openAction='startJoinAsSubgroup'
+  body=false footer=false
+    title=(t "components.groupsMenu.joinAsSubgroupModal.title")
+    id="join-group-to-group"}}
+  {{#bs-modal-body}}
+    {{#bs-form action=(action "submitJoinAsSubgroup") model=this}}
+      {{bs-form-element controlType="text" property="inputToken" autofocus=true
+        label=(t 'components.groupsMenu.joinAsSubgroupModal.label' groupName=modalGroup.name)}}
+    {{/bs-form}}
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#spin-button-onedata buttonType="submit"
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isJoiningAsSubgroupWorking disabled=(unless inputToken true)}}
+      {{t "common.modal.join"}}
+    {{/spin-button-onedata}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}
+
+{{!-- JOIN GROUP TO SPACE --}}
+
+{{#bs-modal open=isJoinSpaceModalOpened openAction='startJoinSpace'
+  body=false footer=false
+    title=(t "components.groupsMenu.joinSpaceModal.title")
+    id="join-group-to-space"}}
+  {{#bs-modal-body}}
+    {{#bs-form action=(action "submitJoinSpace") model=this}}
+      {{bs-form-element controlType="text" property="inputToken" autofocus=true
+        label=(t 'components.groupsMenu.joinSpaceModal.label' groupName=modalGroup.name)}}
+    {{/bs-form}}
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#spin-button-onedata buttonType="submit"
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isJoiningSpaceWorking disabled=(unless inputToken true)}}
+      {{t "common.modal.join"}}
+    {{/spin-button-onedata}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}
+
+{{!-- LEAVE PARENT GROUP --}}
+{{!-- TODO: refactor - this should be a separate component --}}
+
+{{#bs-modal open=isLeaveParentGroupModalOpened openAction='startLeaveParentGroup'
+  body=false footer=false
+    title=(t "components.groupsMenu.leaveParentGroupModal.title")
+    id="leave-parent-group"}}
+  {{#bs-modal-body}}
+    {{#bs-form action=(action "submitLeaveParentGroup") model=this}}
+      {{bs-form-element controlType="select" choices=modalGroup.parentGroups
+        choiceLabelProperty="name"
+        choiceValueProperty="id"
+        property="parentGroupToLeave"
+        autofocus=true
+        label=(t 'components.groupsMenu.leaveParentGroupModal.label' subgroupName=modalGroup.name)
+      }}
+    {{/bs-form}}
+  {{/bs-modal-body}}
+  {{!-- TODO: disabled --}}
+  {{#bs-modal-footer as |footer|}}
+    {{#spin-button-onedata buttonType="submit"
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isLeaveParentGroupWorking disabled=false}}
+      {{t "common.modal.ok"}}
+    {{/spin-button-onedata}}
+    {{#bs-button action=(action "close" target=footer) type="default"}}
+      {{t "common.modal.cancel"}}
+    {{/bs-button}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}

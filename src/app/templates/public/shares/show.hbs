@@ -1,0 +1,48 @@
+{{page-title pageTitle}}
+
+{{!-- TODO: layout (public-top and public-content) should be in public route --}}
+<div class="public-top">
+  <div class="container">
+    <div class="public-top-upper-bar">
+      <div class="public-top-brand"></div>
+    </div>
+
+    <h1 class="share-name">{{model.name}}</h1>
+  </div>
+</div>
+<div class="public-content">
+  <div class="container">
+
+    {{!-- custom share info head elements for public view --}}
+    <div class="share-info-head">
+      <table>
+        <tr>
+          <th>
+            {{t 'components.shareInfoHead.publicUrl'}}
+          </th>
+          <td>
+            {{input-copy inputValue=model.publicUrl}}
+          </td>
+        </tr>
+        {{#if model.handle.publicHandle}}
+        <tr>
+          <th>{{t 'components.shareInfoHead.publicHandle'}}</th>
+          <td>{{input-copy inputValue=model.handle.publicHandle autofocus=false}}</td>
+        </tr>
+        {{/if}}
+      </table>
+    </div>
+
+    {{#if model.handle.metadataString}}
+      <div class="op-panel op-panel-metadata op-panel-background metadata-panel">
+        {{metadata/rdf-editor data=model.handle.metadataString readOnly=true}}
+      </div>
+    {{/if}}
+
+    <div class="op-panel op-panel-files op-panel-background">
+      <div class="files-list">
+        {{outlet}}
+      </div>
+    </div>
+  </div>
+</div>

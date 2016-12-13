@@ -1,0 +1,285 @@
+{{!-- This code is not refactored, because probably other permissions widget will be made --}}
+
+{{!-- The subgroup can be linked to group in Groups collection --}}
+{{#if (and (eq type 'groups') (array-contains availableGroupIds perm.owner.id))}}
+<div class="one-td one-first hidden-xs hidden-sm" {{action 'activate'}}>
+  {{#link-to 'onedata.groups.show' perm.owner.id class="full-size"}}
+    {{#truncated-string parentSelector=".one-first" shrinkBy=20}}
+      {{#if (or (not perm.owner) perm.owner.isLoading)}}
+        <div class="spinner-container spinner-32">
+          {{spin-spinner scale=0.2 lines=12 length=20 width=10}}
+        </div>
+      {{else}}
+        {{perm.owner.name}}
+      {{/if}}
+    {{/truncated-string}}
+  {{/link-to}}
+</div>
+{{else}}
+  <div class="one-td one-first hidden-xs hidden-sm" {{action 'activate'}}>
+    {{#truncated-string parentSelector=".one-first" shrinkBy=20}}
+      {{#if (or (not perm.owner) perm.owner.isLoading)}}
+        <div class="spinner-container spinner-32">
+          {{spin-spinner scale=0.2 lines=12 length=20 width=10}}
+        </div>
+      {{else}}
+        {{perm.owner.name}}
+      {{/if}}
+    {{/truncated-string}}
+  </div>
+{{/if}}
+
+<div class="one-td one-first hidden-md hidden-lg" {{action 'activate'}}>
+  {{#truncated-string parentSelector=".one-first" shrinkBy=20}}
+    {{#if (or (not perm.owner) perm.owner.isLoading)}}
+      <div class="spinner-container spinner-32">
+        {{spin-spinner scale=0.2 lines=12 length=20 width=10}}
+      </div>
+    {{else}}
+      {{perm.owner.name}}
+    {{/if}}
+  {{/truncated-string}}
+</div>
+
+{{!-- ................ --}}
+
+{{#if (eq subjectType 'space')}}
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'ViewSpace'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.viewSpace'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permViewSpace perm.modViewSpace}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'WriteFiles'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.manageShares'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permWriteFiles perm.modWriteFiles}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'ManageShares'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.manageShares'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permManageShares perm.modManageShares}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'ModifySpace'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.modifySpace'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permModifySpace perm.modModifySpace}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'SetPrivileges'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.setPrivileges'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permSetPrivileges perm.modSetPrivileges}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'RemoveSpace'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.removeSpace'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permRemoveSpace perm.modRemoveSpace}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'InviteUser'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.inviteUser'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permInviteUser perm.modInviteUser}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'RemoveUser'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.removeUser'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permRemoveUser perm.modRemoveUser}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'InviteGroup'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.inviteGroup'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permInviteGroup perm.modInviteGroup}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'RemoveGroup'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.removeGroup'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permRemoveGroup perm.modRemoveGroup}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'InviteProvider'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.inviteProvider'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permInviteProvider perm.modInviteProvider}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'RemoveProvider'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.removeProvider'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permRemoveProvider perm.modRemoveProvider}}
+      </span>
+    </div>
+  </div>
+
+{{/if}}
+
+{{!-- ................ --}}
+
+{{#if (eq subjectType 'group')}}
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'ViewGroup'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.viewGroup'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permViewGroup perm.modViewGroup}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'ModifyGroup'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.modifyGroup'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permModifyGroup perm.modModifyGroup}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'SetPrivileges'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.setPrivileges'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permSetPrivileges perm.modSetPrivileges}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'RemoveGroup'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.removeGroup'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permRemoveGroup perm.modRemoveGroup}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'InviteUser'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.inviteUser'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permInviteUser perm.modInviteUser}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'RemoveUser'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.removeUser'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permRemoveUser perm.modRemoveUser}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'InviteGroup'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.inviteGroup'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permInviteGroup perm.modInviteGroup}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'RemoveSubgroup'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.removeSubgroup'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permRemoveSubgroup perm.modRemoveSubgroup}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'JoinGroup'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.joinGroup'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permJoinGroup perm.modJoinGroup}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'CreateSpace'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.createSpace'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permCreateSpace perm.modCreateSpace}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'JoinSpace'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.joinSpace'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permJoinSpace perm.modJoinSpace}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'LeaveSpace'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.leaveSpace'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permLeaveSpace perm.modLeaveSpace}}
+      </span>
+    </div>
+  </div>
+
+  <div class="one-td clickable" {{action 'togglePermission' perm 'GetSupport'}}>
+    <div class="one-table-label">{{t 'components.permissionsTable.getSupport'}}</div>
+    <div class="one-table-checkbox">
+      <span>
+        {{bool-option perm.permGetSupport perm.modGetSupport}}
+      </span>
+    </div>
+  </div>
+
+
+
+
+
+
+
+{{/if}}

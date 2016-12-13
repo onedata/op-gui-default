@@ -1,0 +1,9 @@
+{{#if model.rootDir}}
+  {{page-title pageTitle}}
+
+  {{data-files-tree rootDir=model.rootDir openDirInBrowser='openDirInBrowser'}}
+{{else}}
+  <div class="secondary-sidebar-item">
+    <div class="null-dir-info">{{t 'data.dataSpace.nullDir'}}</div>
+  </div>
+{{/if}}

@@ -1,0 +1,13 @@
+<div class="file-breadcrumbs-item-inner">
+  {{#unless item.isRoot}}
+    <div class="file-breadcrumbs-element file-breadcrumbs-next-icon">
+      {{one-icon icon='arrow-right'}}
+    </div>
+  {{/unless}}
+  <div class="file-breadcrumbs-element file-breadcrumbs-name">
+    <a id="{{anchorId}}" {{action "changeDir" file}}
+      class="file-breadcrumb-item-link truncate" href="javascript:void(0);">
+      {{name}}
+    </a>
+  </div>
+</div>

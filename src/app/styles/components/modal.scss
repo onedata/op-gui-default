@@ -1,0 +1,110 @@
+.modal {
+  $control-label-margin-bottom: 10px;
+
+  word-wrap: break-word;
+
+  .control-label {
+    margin-bottom: $control-label-margin-bottom;
+    font-weight: bold;
+    // TODO: change in new modal style
+    // text-transform: uppercase;
+  }
+
+  .control-label + .control-sublabel {
+    margin-top: -$control-label-margin-bottom + 4px;
+  }
+
+  .control-sublabel {
+    margin-bottom: $control-label-margin-bottom;
+    font-size: 90%;
+    color: #888;
+  }
+
+  .modal-dialog {
+    .modal-content {
+      border: none;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+
+      .modal-header {
+        padding-left: 30px;
+        padding-right: 30px;
+        border-top-left-radius: inherit;
+        border-top-right-radius: inherit;
+        // TODO: use h1?
+        font-size: 1.6em;
+        color: white;
+        background-color: #2B3037;
+
+        .close {
+          color: white;
+          text-shadow: none;
+        }
+      }
+
+      .modal-body {
+        // padding: 30px;
+
+        .form-group {
+          label {
+            margin-bottom: 20px;
+          }
+        }
+
+      }
+
+      .modal-footer {
+        text-align: center;
+        border-radius: inherit;
+        background-color: #F2F2F2;
+        border-top: none;
+
+        .btn + .btn {
+          margin-left: 25px;
+        }
+      }
+    }
+  }
+}
+
+// make all modals cenetered
+.modal {
+  height: 100%;
+
+  .modal-dialog {
+    top: 50% !important;
+    margin-top:0;
+    margin-bottom:0;
+  }
+
+  //keep proper transitions on fade in
+  &.fade .modal-dialog {
+    transform: translateY(-100%) !important;
+  }
+  &.in .modal-dialog {
+    transform: translateY(-50%) !important;
+  }
+}
+
+/// full width rows with padding
+.modal-row.modal-row-main {
+  padding: 25px 30px;
+  margin-top: 0;
+  margin-bottom: 0;
+
+  &:not(:last-child) {
+    border-bottom: solid 1px #D8D8D7;
+  }
+
+  &.heading {
+    background-color: #F7F7F7;
+
+    h1 {
+      line-height: 18px;
+      font-size: 18px;
+      margin: 10px 0;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+<div class="secondary-sidebar-header">
+  <div class="title">
+    {{t 'components.sharesMenu.title'}}
+  </div>
+</div>
+
+<ul class="shares-list">
+  {{#each validSharesSorted as |share|}}
+    {{shares-menu-item share=share isExpanded=(eq activeShare.id share.id)
+      openSettingsModal='openSettingsModal' openSubmenuEntry='openSubmenuEntry'
+      collapseAllShares='collapseAllShares'}}
+  {{/each}}
+</ul>
+
+{{!-- modals --}}
+
+{{!-- RENAME SPACE --}}
+
+{{modals/rename-modal model=modalShare open=isRenameModalOpened modalId="rename-space"
+  title=(t "components.sharesMenu.renameModal.title")
+  label=(t 'components.sharesMenu.renameModal.label')}}
+
+{{modals/remove-modal model=modalShare open=isRemoveModalOpened modalId="remove-share"
+  title=(t "components.sharesMenu.removeModal.title" name=modalShare.name)
+  label=(t "components.sharesMenu.removeModal.label" name=modalShare.name)
+  answered="handleRemoveAnswer"}}

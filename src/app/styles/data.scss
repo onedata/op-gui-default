@@ -1,0 +1,398 @@
+.data-spaces-select {
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+
+  width: 100%;
+  color: #56616E;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+
+  .form-control {
+    font-size: inherit;
+    border: 0;
+    border-radius: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    transition: none;
+    -webkit-transition: none;
+    -o-transtion: none;
+  }
+}
+
+.onedata-select:before {
+  content: "a";
+}
+
+.secondary-sidebar {
+  // root directory item
+  .root-item {
+  }
+
+  .tree-expand-icon {
+    font-size: $secondary-sidebar-icon-font-size * 0.75;
+  }
+
+  // normal directory - only folder icon and label is clickable
+  .item-click-area {
+    cursor: pointer; cursor: hand;
+  }
+
+  // TODO: this is a common style, separate color from it please
+  .secondary-sidebar-item.single-selectable {
+    border-left: 4px solid;
+    border-left-color: transparent;
+
+    &:hover {
+      background-color: $onedata-light-gray;
+    }
+
+    &.active {
+      background-color: $onedata-light-gray;
+      color: $onedata-red;
+
+      &.onedata-red {
+        border-left-color: $onedata-red;
+      }
+    }
+  }
+
+  .select-arrow {
+    padding-top: 10px;
+  }
+
+  .level-1 .secondary-sidebar-item {
+    padding-left: ($secondary-sidebar-item-padding + 22px) !important;
+  }
+
+  .level-2 .secondary-sidebar-item {
+    padding-left: ($secondary-sidebar-item-padding + 44px) !important;
+  }
+
+}
+
+// TODO
+
+.table.files-table {
+  position: relative;
+
+  @include vendor-prefix(user-select, none);
+  cursor: default;
+
+  thead {
+    th {
+      height: $secondary-sidebar-item-height;
+      padding: 0 8px;
+      text-transform: uppercase;
+      font-weight: normal;
+    }
+  }
+
+  tbody {
+    tr.first-level {
+      line-height: 32px;
+
+      &:hover {
+        background-color: $onedata-light-gray;
+      }
+
+      &.active {
+        background-color: $onedata-light-azure;
+      }
+
+      &.metadata-opened {
+        background-color: $onedata-light-gray;
+      }
+
+      td {
+        // disable Bootstrap colors - use tr color
+        background-color: transparent !important;
+
+        // make text in rows aligned vertically middle
+        line-height: inherit;
+
+        &.file-list-col-text {
+          vertical-align: middle;
+        }
+
+        &.col-permissions {
+          font-family: monospace;
+        }
+
+        .file-icon {
+          display: table-cell;
+          width: 40px;
+          margin-left: -6px;
+          font-size: 32px !important;
+          text-align: left;
+        }
+        .file-label-container {
+          display: table-cell;
+          position: relative;
+
+          .file-label {
+            position: absolute;
+            margin-left: 10px;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            @include vendor-prefix(user-select, none);
+
+            .file-provider-label {
+              color: $onedata-red;
+            }
+            .file-provider-label-name {
+              color: $onedata-red;
+              font-weight: bold;
+            }
+          }
+        }
+        .file-row-tools {
+          position: absolute;
+          top: 0;
+          right: 0;
+          height: 100%;
+          .oneicon {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-right: 10px;
+            font-size: 30px;
+            cursor: pointer;
+          }
+
+          .file-tool {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+          }
+
+          // metadata tool is on the left of first right tool
+          .file-tool-metadata {
+            right: 32px;
+
+            &.active {
+              color: $onedata-red;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/// file list table column styles
+
+.file-list-col-file {
+  position: relative !important;
+}
+.file-list-col-size {
+  width: 95px;
+  min-width: 95px;
+  max-width: 95px;
+}
+.file-list-col-permissions {
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
+}
+.file-list-col-modification {
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
+}
+
+.dropdown.open .oneicon.oneicon-settings,
+.oneicon.oneicon-settings:hover {
+    color: $onedata-red;
+}
+
+&.file-drag {
+  .drop-area {
+    display: block;
+  }
+}
+
+.drop-area {
+  display: none;
+  z-index: 100;
+  position: fixed;
+  top: $top-bar-height + 20px;
+  left: $sidebar-width + $secondary-sidebar-width + 20px;
+  right: 20px;
+  bottom: 20px;
+  background-color: rgba($onedata-light-gray, 0.75);
+  border: 4px dashed $onedata-graphite;
+  border-radius: 10px;
+
+  .oneicon {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 200px;
+    text-align: center;
+  }
+}
+
+.data-files-list-toolbar {
+  .dropdown .dropdown-menu {
+    // correct X of dropdown for toolbar
+    transform: translateX(5px);
+
+    &.dropdown-menu-list {
+      > li:not(.divider) {
+        > a {
+          padding-top: 5px;
+          padding-bottom: 5px;
+          padding-right: 15px;
+
+          font-size: 0.9em;
+
+          .item-icon {
+            font-size: 28px;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+// modals
+
+// file chunks
+
+.file-blocks-table {
+  canvas.file-chunks {
+    // NOTE: should be synchronized with utils/file-chunks-bar.js
+    width: 320px;
+    height: 20px;
+
+    border-left: 1px solid $onedata-graphite;
+    border-right: 1px solid $onedata-graphite;
+
+    background-color: #F2F2F2;
+
+    &.error {
+      background-color: transparent;
+    }
+
+    &.loading {
+      background-color: transparent;
+    }
+  }
+  .file-size {
+    width: 320px;
+    font-size: 0.7em;
+    .start {
+      float: left;
+      text-align: left;
+    }
+    .end {
+      float: right;
+      text-align: right;
+    }
+  }
+
+  .provider-name {
+    width: 260px;
+    max-width: 260px;
+
+    .truncate {
+      max-width: 150px;
+    }
+  }
+}
+
+.null-dir-info {
+  padding-top: 20px;
+  line-height: normal;
+  font-style: italic;
+}
+
+.files-list {
+  height: 100%;
+
+  // component - TODO: move to other file?
+  .data-files-list {
+    height: 100%;
+  }
+
+  .file-row-load-more {
+    height: 64px;
+  }
+}
+
+.data-files-list-loader {
+  // is floating above files list
+  position: absolute;
+  z-index: 1100;
+  left: 0;
+  right: 0;
+  // render always to the bottom of its parent (which should be files list table)
+  bottom: 0;
+  background-color: rgba($onedata-light-gray, .5);
+
+  .data-files-list-loader-gradient {
+    min-height: 100px;
+    max-height: 100%;
+    @include linear-gradient($onedata-light-gray, rgba($onedata-light-gray, 0));
+
+
+    .spinner-container {
+      width: 100%;
+    }
+
+  }
+
+  .spinner-container {
+    top: 30px;
+  }
+}
+
+.empty-dir-image {
+  background-image: url("/assets/images/empty-dir.svg");
+}
+
+.selection-background-pulse {
+  animation: azure-pulse 3s infinite;
+}
+
+.notice-background-pulse {
+  animation: light-azure-pulse-onetime 0.75s;
+}
+
+@keyframes azure-pulse {
+  0% {
+    background-color: $onedata-light-azure;
+  }
+  50% {
+    background-color: $onedata-azure;
+  }
+  100% {
+    background-color: $onedata-light-azure;
+  }
+}
+
+@keyframes light-azure-pulse-onetime {
+  0% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: $onedata-azure;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.file-tool {
+  &:hover {
+    color: $onedata-red;
+  }
+}

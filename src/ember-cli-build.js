@@ -19,7 +19,7 @@ module.exports = function(defaults) {
     },
     // a "bootstrap" should be imported into app.scss
     'ember-cli-bootstrap-sassy': {
-      // import SASS styles, Glyphicons and some JS that is used outside of ember-bootstrap components 
+      // import SASS styles and some JS that is used outside of ember-bootstrap components 
       'js': [
         // TODO: use ember-bootstrap tooltip (needs refactoring and removing own bs-tooltip component)
         'tooltip',
@@ -31,7 +31,7 @@ module.exports = function(defaults) {
         // TODO: rewrite dropdowns to ember-bootstrap components
         'dropdown'
       ],
-      'glyphicons': true
+      'glyphicons': false
     },
     // import only JS
     'ember-bootstrap': {

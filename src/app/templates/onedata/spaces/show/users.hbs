@@ -2,12 +2,16 @@
   {{permissions-table subjectType="space"
     usersPermissions=model.permissions subject=model.subject}}
 {{else}}
-  {{!-- TODO: translations --}}
-
+  {{#one-icon tagName="div" icon="group" class="content-error-icon"}}
+    {{#one-overlay fog=false}}
+      {{one-icon tagName="div" icon="ban-left-thin" class="content-error-icon icon-overlay ban"}}
+    {{/one-overlay}}
+  {{/one-icon}}
   <div class="inner-content content-error">
-    You do not have privileges to view members of this space.
+    {{t "common.noPrivileges"
+      privileges=(t "spaces.show.viewMembersPrivileges")
+    }}
   </div>
-  <div class="content-error-icon glyphicon glyphicon-ban-circle"></div>
 
 {{/if}}
 

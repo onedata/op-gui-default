@@ -36,7 +36,8 @@ export default {
     featureNotSupportedLong: 'Sorry, this feature is not supported yet.',
     cannotLoadResource: 'Cannot load requested resource',
     serverError: 'Server error',
-    fatalApplicationErrorResources: "A fatal error occured loading application's resources"
+    fatalApplicationErrorResources: "A fatal error occured loading application's resources",
+    noPrivileges: 'You do not have privileges to {{privileges}}.'
   },
   services: {
     session: sessionLocales
@@ -467,7 +468,8 @@ export default {
       members: {
         title: 'Members permissions'
       },
-      spaces: "Spaces"
+      spaces: "Spaces",
+      viewPrivileges: "view members of this group"
     }
   },
   shares: {
@@ -492,6 +494,7 @@ export default {
       groups: {
         title: 'Groups permissions'
       },
+      viewMembersPrivileges: 'view members of this space'
     }
   },
   data: {
@@ -505,7 +508,10 @@ export default {
         file: {
           title: 'File details'
         },
-        loaderMessage: 'Loading file browser...'
+        loaderMessage: 'Loading file browser...',
+        error: {
+          synchronizeError: 'Selected space or directory cannot be synchronized.'
+        }
       }
     }
   }

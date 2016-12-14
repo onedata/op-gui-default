@@ -537,7 +537,7 @@ html, body {
       }
 
       .content-error {
-        margin-top: 40px;
+        margin-top: 20px;
         font-size: 2em;
         text-align: center;
       }
@@ -547,6 +547,16 @@ html, body {
         margin-top: 40px;
         font-size: 128px;
         text-align: center;
+
+        .icon-overlay {
+          margin-top: 0;
+          font-size: 256px;
+          transform: translateY(-25%);
+         
+          &.ban {
+            color: $color-red-ban;
+          }
+        }
       }
     }
   }

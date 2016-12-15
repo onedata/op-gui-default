@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'oneicons';
-  src:  url('fonts/oneicons.eot?gsq9gf');
-  src:  url('fonts/oneicons.eot?gsq9gf#iefix') format('embedded-opentype'),
-    url('fonts/oneicons.ttf?gsq9gf') format('truetype'),
-    url('fonts/oneicons.woff?gsq9gf') format('woff'),
-    url('fonts/oneicons.svg?gsq9gf#oneicons') format('svg');
+  src:  url('fonts/oneicons.eot?1x45va');
+  src:  url('fonts/oneicons.eot?1x45va#iefix') format('embedded-opentype'),
+    url('fonts/oneicons.ttf?1x45va') format('truetype'),
+    url('fonts/oneicons.woff?1x45va') format('woff'),
+    url('fonts/oneicons.svg?1x45va#oneicons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -24,6 +24,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.oneicon-clipboard-copy:before {
+  content: "\e956";
+}
 .oneicon-ban-left-thin:before {
   content: "\e955";
 }

@@ -319,11 +319,12 @@ export default {
         groups: 'Groups'
       },
       noUsers: {
+        space: 'This space has no users',
         group: 'This group has no users',
       },
       noGroups: {
         group: 'This group has no subgroups',
-        space: 'This space does not belong to any group'
+        space: 'This space has no groups'
       }
     },
     // data

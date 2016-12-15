@@ -1,7 +1,7 @@
 /* jshint expr:true */
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
-import bytesToString from 'op-worker-gui/utils/bytes-to-string';
+import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
 
 describe('Unit | Utility | bytes to string', function() {
   it('can convert byte size to GiB string', function() {

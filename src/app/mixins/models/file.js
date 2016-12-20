@@ -4,6 +4,8 @@ import DS from 'ember-data';
 import octalPermissionsToString from 'op-worker-gui/utils/octal-permissions-to-string';
 /* globals moment */
 
+import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
+
 /**
  * Common attributes and methods of file and file-public models.
  * @module
@@ -87,26 +89,10 @@ export default Ember.Mixin.create({
     this.set('dirsPath', []);
   },
 
-  sizeHumanReadable: function() {
-    let bytes = this.get('size');
-    if (!bytes && bytes !== 0) {
-      return '';
-    }
-
-    let number = bytes;
-    let unit = 'B';
-    if (bytes > 1073741824) {
-      unit = 'GB';
-      number = bytes/1073741824;
-    } else if (bytes >= 1048576) {
-      unit = 'MB';
-      number = bytes/1048576;
-    } else if (bytes >= 1024) {
-      unit = 'KB';
-      number = bytes/1024;
-    }
-    return `${Math.round(number * 100) / 100} ${unit}`;
-  }.property('size'),
+  sizeHumanReadable: Ember.computed('size', function() {
+    let size = this.get('size');
+    return (size == null) ? '' : bytesToString(size);
+  }),
 
   modificationMoment: function() {
     let timestamp = this.get('modificationTime');

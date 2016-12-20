@@ -200,7 +200,7 @@ export default Ember.Component.extend({
     },
 
     setAsHome(space) {
-      this.$().addClass('is-loading');
+      this.set('isLoading', true);
 
       let currentHome = this.get('spaces').find((s) => s.get('isDefault'));
 
@@ -234,7 +234,7 @@ export default Ember.Component.extend({
         );
 
         savePromise.finally(() => {
-          this.$().removeClass('is-loading');
+          this.set('isLoading', false);
         });
       };
 
@@ -256,7 +256,7 @@ export default Ember.Component.extend({
                 (error && error.message) || this.get('i18n').t('common.unknownError')
             );
             currentHome.rollbackAttributes();
-            this.$().removeClass('is-loading');
+            this.set('isLoading', false);
           }
         );
       } else {

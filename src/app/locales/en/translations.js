@@ -1,4 +1,4 @@
-import sessionLocales from './session';
+import sessionLocales from 'ember-cli-onedata-common/locales/en/session';
 import filePermissions from './file-permissions';
 
 /**
@@ -36,7 +36,8 @@ export default {
     featureNotSupportedLong: 'Sorry, this feature is not supported yet.',
     cannotLoadResource: 'Cannot load requested resource',
     serverError: 'Server error',
-    fatalApplicationErrorResources: "A fatal error occured loading application's resources"
+    fatalApplicationErrorResources: "A fatal error occured loading application's resources",
+    noPrivileges: 'You do not have privileges to {{privileges}}.'
   },
   services: {
     session: sessionLocales
@@ -318,11 +319,12 @@ export default {
         groups: 'Groups'
       },
       noUsers: {
+        space: 'This space has no users',
         group: 'This group has no users',
       },
       noGroups: {
         group: 'This group has no subgroups',
-        space: 'This space does not belong to any group'
+        space: 'This space has no groups'
       }
     },
     // data
@@ -467,7 +469,8 @@ export default {
       members: {
         title: 'Members permissions'
       },
-      spaces: "Spaces"
+      spaces: "Spaces",
+      viewPrivileges: "view members of this group"
     }
   },
   shares: {
@@ -492,6 +495,7 @@ export default {
       groups: {
         title: 'Groups permissions'
       },
+      viewMembersPrivileges: 'view members of this space'
     }
   },
   data: {
@@ -505,7 +509,10 @@ export default {
         file: {
           title: 'File details'
         },
-        loaderMessage: 'Loading file browser...'
+        loaderMessage: 'Loading file browser...',
+        error: {
+          synchronizeError: 'Selected space or directory cannot be synchronized.'
+        }
       }
     }
   }

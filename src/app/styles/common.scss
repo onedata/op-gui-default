@@ -537,7 +537,7 @@ html, body {
       }
 
       .content-error {
-        margin-top: 40px;
+        margin-top: 20px;
         font-size: 2em;
         text-align: center;
       }
@@ -547,6 +547,16 @@ html, body {
         margin-top: 40px;
         font-size: 128px;
         text-align: center;
+
+        .icon-overlay {
+          margin-top: 0;
+          font-size: 256px;
+          transform: translateY(-25%);
+         
+          &.ban {
+            color: $color-red-ban;
+          }
+        }
       }
     }
   }
@@ -646,24 +656,6 @@ html, body {
 
 .no-outline {
   outline: none !important;
-}
-
-// DEPRECATED
-.is-loading {
-  position: relative;
-
-  &::after {
-    position: absolute;
-    background-repeat: no-repeat;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(white, 0.5);
-    background-image: url("/assets/images/loading-128.gif");
-    background-position: center 30px;
-    content: ' ';
-  }
 }
 
 .relative {

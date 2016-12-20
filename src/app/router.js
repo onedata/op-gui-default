@@ -36,10 +36,7 @@ Router.map(function() {
       this.route('data-space', {path: '/:data_space_id'}, function() {
         // onedata/data/:space_id/:dir_id - a directory, which content is displayed
         //   currently in browser (and is expanded in data-files-tree)
-        this.route('dir', {path: '/:dir_id'}, function() {
-          // onedata/data/:space_id/:dir_id/:file_id - file selected in a browser
-          this.route('file', {path: '/:file_id'});
-        });
+        this.route('dir', {path: '/:dir_id'});
 
       });
     });
@@ -61,11 +58,6 @@ Router.map(function() {
           this.route('dir', {path: ':shared_dir_id'});
         });
     });
-
-    // TODO: activate after routes implementation
-    // this.route('recent', {resetNamespace: true});
-    // this.route('links', {resetNamespace: true});
-    // this.route('trash', {resetNamespace: true});
 
   });
 

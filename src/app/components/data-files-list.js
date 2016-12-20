@@ -319,7 +319,7 @@ export default Ember.Component.extend({
         }
 
       } else {
-        fileRows.push(Ember.create({
+        fileRows.push(Ember.Object.create({
           file: files[0]
         }));
       }

@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import PromiseLoadingMixin from 'op-worker-gui/mixins/promise-loading';
+import PromiseLoadingMixin from 'ember-cli-onedata-common/mixins/promise-loading';
 import { mergeAcls } from 'op-worker-gui/utils/acl-utils';
 import { POSIX_SPECIAL_DIFFERENT } from 'op-worker-gui/components/file-permissions/posix';
 

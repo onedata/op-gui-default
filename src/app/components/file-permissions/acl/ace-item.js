@@ -1,5 +1,8 @@
 import Ember from 'ember';
-import { iconHTML } from 'op-worker-gui/helpers/icon';
+
+function iconHTML(icon) {
+  return Ember.HTMLBars.compile(`{{one-icon icon="${icon}"}}`);
+} 
 
 /**
  * A graphical representation of single ``AccessControlEntity``.

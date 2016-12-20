@@ -128,22 +128,27 @@ $screen-lg-min: $min-width-desktop-medium;
     @import 'components/dropdown';
 }
 
+// original stylesheet for ember-power-select
+@import "ember-power-select";
+
+// OP components
 @import 'components/modal';
 @import 'components/button';
 @import 'components/notify';
 @import 'components/file-upload';
 @import 'components/permissions-table';
-@import 'components/spin-button-base';
 @import 'components/modal-types';
-@import 'components/one-option-button';
 @import 'components/file-permissions';
-@import 'components/select2';
-@import 'components/message-box-modal';
-@import 'components/common-loader';
 @import 'components/metadata-panel';
 @import 'components/share-info-head';
 @import 'components/file-breadcrumbs';
-
-// original stylesheet for ember-power-select
-@import "ember-power-select";
 @import "components/ember-power-select";
+
+// onedata-common components
+@import 'components/button-common';
+@import 'components/common-loader';
+@import 'components/message-box-modal';
+@import 'components/one-option-button';
+@import 'components/one-overlay';
+@import 'components/select2';
+@import 'components/spin-button-base';

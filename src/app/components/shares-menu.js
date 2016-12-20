@@ -11,7 +11,7 @@
 */
 
 import Ember from 'ember';
-import PromiseLoadingMixin from 'op-worker-gui/mixins/promise-loading';
+import PromiseLoadingMixin from 'ember-cli-onedata-common/mixins/promise-loading';
 
 export default Ember.Component.extend(PromiseLoadingMixin, {
   secondaryMenu: Ember.inject.service(),

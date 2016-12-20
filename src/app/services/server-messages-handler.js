@@ -1,1 +1,0 @@
-../../../gui/common_assets/js/services/server-messages-handler.js

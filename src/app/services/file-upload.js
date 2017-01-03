@@ -186,16 +186,14 @@ ${resumableFileId}, but it could not be found in any dir`);
     this.get('oneproviderServer').fileUploadSuccess(
       file.uniqueIdentifier,
       this.getParentIdOfUploadingFile(file.uniqueIdentifier)
-    );
-    this.fileUploadCompleted(file);
+    ).finally(() => this.fileUploadCompleted(file));
   },
 
   fileUploadFailure(file) {
     this.get('oneproviderServer').fileUploadFailure(
       file.uniqueIdentifier,
       this.getParentIdOfUploadingFile(file.uniqueIdentifier)
-    );
-    this.fileUploadCompleted(file);
+    ).finally(() => this.fileUploadCompleted(file));
   },
 
   /**

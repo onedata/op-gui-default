@@ -3,24 +3,25 @@ import { expect } from 'chai';
 import {
   describe,
   it,
-  beforeEach
+  beforeEach,
+  afterEach
 } from 'mocha';
 import Ember from 'ember';
 import { initialize } from 'op-worker-gui/instance-initializers/global-app';
+import startApp from 'op-worker-gui/tests/helpers/start-app';
 
 describe('GlobalAppInstanceInitializer', function() {
-  let appInstance;
+  beforeEach(function () {
+    this.application = startApp();
+  });
 
-  beforeEach(function() {
-    Ember.run(function() {
-      const application = Ember.Application.create();
-      appInstance = application.buildInstance();
-    });
+  afterEach(function() {
+    Ember.run(this.application, 'destroy');
   });
 
   it('exposes window.App variable which is a reference to appInstance', function() {
-    initialize(appInstance);
+    initialize(this.application);
 
-    expect(window.App).to.be.equal(appInstance);
+    expect(window.App).to.be.equal(this.application);
   });
 });

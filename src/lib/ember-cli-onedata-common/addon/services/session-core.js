@@ -13,8 +13,11 @@
 import Ember from 'ember';
 import SessionService from 'ember-simple-auth/services/session';
 
+const DEFAULT_USER_RECORD_ID = '0';
+
 export default SessionService.extend({
   server: Ember.inject.service(),
+  store: Ember.inject.service(),
 
   /**
    * @type {function}
@@ -45,10 +48,17 @@ export default SessionService.extend({
   sessionValid: null,
 
   /**
-   * Generic session details (object) returned from the server, containing
-   * user name etc.
+   * Generic session details (object) returned from the server.
+   * @type {Object}
+   * @property {boolean} firstLogin
    */
   sessionDetails: null,
+
+  /**
+   * A User record.
+   * @type {User}
+   */
+  user: null,
 
   websocketWasOpened: false,
 
@@ -142,29 +152,17 @@ export default SessionService.extend({
   /** Performs an RPC call and registers a promise that will resolve
    * client session when WebSocket is established and it has send session
    * details. */
-  resolveSession: function () {
+  resolveSession() {
     console.debug('session.resolveSession');
     // Request session data
+    // TODO: no reject handling
     this.get('server').sessionRPC().then((data) => {
       console.debug("RESOLVE SESSION REQ");
       console.debug('data: ' + JSON.stringify(data));
       if (data.sessionValid === true) {
-        this.set('sessionDetails', data.sessionDetails);
-        const sessionRestoreResolveFun = this.get('sessionRestoreResolve');
-        if (sessionRestoreResolveFun) {
-          console.debug("SESSION VALID, RESTORED");
-          sessionRestoreResolveFun();
-        } else {
-          console.debug("SESSION VALID, AUTHENTICATED");
-          this.get('session').authenticate('authenticator:basic');
-        }
+        this.onResolveSessionValid(data);
       } else {
-        console.debug("SESSION INVALID");
-        const sessionRestoreRejectFun = this.get('sessionRestoreReject');
-        if (sessionRestoreRejectFun) {
-          console.debug("RESTORE REJECTED");
-          sessionRestoreRejectFun();
-        }
+        this.onResolveSessionInvalid();
       }
       const resolveFunction = this.get('sessionInitResolve');
       // the resoleFunction can be undefined/null only if we (re)open WebSocket
@@ -180,5 +178,53 @@ export default SessionService.extend({
         sessionRestoreReject: null
       });
     });
+  },
+
+  /**
+   * @private
+   */
+  onResolveSessionValid(data) {
+    let sessionRestoreResolveFun = this.get('sessionRestoreResolve');
+    Ember.assert(
+      'session data should contain sessionDetails object',
+      data.sessionDetails != null
+    );
+    let sessionUserPromise = this.getUser();
+    sessionUserPromise.then(user => {
+      this.setProperties({
+        sessionDetails: data.sessionDetails,
+        user: user
+      });
+      if (sessionRestoreResolveFun) {
+        console.debug("SESSION VALID, RESTORED");
+        sessionRestoreResolveFun();
+      } else {
+        console.debug("SESSION VALID, AUTHENTICATED");
+        this.get('session').authenticate('authenticator:basic');
+      }
+    });
+    sessionUserPromise.catch(() => {
+      console.debug("SESSION: USER CANNOT BE FETCHED (findRecord rejected)");
+      this.onResolveSessionInvalid();
+    });
+  },
+
+  /**
+   * @private
+   */
+  onResolveSessionInvalid() {
+    console.debug("SESSION INVALID");
+    const sessionRestoreRejectFun = this.get('sessionRestoreReject');
+    if (sessionRestoreRejectFun) {
+      console.debug("RESTORE REJECTED");
+      sessionRestoreRejectFun();
+    }
+  },
+
+  /**
+   * @private
+   */
+  getUser() {
+    return this.get('store').findRecord('user', DEFAULT_USER_RECORD_ID);
   }
 });

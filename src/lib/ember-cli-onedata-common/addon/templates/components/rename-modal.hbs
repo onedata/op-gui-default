@@ -1,0 +1,45 @@
+{{#bs-modal open=open body=false footer=false
+    id=modalId
+    title=title
+    openAction="open"
+    closedAction="closed"
+    keyboard=(not isLoading)
+    autoClose=(not isLoading)
+    backdropClose=(not isLoading)
+    closeButton=false
+  }}
+  {{#bs-modal-body}}
+  
+    {{yield}}
+
+    <div class="control-label">
+      {{label}}
+    </div>
+
+    {{input type="text" value=renameName autofocus=true
+      class="form-control"
+      enter=(if canSubmit "confirm")
+      disabled=(or isLoading (not open))}}
+
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#spin-button-onedata buttonType="submit"
+      action=(if canSubmit "confirm")
+      class="btn btn-primary no-outline" spinnerColor="#fff"
+      inFlight=isLoading
+      disabled=(not canSubmit)
+    }}
+      {{t "common.modal.ok"}}
+    {{/spin-button-onedata}}
+
+    {{#spin-button-onedata buttonType="submit"
+      action=(action "cancel")
+      class="btn-default btn no-outline"
+      spinnerColor="#fff"
+      inFlight=cancelInProgress
+      disabled=cancelInProgress
+    }}
+      {{t "common.modal.cancel"}}
+    {{/spin-button-onedata}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}

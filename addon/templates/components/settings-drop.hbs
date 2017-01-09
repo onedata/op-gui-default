@@ -1,0 +1,18 @@
+{{#bs-dropdown class="settings-dropdown"}}
+  {{#bs-dropdown-toggle tagName="div"}}
+    <span class="item-element item-icon transparent-not-hovered settings-icon">
+      {{one-icon icon='settings'}}
+    </span>
+  {{/bs-dropdown-toggle}}
+  {{#bs-dropdown-menu tagName="ul" class="" alignment="right"
+    class=(concat type "-dropdown-menu dropdown-menu-right dropdown-menu-list dropdown-menu-settings")}}
+
+    {{yield}}
+    
+    {{#each menuItems as |item|}}
+      {{settings-drop-item icon=item.icon label=item.label click=(action item.action)
+        scrollParentSelector=".accordion-container"}}
+    {{/each}}
+
+  {{/bs-dropdown-menu}}
+{{/bs-dropdown}}

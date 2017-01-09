@@ -6,22 +6,22 @@ import chai from 'chai';
 chai.use(sinonChai);
 
 import Ember from 'ember';
-const {computed, inject} = Ember;
 
 import {
-  describeModule,
-  it
+  setupTest,
 } from 'ember-mocha';
 
-describeModule(
-  'service:events-bus',
-  'EventsBusService',
-  {
-    // Specify the other units that are required for this test.
-    // needs: ['service:foo']
-  },
+import {
+  it,
+  describe
+} from 'mocha';
 
-  function() {
+describe('EventsBusService', function() {
+    setupTest('service:events-bus', {
+      // Specify the other units that are required for this test.
+      // needs: ['service:foo']
+    });
+    
     const Sender = Ember.Object.extend({
       sendGlobalEvent(a, b) {
         this.get('eventsBus').trigger('sender:foo', a, b);

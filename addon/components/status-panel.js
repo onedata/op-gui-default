@@ -24,7 +24,7 @@ export default Ember.Component.extend({
   blocking: null,
 
   /**
-   * One of: "info", "warning", "error", "loading" or null
+   * One of: "info", "warning", "error", "loading", "question" or null
    * If null - the status will be not rendered at all, only yielded content.
    * @type String
    */

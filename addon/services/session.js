@@ -9,8 +9,7 @@ const MAX_RECONNECT_TRIES = 10;
 
 /**
  * An implementation of ember-simple-auth session service.
- * It extends core Onedata webgui session. You can provide either session-core
- * or session-core-no-simple-auth as a core session class.
+ * It extends core Onedata webgui session.
  *
  * This module adds notifications about WS failures to user.
  * There are some modals that indicated reconnection: error message, countdown,

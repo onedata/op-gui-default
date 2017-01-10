@@ -22,7 +22,9 @@ export default Ember.Route.extend(ShowPermissionsRouteMixin, {
     var subject = this.modelFor(`onedata.${this.get('routeType')}.show`);
     return {
       subject: subject,
+      // FIXME
       userPermissions: subject.get('userPermissions'),
+      // FIXME
       groupPermissions: subject.get('groupPermissions'),
       availableGroups: this.modelFor('onedata.groups')
     };

@@ -9,13 +9,18 @@
 
 import Ember from 'ember';
 
+const {
+  inject
+} = Ember;
+
 export default Ember.Route.extend({
-  fileSystemTree: Ember.inject.service('file-system-tree'),
+  fileSystemTree: inject.service(),
 
   mainRouteName: 'data',
 
   model() {
-    return this.store.findAll('data-space');
+    // FIXME do not use findAll
+    return this.store.findAll('space');
   },
 
   afterModel(dataSpaces) {

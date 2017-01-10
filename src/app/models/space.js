@@ -1,4 +1,16 @@
 import DS from 'ember-data';
+import Ember from 'ember';
+import isDefaultMixinFactory from 'ember-cli-onedata-common/mixin-factories/models/is-default';
+
+const {
+  attr,
+  hasMany,
+  belongsTo
+} = DS;
+
+const {
+  inject,
+} = Ember;
 
 /**
  * A configuration of a space - entry point for all options
@@ -9,35 +21,20 @@ import DS from 'ember-data';
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default DS.Model.extend({
+export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
+  session: inject.service('session'),
+
   /** User specified name of space that will be exposed in GUI */
-  name: DS.attr('string'),
+  name: attr('string'),
+
+  hasViewPrivilege: attr('boolean'),
+
+  /** A root directory with space files. It must be a dir-type File! */
+  rootDir: belongsTo('file', {async: true}),
+
   /** Collection of users permissions - effectively all rows in permissions table */
-  userPermissions: DS.hasMany('spaceUserPermission', {async: true}),
+  userPermissions: hasMany('spaceUserPermission', {async: true}),
   /** Collection of group permissions - effectively all rows in permissions table */
-  groupPermissions: DS.hasMany('spaceGroupPermission', {async: true}),
-  /** Whether user specified this space as default */
-  isDefault: DS.attr('boolean', {defaultValue: false}),
+  groupPermissions: hasMany('spaceGroupPermission', {async: true}),
 
-  groups: DS.hasMany('group', {async: true}),
-
-// TODO: currently not used - use list Order in templates
-  /** An absolute position on list */
-  listOrder: DS.attr('number'),
-
-  dataSpace: DS.belongsTo('dataSpace', {async: true}),
-
-  hasViewPrivilege: DS.attr('boolean'),
-
-  save() {
-    const p = this._super(...arguments);
-    p.then(() => {
-      this.get('dataSpace').then(s => {
-        if (s) {
-          s.update();
-        }
-      });
-    });
-    return p;
-  }
 });

@@ -14,10 +14,6 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
   session: Ember.inject.service('session'),
   loginRedirect: Ember.inject.service(),
 
-  activate() {
-    console.debug('app activate');
-  },
-
   actions: {
     goToItem(name) {
       this.transitionTo(`onedata.${name}.index`);

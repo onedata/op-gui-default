@@ -13,8 +13,6 @@
 import Ember from 'ember';
 import SessionService from 'ember-simple-auth/services/session';
 
-const DEFAULT_USER_RECORD_ID = '0';
-
 export default SessionService.extend({
   server: Ember.inject.service(),
   store: Ember.inject.service(),
@@ -51,6 +49,7 @@ export default SessionService.extend({
    * Generic session details (object) returned from the server.
    * @type {Object}
    * @property {boolean} firstLogin
+   * @property {string} userId - id of User record
    */
   sessionDetails: null,
 
@@ -189,7 +188,11 @@ export default SessionService.extend({
       'session data should contain sessionDetails object',
       data.sessionDetails != null
     );
-    let sessionUserPromise = this.getUser();
+    Ember.assert(
+      'sessionDetails should include userId property',
+      data.sessionDetails.userId
+    );
+    let sessionUserPromise = this.getUser(data.sessionDetails.userId);
     sessionUserPromise.then(user => {
       this.setProperties({
         sessionDetails: data.sessionDetails,
@@ -224,7 +227,7 @@ export default SessionService.extend({
   /**
    * @private
    */
-  getUser() {
-    return this.get('store').findRecord('user', DEFAULT_USER_RECORD_ID);
+  getUser(userId) {
+    return this.get('store').findRecord('user', userId);
   }
 });

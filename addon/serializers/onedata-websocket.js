@@ -34,6 +34,7 @@ export default RESTSerializer.extend({
       }
     });
 
+    // FIXME: modified keys are not propertly detected for relationships
     snapshot.eachRelationship((key, relationship) => {
       if (options.keys ? options.keys.includes(key) : true) {
         if (relationship.kind === 'belongsTo') {

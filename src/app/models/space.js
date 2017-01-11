@@ -4,7 +4,6 @@ import isDefaultMixinFactory from 'ember-cli-onedata-common/mixin-factories/mode
 
 const {
   attr,
-  hasMany,
   belongsTo
 } = DS;
 
@@ -29,12 +28,15 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
 
   hasViewPrivilege: attr('boolean'),
 
+  /*** RELATIONS */
+
   /** A root directory with space files. It must be a dir-type File! */
-  rootDir: belongsTo('file', {async: true}),
+  rootDir: belongsTo('file', { async: true }),
 
   /** Collection of users permissions - effectively all rows in permissions table */
-  userPermissions: hasMany('spaceUserPermission', {async: true}),
+  userList: belongsTo('space-user-list', { async: true }),
+  
   /** Collection of group permissions - effectively all rows in permissions table */
-  groupPermissions: hasMany('spaceGroupPermission', {async: true}),
+  groupList: belongsTo('space-group-list', { async: true }),
 
 });

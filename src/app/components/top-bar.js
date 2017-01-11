@@ -1,5 +1,10 @@
 import Ember from 'ember';
 
+const {
+  computed,
+  inject
+} = Ember;
+
 /**
  * Just a top bar - container for toolbars and other stuff.
  * @module components/top-bar
@@ -9,5 +14,7 @@ import Ember from 'ember';
  */
 export default Ember.Component.extend({
   /** Session is needed for account dropdown */
-  session: Ember.inject.service()
+  session: inject.service(),
+
+  userName: computed.alias('session.user.name')
 });

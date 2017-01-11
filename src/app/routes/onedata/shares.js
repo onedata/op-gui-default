@@ -9,7 +9,7 @@ export default Ember.Route.extend({
   },
 
   model() {
-    return this.store.findAll('share');
+    return this.modelFor('onedata').get('shares');
   },
 
   actions: {

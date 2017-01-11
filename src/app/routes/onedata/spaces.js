@@ -14,7 +14,7 @@ export default Ember.Route.extend({
   mainRouteName: 'spaces',
 
   model() {
-    return this.store.findAll('space');
+    return this.modelFor('onedata').get('spaces');
   },
 
   actions: {

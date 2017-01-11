@@ -13,6 +13,7 @@ export default Ember.Component.extend({
   store: Ember.inject.service(),
   i18n: Ember.inject.service(),
   oneproviderServer: Ember.inject.service(),
+  session: Ember.inject.service(),
 
   /** @abstract */
   modalId: null,
@@ -61,7 +62,7 @@ export default Ember.Component.extend({
   },
 
   fetchHandleServices: Ember.on('init', function() {
-    const fetchPromise = this.get('store').findAll('handle-service');
+    let fetchPromise = this.get('session.user').get('handleServices');
     fetchPromise.then((hsList) => {
       if (hsList) {
         this.set('availableHandleServices', hsList);

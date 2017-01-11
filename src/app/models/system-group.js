@@ -13,10 +13,4 @@ import DS from 'ember-data';
 export default DS.Model.extend({
   /** Name exposed in GUI */
   name: DS.attr('string'),
-
-  /** Collection of space permissions models - each for single Space */
-  spacesPermissions: DS.hasMany('spaceGroupPermission', {async: true}),
-
-  groupsPermissions: DS.hasMany('groupGroupPermission', {async: true}),
-
 });

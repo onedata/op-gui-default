@@ -7,7 +7,7 @@ import Ember from 'ember';
  * ```
  * fallbackRoute: 'data.index',
  * model(params) {
- *   return this.handleReject(this.store.findRecord('data-space', params.data_space_id));
+ *   return this.handleReject(this.store.findRecord('space', params.data_space_id));
  * },
  * ```
  * On model reject, the application will redirect to route specified by ``fallbackRoute`` property

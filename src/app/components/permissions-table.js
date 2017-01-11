@@ -17,6 +17,7 @@ export default Ember.Component.extend({
   commonModals: Ember.inject.service(),
   notify: Ember.inject.service(),
   store: Ember.inject.service(),
+  session: Ember.inject.service(),
 
   classNames: ['permissions-table'],
 
@@ -65,7 +66,7 @@ export default Ember.Component.extend({
 
   availableGroups: function() {
     if (this.get('groupsPermissions')) {
-      return this.get('store').findAll('group');
+      return this.get('session.user.groups');
     } else {
       return null;
     }

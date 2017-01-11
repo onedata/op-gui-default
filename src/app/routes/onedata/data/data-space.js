@@ -16,7 +16,7 @@ export default Ember.Route.extend(RouteRejectHandler, {
 
   model(params) {
     return this.handleReject(
-      this.store.findRecord('data-space', params.data_space_id)
+      this.store.findRecord('space', params.data_space_id)
     );
   },
 

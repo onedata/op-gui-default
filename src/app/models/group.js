@@ -1,5 +1,11 @@
 import DS from 'ember-data';
 
+const {
+  attr,
+  hasMany,
+  belongsTo
+} = DS;
+
 /**
  * A group in system - model for groups/ routes.
  * This must be a group that is accessible for current user.
@@ -12,21 +18,18 @@ import DS from 'ember-data';
  */
 export default DS.Model.extend({
   /** User specified name of space that will be exposed in GUI */
-  name: DS.attr('string'),
-  /** Collection of users permissions - each will be a row in permissions table */
-  userPermissions: DS.hasMany('groupUserPermission', {async: true}),
-  /** Collection of group permissions - each will be a row in permissions table */
-  groupPermissions: DS.hasMany('groupGroupPermission', {async: true}),
+  name: attr('string'),
 
-  // TODO: this property is currently not supported in backend
-  spaces: DS.hasMany('space', {async: true}),
+  hasViewPrivilege: attr('boolean'),
 
-  parentGroups: DS.hasMany('group', {async: true, inverse: 'childGroups'}),
-  childGroups: DS.hasMany('group', {async: true, inverse: 'parentGroups'}),
+  /*** RELATIONS */
 
-  // TODO: currently not used - use list Order in templates
-  /** An absolute position on list */
-  listOrder: DS.attr('number'),
+  /** Collection of users permissions - effectively all rows in permissions table */
+  userList: belongsTo('group-user-list', { async: true }),
+  
+  /** Collection of group permissions - effectively all rows in permissions table */
+  groupList: belongsTo('group-group-list', { async: true }),
 
-  hasViewPrivilege: DS.attr('boolean'),
+  parentGroups: hasMany('group', {async: true, inverse: 'childGroups'}),
+  childGroups: hasMany('group', {async: true, inverse: 'parentGroups'}),
 });

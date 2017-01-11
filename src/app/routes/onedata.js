@@ -9,7 +9,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
   session: inject.service(),
 
   model() {
-    debugger;
     return this.get('session.user');
   },
 });

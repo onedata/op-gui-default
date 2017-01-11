@@ -252,11 +252,6 @@ export default Ember.Component.extend({
     },
 
     renameModalOpened() {
-      // TODO: should use autofocus of modal bs-form-element, but it does not work
-      // $('*').focus(function(event) {
-      //   debugger;
-      // });
-
       this.$().find('input').focus().select();
     },
 

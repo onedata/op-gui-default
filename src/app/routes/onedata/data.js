@@ -19,8 +19,7 @@ export default Ember.Route.extend({
   mainRouteName: 'data',
 
   model() {
-    // FIXME do not use findAll
-    return this.store.findAll('space');
+    return this.modelFor('onedata').get('spaces');
   },
 
   afterModel(dataSpaces) {

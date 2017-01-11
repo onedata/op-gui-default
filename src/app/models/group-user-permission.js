@@ -1,6 +1,15 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import PermissionsModelGroupMixin from 'op-worker-gui/mixins/permissions-model-group';
+import permissionModelFactory from 'op-gui-worker/mixin-factories/models/permission';
+import FLAG_NAMES from 'op-gui-worker/constants/permission-group-flags';
+
+const {
+  computed
+} = Ember;
+
+const {
+  belongsTo
+} = DS;
 
 /**
  * A set of single Group permissions for a single User
@@ -10,10 +19,11 @@ import PermissionsModelGroupMixin from 'op-worker-gui/mixins/permissions-model-g
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default DS.Model.extend(PermissionsModelGroupMixin, {
-  // TODO spaceUser or generic user?
-  systemUser: DS.belongsTo('systemUser', {async: true}),
-  group: DS.belongsTo('group', {async: true}),
+export default DS.Model.extend(permissionModelFactory(FLAG_NAMES), {
+  // FIXME
+  // systemUser: belongsTo('systemUser', {async: true}),
 
-  owner: Ember.computed.alias('systemUser'),
+  group: belongsTo('group', {async: true, inverse: null}),
+
+  owner: computed.alias('systemUser'),
 });

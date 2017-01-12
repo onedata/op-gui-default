@@ -52,7 +52,7 @@ CHANGELOG
 * VFS-2660 Fixing some issues in app without app
 * VFS-2658 Refactored upload batch to use service
 * VFS-2660 Stub of new files list upload loader
-* VFS-2660 New route for shared dir: /*/shares/:share_id/:shared_dir_id
+* VFS-2660 New route for shared dir: `/*/shares/:share_id/:shared_dir_id`
 * VFS-2658 Do not make explicit find on created file
 * VFS-2660 Added more loading routes for data
 * VFS-2660 Changed shares browser to get non-proxied File
@@ -146,7 +146,7 @@ CHANGELOG
 * VFS-2407 Fix spaces perms for group table
 * VFS-2407 Added missing view files header; changing order of permissions
 * VFS-2407 Added "write files" space permission
-* VFS-2407 Added test_rel_xunit_output for testing production builds
+* VFS-2407 Added `test_rel_xunit_output` for testing production builds
 * VFS-2462 Stub of broken metadata editor on data-files-list
 * VFS-2462 First version of metadata editor with save
 * VFS-2462 Fixing changes file-metadata to meta
@@ -159,7 +159,7 @@ CHANGELOG
 * VFS-2407 Delete share for file on destroyRecord; clean-up
 * VFS-2407 Clean-up, copy input for public url share
 * VFS-2407 Styles for public shares view and shares style improvements
-* VFS-2407 Added missing _super in login route setupController
+* VFS-2407 Added missing `_super` in login route setupController
 * VFS-2407 Public mode download
 * VFS-2407 Settings drop for Shares; settings-drop refactoring
 * VFS-2407 Fixed some issues with goint to default/first obj. in indexes

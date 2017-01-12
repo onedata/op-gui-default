@@ -1,17 +1,17 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import permissionModelFactory from 'op-gui-worker/mixin-factories/models/permission';
-import FLAG_NAMES from 'op-gui-worker/constants/permission-space-flags';
+import permissionModelFactory from 'op-worker-gui/mixin-factories/models/permission';
+import FLAG_NAMES from 'op-worker-gui/constants/permission-space-flags';
 
 const {
   computed,
   RSVP: {
     Promise
-  },
-  inject
+  }
 } = Ember;
 
 const {
+  attr,
   belongsTo
 } = DS;
 
@@ -26,21 +26,29 @@ const ObjectPromiseProxy =
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend(permissionModelFactory(FLAG_NAMES), {
-  store: inject.service(),
+  space: belongsTo('space', {async: true, inverse: null}),
 
+  systemUserId: attr('string'),
+  
   systemUser: computed('space.id', function () {
     let store = this.get('store');
     
     let mainPromise = new Promise((resolve, reject) => {
+      let systemUserId = this.get('systemUserId');
       let getSpace = this.get('space');
       getSpace.then(space => {
-        let spaceId = space.get('id');
-        let getSystemUser = store.queryRecord('systemUser', {
-          context: {
-            od_space: spaceId
-          }
-        });
-        getSystemUser.then(resolve, reject);
+        if (!space) {
+          resolve(null);
+        } else {
+          let spaceId = space.get('id');
+          let getSystemUser = store.query('system-user', { filter: {
+            id: systemUserId,
+            context: {
+              od_space: spaceId
+            }
+          }});
+          getSystemUser.then(resolve, reject);
+        }
       });
       getSpace.catch(reject);
     });
@@ -49,8 +57,6 @@ export default DS.Model.extend(permissionModelFactory(FLAG_NAMES), {
       promise: mainPromise
     });
   }),
-
-  space: belongsTo('space', {async: true, inverse: null}),
 
   /** Common alias for owner - in this case a user (system-user) */
   owner: computed.alias('systemUser'),

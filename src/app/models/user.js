@@ -2,7 +2,6 @@ import DS from 'ember-data';
 
 const {
   attr,
-  belongsTo,
   hasMany
 } = DS;
 
@@ -11,8 +10,7 @@ const ASYNC_ONEWAY = { async: true, inverse: null };
 // FIXME jsdoc
 export default DS.Model.extend({
   name: attr('string'),
-  alias: attr('string'),
-  defaultSpaceId: belongsTo('space', ASYNC_ONEWAY),
+  defaultSpaceId: attr('string'),
 
   /*** Relations ***/
 

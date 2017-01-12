@@ -8,14 +8,11 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-import ShowPermissionsRouteMixin from 'op-worker-gui/mixins/show-permissions-route';
 import Ember from 'ember';
+import showPermissionsMixinFactory from 'op-worker-gui/mixin-factories/routes/show-permissions';
 
-export default Ember.Route.extend(ShowPermissionsRouteMixin, {
+export default Ember.Route.extend(showPermissionsMixinFactory('groups', 'user'), {
   oneproviderServer: Ember.inject.service(),
-
-  permissionsType: 'users',
-  routeType: 'groups',
 
   /** Override from mixin - we need two separate permissions collections */
   model() {

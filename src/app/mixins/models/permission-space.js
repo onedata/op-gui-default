@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import permissionModelFactory from 'op-gui-worker/mixin-factories/models/permission';
+import permissionModelFactory from 'op-worker-gui/mixin-factories/models/permission';
 
 const {
   belongsTo

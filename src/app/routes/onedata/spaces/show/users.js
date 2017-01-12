@@ -9,13 +9,10 @@
  */
 
 import Ember from 'ember';
-import ShowPermissionsRouteMixin from 'op-worker-gui/mixins/show-permissions-route';
+import showPermissionsMixinFactory from 'op-worker-gui/mixin-factories/routes/show-permissions';
 
-export default Ember.Route.extend(ShowPermissionsRouteMixin, {
+export default Ember.Route.extend(showPermissionsMixinFactory('spaces', 'user'), {
   oneproviderServer: Ember.inject.service(),
-
-  permissionsType: 'users',
-  routeType: 'spaces',
 
   actions: {
     inviteItem() {

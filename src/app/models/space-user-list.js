@@ -5,8 +5,6 @@ const {
   hasMany
 } = DS;
 
-const ASYNC = { async: true };
-
 /**
  * FIXME
  * @module models/space-user-list
@@ -15,6 +13,6 @@ const ASYNC = { async: true };
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend({
-  space: belongsTo('space', ASYNC),
-  permissions: hasMany('space-user-permission', ASYNC),
+  space: belongsTo('space', { async: true }),
+  permissions: hasMany('spaceUserPermission', { async: true, inverse: null }),
 });

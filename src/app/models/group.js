@@ -1,4 +1,5 @@
 import DS from 'ember-data';
+import isDefaultMixinFactory from 'ember-cli-onedata-common/mixin-factories/models/is-default';
 
 const {
   attr,
@@ -16,7 +17,7 @@ const {
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default DS.Model.extend({
+export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
   /** User specified name of space that will be exposed in GUI */
   name: attr('string'),
 

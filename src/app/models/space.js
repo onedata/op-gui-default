@@ -1,15 +1,10 @@
 import DS from 'ember-data';
-import Ember from 'ember';
 import isDefaultMixinFactory from 'ember-cli-onedata-common/mixin-factories/models/is-default';
 
 const {
   attr,
   belongsTo
 } = DS;
-
-const {
-  inject,
-} = Ember;
 
 /**
  * A configuration of a space - entry point for all options
@@ -21,8 +16,6 @@ const {
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
-  session: inject.service('session'),
-
   /** User specified name of space that will be exposed in GUI */
   name: attr('string'),
 

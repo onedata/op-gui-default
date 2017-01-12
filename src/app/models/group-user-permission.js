@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import permissionModelFactory from 'op-gui-worker/mixin-factories/models/permission';
-import FLAG_NAMES from 'op-gui-worker/constants/permission-group-flags';
+import permissionModelFactory from 'op-worker-gui/mixin-factories/models/permission';
+import FLAG_NAMES from 'op-worker-gui/constants/permission-group-flags';
 
 const {
   computed

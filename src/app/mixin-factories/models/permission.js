@@ -24,8 +24,6 @@ const {
   computed
 } = Ember;
 
-const DEFAULT_FALSE = { defaultValue: false };
-
 function create(flagNames) {
   let modFlags = flagNames.map(flag => camelize(`mod${flag}`));
 
@@ -80,10 +78,16 @@ function create(flagNames) {
   
   // Create model persisted attribute for single permission flag
   // Eg. permViewSpace: DS.attr('boolean', {defaultValue: false}),
+  let permissionAttributes = {};
+
   flagNames.forEach(flag => {
-    mixin[camelize(`perm${flag}`)] =
-      DS.attr('boolean', DEFAULT_FALSE);
+    permissionAttributes[camelize(`perm${flag}`)] =
+      DS.attr('boolean', { defaultValue: false });
   });
+
+  mixin.reopen(permissionAttributes);
+
+  return mixin;
 }
 
 export default create;

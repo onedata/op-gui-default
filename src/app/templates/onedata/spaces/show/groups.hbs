@@ -1,6 +1,6 @@
 {{#if canViewPermissions}}
   {{permissions-table subjectType="space"
-    groupsPermissions=model.permissions subject=model.subject}}
+    groupsPermissions=permissions subject=subject}}
 {{else}}
   {{#one-icon tagName="div" icon="group" class="content-error-icon"}}
     {{#one-overlay fog=false}}

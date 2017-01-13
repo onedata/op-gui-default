@@ -1,9 +1,9 @@
 {{page-title (t 'groups.show.members.title')}}
 
 {{#if canViewPermissions}}
-  {{permissions-table subjectType="group" subject=model.subject
-    usersPermissions=model.userPermissions
-    groupsPermissions=model.groupPermissions}}
+  {{permissions-table subjectType="group" subject=subject
+    usersPermissions=userPermissions
+    groupsPermissions=groupPermissions}}
 {{else}}
   {{#one-icon tagName="div" icon="group" class="content-error-icon"}}
     {{#one-overlay fog=false}}

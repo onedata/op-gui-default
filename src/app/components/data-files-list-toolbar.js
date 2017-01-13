@@ -275,7 +275,7 @@ export default Ember.Component.extend({
       let fileId = this.get('fileForChunks.id');
       // TODO: if fileId null...
 
-      this.get('store').query('file-distribution', { filter: { fileId: fileId } }).then(
+      this.get('store').query('file-distribution', { fileId }).then(
         (fbs) => {
           this.set('fileBlocks', fbs);
         },

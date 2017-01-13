@@ -11,7 +11,7 @@
 import Ember from 'ember';
 import showPermissionsMixinFactory from 'op-worker-gui/mixin-factories/routes/show-permissions';
 
-export default Ember.Route.extend(showPermissionsMixinFactory('spaces', 'user'), {
+export default Ember.Route.extend(showPermissionsMixinFactory('spaces'), {
   oneproviderServer: Ember.inject.service(),
 
   actions: {

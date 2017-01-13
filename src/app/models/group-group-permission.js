@@ -1,15 +1,6 @@
-import Ember from 'ember';
 import DS from 'ember-data';
 import permissionModelFactory from 'op-worker-gui/mixin-factories/models/permission';
 import FLAG_NAMES from 'op-worker-gui/constants/permission-group-flags';
-
-const {
-  computed
-} = Ember;
-
-const {
-  belongsTo
-} = DS;
 
 /**
  * A set of single Group permissions for a single (sub)Group
@@ -19,11 +10,6 @@ const {
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default DS.Model.extend(permissionModelFactory(FLAG_NAMES), {
-  // FIXME
-  // systemGroup: belongsTo('systemGroup', {async: true}),
-
-  group: belongsTo('group', {async: true, inverse: null}),
-
-  owner: computed.alias('systemGroup')
-});
+export default DS.Model.extend(
+  permissionModelFactory(FLAG_NAMES, 'group', 'systemGroup')
+);

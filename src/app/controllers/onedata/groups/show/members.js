@@ -8,4 +8,4 @@ import showPermissionsMixinFactory from 'op-worker-gui/mixin-factories/controlle
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default Ember.Controller.extend(showPermissionsMixinFactory('member'), {});
+export default Ember.Controller.extend(showPermissionsMixinFactory(['user', 'group']));

@@ -12,12 +12,18 @@
 
 import Ember from 'ember';
 
+const {
+  inject,
+  computed,
+  RSVP: {Promise}
+} = Ember;
+
 export default Ember.Component.extend({
-  oneproviderServer: Ember.inject.service(),
-  commonModals: Ember.inject.service(),
-  notify: Ember.inject.service(),
-  store: Ember.inject.service(),
-  session: Ember.inject.service(),
+  oneproviderServer: inject.service(),
+  commonModals: inject.service(),
+  notify: inject.service(),
+  store: inject.service(),
+  session: inject.service(),
 
   classNames: ['permissions-table'],
 
@@ -27,10 +33,10 @@ export default Ember.Component.extend({
   */
   subject: null,
 
-  isLoading: Ember.computed('isLocked', 'users.@each.isLoaded', 'groups.@each.isLoaded', function() {
+  isLoading: computed('isLocked', 'users.@each.isLoaded', 'groups.@each.isLoaded', function() {
     let {isLocked, users, groups} =
       this.getProperties('isLocked', 'users', 'groups');
-    return isLocked || users.some(p => !p.get('isLoaded')) || groups.some(p => !p.get('isLoaded'));
+    return isLocked || users && users.some(p => !p.get('isLoaded')) || groups && groups.some(p => !p.get('isLoaded'));
   }),
 
   /** Unfortunately, some colors are used by spin.js and must be passed from JS code
@@ -57,12 +63,12 @@ export default Ember.Component.extend({
    * It must be injected into component.
    */
   usersPermissions: null,
-  usersPermissionsSorted: Ember.computed.sort('usersPermissions', 'permissionsSorting'),
-  users: Ember.computed.mapBy('usersPermissions', 'owner'),
+  usersPermissionsSorted: computed.sort('usersPermissions', 'permissionsSorting'),
+  users: computed.mapBy('usersPermissions', 'owner'),
 
   groupsPermissions: null,
-  groupsPermissionsSorted: Ember.computed.sort('groupsPermissions', 'permissionsSorting'),
-  groups: Ember.computed.mapBy('groupsPermissions', 'owner'),
+  groupsPermissionsSorted: computed.sort('groupsPermissions', 'permissionsSorting'),
+  groups: computed.mapBy('groupsPermissions', 'owner'),
 
   availableGroups: function() {
     if (this.get('groupsPermissions')) {
@@ -149,7 +155,7 @@ export default Ember.Component.extend({
           );
         }
       });
-      let masterPromise = Ember.RSVP.Promise.all(promises);
+      let masterPromise = Promise.all(promises);
       masterPromise.finally(() => this.set('isLocked', false));
       masterPromise.catch((error) => {
         error = error || this.get('i18n').t('common.unknownError');
@@ -165,7 +171,7 @@ export default Ember.Component.extend({
       this.get('allPermissions').forEach(function(permission) {
         permission.reset();
       });
-      return new Ember.RSVP.Promise((resolve) => {
+      return new Promise((resolve) => {
         resolve();
       });
     },

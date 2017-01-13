@@ -11,21 +11,22 @@
 import Ember from 'ember';
 import showPermissionsMixinFactory from 'op-worker-gui/mixin-factories/routes/show-permissions';
 
-export default Ember.Route.extend(showPermissionsMixinFactory('groups', 'user'), {
+export default Ember.Route.extend(showPermissionsMixinFactory('groups'), {
   oneproviderServer: Ember.inject.service(),
 
-  /** Override from mixin - we need two separate permissions collections */
-  model() {
-    var subject = this.modelFor(`onedata.${this.get('routeType')}.show`);
-    return {
-      subject: subject,
-      // FIXME
-      userPermissions: subject.get('userPermissions'),
-      // FIXME
-      groupPermissions: subject.get('groupPermissions'),
-      availableGroups: this.modelFor('onedata.groups')
-    };
-  },
+  // /** Override from mixin - we need two separate permissions collections */
+  // model() {
+  //   var subject = this.modelFor(`onedata.${this.get('routeType')}.show`);
+  //   return {
+  //     subject: subject,
+  //     // FIXME
+  //     userPermissions: subject.get('userPermissions'),
+  //     // FIXME
+  //     groupPermissions: subject.get('groupPermissions'),
+  //     // FIXME
+  //     availableGroups: this.modelFor('onedata.groups')
+  //   };
+  // },
 
   actions: {
     didTransition() {

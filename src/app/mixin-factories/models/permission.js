@@ -2,7 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 /**
- * A factiory for creating permission models.
+ * A factory for creating permission models.
  * 
  * Created model has persisted attributes based on ``FLAG_NAMES`` in this file, eg.
  * ```
@@ -13,18 +13,37 @@ import DS from 'ember-data';
  * modViewGroup: false,
  * ```
  * 
+ * FIXME: add jsdoc about ``systemModel``
+ * 
  * @module mixin-factories/permission
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
+const ObjectPromiseProxy =
+  Ember.ObjectProxy.extend(Ember.PromiseProxyMixin);
+
 const {
   String: { camelize },
-  computed
+  RSVP: { Promise },
+  computed,
+  assert
 } = Ember;
 
-function create(flagNames) {
+/**
+ * @param {array} flagNames
+ * @param {string} subjectType eg. space, group
+ * @param {string} systemEntityName eg. systemUser, systemGroup
+ */
+function create(flagNames, subjectType, systemEntityName) {
+  assert(
+    'all parameters are required',
+    Array.from(arguments).every(a => a)
+  );
+
+  let systemEntityNameId = systemEntityName + 'Id';
+
   let modFlags = flagNames.map(flag => camelize(`mod${flag}`));
 
   let mixin = Ember.Mixin.create({
@@ -78,14 +97,55 @@ function create(flagNames) {
   
   // Create model persisted attribute for single permission flag
   // Eg. permViewSpace: DS.attr('boolean', {defaultValue: false}),
-  let permissionAttributes = {};
+  let additionalAttributes = {};
 
   flagNames.forEach(flag => {
-    permissionAttributes[camelize(`perm${flag}`)] =
+    additionalAttributes[camelize(`perm${flag}`)] =
       DS.attr('boolean', { defaultValue: false });
   });
 
-  mixin.reopen(permissionAttributes);
+  additionalAttributes[systemEntityNameId] = DS.attr('string');
+
+  additionalAttributes[systemEntityName] = computed(
+    systemEntityNameId,
+    `${subjectType}.id`,
+    
+    function() {
+      let store = this.get('store');
+      
+      let mainPromise = new Promise((resolve, reject) => {
+        let systemEntityId = this.get(systemEntityNameId);
+        let getSubject = this.get(subjectType);
+        getSubject.then(subject => {
+          if (!subject) {
+            resolve(null);
+          } else {
+            let subjectId = subject.get('id');
+            let query = {
+              id: systemEntityId,
+              context: {}
+            };
+            query.context[`od_${subjectType}`] = subjectId;
+
+            let getSystemUser = store.queryRecord(systemEntityName, query);
+            getSystemUser.then(resolve, reject);
+          }
+        });
+        getSubject.catch(reject);
+      });
+      
+      return ObjectPromiseProxy.create({
+        promise: mainPromise
+      });
+    }
+  );
+
+  additionalAttributes[subjectType] =
+    DS.belongsTo(subjectType, { async: true, inverse: null });
+
+  additionalAttributes['owner'] = computed.alias(systemEntityName);
+
+  mixin.reopen(additionalAttributes);
 
   return mixin;
 }

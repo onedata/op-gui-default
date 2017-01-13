@@ -22,7 +22,7 @@ function create(permissionType) {
     secondaryMenu: inject.service(),
 
     subject: computed.alias('model'),
-    permissions: computed.alias(`model.${permissionType}List.permissions`),
+
     canViewPermissions: computed.alias('subject.hasViewPrivilege'),
 
     changeMenuActiveOption() {
@@ -39,6 +39,23 @@ function create(permissionType) {
     }),
 
   });
+
+  let additionalAttributes = {};
+
+  if (Array.isArray(permissionType)) {
+    permissionType.forEach(pt => {
+      additionalAttributes[`${pt}Permissions`] =
+        computed.alias(`model.${pt}List.permissions`);  
+    });
+  } else {
+    additionalAttributes['permissions'] =
+      computed.alias(`model.${permissionType}List.permissions`);
+
+    additionalAttributes[`${permissionType}Permissions`] =
+      computed.alias('permissions');
+  }
+  
+  mixin.reopen(additionalAttributes);
 
   return mixin;
 }

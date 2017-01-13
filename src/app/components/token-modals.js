@@ -45,18 +45,24 @@ export default Ember.Component.extend({
 
   actions: {
     getToken() {
-      let type = this.get('type');
-      let tokenFun = this.get('oneproviderServer')[`getToken${type.capitalize()}`];
+      let {
+        type,
+        oneproviderServer,
+        funArgs,
+        i18n
+      } = this.getProperties('type', 'oneproviderServer', 'funArgs', 'i18n');
+
+      let tokenFun = oneproviderServer[`getToken${type.capitalize()}`];
       // TODO: handle in GUI?
       if (!tokenFun) {
         throw `GetToken function not found in oneProviderServer for type: ${type}`;
       }
-      tokenFun.apply(this.get('oneproviderServer'), this.get('funArgs')).then(
+      tokenFun.apply(oneproviderServer, funArgs).then(
         (data) => {
           this.set('inviteToken', data.token);
         },
         (error) => {
-          this.set('errorMessage', error.message || this.get('i18n').t('common.unknownError'));
+          this.set('errorMessage', error.message || i18n.t('common.unknownError'));
           console.error(`Token ${type} fetch failed: ` + JSON.stringify(error));
         }
       );

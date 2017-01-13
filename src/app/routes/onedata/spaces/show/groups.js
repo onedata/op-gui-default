@@ -11,17 +11,17 @@
 import Ember from 'ember';
 import showPermissionsMixinFactory from 'op-worker-gui/mixin-factories/routes/show-permissions';
 
-export default Ember.Route.extend(showPermissionsMixinFactory('spaces', 'group'), {
+export default Ember.Route.extend(showPermissionsMixinFactory('spaces'), {
   oneproviderServer: Ember.inject.service(),
 
   actions: {
     inviteItem() {
       let space = this.modelFor('onedata.spaces.show');
       this.get('oneproviderServer').inviteGroup(space).then(
-       (token) => {
-         this.set('inviteToken', token);
-       }
-       // TODO: handle errors
+        (token) => {
+          this.set('inviteToken', token);
+        }
+        // TODO: handle errors
       );
     }
   }

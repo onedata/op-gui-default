@@ -51,9 +51,10 @@ let TYPE_RPC_REQ = 'RPCReq';
 let TYPE_RPC_RESP = 'RPCResp';
 let TYPE_PUSH_MESSAGE = 'pushMessage';
 // Operations on model, identified by `operation` key
-let OP_FIND = 'find';
+let OP_FIND_RECORD = 'findRecord';
 let OP_FIND_ALL = 'findAll';
-let OP_FIND_QUERY = 'findQuery';
+let OP_QUERY = 'query';
+let OP_QUERY_RECORD = 'queryRecord';
 let OP_FIND_MANY = 'findMany';
 let OP_FIND_HAS_MANY = 'findHasMany';
 let OP_FIND_BELONGS_TO = 'findBelongsTo';
@@ -63,6 +64,15 @@ let OP_DELETE_RECORD = 'deleteRecord';
 // Operation results, identified by `result` key
 let RESULT_OK = 'ok';
 let RESULT_ERROR = 'error';
+
+const FETCH_MODEL_OPERATIONS = new Set([
+  OP_FIND_RECORD,
+  OP_FIND_ALL,
+  OP_QUERY,
+  OP_QUERY_RECORD,
+  OP_FIND_MANY,
+  OP_CREATE_RECORD
+]);
 
 export default DS.RESTAdapter.extend({
   store: Ember.inject.service('store'),
@@ -181,8 +191,8 @@ export default DS.RESTAdapter.extend({
 
   /** Called when ember store wants to find a record */
   findRecord(store, type, id, record) {
-    this.logToConsole(OP_FIND, [store, type, id, record]);
-    return this.asyncRequest(OP_FIND, type.modelName, id);
+    this.logToConsole(OP_FIND_RECORD, [store, type, id, record]);
+    return this.asyncRequest(OP_FIND_RECORD, type.modelName, id);
   },
 
   /** Called when ember store wants to find all records of a type */
@@ -193,8 +203,13 @@ export default DS.RESTAdapter.extend({
 
   /** Called when ember store wants to find all records that match a query */
   query(store, type, query) {
-    this.logToConsole(OP_FIND_QUERY, [store, type, query]);
-    return this.asyncRequest(OP_FIND_QUERY, type.modelName, null, query);
+    this.logToConsole(OP_QUERY, [store, type, query]);
+    return this.asyncRequest(OP_QUERY, type.modelName, null, query);
+  },
+
+  queryRecord(store, type, query) {
+    this.logToConsole(OP_QUERY_RECORD, [store, type, query]);
+    return this.asyncRequest(OP_QUERY_RECORD, type.modelName, null, query);
   },
 
   /** Called when ember store wants to find multiple records by id */
@@ -351,13 +366,9 @@ export default DS.RESTAdapter.extend({
     switch (operation) {
       case OP_CREATE_RECORD:
         return json[type] || json[type.camelize()];
-
-      case OP_FIND_QUERY:
-        // In case of find_query, json is in form
-        // {filter: {key: value}}
-        // Just send the filter
-        return json.filter;
-
+ 
+      // case OP_QUERY:
+      // case OP_QUERY_RECORD:
       default:
         return json;
     }
@@ -368,30 +379,12 @@ export default DS.RESTAdapter.extend({
    * by Ember.
    */
   transformResponse(json, type, operation) {
-    let result = {};
-    switch (operation) {
-      case OP_FIND:
-        result[type] = json;
-        return result;
-
-      case OP_FIND_ALL:
-        result[type] = json;
-        return result;
-
-      case OP_FIND_QUERY:
-        result[type] = json;
-        return result;
-
-      case OP_FIND_MANY:
-        result[type] = json;
-        return result;
-
-      case OP_CREATE_RECORD:
-        result[type] = json;
-        return result;
-
-      default:
-        return json;
+    if (FETCH_MODEL_OPERATIONS.has(operation)) {
+      let result = {};
+      result[type] = json;
+      return result;
+    } else {
+      return json;
     }
   },
 

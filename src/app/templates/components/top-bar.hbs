@@ -12,8 +12,13 @@
       {{#link-to "index" class="navbar-brand top-bar-item clickable" tagName="div"}}
         <div class="provider-name-container">
           <div class="oneicon oneicon-provider top-bar-icon"></div>
-          <div class="label-provider">{{t 'components.topBar.provider'}}:</div>
-          <div class="provider-name truncate">{{session.sessionDetails.providerName}}</div>
+          <div class="provider-name truncate">
+            {{session.sessionDetails.providerName}}
+          </div>
+          {{#truncated-string class="provider-name" shrinkBy=32}}
+            
+            
+          {{/truncated-string}}
         </div>
       {{/link-to}}
     </div>

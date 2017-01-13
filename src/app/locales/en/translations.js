@@ -74,7 +74,6 @@ export default {
     topBar: {
       logout: 'Log out',
       manageProviders: 'Manage account',
-      provider: 'provider'
     },
     mainMenu: {
       data: 'data',

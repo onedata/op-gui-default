@@ -10,29 +10,45 @@
 
 import Ember from 'ember';
 
+const {
+  observer,
+  computed,
+  inject
+} = Ember;
+
 export default Ember.Component.extend({
-  secondaryMenu: Ember.inject.service(),
-  store: Ember.inject.service(),
-  notify: Ember.inject.service(),
-  oneproviderServer: Ember.inject.service(),
-  commonModals: Ember.inject.service(),
-  commonLoader: Ember.inject.service(),
-  session: Ember.inject.service(),
+  secondaryMenu: inject.service(),
+  store: inject.service(),
+  notify: inject.service(),
+  oneproviderServer: inject.service(),
+  commonModals: inject.service(),
+  commonLoader: inject.service(),
+  session: inject.service(),
 
   spaces: null,
-  validSpaces: function() {
-    return this.get('spaces').filter((s) => s.get('isLoaded'));
-  }.property('spaces', 'spaces.[]', 'spaces.@each.isLoaded'),
+  validSpaces: computed.filterBy('spaces', 'isLoaded', true),
   spacesSorting: ['isDefault:desc', 'name'],
-  validSpacesSorted: Ember.computed.sort('validSpaces', 'spacesSorting'),
+  // FIXME: spaces -> validSpaces
+  validSpacesSorted: computed.sort('spaces', 'spacesSorting'),
 
-  activeSpace: Ember.computed.alias('secondaryMenu.activeSpace'),
+  activeSpace: computed.alias('secondaryMenu.activeSpace'),
 
-  isLoading: function() {
-    return !this.get('spaces.length') || this.get('spaces').any((s) => !s.get('name'));
-  }.property('spaces', 'spaces.length', 'spaces.@each.name'),
+  // FIXME maybe this implementation was better
+  // isLoading: computed('isWorking', 'spaces.length', 'spaces.@each.name', function() {
+  //   let { spaces, isWorking } = this.getProperties('spaces', 'isWorking');
+  //   return spaces.get('length') === 0 ||
+  //     spaces.any(s => !s || !s.get('name')) ||
+  //     isWorking;
+  // }),
 
-  isLoadingChanged: function() {
+  isLoading: computed('isWorking', 'spaces.@each.isLoaded', function() {
+    let { spaces, isWorking } = this.getProperties('spaces', 'isWorking');
+    return !spaces ||
+      spaces.any(s => !s || !s.get('isLoaded')) ||
+      isWorking;
+  }),
+
+  isLoadingChanged: observer('isLoading', function() {
     if (this.get('isLoading')) {
       this.setProperties({
         'commonLoader.isLoading': true,
@@ -46,7 +62,7 @@ export default Ember.Component.extend({
         'commonLoader.messageSecondary': null,
       });
     }
-  }.observes('isLoading'),
+  }),
 
   /*** Variables for actions and modals ***/
 
@@ -56,7 +72,7 @@ export default Ember.Component.extend({
   isJoiningSpace: false,
   joinSpaceToken: null,
 
-  isRenameModalOpened: Ember.computed('openedModal', {
+  isRenameModalOpened: computed('openedModal', {
     get() {
       return this.get('openedModal') === 'rename';
     },
@@ -69,7 +85,7 @@ export default Ember.Component.extend({
   }),
 
   spaceToRemove: null,
-  isRemoveModalOpened: Ember.computed('openedModal', {
+  isRemoveModalOpened: computed('openedModal', {
     get() {
       return this.get('openedModal') === 'remove';
     },
@@ -81,7 +97,7 @@ export default Ember.Component.extend({
     }
   }),
 
-  isLeaveModalOpened: Ember.computed('openedModal', {
+  isLeaveModalOpened: computed('openedModal', {
     get() {
       return this.get('openedModal') === 'leave';
     },
@@ -201,7 +217,7 @@ export default Ember.Component.extend({
     },
 
     setAsHome(space) {
-      this.set('isLoading', true);
+      this.set('isWorking', true);
 
       let user = this.get('session.user');
       let {id: spaceId, name: spaceName} = space.getProperties('id', 'name');
@@ -230,7 +246,7 @@ export default Ember.Component.extend({
       });
 
       savePromise.finally(() => {
-        this.set('isLoading', false);
+        this.set('isWorking', false);
       });
       
     },

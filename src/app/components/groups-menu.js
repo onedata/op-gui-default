@@ -13,13 +13,20 @@
 import Ember from 'ember';
 import PromiseLoadingMixin from 'ember-cli-onedata-common/mixins/promise-loading';
 
+const {
+  computed,
+  inject,
+  observer,
+  on
+} = Ember;
+
 export default Ember.Component.extend(PromiseLoadingMixin, {
-  secondaryMenu: Ember.inject.service(),
-  store: Ember.inject.service(),
-  notify: Ember.inject.service(),
-  oneproviderServer: Ember.inject.service(),
-  commonModals: Ember.inject.service(),
-  commonLoader: Ember.inject.service(),
+  secondaryMenu: inject.service(),
+  store: inject.service(),
+  notify: inject.service(),
+  oneproviderServer: inject.service(),
+  commonModals: inject.service(),
+  commonLoader: inject.service(),
 
   /** A buffer for token that is entered by user and submitted to backend */
   inputToken: null,
@@ -35,20 +42,21 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     return this.get('groups').filter((s) => s.get('isLoaded') && !s.get('isDeleted'));
   }.property('groups', 'groups.[]', 'groups.@each.isLoaded', 'groups.@each.isDeleted'),
   groupsSorting: ['isDefault:desc', 'name'],
-  validGroupsSorted: Ember.computed.sort('validGroups', 'groupsSorting'),
+  validGroupsSorted: computed.sort('validGroups', 'groupsSorting'),
 
-  activeGroup: Ember.computed.alias('secondaryMenu.activeGroup'),
+  activeGroup: computed.alias('secondaryMenu.activeGroup'),
 
   /**
    * The groups menu is loading if the groups property is null/undefined or
    * any of the groups in group array is not loaded (isLoaded property).
    */
-  isLoading: function() {
-    return !this.get('groups') || this.get('groups').any((s) => !s.get('isLoaded'));
-  }.property('groups', 'groups.@each.isLoaded'),
+  isLoading: computed('groups.@each.isLoaded', function() {
+    let groups = this.get('groups');
+    return !groups || groups.any(s => !s || !s.get('isLoaded'));
+  }),
 
   // TODO: what is loading?
-  isLoadingChanged: function() {
+  isLoadingChanged: observer('isLoading', function() {
     if (this.get('isLoading')) {
       this.setProperties({
         'commonLoader.isLoading': true,
@@ -62,7 +70,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
         'commonLoader.messageSecondary': null,
       });
     }
-  }.observes('isLoading'),
+  }),
 
   /*** Variables for actions and modals ***/
 
@@ -72,7 +80,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   isJoiningGroup: false,
   joinGroupToken: null,
 
-  isRenameModalOpened: Ember.computed('openedModal', {
+  isRenameModalOpened: computed('openedModal', {
     get() {
       return this.get('openedModal') === 'rename';
     },
@@ -85,7 +93,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   }),
 
   groupToRemove: null,
-  isRemoveModalOpened: Ember.computed('openedModal', {
+  isRemoveModalOpened: computed('openedModal', {
     get() {
       return this.get('openedModal') === 'remove';
     },
@@ -97,7 +105,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     }
   }),
 
-  isLeaveModalOpened: Ember.computed('openedModal', {
+  isLeaveModalOpened: computed('openedModal', {
     get() {
       return this.get('openedModal') === 'leave';
     },
@@ -109,7 +117,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     }
   }),
 
-  isJoinSpaceModalOpened: Ember.computed('openedModal', {
+  isJoinSpaceModalOpened: computed('openedModal', {
     get() {
       return this.get('openedModal') === 'joinSpace';
     },
@@ -121,7 +129,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     }
   }),
 
-  isJoinAsSubgroupModalOpened: Ember.computed('openedModal', {
+  isJoinAsSubgroupModalOpened: computed('openedModal', {
     get() {
       return this.get('openedModal') === 'joinAsSubgroup';
     },
@@ -133,7 +141,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     }
   }),
 
-  isLeaveParentGroupModalOpened: Ember.computed('openedModal', {
+  isLeaveParentGroupModalOpened: computed('openedModal', {
     get() {
       return this.get('openedModal') === 'leaveParentGroup';
     },
@@ -145,16 +153,16 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     }
   }),
 
-  registerInsecondaryMenu: function() {
+  registerInsecondaryMenu: on('init', function() {
     this.set('secondaryMenu.component', this);
-  }.on('init'),
+  }),
 
-  activeGroupDidChange: function() {
-    if (this.get('activeGroup')) {
-
-      this.sendAction('goToGroup', this.get('activeGroup'));
+  activeGroupDidChange: observer('activeGroup', function() {
+    let activeGroup = this.get('activeGroup');
+    if (activeGroup) {
+      this.sendAction('goToGroup', activeGroup);
     }
-  }.observes('activeGroup'),
+  }),
 
   didInsertElement() {
     // reset groups expanded state
@@ -300,24 +308,37 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     },
 
     submitJoinSpace() {
-      let token = this.get('inputToken') && this.get('inputToken').trim();
-      let group = this.get('modalGroup');
-      let promise = this.promiseLoading(this.get('oneproviderServer')
-        .groupJoinSpace(this.get('modalGroup.id'), token)).then(
+      let {
+        inputToken,
+        modalGroup,
+        oneproviderServer,
+        notify,
+        i18n
+      } = this.getProperties(
+        'inputToken',
+        'modalGroup',
+        'oneproviderServer',
+        'notify',
+        'i18n'
+      );
+      let token = inputToken && inputToken.trim();
+      let group = modalGroup;
+      let promise = this.promiseLoading(oneproviderServer)
+        .groupJoinSpace(modalGroup.get('id'), token).then(
           (data) => {
-            let message = this.get('i18n').t('components.groupsMenu.notify.joinSpaceSuccess', {
+            let message = i18n.t('components.groupsMenu.notify.joinSpaceSuccess', {
               groupName: group.get('name'),
               spaceName: data.spaceName
             });
-            this.get('notify').info(message);
+            notify.info(message);
           },
           (error) => {
             console.log(error.message);
-            let message = this.get('i18n').t('components.groupsMenu.notify.joinSpaceFailed', {
+            let message = i18n.t('components.groupsMenu.notify.joinSpaceFailed', {
               groupName: group.get('name'),
             });
             message = message + ': ' + error.message;
-            this.get('notify').error(message);
+            notify.error(message);
           }
       );
       promise.finally(() => {

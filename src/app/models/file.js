@@ -9,12 +9,8 @@
 
 import DS from 'ember-data';
 
-import FileMixin from 'op-worker-gui/mixins/models/file';
+import createFileModel from 'op-worker-gui/mixin-factories/models/file';
 
-export default DS.Model.extend(FileMixin, {
-  share: DS.belongsTo('share', {inverse: null, async: true}),
-  parent: DS.belongsTo('file', {inverse: 'children', async: true}),
-  children: DS.hasMany('file', {inverse: 'parent', async: true}),
-  fileProperty: DS.belongsTo('file-property', {inverse: 'file', async: true}),
+export default DS.Model.extend(createFileModel('regular'), {
   filePermission: DS.belongsTo('file-permission', {inverse: 'file', async: true}),
 });

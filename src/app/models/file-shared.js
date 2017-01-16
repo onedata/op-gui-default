@@ -1,6 +1,6 @@
 /**
- * Represents a file in a file browser for signed-in user.
- * @module models/file
+ * Represents a file in a share file browser for signed-in user.
+ * @module models/file-shared
  * @author Łukasz Opioła
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
@@ -9,11 +9,6 @@
 
 import DS from 'ember-data';
 
-import FileMixin from 'op-worker-gui/mixins/models/file';
+import createFileModel from 'op-worker-gui/mixin-factories/models/file';
 
-export default DS.Model.extend(FileMixin, {
-  share: DS.belongsTo('share', {inverse: null, async: true}),
-  parent: DS.belongsTo('file-shared', {inverse: 'children', async: true}),
-  children: DS.hasMany('file-shared', {inverse: 'parent', async: true}),
-  fileProperty: DS.belongsTo('file-property-shared', {inverse: 'file', async: true}),
-});
+export default DS.Model.extend(createFileModel('shared'));

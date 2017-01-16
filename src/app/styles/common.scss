@@ -4,6 +4,7 @@ $responsive-multiplier: 1 !default;
 $sidebar-width: 68px !default;
 $top-bar-height: 80px !default;
 $global-min-width: 1000px !default;
+$provider-name-conainer-width: 360px !default;
 // $secondary-sidebar-width: 352px;
 $secondary-sidebar-width: 352px !default;
 $secondary-sidebar-width-max-addition: 400px;
@@ -61,6 +62,8 @@ html, body {
 }
 
 #app {
+  $brand-top-padding: 15px;
+
   header {
     position: fixed;
     top: 0;
@@ -73,10 +76,13 @@ html, body {
     // TODO
     //transition: left 0.25s;
 
+    $top-bar-separator-border: solid 1px $color-toolbar-separator;
+
     .navbar {
       height: $top-bar-height;
       margin-bottom: 0;
       border: none;
+      border-bottom: $top-bar-separator-border;
       border-radius: 0;
       background: none;
 
@@ -117,44 +123,36 @@ html, body {
           margin-left: $secondary-sidebar-item-padding;
           margin-right: 62px;
           background-image: url("/assets/images/logo-dark.svg");
-          background-position: center left;
+          background-position-x: left;
+          background-position-y: $brand-top-padding;
           background-size: auto 26px;
           background-repeat: no-repeat;
 
           .provider-name-container {
             // make sure to be able to contain provider label and name
-            width: 400px;
+            width: $provider-name-conainer-width + 32px;
             position: absolute;
             top: 50%;
             left: -4px;
-            transform: translateY(-50%) translateY(25px);
-            font-size: 0.85em;
+            transform: translateY(-50%) translateY(20px);
+            font-size: 12px;
+
+            line-height: 22px;
 
             .top-bar-icon {
               display: block;
               float: left;
-              font-size: 24px !important;
-              line-height: 24px;
-              color: $onedata-red;
-            }
-
-            .label-provider {
-              line-height: 24px;
-              display: block;
-              float: left;
-              margin-left: 4px;
-              &::first-letter {
-                text-transform: capitalize;
-              }
+              font-size: 22px !important;
+              line-height: inherit;
+              color: #000;
             }
 
             .provider-name {
               display: block;
               float: left;
-              line-height: 24px;
-              margin-left: 8px;
-              font-weight: bold;
-              max-width: 210px;
+              max-width: $provider-name-conainer-width;
+              line-height: inherit;
+              margin-left: 4px;
             }
           }
         }
@@ -167,7 +165,7 @@ html, body {
 
       // TODO: left only for first, disable right for last
       .toolbar-group {
-        border-right: solid 1px $color-toolbar-separator;
+        border-right: $top-bar-separator-border;
 
         &.navbar-right {
           &:first-of-type {
@@ -229,7 +227,7 @@ html, body {
         background-image: url("/assets/images/logo-short-light.svg");
         background-size: 40px 26px;
         background-repeat: no-repeat;
-        background-position: center center;
+        background-position: center $brand-top-padding;
       }
 
       // TODO

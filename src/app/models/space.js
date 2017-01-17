@@ -23,6 +23,8 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
 
   /*** RELATIONS */
 
+  user: belongsTo('user', { async: true }),
+
   /** A root directory with space files. It must be a dir-type File! */
   rootDir: belongsTo('file', { async: true }),
 

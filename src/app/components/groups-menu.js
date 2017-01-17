@@ -27,6 +27,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   oneproviderServer: inject.service(),
   commonModals: inject.service(),
   commonLoader: inject.service(),
+  session: inject.service(),
 
   /** A buffer for token that is entered by user and submitted to backend */
   inputToken: null,
@@ -207,9 +208,11 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
 
     _submitCreateGroup() {
       let name = this.get('newGroupName');
+      let user = this.get('session.user');
       let s = this.get('store').createRecord('group', {
         name: name,
         hasViewPrivilege: true,
+        user
       });
       let savePromise = s.save();
       savePromise.then(

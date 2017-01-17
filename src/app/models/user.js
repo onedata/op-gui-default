@@ -13,22 +13,18 @@ export default DS.Model.extend({
   /*** Relations ***/
 
   groups: hasMany('group', {
-    async: true,
-    inverse: null
+    async: true
   }),
 
   spaces: hasMany('spaces', {
-    async: true,
-    inverse: null
+    async: true
   }),
 
   shares: hasMany('share', {
-    async: true,
-    inverse: null
+    async: true
   }),
 
   handleServices: hasMany('handle-service', {
-    async: true,
-    inverse: null
+    async: true
   }),
 });

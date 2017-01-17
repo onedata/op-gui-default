@@ -25,6 +25,8 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
 
   /*** RELATIONS */
 
+  user: belongsTo('user', { async: true }),
+
   /** Collection of users permissions - effectively all rows in permissions table */
   userList: belongsTo('group-user-list', { async: true }),
   

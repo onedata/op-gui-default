@@ -61,6 +61,9 @@ function create(type) {
 
   if (type === 'regular') {
     mixin.reopen({
+      user: belongsTo('user', {
+        async: true
+      }),
       dataSpace: belongsTo('space', {
         async: true
       }),

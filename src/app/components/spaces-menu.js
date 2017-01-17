@@ -158,9 +158,11 @@ export default Ember.Component.extend({
     _submitCreateSpace() {
       // set isSavingSpace one more time, because we can reach this action from input text
       let name = this.get('newSpaceName');
+      let user = this.get('session.user');
       let s = this.get('store').createRecord('space', {
         name: name,
         hasViewPrivilege: true,
+        user
       });
       let savePromise = s.save();
       savePromise.then(

@@ -26,7 +26,8 @@ function create(permissionType) {
     canViewPermissions: computed.alias('subject.hasViewPrivilege'),
 
     changeMenuActiveOption() {
-      this.set('secondaryMenu.activeOption', permissionType);
+      let activeOption = Array.isArray(permissionType) ? 'members' : permissionType + 's';
+      this.set('secondaryMenu.activeOption', activeOption);
 
       // TODO: control visible class of secondary sidebar with bound property
       // Ember.run.scheduleOnce('afterRender', this, function() {

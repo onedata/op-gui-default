@@ -291,6 +291,29 @@ export default DS.RESTAdapter.extend({
   },
 
   /** -------------------------------------------------------------------
+   * Semaphore to not allow pushing before all model resp are done
+   * ------------------------------------------------------------------- */
+
+  _respSemaphore: 0,
+
+  waitingMessages: Ember.A(),
+
+  isRespSemaphoreAcquired: Ember.computed('_respSemaphore', function() {
+    return this.get('_respSemaphore') > 0;
+  }),
+
+  respSemaphoreAcquire() {
+    this.incrementProperty('_respSemaphore');
+  },
+
+  respSemaphoreRelease() {
+    this.decrementProperty('_respSemaphore');
+    if (this.get('_respSemaphore') < 0) {
+      this.set('_respSemaphore', 0);
+    }
+  },
+
+  /** -------------------------------------------------------------------
    * Internal functions
    * ------------------------------------------------------------------- */
 
@@ -313,6 +336,7 @@ export default DS.RESTAdapter.extend({
       resourceIds: ids,
       data: this.transformRequest(data, type, operation)
     };
+    this.respSemaphoreAcquire();
     return this.sendAndRegisterPromise(operation, type, payload);
   },
 
@@ -465,70 +489,134 @@ export default DS.RESTAdapter.extend({
     }
   },
 
+  processMessageLater(message) {
+    console.debug(`A message (uuid=${message.uuid}) will be processed later`);
+    let waitingMessages = this.get('waitingMessages');
+    waitingMessages.pushObject(message);
+  },
+
+  processQueuedMessages() {
+    let waitingMessages = this.get('waitingMessages');
+    /* jshint loopfunc: true */
+    while (waitingMessages.get('length') > 0) {
+      let message = waitingMessages.shift();
+      setTimeout(() => this.processMessage(message), 0);
+    }
+  },
+
+  waitingMessagesChanged: Ember.observer('isRespSemaphoreAcquired', 'waitingMessages.length', function() {
+    let {
+      isRespSemaphoreAcquired,
+      waitingMessages
+    } = this.getProperties(
+      'isRespSemaphoreAcquired',
+      'waitingMessages'
+    );
+
+    if (!isRespSemaphoreAcquired && waitingMessages.get('length') > 0) {
+      console.debug('respSemaphore has been released - processing waitingMessages');
+      this.processQueuedMessages();
+    }
+  }),
+
   // TODO: document message object: data, uuid, result
   processMessage(message) {
     let adapter = this;
+    let store = this.get('store');
     let promise;
-    console.debug('received: ' + JSON.stringify(message.data));
-    if (message.msgType === TYPE_MODEL_RESP) {
-      // Received a response to data fetch
-      promise = adapter.promises.get(message.uuid);
-      if (message.result === RESULT_OK) {
-        let transformed_data = adapter.transformResponse(message.data,
-            promise.type, promise.operation);
-        console.debug(`FETCH_RESP success, (uuid=${message.uuid}): ${JSON.stringify(transformed_data)}`);
+    let {
+      msgType,
+      uuid,
+      result,
+      data,
+      resourceType
+    } = message;
 
-        promise.success(transformed_data);
-      } else if (message.result === RESULT_ERROR) {
-        console.debug(`FETCH_RESP error, (uuid=${message.uuid}): ${JSON.stringify(message.data)}`);
-        promise.error(message.data);
-      } else {
-        console.warn(`Received model response (uuid=${message.uuid}) with unknown result: ${message.result}`);
-        promise.error(message.data);
-      }
-    } else if (message.msgType === TYPE_RPC_RESP) {
-      // Received a response to RPC call
-      promise = adapter.promises.get(message.uuid);
-      if (message.result === RESULT_OK) {
-        console.debug(`RPC_RESP success, (uuid=${message.uuid}): ${JSON.stringify(message.data)}`);
-        promise.success(message.data);
-      } else if (message.result === RESULT_ERROR) {
-        console.debug(`RPC_RESP error, (uuid=${message.uuid}): ${JSON.stringify(message.data)}`);
-        promise.error(message.data);
-      } else {
-        console.warn(`Received RPC response (uuid=${message.uuid}) with unknown result: ${message.result}`);
-        promise.error(message.data);
-      }
+    console.debug('Processing message: ' + JSON.stringify(message));
+
+    switch (msgType) {
+      case TYPE_MODEL_RESP:
+        try {
+          // Received a response to data fetch
+          promise = adapter.promises.get(uuid);
+          if (result === RESULT_OK) {
+            let transformed_data = this.transformResponse(
+              data,
+              promise.type,
+              promise.operation
+            );
+            console.debug(`FETCH_RESP success, (uuid=${message.uuid}): ${JSON.stringify(transformed_data)}`);
+            promise.success(transformed_data);
+          } else if (result === RESULT_ERROR) {
+            console.debug(`FETCH_RESP error, (uuid=${uuid}): ${JSON.stringify(data)}`);
+            promise.error(data);
+          } else {
+            console.warn(`Received model response (uuid=${uuid}) with unknown result: ${result}`);
+            promise.error(data);
+          }
+        } finally {
+          this.respSemaphoreRelease();
+        }
+
+        break;
+    
+      case TYPE_RPC_RESP:
+        // Received a response to RPC call
+        promise = adapter.promises.get(uuid);
+        if (result === RESULT_OK) {
+          console.debug(`RPC_RESP success, (uuid=${uuid}): ${JSON.stringify(data)}`);
+          promise.success(data);
+        } else if (result === RESULT_ERROR) {
+          console.debug(`RPC_RESP error, (uuid=${uuid}): ${JSON.stringify(data)}`);
+          promise.error(data);
+        } else {
+          console.warn(`Received RPC response (uuid=${uuid}) with unknown result: ${result}`);
+          promise.error(data);
+        }
+        break;
+
+      case TYPE_MODEL_CRT_PUSH:
+      case TYPE_MODEL_UPT_PUSH:
+        // Received a push message that something was created
+        if (this.get('isRespSemaphoreAcquired')) {
+          this.processMessageLater(message);
+        } else {
+          console.debug(msgType + ': ' + JSON.stringify(message));
+          let payload = {};
+          payload[resourceType] = data;
+          store.pushPayload(payload);
+        }
+        break;
+
+      case TYPE_MODEL_DLT_PUSH:
+        // Received a push message that something was deleted
+        // data field contains a list of ids to delete
+        if (this.get('isRespSemaphoreAcquired')) {
+          this.processMessageLater(message);
+        } else {
+          data.forEach(function (id) {
+            store.findRecord(resourceType, id).then(
+                function (record) {
+                  store.unloadRecord(record);
+                });
+          });
+        }
+        break;
+
+      case TYPE_PUSH_MESSAGE:
+        this.get('serverMessagesHandler').triggerEvent(
+          data.operation,
+          data.arguments
+        );
+        break;
+
+      default:
+        console.warn(`Server message with unknown type received: ${msgType}`);
+        break;
     }
-    else if (message.msgType === TYPE_MODEL_CRT_PUSH ||
-        message.msgType === TYPE_MODEL_UPT_PUSH) {
-      // Received a push message that something was created
-      console.debug(message.msgType + ': ' + JSON.stringify(message));
-      let payload = {};
-      payload[message.resourceType] = message.data;
-      this.get('store').pushPayload(payload);
-    } else if (message.msgType === TYPE_MODEL_DLT_PUSH) {
-      let store = this.get('store');
-      // Received a push message that something was deleted
-      console.debug('Delete:' + JSON.stringify(message));
-      // data field contains a list of ids to delete
-      message.data.forEach(function (id) {
-        store.findRecord(message.resourceType, id).then(
-            function (record) {
-              store.unloadRecord(record);
-            });
-      });
-    }
-    else if (message.msgType === TYPE_PUSH_MESSAGE) {
-      this.get('serverMessagesHandler').triggerEvent(
-        message.data.operation,
-        message.data.arguments
-      );
-    } else {
-      console.warn(`Server message with unknown type received: ${message.msgType}`);
-    }
-    if (message.uuid) {
-      adapter.promises.delete(message.uuid);
+
+    if (uuid) {
+      adapter.promises.delete(uuid);
     }
   },
 

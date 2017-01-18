@@ -1,8 +1,19 @@
 import Ember from 'ember';
 
+const {
+  String: {
+    htmlSafe
+  },
+  inject,
+  computed
+} = Ember;
+
+/**
+ * @return {SafeString} a HTML that should display icon as in one-icon
+ */
 function iconHTML(icon) {
-  return Ember.HTMLBars.compile(`{{one-icon icon="${icon}"}}`);
-} 
+  return htmlSafe(`<span class="one-icon oneicon oneicon-${icon}"></span>`);
+}
 
 /**
  * A graphical representation of single ``AccessControlEntity``.
@@ -13,7 +24,7 @@ function iconHTML(icon) {
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
-  store: Ember.inject.service(),
+  store: inject.service(),
 
   /**
    * @type AccessControlEntity
@@ -32,7 +43,13 @@ export default Ember.Component.extend({
    */
   systemGroups: null,
 
-  subjectName: function() {
+  types: ['allow', 'deny'],
+
+  /**
+   * Permission subject name for read-only entries. Eg. user name.
+   * @type {computed<string>}
+   */
+  subjectName: computed('ace.{subject,user,group}', function() {
     let subjectsListProperty;
     let subjectIdProperty;
     switch (this.get('ace.subject')) {
@@ -50,27 +67,20 @@ export default Ember.Component.extend({
     const subjectInfo = (this.get(subjectsListProperty) || [])
       .find(e => e.id === this.get(subjectIdProperty));
     return subjectInfo && subjectInfo.text;
-  }.property('ace.subject', 'ace.user', 'ace.group'),
+  }).readOnly(),
 
   /**
    * This should resolve subject type icon name for ace.type.
    * Currently icon names are the same as type name.
    */
-  subjectTypeIcon: function() {
-    return this.get('ace.subject');
-  }.property('ace.subject'),
+  subjectTypeIcon: computed.alias('ace.subject'),
 
-  subjectItems: function() {
+  subjectItems: computed(function() {
     return [
-      {id: 'user', text: iconHTML(['user'])},
-      {id: 'group', text: iconHTML(['group'])},
-      // Not implemented yet in backend
-      // {id: 'owner', text: this.generateSubjectIconHtml('owner')},
-      // {id: 'everyone', text: this.generateSubjectIconHtml('everyone')},
+      {id: 'user', text: iconHTML('user')},
+      {id: 'group', text: iconHTML('group')},
     ];
-  }.property().readOnly(),
-
-  types: ['allow', 'deny'],
+  }).readOnly(),
 
   // TODO: these actions can be probably invoked as: (action 'moveUp' ace) in view
   actions: {
@@ -125,7 +135,7 @@ export default Ember.Component.extend({
     'perm_write_owner'
   ],
 
-  permissionKeys: function() {
+  permissionKeys: computed('file.type', function() {
     switch (this.get('fileType')) {
       case 'file':
         return this.get('filePermissionKeys');
@@ -134,5 +144,5 @@ export default Ember.Component.extend({
       default:
         return null;
     }
-  }.property('file.type').readOnly()
+  }).readOnly()
 });

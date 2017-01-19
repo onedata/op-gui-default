@@ -4,14 +4,8 @@ const {
   inject,
   computed,
   observer,
-  isArray,
-  on,
-  RSVP: {
-    Promise
-  }
+  isArray
 } = Ember;
-
-const ObjectPromiseProxy = Ember.ObjectProxy.extend(Ember.PromiseProxyMixin);
 
 /**
  * Base for spaces/groups submenu options controllers - select submenu option on route's

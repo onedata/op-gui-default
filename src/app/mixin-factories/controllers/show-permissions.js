@@ -3,8 +3,15 @@ import Ember from 'ember';
 const {
   inject,
   computed,
-  observer
+  observer,
+  isArray,
+  on,
+  RSVP: {
+    Promise
+  }
 } = Ember;
+
+const ObjectPromiseProxy = Ember.ObjectProxy.extend(Ember.PromiseProxyMixin);
 
 /**
  * Base for spaces/groups submenu options controllers - select submenu option on route's
@@ -17,6 +24,9 @@ const {
  */
 export default create;
 
+/**
+ * @param {string|string[]} permissionType user or group or [user, group]
+ */
 function create(permissionType) {
   let mixin = Ember.Mixin.create({
     secondaryMenu: inject.service(),
@@ -43,19 +53,43 @@ function create(permissionType) {
 
   let additionalAttributes = {};
 
-  if (Array.isArray(permissionType)) {
-    permissionType.forEach(pt => {
-      additionalAttributes[`${pt}Permissions`] =
-        computed.alias(`model.${pt}List.permissions`);  
-    });
-  } else {
-    additionalAttributes['permissions'] =
-      computed.alias(`model.${permissionType}List.permissions`);
+  if (!isArray(permissionType)) {
+    additionalAttributes['permissions'] = 
+      computed.alias(`${permissionType}s-permissions`.camelize());
 
-    additionalAttributes[`${permissionType}Permissions`] =
-      computed.alias('permissions');
+    permissionType = [permissionType];
   }
+
+  // create aliases to permissions models (each is a ObjectProxy<RecordArray>)
+  permissionType.forEach(pt => {
+    additionalAttributes[`${pt}s-permissions`.camelize()] =
+      computed.alias(`model.${pt}List.permissions`);
+  });
+
+  // names of created attributes
+  let listAttributes =
+      permissionType.map(pt => `model.${pt}List`);
+
+  // one computed property to check if promises for fetching
+  // all permissions list model are settled
+  let listsAreSettled = listAttributes.map(li => li + '.isSettled');
+  additionalAttributes['isLoadingList'] =
+    computed(...listsAreSettled, function() {
+      return listsAreSettled.any(s => !this.get(s));
+    });
   
+  additionalAttributes['isListRejected'] =
+    computed(...listAttributes, 'isLoadingList', function() {
+      if (this.get('isLoadingList')) {
+        return false;
+      } else {
+        let listNotLoaded = listAttributes.every(la => {
+          return this.get(la + '.content') == null;
+        });
+        return listNotLoaded;
+      }
+    });
+
   mixin.reopen(additionalAttributes);
 
   return mixin;

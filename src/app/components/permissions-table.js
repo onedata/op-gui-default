@@ -15,6 +15,8 @@ import Ember from 'ember';
 const {
   inject,
   computed,
+  observer,
+  isArray,
   RSVP: {Promise}
 } = Ember;
 
@@ -33,10 +35,11 @@ export default Ember.Component.extend({
   */
   subject: null,
 
-  isLoading: computed('isLocked', 'users.@each.isLoaded', 'groups.@each.isLoaded', function() {
-    let {isLocked, users, groups} =
-      this.getProperties('isLocked', 'users', 'groups');
-    return isLocked || users && users.some(p => !p.get('isLoaded')) || groups && groups.some(p => !p.get('isLoaded'));
+  isLoading: computed('isLocked', 'users.@each.isLoaded', 'groups.@each.isLoaded', 
+    'isLoadingList', function() {
+      let {isLocked, users, groups, isLoadingList} =
+        this.getProperties('isLocked', 'users', 'groups', 'isLoadingList');
+      return isLocked || isLoadingList || users && users.some(p => !p.get('isLoaded')) || groups && groups.some(p => !p.get('isLoaded'));
   }),
 
   /** Unfortunately, some colors are used by spin.js and must be passed from JS code
@@ -56,6 +59,9 @@ export default Ember.Component.extend({
 
   permissionsSorting: ['owner'],
 
+  // FIXME jsdoc
+  isLoadingList: undefined,
+
   /**
    * Collection of permissions-base model subclasses instances.
    * Each represents a sigle entity with some permissions to set.
@@ -65,10 +71,24 @@ export default Ember.Component.extend({
   usersPermissions: null,
   usersPermissionsSorted: computed.sort('usersPermissions', 'permissionsSorting'),
   users: computed.mapBy('usersPermissions', 'owner'),
+  showUsersPermissions: computed('usersPermissions', function() {
+    return this.get('usersPermissions') != null;
+  }),
+  emptyUsersPermissions: computed('usersPermissions.length', function() {
+    let ps = this.get('usersPermissions');
+    return isArray(ps) && ps.get('length') === 0;
+  }),
 
   groupsPermissions: null,
   groupsPermissionsSorted: computed.sort('groupsPermissions', 'permissionsSorting'),
   groups: computed.mapBy('groupsPermissions', 'owner'),
+  showGroupsPermissions: computed('groupsPermissions', function() {
+    return this.get('groupsPermissions') != null;
+  }),
+  emptyGroupsPermissions: computed('groupsPermissions.length', function() {
+    let ps = this.get('groupsPermissions');
+    return isArray(ps) && ps.get('length') === 0;
+  }),
 
   availableGroups: function() {
     if (this.get('groupsPermissions')) {
@@ -84,12 +104,12 @@ export default Ember.Component.extend({
    */
   subjectType: null,
 
-  typeSingular: function() {
+  typeSingular: computed('type', function() {
     let type = this.get('type');
     return (type.slice(-1) === 's') ? type.slice(0, -1) : type;
-  }.property('type'),
+  }),
 
-  inviteButton: function() {
+  inviteButton: computed('type', function() {
     switch (this.get('type')) {
       case 'users':
         return 'user-add';
@@ -98,32 +118,32 @@ export default Ember.Component.extend({
       default:
         return null;
     }
-  }.property('type'),
+  }),
 
   /** Should permissions table be treated as modified and not saved?
    *  It is true when at least one permission model in collection is modified.
    */
-  isModified: function() {
-    let up = this.get('usersPermissions');
-    let gp = this.get('groupsPermissions');
-    let upModified = up ? up.any(p => p.get('isModified')) : false;
-    let gpModified = gp ? gp.any(p => p.get('isModified')) : false;
-    return upModified || gpModified;
-  }.property('usersPermissions.@each.isModified', 'groupsPermissions.@each.isModified'),
+  // isModified: function() {
+  //   let up = this.get('usersPermissions');
+  //   let gp = this.get('groupsPermissions');
+  //   let upModified = up ? up.any(p => p.get('isModified')) : false;
+  //   let gpModified = gp ? gp.any(p => p.get('isModified')) : false;
+  //   return upModified || gpModified;
+  // }.property('usersPermissions.@each.isModified', 'groupsPermissions.@each.isModified'),
 
-  isModifiedChanged: function() {
+  isModifiedChanged: observer('isModified', function() {
     this.sendAction('modifiedChanged', this.get('isModified'), this.get('subjectType'));
-  }.observes('isModified'),
+  }),
 
   activePermissions: null,
 
-  allPermissions: function() {
+  allPermissions: computed('usersPermissions', 'groupsPermissions', function() {
     return [].concat(
       this.get('usersPermissions') && this.get('usersPermissions').toArray() || []
     ).concat(
       this.get('groupsPermissions') && this.get('groupsPermissions').toArray() || []
     );
-  }.property('usersPermissions', 'groupsPermissions'),
+  }),
 
   actions: {
     /** Change state of single permission checkbox */

@@ -6,7 +6,8 @@ const {
 } = DS;
 
 /**
- * FIXME jsdoc
+ * Base data store attributes of File models.
+ * See ``mixin-factories/models/file`` for creating specific models.
  * @module mixins/models/file-base
  * @author Jakub Liput
  * @copyright (C) 2016-2017 ACK CYFRONET AGH

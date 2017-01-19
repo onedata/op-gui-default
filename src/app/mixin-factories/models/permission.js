@@ -1,6 +1,16 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+const ObjectPromiseProxy =
+  Ember.ObjectProxy.extend(Ember.PromiseProxyMixin);
+
+const {
+  String: { camelize },
+  RSVP: { Promise },
+  computed,
+  assert
+} = Ember;
+
 /**
  * A factory for creating permission models.
  * 
@@ -13,23 +23,33 @@ import DS from 'ember-data';
  * modViewGroup: false,
  * ```
  * 
- * FIXME: add jsdoc about ``systemModel``
+ * ## System model relations
+ * 
+ * The mixin will add a DS attribte for storing ID of related system model
+ * (eg. system-user or system-group).
+ * 
+ * A computed property for fetching the attribute will be also created.
+ * The system model is _not_ implemented as a ``belongsTo`` relation,
+ * because fetching system model must be performed with ``findQuery``.
+ * 
+ * Finally, the model will have for example properties:
+ * - ``systemUserId: DS.attr<string>``
+ * - ``systemUser: ObjectProxy<SystemUser>``
+ * 
+ * ## Subject relation
+ * 
+ * A permission model has a relation to the subject that permissions is about.
+ * For example it can be a Space or a Group.
+ * 
+ * The created mixin will have a ``belongsTo`` relation to the subject with
+ * name of type (eg. ``space: belongsTo(space)``) and an alias to this property
+ * named ``owner``.
  * 
  * @module mixin-factories/permission
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-
-const ObjectPromiseProxy =
-  Ember.ObjectProxy.extend(Ember.PromiseProxyMixin);
-
-const {
-  String: { camelize },
-  RSVP: { Promise },
-  computed,
-  assert
-} = Ember;
 
 /**
  * @param {array} flagNames

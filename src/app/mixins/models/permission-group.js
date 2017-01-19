@@ -2,25 +2,11 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import permissionModelFactory from 'op-worker-gui/mixin-factories/models/permission';
 
+import FLAG_NAMES from 'op-worker-gui/contants/group-flags';
+
 const {
   belongsTo
 } = DS;
-
-const FLAG_NAMES = [
-  'ViewGroup',
-  'ModifyGroup',
-  'SetPrivileges',
-  'RemoveGroup',
-  'InviteUser',
-  'RemoveUser',
-  'CreateSpace',
-  'JoinSpace',
-  'LeaveSpace',
-  'GetSupport',
-  'InviteGroup',
-  'RemoveSubgroup',
-  'JoinGroup'
-];
 
 /**
  * A base DS.Model for creating group permission models.

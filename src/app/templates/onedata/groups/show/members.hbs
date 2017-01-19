@@ -3,7 +3,9 @@
 {{#if canViewPermissions}}
   {{permissions-table subjectType="group" subject=subject
     usersPermissions=userPermissions
-    groupsPermissions=groupPermissions}}
+    groupsPermissions=groupPermissions
+    isLoadingList=isLoadingList
+    isListRejected=isListRejected}}
 {{else}}
   {{#one-icon tagName="div" icon="group" class="content-error-icon"}}
     {{#one-overlay fog=false}}

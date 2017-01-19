@@ -28,19 +28,11 @@ export default Ember.Component.extend({
   spaces: null,
   validSpaces: computed.filterBy('spaces', 'isLoaded', true),
   spacesSorting: ['isDefault:desc', 'name'],
-  // FIXME: spaces -> validSpaces
-  validSpacesSorted: computed.sort('spaces', 'spacesSorting'),
+  validSpacesSorted: computed.sort('validSpaces', 'spacesSorting'),
 
   activeSpace: computed.alias('secondaryMenu.activeSpace'),
 
-  // FIXME maybe this implementation was better
-  // isLoading: computed('isWorking', 'spaces.length', 'spaces.@each.name', function() {
-  //   let { spaces, isWorking } = this.getProperties('spaces', 'isWorking');
-  //   return spaces.get('length') === 0 ||
-  //     spaces.any(s => !s || !s.get('name')) ||
-  //     isWorking;
-  // }),
-
+  // TODO: if in trouble, also assume, that spaces.length === 0 means that isLoading is true
   isLoading: computed('isWorking', 'spaces.@each.isLoaded', function() {
     let { spaces, isWorking } = this.getProperties('spaces', 'isWorking');
     return !spaces ||

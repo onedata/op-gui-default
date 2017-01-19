@@ -21,7 +21,7 @@ const {
 function create(routeType) {
   let mixin = Ember.Mixin.create({
     model() {
-      return this.modelFor(`onedata.${routeType}.show`); 
+      return this.modelFor(`onedata.${routeType}.show`);
     },
 
     setupController(controller, model) {
@@ -43,6 +43,10 @@ function create(routeType) {
         permission.toggleProperty(permName);
         permission.toggleProperty(modName);
       },
+
+      reload: function() {
+        this.refresh();
+      }
     }
   });
 

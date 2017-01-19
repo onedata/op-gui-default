@@ -5,16 +5,14 @@ const {
   hasMany
 } = DS;
 
-const ASYNC = { async: true };
-
 /**
- * FIXME
+ * Model with group permissions list for group.
  * @module models/group-group-list
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend({
-  group: belongsTo('group', ASYNC),
-  permissions: hasMany('group-group-permission', ASYNC),
+  group: belongsTo('group', { async: true }),
+  permissions: hasMany('group-group-permission', { async: true }),
 });

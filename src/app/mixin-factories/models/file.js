@@ -39,7 +39,12 @@ const FILE_PROPERTY_RELATIONS = {
 };
 
 /**
- * Common attributes and methods of file and file-public models.
+ * A factory method for creating specific File models.
+ * Factory is needed, because specific File models have relations to
+ * specific models (different shares, parents, children and file-properites).
+ * 
+ * Uses ``file-base`` and ``file-runtime`` mixins.
+ * 
  * @module mixin-factories/models/file
  * @author Jakub Liput
  * @copyright (C) 2017 ACK CYFRONET AGH

@@ -14,10 +14,12 @@ const {
 } = Ember;
 
 /**
- * FIXME jsdoc
+ * Methods for File models for adding runtime fields, computed properties,
+ * methods and other Ember stuff to base File model.
+ * 
  * @module mixins/models/file-runtime
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Mixin.create({

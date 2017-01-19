@@ -1,6 +1,8 @@
 {{#if canViewPermissions}}
   {{permissions-table subjectType="space"
-    usersPermissions=permissions subject=subject}}
+    usersPermissions=permissions subject=subject
+    isLoadingList=isLoadingList
+    isListRejected=isListRejected}}
 {{else}}
   {{#one-icon tagName="div" icon="group" class="content-error-icon"}}
     {{#one-overlay fog=false}}

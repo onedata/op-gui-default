@@ -14,34 +14,9 @@ import showPermissionsMixinFactory from 'op-worker-gui/mixin-factories/routes/sh
 export default Ember.Route.extend(showPermissionsMixinFactory('groups'), {
   oneproviderServer: Ember.inject.service(),
 
-  // /** Override from mixin - we need two separate permissions collections */
-  // model() {
-  //   var subject = this.modelFor(`onedata.${this.get('routeType')}.show`);
-  //   return {
-  //     subject: subject,
-  //     // FIXME
-  //     userPermissions: subject.get('userPermissions'),
-  //     // FIXME
-  //     groupPermissions: subject.get('groupPermissions'),
-  //     // FIXME
-  //     availableGroups: this.modelFor('onedata.groups')
-  //   };
-  // },
-
   actions: {
     didTransition() {
       this.controller.changeMenuActiveOption();
     },
-
-    // TODO: implement
-    // inviteItem() {
-    //   let space = this.modelFor('onedata.spaces.show');
-    //   this.get('oneproviderServer').inviteUser(space).then(
-    //     (token) => {
-    //       this.set('inviteToken', token);
-    //     }
-    //     // TODO: handle errors
-    //   );
-    // }
   }
 });

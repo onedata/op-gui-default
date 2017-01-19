@@ -1,6 +1,14 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+/**
+ * Mixin for creating shares model (eg. share, share-public)
+ * @module mixin-factories/models/share
+ * @author Jakub Liput
+ * @copyright (C) 2016 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 const {
   computed,
   assert
@@ -21,7 +29,10 @@ let CONTAINER_DIR_RELATION = {
   public: 'file-public'
 };
 
-// FIXME jsdoc
+/**
+ * Create a Mixin for creating share-* models.
+ * @param {string} type one of: regular, public
+ */
 function create(type) {
   let fileRelation = FILE_RELATION[type];
   let containerDirRelation = CONTAINER_DIR_RELATION[type];
@@ -73,5 +84,4 @@ function create(type) {
   return mixin;
 }
 
-// FIXME jsdoc
 export default create;

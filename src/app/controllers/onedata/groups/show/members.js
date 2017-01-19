@@ -2,7 +2,7 @@ import Ember from 'ember';
 import showPermissionsMixinFactory from 'op-worker-gui/mixin-factories/controllers/show-permissions';
 
 /**
- * See controllers/spaces/show-permission-base for details.
+ * See mixin-factories/controllers/show-permissions for details.
  * @module controllers/onedata/spaces/show/users
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH

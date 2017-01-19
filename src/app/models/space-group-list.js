@@ -5,16 +5,14 @@ const {
   hasMany
 } = DS;
 
-const ASYNC = { async: true };
-
 /**
- * FIXME
- * @module models/space-group-list
+ * Model with group permissions list for space.
+ * @module models/group-group-list
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend({
-  space: belongsTo('space', ASYNC),
-  permissions: hasMany('space-group-permission', ASYNC),
+  space: belongsTo('space', { async: true }),
+  permissions: hasMany('space-group-permission', { async: true }),
 });

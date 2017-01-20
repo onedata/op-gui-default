@@ -11,6 +11,7 @@ import SettingsDropMixin from 'op-worker-gui/mixins/components/settings-drop';
  */
 export default Ember.Component.extend(SettingsDropMixin, {
   commonModals: Ember.inject.service(),
+  messageBox: Ember.inject.service(),
 
   /**
     Items in "group settings" dropright menu

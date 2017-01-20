@@ -388,22 +388,4 @@ export default Ember.Service.extend({
       childGroupId: childGroupId
     });
   },
-
-
-  // TODO: not used since VFS-2661
-  /**
-   * Fetch a token, which can be passed to a provider which can support
-   * the newly created space.
-   *
-   * @param {String} groupId An ID of the group, which will use a newly created space
-   * @returns {RSVP.Promise} A backend operation completion:
-   * - ``resolve(object: data)`` when successfully fetched the token
-   *   - ``data.token`` a token
-   * - ``reject(object: error)`` on failure
-   */
-  // getTokenRequestSpaceCreation(groupId) {
-  //   return this.get('server').privateRPC('getTokenRequestSpaceCreation', {
-  //     groupId: groupId
-  //   });
-  // }
 });

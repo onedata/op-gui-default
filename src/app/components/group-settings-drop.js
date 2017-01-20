@@ -72,12 +72,6 @@ export default Ember.Component.extend(SettingsDropMixin, {
         label: i18n.t('components.groupsMenu.drop.joinSpace'),
         action: 'joinSpace'
       },
-      // disabled since VFS-2661
-      // {
-      //   icon: 'space-add',
-      //   label: i18n.t('components.groupsMenu.drop.createSpace'),
-      //   action: 'requestSpaceCreation'
-      // },
       {
         icon: 'remove',
         label: i18n.t('components.groupsMenu.drop.remove'),
@@ -126,14 +120,6 @@ export default Ember.Component.extend(SettingsDropMixin, {
         funArgs: [this.get('group.id')],
       });
     },
-
-    // disabled since VFS-2661
-    // requestSpaceCreation() {
-    //   this.get('commonModals').openModal('token', {
-    //     type: 'requestSpaceCreation',
-    //     funArgs: [this.get('group.id')]
-    //   });
-    // },
 
     joinSpace() {
       this.sendAction('openSettingsModal', 'joinSpace', this.get('group'));

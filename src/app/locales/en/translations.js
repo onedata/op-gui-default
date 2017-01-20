@@ -208,8 +208,6 @@ export default {
         remove: 'Remove',
         inviteUser: 'Invite user',
         inviteGroup: 'Invite group',
-        // disabled in VFS-2661
-        // createSpace: 'Request space creation',
         joinSpace: 'Join space',
         joinAsSubgroup: 'Join as subgroup'
       },
@@ -442,11 +440,6 @@ export default {
         title: 'Invite group to the group',
         label: 'Pass the below token to the group you want to invite to group'
       },
-      // disabled since VFS-2661
-      // requestSpaceCreation: {
-      //   title: 'Request space creation for the group',
-      //   label: 'Pass the below token to a provider of your choice. The token can be used to create a space for your group and grant support to the space.'
-      // }
     },
     shareInfoHead: {
       path: 'Path',

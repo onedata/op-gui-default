@@ -103,7 +103,7 @@ export default Ember.Component.extend(SettingsDropMixin, {
       this.get('messageBox').open({
         title: i18n.t('common.featureNotSupportedShort'),
         type: 'warning',
-        allowClose: false,
+        allowClose: true,
         message: i18n.t('common.featureNotSupportedLong')
       });
 

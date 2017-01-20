@@ -389,6 +389,8 @@ export default Ember.Service.extend({
     });
   },
 
+
+  // TODO: not used since VFS-2661
   /**
    * Fetch a token, which can be passed to a provider which can support
    * the newly created space.
@@ -399,9 +401,9 @@ export default Ember.Service.extend({
    *   - ``data.token`` a token
    * - ``reject(object: error)`` on failure
    */
-  getTokenRequestSpaceCreation(groupId) {
-    return this.get('server').privateRPC('getTokenRequestSpaceCreation', {
-      groupId: groupId
-    });
-  }
+  // getTokenRequestSpaceCreation(groupId) {
+  //   return this.get('server').privateRPC('getTokenRequestSpaceCreation', {
+  //     groupId: groupId
+  //   });
+  // }
 });

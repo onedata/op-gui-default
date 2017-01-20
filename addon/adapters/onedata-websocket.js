@@ -51,9 +51,10 @@ let TYPE_RPC_REQ = 'RPCReq';
 let TYPE_RPC_RESP = 'RPCResp';
 let TYPE_PUSH_MESSAGE = 'pushMessage';
 // Operations on model, identified by `operation` key
-let OP_FIND = 'find';
+let OP_FIND_RECORD = 'findRecord';
 let OP_FIND_ALL = 'findAll';
-let OP_FIND_QUERY = 'findQuery';
+let OP_QUERY = 'query';
+let OP_QUERY_RECORD = 'queryRecord';
 let OP_FIND_MANY = 'findMany';
 let OP_FIND_HAS_MANY = 'findHasMany';
 let OP_FIND_BELONGS_TO = 'findBelongsTo';
@@ -63,6 +64,15 @@ let OP_DELETE_RECORD = 'deleteRecord';
 // Operation results, identified by `result` key
 let RESULT_OK = 'ok';
 let RESULT_ERROR = 'error';
+
+const FETCH_MODEL_OPERATIONS = new Set([
+  OP_FIND_RECORD,
+  OP_FIND_ALL,
+  OP_QUERY,
+  OP_QUERY_RECORD,
+  OP_FIND_MANY,
+  OP_CREATE_RECORD
+]);
 
 export default DS.RESTAdapter.extend({
   store: Ember.inject.service('store'),
@@ -181,8 +191,8 @@ export default DS.RESTAdapter.extend({
 
   /** Called when ember store wants to find a record */
   findRecord(store, type, id, record) {
-    this.logToConsole(OP_FIND, [store, type, id, record]);
-    return this.asyncRequest(OP_FIND, type.modelName, id);
+    this.logToConsole(OP_FIND_RECORD, [store, type, id, record]);
+    return this.asyncRequest(OP_FIND_RECORD, type.modelName, id);
   },
 
   /** Called when ember store wants to find all records of a type */
@@ -193,8 +203,13 @@ export default DS.RESTAdapter.extend({
 
   /** Called when ember store wants to find all records that match a query */
   query(store, type, query) {
-    this.logToConsole(OP_FIND_QUERY, [store, type, query]);
-    return this.asyncRequest(OP_FIND_QUERY, type.modelName, null, query);
+    this.logToConsole(OP_QUERY, [store, type, query]);
+    return this.asyncRequest(OP_QUERY, type.modelName, null, query);
+  },
+
+  queryRecord(store, type, query) {
+    this.logToConsole(OP_QUERY_RECORD, [store, type, query]);
+    return this.asyncRequest(OP_QUERY_RECORD, type.modelName, null, query);
   },
 
   /** Called when ember store wants to find multiple records by id */
@@ -276,6 +291,29 @@ export default DS.RESTAdapter.extend({
   },
 
   /** -------------------------------------------------------------------
+   * Semaphore to not allow pushing before all model resp are done
+   * ------------------------------------------------------------------- */
+
+  _respSemaphore: 0,
+
+  waitingMessages: Ember.A(),
+
+  isRespSemaphoreAcquired: Ember.computed('_respSemaphore', function() {
+    return this.get('_respSemaphore') > 0;
+  }),
+
+  respSemaphoreAcquire() {
+    this.incrementProperty('_respSemaphore');
+  },
+
+  respSemaphoreRelease() {
+    this.decrementProperty('_respSemaphore');
+    if (this.get('_respSemaphore') < 0) {
+      this.set('_respSemaphore', 0);
+    }
+  },
+
+  /** -------------------------------------------------------------------
    * Internal functions
    * ------------------------------------------------------------------- */
 
@@ -298,6 +336,7 @@ export default DS.RESTAdapter.extend({
       resourceIds: ids,
       data: this.transformRequest(data, type, operation)
     };
+    this.respSemaphoreAcquire();
     return this.sendAndRegisterPromise(operation, type, payload);
   },
 
@@ -351,13 +390,9 @@ export default DS.RESTAdapter.extend({
     switch (operation) {
       case OP_CREATE_RECORD:
         return json[type] || json[type.camelize()];
-
-      case OP_FIND_QUERY:
-        // In case of find_query, json is in form
-        // {filter: {key: value}}
-        // Just send the filter
-        return json.filter;
-
+ 
+      // case OP_QUERY:
+      // case OP_QUERY_RECORD:
       default:
         return json;
     }
@@ -368,30 +403,12 @@ export default DS.RESTAdapter.extend({
    * by Ember.
    */
   transformResponse(json, type, operation) {
-    let result = {};
-    switch (operation) {
-      case OP_FIND:
-        result[type] = json;
-        return result;
-
-      case OP_FIND_ALL:
-        result[type] = json;
-        return result;
-
-      case OP_FIND_QUERY:
-        result[type] = json;
-        return result;
-
-      case OP_FIND_MANY:
-        result[type] = json;
-        return result;
-
-      case OP_CREATE_RECORD:
-        result[type] = json;
-        return result;
-
-      default:
-        return json;
+    if (FETCH_MODEL_OPERATIONS.has(operation)) {
+      let result = {};
+      result[type] = json;
+      return result;
+    } else {
+      return json;
     }
   },
 
@@ -472,70 +489,134 @@ export default DS.RESTAdapter.extend({
     }
   },
 
+  processMessageLater(message) {
+    console.debug(`A message (uuid=${message.uuid}) will be processed later`);
+    let waitingMessages = this.get('waitingMessages');
+    waitingMessages.pushObject(message);
+  },
+
+  processQueuedMessages() {
+    let waitingMessages = this.get('waitingMessages');
+    /* jshint loopfunc: true */
+    while (waitingMessages.get('length') > 0) {
+      let message = waitingMessages.shift();
+      setTimeout(() => this.processMessage(message), 0);
+    }
+  },
+
+  waitingMessagesChanged: Ember.observer('isRespSemaphoreAcquired', 'waitingMessages.length', function() {
+    let {
+      isRespSemaphoreAcquired,
+      waitingMessages
+    } = this.getProperties(
+      'isRespSemaphoreAcquired',
+      'waitingMessages'
+    );
+
+    if (!isRespSemaphoreAcquired && waitingMessages.get('length') > 0) {
+      console.debug('respSemaphore has been released - processing waitingMessages');
+      this.processQueuedMessages();
+    }
+  }),
+
   // TODO: document message object: data, uuid, result
   processMessage(message) {
     let adapter = this;
+    let store = this.get('store');
     let promise;
-    console.debug('received: ' + JSON.stringify(message.data));
-    if (message.msgType === TYPE_MODEL_RESP) {
-      // Received a response to data fetch
-      promise = adapter.promises.get(message.uuid);
-      if (message.result === RESULT_OK) {
-        let transformed_data = adapter.transformResponse(message.data,
-            promise.type, promise.operation);
-        console.debug(`FETCH_RESP success, (uuid=${message.uuid}): ${JSON.stringify(transformed_data)}`);
+    let {
+      msgType,
+      uuid,
+      result,
+      data,
+      resourceType
+    } = message;
 
-        promise.success(transformed_data);
-      } else if (message.result === RESULT_ERROR) {
-        console.debug(`FETCH_RESP error, (uuid=${message.uuid}): ${JSON.stringify(message.data)}`);
-        promise.error(message.data);
-      } else {
-        console.warn(`Received model response (uuid=${message.uuid}) with unknown result: ${message.result}`);
-        promise.error(message.data);
-      }
-    } else if (message.msgType === TYPE_RPC_RESP) {
-      // Received a response to RPC call
-      promise = adapter.promises.get(message.uuid);
-      if (message.result === RESULT_OK) {
-        console.debug(`RPC_RESP success, (uuid=${message.uuid}): ${JSON.stringify(message.data)}`);
-        promise.success(message.data);
-      } else if (message.result === RESULT_ERROR) {
-        console.debug(`RPC_RESP error, (uuid=${message.uuid}): ${JSON.stringify(message.data)}`);
-        promise.error(message.data);
-      } else {
-        console.warn(`Received RPC response (uuid=${message.uuid}) with unknown result: ${message.result}`);
-        promise.error(message.data);
-      }
+    console.debug('Processing message: ' + JSON.stringify(message));
+
+    switch (msgType) {
+      case TYPE_MODEL_RESP:
+        try {
+          // Received a response to data fetch
+          promise = adapter.promises.get(uuid);
+          if (result === RESULT_OK) {
+            let transformed_data = this.transformResponse(
+              data,
+              promise.type,
+              promise.operation
+            );
+            console.debug(`FETCH_RESP success, (uuid=${message.uuid}): ${JSON.stringify(transformed_data)}`);
+            promise.success(transformed_data);
+          } else if (result === RESULT_ERROR) {
+            console.debug(`FETCH_RESP error, (uuid=${uuid}): ${JSON.stringify(data)}`);
+            promise.error(data);
+          } else {
+            console.warn(`Received model response (uuid=${uuid}) with unknown result: ${result}`);
+            promise.error(data);
+          }
+        } finally {
+          this.respSemaphoreRelease();
+        }
+
+        break;
+    
+      case TYPE_RPC_RESP:
+        // Received a response to RPC call
+        promise = adapter.promises.get(uuid);
+        if (result === RESULT_OK) {
+          console.debug(`RPC_RESP success, (uuid=${uuid}): ${JSON.stringify(data)}`);
+          promise.success(data);
+        } else if (result === RESULT_ERROR) {
+          console.debug(`RPC_RESP error, (uuid=${uuid}): ${JSON.stringify(data)}`);
+          promise.error(data);
+        } else {
+          console.warn(`Received RPC response (uuid=${uuid}) with unknown result: ${result}`);
+          promise.error(data);
+        }
+        break;
+
+      case TYPE_MODEL_CRT_PUSH:
+      case TYPE_MODEL_UPT_PUSH:
+        // Received a push message that something was created
+        if (this.get('isRespSemaphoreAcquired')) {
+          this.processMessageLater(message);
+        } else {
+          console.debug(msgType + ': ' + JSON.stringify(message));
+          let payload = {};
+          payload[resourceType] = data;
+          store.pushPayload(payload);
+        }
+        break;
+
+      case TYPE_MODEL_DLT_PUSH:
+        // Received a push message that something was deleted
+        // data field contains a list of ids to delete
+        if (this.get('isRespSemaphoreAcquired')) {
+          this.processMessageLater(message);
+        } else {
+          data.forEach(function (id) {
+            store.findRecord(resourceType, id).then(
+                function (record) {
+                  store.unloadRecord(record);
+                });
+          });
+        }
+        break;
+
+      case TYPE_PUSH_MESSAGE:
+        this.get('serverMessagesHandler').triggerEvent(
+          data.operation,
+          data.arguments
+        );
+        break;
+
+      default:
+        console.warn(`Server message with unknown type received: ${msgType}`);
+        break;
     }
-    else if (message.msgType === TYPE_MODEL_CRT_PUSH ||
-        message.msgType === TYPE_MODEL_UPT_PUSH) {
-      // Received a push message that something was created
-      console.debug(message.msgType + ': ' + JSON.stringify(message));
-      let payload = {};
-      payload[message.resourceType] = message.data;
-      this.get('store').pushPayload(payload);
-    } else if (message.msgType === TYPE_MODEL_DLT_PUSH) {
-      let store = this.get('store');
-      // Received a push message that something was deleted
-      console.debug('Delete:' + JSON.stringify(message));
-      // data field contains a list of ids to delete
-      message.data.forEach(function (id) {
-        store.findRecord(message.resourceType, id).then(
-            function (record) {
-              store.unloadRecord(record);
-            });
-      });
-    }
-    else if (message.msgType === TYPE_PUSH_MESSAGE) {
-      this.get('serverMessagesHandler').triggerEvent(
-        message.data.operation,
-        message.data.arguments
-      );
-    } else {
-      console.warn(`Server message with unknown type received: ${message.msgType}`);
-    }
-    if (message.uuid) {
-      adapter.promises.delete(message.uuid);
+
+    if (uuid) {
+      adapter.promises.delete(uuid);
     }
   },
 

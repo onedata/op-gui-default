@@ -1,4 +1,9 @@
+import Ember from 'ember';
 import DS from 'ember-data';
+
+const {
+  computed
+} = Ember;
 
 /**
  * Information about distribution of file blocks among single provider.
@@ -8,7 +13,20 @@ import DS from 'ember-data';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend({
-  provider: DS.belongsTo('system-provider', {async: true}),
+  provider: DS.attr('string'),
+
+  getProvider: computed(
+    'provider',
+    // TODO: context dependency
+    
+    function() {
+      let store = this.get('store');
+      return store.queryRecord('system-provider', {
+        id: this.get('provider'),
+        context: {}
+      });
+    }
+  ),
 
   /**
     Array of integers. Number of elements should be even.

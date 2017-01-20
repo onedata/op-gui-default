@@ -326,8 +326,8 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
       );
       let token = inputToken && inputToken.trim();
       let group = modalGroup;
-      let promise = this.promiseLoading(oneproviderServer)
-        .groupJoinSpace(modalGroup.get('id'), token).then(
+      let promise = this.promiseLoading(oneproviderServer.groupJoinSpace(modalGroup.get('id'), token))
+        .then(
           (data) => {
             let message = i18n.t('components.groupsMenu.notify.joinSpaceSuccess', {
               groupName: group.get('name'),

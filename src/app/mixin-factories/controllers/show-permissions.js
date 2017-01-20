@@ -30,7 +30,8 @@ function create(permissionType) {
     canViewPermissions: computed.alias('subject.hasViewPrivilege'),
 
     changeMenuActiveOption() {
-      let activeOption = Array.isArray(permissionType) ? 'members' : permissionType + 's';
+      let activeOption = Array.isArray(permissionType) ?
+        (permissionType.length === 1 ? permissionType[0] + 's' : 'members') : permissionType + 's';
       this.set('secondaryMenu.activeOption', activeOption);
 
       // TODO: control visible class of secondary sidebar with bound property

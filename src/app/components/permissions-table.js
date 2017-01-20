@@ -123,13 +123,13 @@ export default Ember.Component.extend({
   /** Should permissions table be treated as modified and not saved?
    *  It is true when at least one permission model in collection is modified.
    */
-  // isModified: function() {
-  //   let up = this.get('usersPermissions');
-  //   let gp = this.get('groupsPermissions');
-  //   let upModified = up ? up.any(p => p.get('isModified')) : false;
-  //   let gpModified = gp ? gp.any(p => p.get('isModified')) : false;
-  //   return upModified || gpModified;
-  // }.property('usersPermissions.@each.isModified', 'groupsPermissions.@each.isModified'),
+  isModified: function() {
+    let up = this.get('usersPermissions');
+    let gp = this.get('groupsPermissions');
+    let upModified = up ? up.any(p => p.get('isModified')) : false;
+    let gpModified = gp ? gp.any(p => p.get('isModified')) : false;
+    return upModified || gpModified;
+  }.property('usersPermissions.@each.isModified', 'groupsPermissions.@each.isModified'),
 
   isModifiedChanged: observer('isModified', function() {
     this.sendAction('modifiedChanged', this.get('isModified'), this.get('subjectType'));

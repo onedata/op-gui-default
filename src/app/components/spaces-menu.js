@@ -111,7 +111,7 @@ export default Ember.Component.extend({
     }
   }.observes('activeSpace'),
 
-  didInsertElement() {
+  init() {
     // reset spaces expanded state
     this.get('spaces').forEach((s) => s.set('isExpanded', false));
 

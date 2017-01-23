@@ -14,16 +14,23 @@
 
 import Ember from 'ember';
 
+const {
+  computed,
+  inject,
+  run,
+  on
+} = Ember;
+
 export default Ember.Component.extend({
   classNameBindings: ['isVisible:visible'],
 
-  session: Ember.inject.service('session'),
-  service: Ember.inject.service('main-menu'),
+  session: inject.service('session'),
+  service: inject.service('main-menu'),
 
-  currentItem: Ember.computed.alias('service.currentItem'),
-  isVisible: Ember.computed.alias('service.isVisible'),
+  currentItem: computed.alias('service.currentItem'),
+  isVisible: computed.alias('service.isVisible'),
 
-  registerInService: Ember.on('init', function() {
+  registerInService: on('init', function() {
     this.set('service.component', this);
   }),
 
@@ -32,9 +39,12 @@ export default Ember.Component.extend({
   }.property('session.sessionDetails'),
 
   didInsertElement() {
-    $('nav.primary-sidebar').hover(() => {
-      $('nav.primary-sidebar').toggleClass('visible');
-    });
+    run.scheduleOnce('afterRender', this, function() {
+      // TODO: old code for responsiveness, use property bindings for visible
+      $('nav.primary-sidebar').hover(() => {
+        $('nav.primary-sidebar').toggleClass('visible');
+      });
+    });    
   },
 
   actions: {

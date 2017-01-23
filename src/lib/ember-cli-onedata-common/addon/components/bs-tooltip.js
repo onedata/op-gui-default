@@ -1,5 +1,10 @@
 import Ember from 'ember';
 
+const {
+  observer,
+  run
+} = Ember;
+
 /**
  * Adds a Bootstrap tooltip on yielded content.
  * Example of usage:
@@ -25,13 +30,15 @@ export default Ember.Component.extend({
   placement: 'bottom',
   title: null,
 
-  bootstrapize: function() {
+  bootstrapize: observer('title', function() {
     if (this.get('title')) {
-      this.$().tooltip('hide')
-          .attr('data-original-title', this.get('title'))
-          .tooltip('fixTitle');
+      run.scheduleOnce('afterRender', this, function() {
+        this.$().tooltip('hide')
+            .attr('data-original-title', this.get('title'))
+            .tooltip('fixTitle');
+      });
     }
-  }.observes('title'),
+  }),
 
   didInsertElement() {
     this.bootstrapize();

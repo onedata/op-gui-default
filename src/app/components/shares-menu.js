@@ -106,7 +106,8 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     }
   }.observes('activeShare'),
 
-  didInsertElement() {
+  init() {
+    this._super(...arguments);
     this.isLoadingChanged();
   },
 

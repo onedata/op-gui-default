@@ -1,5 +1,13 @@
 import Ember from 'ember';
 
+const {
+  run,
+  computed,
+  String :{
+    htmlSafe
+  }
+} = Ember;
+
 /**
  * A loader element that covers all files that are new in last ``fetchMoreFiles``
  * request. It covers always from previous loaded files list to bottom of table.
@@ -26,7 +34,7 @@ export default Ember.Component.extend({
    */
   $filesTable: null,
 
-  style: Ember.computed('top', '$filesTable', function() {
+  style: computed('top', '$filesTable', function() {
     let style = 'display: none;';
 
     const startRow = this.get('startRow');
@@ -36,7 +44,7 @@ export default Ember.Component.extend({
         style = `display: block; top: ${top}px;`;
       }
     }
-    return Ember.String.htmlSafe(style);
+    return htmlSafe(style);
   }),
 
   __stickyFun: null,
@@ -58,9 +66,11 @@ export default Ember.Component.extend({
   },
 
   didInsertElement() {
-    this.set('$filesTable', this.$().closest('.data-files-list').find('.files-table'));
-    // TODO: Currently sticky spinner is disabled due to bugs
-    // this.bindSticky();
+    run.scheduleOnce('afterRender', this, function() {
+      this.set('$filesTable', this.$().closest('.data-files-list').find('.files-table'));
+      // TODO: Currently sticky spinner is disabled due to bugs
+      // this.bindSticky();
+    });
   },
 
   willDestroyElement() {
@@ -68,7 +78,7 @@ export default Ember.Component.extend({
     // this.unbindSticky();
   },
 
-  top: Ember.computed('startRow', function() {
+  top: computed('startRow', '$filesTable', function() {
     let startRow = this.get('startRow');
     let $filesTable = this.get('$filesTable');
     let $row = $filesTable.find(`.file-row-index-${startRow}`);

@@ -165,10 +165,11 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     }
   }),
 
-  didInsertElement() {
+  init() {
+    this._super(...arguments);
     // reset groups expanded state
     this.get('groups').forEach((s) => s.set('isExpanded', false));
-
+    
     this.isLoadingChanged();
   },
 

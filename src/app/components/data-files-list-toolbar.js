@@ -1,5 +1,15 @@
 import Ember from 'ember';
 
+const {
+  run,
+  computed,
+  inject,
+  observer,
+  RSVP: {
+    Promise
+  }
+} = Ember;
+
 /**
  * Provides set of tools for file manipulation and getting info.
  * Beside toolbar buttons, contains a set of modals for toolbar actions.
@@ -9,17 +19,17 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
-  notify: Ember.inject.service('notify'),
-  fileUpload: Ember.inject.service('fileUpload'),
-  store: Ember.inject.service(),
-  fileSystemTree: Ember.inject.service(),
+  notify: inject.service('notify'),
+  fileUpload: inject.service('fileUpload'),
+  store: inject.service(),
+  fileSystemTree: inject.service(),
 
   tagName: 'ul',
   classNames: ['data-files-list-toolbar', 'nav', 'navbar-nav', 'navbar-right', 'toolbar-group'],
 
   fileForChunks: null,
   fileBlocksSorting: ['provider.name'],
-  fileBlocksSorted: Ember.computed.sort('fileBlocks', 'fileBlocksSorting'),
+  fileBlocksSorted: computed.sort('fileBlocks', 'fileBlocksSorting'),
 
   chunksModalError: null,
 
@@ -37,7 +47,7 @@ export default Ember.Component.extend({
     });
   },
 
-  selectedCount: Ember.computed.alias('dir.selectedFiles.length'),
+  selectedCount: computed.alias('dir.selectedFiles.length'),
   
   /**
    * A width of its element. Updated on window resize (see ``didInsertElement``).
@@ -51,7 +61,7 @@ export default Ember.Component.extend({
    * Make full toolbar otherwise.
    * @type {Boolean}
    */
-  collapsed: Ember.computed('navbarWidth', function() {
+  collapsed: computed('navbarWidth', function() {
     let width = this.get('navbarWidth');
     if (width != null) {
       return width < 880;
@@ -60,23 +70,23 @@ export default Ember.Component.extend({
     }
   }),
 
-  isSingleFileSelected: Ember.computed('dir.singleSelectedFile', function() {
+  isSingleFileSelected: computed('dir.singleSelectedFile', function() {
     return this.get('dir.singleSelectedFile') != null;
   }),
 
-  isSingleSelectedFileAFile: Ember.computed('isSingleFileSelected', 'dir.singleSelectedFile.isDir', function() {
+  isSingleSelectedFileAFile: computed('isSingleFileSelected', 'dir.singleSelectedFile.isDir', function() {
     return this.get('isSingleFileSelected') && !this.get('dir.singleSelectedFile.isDir');
   }),
 
-  isSomeFileSelected: Ember.computed('dir.isSomeFileSelected', function() {
+  isSomeFileSelected: computed('dir.isSomeFileSelected', function() {
     return this.get('dir.isSomeFileSelected');
   }),
 
-  isMixedTypesSelected: Ember.computed('dir.selectedFilesType', function() {
+  isMixedTypesSelected: computed('dir.selectedFilesType', function() {
     return this.get('dir.selectedFilesType') === 'mixed';
   }),
 
-  fileUploadLocked: Ember.computed.alias('fileUpload.locked'),
+  fileUploadLocked: computed.alias('fileUpload.locked'),
 
   /**
    * Holds items of toolbar. Each item is a Object with properties:
@@ -86,7 +96,7 @@ export default Ember.Component.extend({
    * - disabled {Boolean}
    * - tooltip {String} - message in tooltip (on hover)
    */
-  items: Ember.computed(
+  items: computed(
     'isSingleFileSelected',
     'isSingleSelectedFileAFile',
     'isSomeFileSelected',
@@ -195,15 +205,15 @@ export default Ember.Component.extend({
       ];
   }),
 
-  fileBlocksProviders: Ember.computed('fileBlocks.@each.provider', function() {
+  fileBlocksProviders: computed('fileBlocks.@each.provider', function() {
     return this.get('fileBlocks').mapBy('provider');
   }),
 
-  makeTooltips: function() {
-    Ember.run.scheduleOnce('afterRender', this, function() {
+  makeTooltips: observer('items.[]', 'fileBlocksProviders.@each.name', function() {
+    run.scheduleOnce('afterRender', this, function() {
       this.$().find('[data-toggle="tooltip"]').tooltip();
     });
-  }.observes('items', 'fileBlocksProviders.@each.name'),
+  }),
 
   didInsertElement() {
     this.makeTooltips();
@@ -213,12 +223,14 @@ export default Ember.Component.extend({
     // if this changes - please copy "dirChanged" method from files-list here
     this.get('fileUpload').assignBrowse(this.$().find('#toolbar-file-browse'), true);
 
-    let __windowResizeFun = () => {
-      this.set('navbarWidth', this.$().closest('nav.navbar').width());
-    };
-    __windowResizeFun();
-    this.set('__windowResizeFun', __windowResizeFun);
-    $(window).on('resize', __windowResizeFun);
+    run.scheduleOnce('afterRender', this, function() {
+      let __windowResizeFun = () => {
+        this.set('navbarWidth', this.$().closest('nav.navbar').width());
+      };
+      __windowResizeFun();
+      this.set('__windowResizeFun', __windowResizeFun);
+      $(window).on('resize', __windowResizeFun);
+    });
   },
 
   willDestroyElement() {
@@ -336,20 +348,21 @@ export default Ember.Component.extend({
      * @param {undefined} _model ignored parameter
      */
     handleRemoveAnswer(yesAnswer, _model, resolve, reject) {
+      let i18n = this.getProperties('i18n');
       let removeResult = this.get('dir').removeSelectedFiles();
-      let i18n = this.get('i18n');
-
+      
       if (yesAnswer) {
        if (typeof removeResult === 'string') {
           this.set('isRemovingFiles', false);
           reject({message: removeResult});
         } else {
-          let fileDestroyPromises = removeResult;
-          let batchPromise = Ember.RSVP.Promise.all(Array.from(fileDestroyPromises.values()));
-          let filesCount = fileDestroyPromises.size;
-          let singular = fileDestroyPromises.size === 1;
           let notify = this.get('notify');
 
+          let fileDestroyPromises = removeResult;
+          let batchPromise = Promise.all(Array.from(fileDestroyPromises.values()));
+          let filesCount = fileDestroyPromises.size;
+          let singular = fileDestroyPromises.size === 1;
+          
           batchPromise.then(() => {
             let message;
             if (singular) {
@@ -430,7 +443,7 @@ export default Ember.Component.extend({
       let {i18n, notify} = this.getProperties('i18n', 'notify');
       let file = model;
       let type = i18n.t('common.' + (file.get('isDir') ? 'directory' : 'file'));
-      type = Ember.String.capitalize(type.toString());
+      type = String.capitalize(type.toString());
       if (success) {
         notify.info(i18n.t('components.dataFilesListToolbar.renameFileModal.success', {
           type: type,

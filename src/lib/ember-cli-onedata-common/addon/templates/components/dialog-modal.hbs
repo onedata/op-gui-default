@@ -17,8 +17,8 @@
       action=(action "confirm")
       class=(concat btnClass " btn no-outline")
       spinnerColor="#fff"
-      inFlight=confirmInProgress
-      disabled=confirmInProgress
+      inFlight=(readonly confirmInProgress)
+      disabled=(readonly isLoading)
     }}
       {{t "common.modal.yes"}}
     {{/spin-button-onedata}}
@@ -27,8 +27,8 @@
       action=(action "cancel")
       class="btn-default btn no-outline"
       spinnerColor="#fff"
-      inFlight=cancelInProgress
-      disabled=cancelInProgress
+      inFlight=(readonly cancelInProgress)
+      disabled=(readonly isLoading)
     }}
       {{t "common.modal.no"}}
     {{/spin-button-onedata}}

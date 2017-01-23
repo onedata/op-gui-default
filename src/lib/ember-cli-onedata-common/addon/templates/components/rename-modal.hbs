@@ -26,7 +26,7 @@
     {{#spin-button-onedata buttonType="submit"
       action=(if canSubmit "confirm")
       class="btn btn-primary no-outline" spinnerColor="#fff"
-      inFlight=isLoading
+      inFlight=(readonly confirmInProgress)
       disabled=(not canSubmit)
     }}
       {{t "common.modal.ok"}}
@@ -36,8 +36,8 @@
       action=(action "cancel")
       class="btn-default btn no-outline"
       spinnerColor="#fff"
-      inFlight=cancelInProgress
-      disabled=cancelInProgress
+      inFlight=(readonly cancelInProgress)
+      disabled=(readonly isLoading)
     }}
       {{t "common.modal.cancel"}}
     {{/spin-button-onedata}}

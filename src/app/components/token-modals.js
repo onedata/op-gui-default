@@ -4,7 +4,7 @@ import Ember from 'ember';
  * A generic modal that is used to fetch a token (see type property).
  * @module
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({

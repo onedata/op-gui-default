@@ -7,7 +7,7 @@ import createShareMixin from 'op-worker-gui/mixin-factories/models/share';
  *
  * @module models/share
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend(createShareMixin('regular'));

@@ -7,7 +7,7 @@ import FLAG_NAMES from 'op-worker-gui/constants/permission-group-flags';
  * Shown on groups/:group_id/users view (beside users permissions table)
  * @module models/group-group-permission
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend(

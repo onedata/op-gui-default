@@ -6,7 +6,7 @@ import SettingsDropMixin from 'op-worker-gui/mixins/components/settings-drop';
  * Component does not have groups manipulation logic - actions are sent to parent components or services.
  * @module components/group-settings-drop
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend(SettingsDropMixin, {

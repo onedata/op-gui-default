@@ -5,7 +5,10 @@ const {
   run,
   assert,
   inject,
-  A
+  A,
+  String: {
+    htmlSafe
+  }
 } = Ember;
 
 /**
@@ -237,7 +240,7 @@ export default Ember.Component.extend({
       'file-upload percentage progress should be between 0..100',
       pp >= 0 && pp <= 100
     );
-    return String.htmlSafe(
+    return htmlSafe(
       `width:${pp}%;`
     );
   }),

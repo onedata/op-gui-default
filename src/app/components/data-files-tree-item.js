@@ -5,7 +5,10 @@ const PER_LEVEL_PADDING_PX = 22;
 const {
   run,
   computed,
-  inject
+  inject,
+  String: {
+    htmlSafe
+  }
 } = Ember;
 
 export default Ember.Component.extend({
@@ -31,7 +34,7 @@ export default Ember.Component.extend({
   },
 
   innerItemStyle: computed('level', function() {
-    return String.htmlSafe(
+    return htmlSafe(
       `padding-left: ${this.get('level')*PER_LEVEL_PADDING_PX}px;`
     );
   }),

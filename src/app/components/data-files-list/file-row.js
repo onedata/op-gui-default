@@ -6,6 +6,9 @@ const {
   observer,
   RSVP: {
     Promise
+  },
+  String: {
+    htmlSafe
   }
 } = Ember;
 
@@ -32,7 +35,7 @@ export default Ember.Component.extend({
 
   fileLabelStyle: computed('labelMaxWidth', function() {
     let style = `max-width: ${this.get('labelMaxWidth')}px;`;
-    return String.htmlSafe(style);
+    return htmlSafe(style);
   }),
 
   highlightClass: computed('file.isSelected', 'file.isEditingMetadata', function() {

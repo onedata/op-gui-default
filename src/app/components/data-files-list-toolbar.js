@@ -348,8 +348,8 @@ export default Ember.Component.extend({
      * @param {undefined} _model ignored parameter
      */
     handleRemoveAnswer(yesAnswer, _model, resolve, reject) {
-      let i18n = this.getProperties('i18n');
-      let removeResult = this.get('dir').removeSelectedFiles();
+      let { i18n, dir } = this.getProperties('i18n', 'dir');
+      let removeResult = dir.removeSelectedFiles();
       
       if (yesAnswer) {
        if (typeof removeResult === 'string') {

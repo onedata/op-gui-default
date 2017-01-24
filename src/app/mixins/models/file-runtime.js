@@ -1,129 +1,171 @@
+/* globals moment */
 import Ember from 'ember';
 
-import DS from 'ember-data';
 import octalPermissionsToString from 'op-worker-gui/utils/octal-permissions-to-string';
-/* globals moment */
-
 import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
 
+const {
+  on,
+  observer,
+  computed,
+  RSVP: {
+    Promise
+  }
+} = Ember;
+
 /**
- * Common attributes and methods of file and file-public models.
- * @module
+ * Methods for File models for adding runtime fields, computed properties,
+ * methods and other Ember stuff to base File model.
+ * 
+ * @module mixins/models/file-runtime
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Mixin.create({
   errorNotifier: Ember.inject.service('errorNotifier'),
-  notify: Ember.inject.service('notify'),
   oneproviderServer: Ember.inject.service(),
 
-  name: DS.attr('string'),
-  /**
-    Specifies is this object a regular file ("file") or directory ("dir")
-    To check if it is a dir please use "isDir" property.
-  */
-  type: DS.attr('string'),
-
-  modificationTime: DS.attr('number'),
-  size: DS.attr('number'),
-
-  /**
-   * ID of Oneprovider that stores this file.
-   * @type {Ember.computed<String>}
-   */
-  provider: DS.attr('string'),
-
-  /**
-   * How many children this directory (it it is a directory-type) has.
-   * If ``totalChildrenCount`` is more than actual ``children.length``, it means
-   * that more children can be fetch from server.
-   *
-   * See also: ``oneproviderServer.fetchMoreDirChildren``.
-   *
-   * See also: ``allChildrenLoaded`` computed property.
-   */
-  totalChildrenCount: DS.attr('number'),
+  /*** RUNTIME STATE */
 
   /// Runtime fields used to store state of file in application
+
   isExpanded: false,
   isSelected: false,
   isEditingMetadata: false,
   isNewlyCreated: false,
 
-  /** @abstract */
-  share: undefined,
-
-  /** @abstract */
-  parent: undefined,
-
-  /** @abstract */
-  children: undefined,
-
-  /// properties for checking presence of object in relation without relation resolve
-  /// note that share and parent relations should be present in classes
-
-  hasShare: Ember.computed('share.content', function() {
-    return this.belongsTo('share').id() != null;
-  }),
-  hasParent: Ember.computed('parent.content', function() {
-    return this.belongsTo('parent').id() != null;
-  }),
-  hasFileProperty: Ember.computed.reads('hasMetadata'),
-  hasMetadata: Ember.computed('fileProperty.content', function() {
-    return this.belongsTo('fileProperty').id() != null || !!this.get('fileProperty.content');
-  }),
-
-  /**
-   * Return true if this file is a dir and not all chilren are loaded from backend.
-   * If this is not a dir, return undefined.
-   */
-  allChildrenLoaded: Ember.computed('totalChildrenCount', 'children.length', 'isDir', function() {
-    if (this.get('isDir')) {
-      return this.get('totalChildrenCount') <= this.get('children.length');
-    }
-  }),
+  /*** INIT */
 
   init() {
     this._super(...arguments);
     this.set('dirsPath', []);
   },
 
-  sizeHumanReadable: Ember.computed('size', function() {
+  updateDirsPath: on('init', observer('parent.name', function () {
+    this.resolveDirsPath().then(data => this.set('dirsPath', data));
+  })),
+
+  /*** RELATION CHECKS */
+
+  /// properties for checking presence of object in relation without relation resolve
+  /// note that share and parent relations should be present in classes
+
+  hasShare: Ember.computed('share.content', function () {
+    return this.belongsTo('share').id() != null;
+  }),
+  hasParent: Ember.computed('parent.content', function () {
+    return this.belongsTo('parent').id() != null;
+  }),
+  hasFileProperty: Ember.computed.reads('hasMetadata'),
+  hasMetadata: Ember.computed('fileProperty.content', function () {
+    return this.belongsTo('fileProperty').id() != null || !!this.get('fileProperty.content');
+  }),
+
+  /*** RUNTIME COMPUTED PROPERTIES */
+
+  /**
+   * Return true if this file is a dir and not all chilren are loaded from backend.
+   * If this is not a dir, return undefined.
+   */
+  allChildrenLoaded: computed('totalChildrenCount', 'children.length', 'isDir', function () {
+    if (this.get('isDir')) {
+      return this.get('totalChildrenCount') <= this.get('children.length');
+    }
+  }),
+
+  sizeHumanReadable: computed('size', function () {
     let size = this.get('size');
     return (size == null) ? '' : bytesToString(size);
   }),
 
-  modificationMoment: function() {
+  modificationMoment: computed('modificationTime', function () {
     let timestamp = this.get('modificationTime');
     return timestamp ? moment(timestamp * 1000).format('YYYY-MM-DD HH:MM') : '-';
-  }.property('modificationTime'),
+  }),
 
-  permissionsHumanReadable: function() {
+  permissionsHumanReadable: computed('permissions', function () {
     let perms = this.get('permissions');
     return perms ? octalPermissionsToString(perms) : '';
-  }.property('permissions'),
+  }),
 
-  isDir: function () {
+  isDir: computed('type', function () {
     return this.get('type') === 'dir';
-  }.property('type'),
+  }),
 
-  isBroken: function () {
+  isBroken: computed('type', function () {
     return this.get('type') === 'broken';
-  }.property('type'),
+  }),
 
-  resetBrowserState() {
-    this.set('isExpanded', false);
-    this.set('isSelected', false);
-  },
+  isVisible: computed('parent.isExpanded', function () {
+    var visible = this.get('parent.isExpanded');
+    console.log('deselect(' + this.get('name') + '): ' +
+      (this.get('isSelected') && !visible));
+    if (this.get('isSelected') && !visible) {
+      this.set('isSelected', false);
+    }
+    return visible;
+  }),
 
-  resetBrowserStateRecursive() {
-    this.get('children').forEach((child) => child.resetBrowserStateRecursive());
-    this.resetBrowserState();
-  },
+  /**
+   * A stringified path to file
+   * @type {computed<string>}
+   */
+  path: computed('dirsPath.@each.name', function () {
+    const dp = this.get('dirsPath');
+    return dp && dp.mapBy('name').join('/');
+  }),
+
+  hasSubDirs: computed('children.@each.isDir', function () {
+    if (this.get('isDir')) {
+      return this.get('children').some(c => c.get('isDir'));
+    } else {
+      return false;
+    }
+  }),
+
+  selectedFiles: computed('isDir', 'children.@each.isSelected', function () {
+    if (this.get('isDir')) {
+      return this.get('children').filterBy('isSelected');
+    } else {
+      return null;
+    }
+  }),
+
+  selectedFilesType: computed('selectedFiles.@each.type', function () {
+    const sf = this.get('selectedFiles');
+    let firstType = sf.length > 0 ? sf[0].get('type') : undefined;
+    if (sf.length > 0 && sf.every(f => f.get('type') === firstType)) {
+      return firstType;
+    } else {
+      return 'mixed';
+    }
+  }),
+
+  singleSelectedFile: computed('isDir', 'selectedFiles.[]', 'selectedFiles.firstObject',
+    function () {
+      if (this.get('isDir')) {
+        let selected = this.get('selectedFiles');
+        return selected.length === 1 ? selected.get('firstObject') : null;
+      } else {
+        return null;
+      }
+    }
+  ),
+
+  isSomeFileSelected: computed('isDir', 'selectedFiles.[]', function () {
+    if (this.get('isDir')) {
+      return this.get('selectedFiles.length') > 0;
+    } else {
+      return false;
+    }
+  }),
+
+  /*** MODEL CLASS OVERRIDES */
 
   /**
    * Delete share when file delete succeeded
+   * @override
    */
   destroyRecord() {
     const sharePromise = this.get('share');
@@ -190,17 +232,21 @@ export default Ember.Mixin.create({
     console.debug('File: ' + this.get('id') + ' isDeleted: ' + this.get('isDeleted'));
   },
 
-  isVisible: function () {
-    var visible = this.get('parent.isExpanded');
-    console.log('deselect(' + this.get('name') + '): ' +
-      (this.get('isSelected') && !visible));
-    if (this.get('isSelected') && !visible) {
-      this.set('isSelected', false);
-    }
-    return visible;
-  }.property('parent.isExpanded'),
+  /*** UTILS */
 
-  /// Utils
+  resetBrowserState() {
+    this.setProperties({
+      isExpanded: false,
+      isSelected: false
+    });
+  },
+
+  resetBrowserStateRecursive() {
+    this.get('children').forEach(child => {
+      child.resetBrowserStateRecursive();
+    });
+    this.resetBrowserState();
+  },
 
   /**
    * Resolves an array with file parents, including the file.
@@ -211,7 +257,7 @@ export default Ember.Mixin.create({
    */
   resolveDirsPath() {
     let path = [this];
-    return new Ember.RSVP.Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       this.get('parent').then(
         (p) => {
           if (p) {
@@ -229,63 +275,6 @@ export default Ember.Mixin.create({
       );
     });
   },
-
-  updateDirsPath: Ember.on('init', Ember.observer('parent', 'parent.name', function() {
-    this.resolveDirsPath().then(data => this.set('dirsPath', data));
-  })),
-
-  path: Ember.computed('dirsPath.@each.name', function() {
-    const dp = this.get('dirsPath');
-    return dp && dp.mapBy('name').join('/');
-  }),
-
-  // TODO: move directory utils to mixin
-  /// Directory utils
-
-  hasSubDirs: Ember.computed('children.@each.isDir', function() {
-    if (this.get('isDir')) {
-      return this.get('children').some(c => c.get('isDir'));
-  } else {
-      return false;
-    }
-  }),
-
-  selectedFiles: Ember.computed('isDir', 'children.@each.isSelected', function() {
-    if (this.get('isDir')) {
-      return this.get('children').filterBy('isSelected');
-    } else {
-      return null;
-    }
-  }),
-
-  selectedFilesType: Ember.computed('selectedFiles.@each.type', function() {
-    const sf = this.get('selectedFiles');
-    let firstType = sf.length > 0 ? sf[0].get('type') : undefined;
-    if (sf.length > 0 && sf.every(f => f.get('type') === firstType)) {
-      return firstType;
-    } else {
-      return 'mixed';
-    }
-  }),
-
-  singleSelectedFile: Ember.computed('isDir', 'selectedFiles.[]', 'selectedFiles.firstObject',
-    function() {
-      if (this.get('isDir')) {
-        let selected = this.get('selectedFiles');
-        return selected.length === 1 ? selected.get('firstObject') : null;
-      } else {
-        return null;
-      }
-    }
-  ),
-
-  isSomeFileSelected: Ember.computed('isDir', 'selectedFiles.[]', function() {
-    if (this.get('isDir')) {
-      return this.get('selectedFiles.length') > 0;
-    } else {
-      return false;
-    }
-  }),
 
   /**
    * If this file is a dir, remove its selected files.
@@ -337,7 +326,7 @@ export default Ember.Mixin.create({
       function handleFileCreationError(error) {
         try {
           console.error(
-`File with name "${fileName}" creation failed: ${JSON.stringify(error)};
+            `File with name "${fileName}" creation failed: ${JSON.stringify(error)};
 File parent id: ${parentId}`
           );
         } finally {

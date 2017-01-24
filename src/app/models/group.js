@@ -1,4 +1,11 @@
 import DS from 'ember-data';
+import isDefaultMixinFactory from 'ember-cli-onedata-common/mixin-factories/models/is-default';
+
+const {
+  attr,
+  hasMany,
+  belongsTo
+} = DS;
 
 /**
  * A group in system - model for groups/ routes.
@@ -7,26 +14,25 @@ import DS from 'ember-data';
  *
  * @module models/group
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default DS.Model.extend({
+export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
   /** User specified name of space that will be exposed in GUI */
-  name: DS.attr('string'),
-  /** Collection of users permissions - each will be a row in permissions table */
-  userPermissions: DS.hasMany('groupUserPermission', {async: true}),
-  /** Collection of group permissions - each will be a row in permissions table */
-  groupPermissions: DS.hasMany('groupGroupPermission', {async: true}),
+  name: attr('string'),
 
-  // TODO: this property is currently not supported in backend
-  spaces: DS.hasMany('space', {async: true}),
+  hasViewPrivilege: attr('boolean'),
 
-  parentGroups: DS.hasMany('group', {async: true, inverse: 'childGroups'}),
-  childGroups: DS.hasMany('group', {async: true, inverse: 'parentGroups'}),
+  /*** RELATIONS */
 
-  // TODO: currently not used - use list Order in templates
-  /** An absolute position on list */
-  listOrder: DS.attr('number'),
+  user: belongsTo('user', { async: true }),
 
-  hasViewPrivilege: DS.attr('boolean'),
+  /** Collection of users permissions - effectively all rows in permissions table */
+  userList: belongsTo('group-user-list', { async: true }),
+  
+  /** Collection of group permissions - effectively all rows in permissions table */
+  groupList: belongsTo('group-group-list', { async: true }),
+
+  parentGroups: hasMany('group', {async: true, inverse: 'childGroups'}),
+  childGroups: hasMany('group', {async: true, inverse: 'parentGroups'}),
 });

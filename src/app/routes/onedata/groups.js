@@ -5,7 +5,7 @@ export default Ember.Route.extend({
   mainRouteName: 'groups',
 
   model() {
-    return this.store.findAll('group');
+    return this.modelFor('onedata').get('groups');
   },
 
   actions: {

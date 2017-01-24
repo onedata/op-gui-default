@@ -32,7 +32,7 @@ import conflictProviderId from 'op-worker-gui/utils/conflict-provider-id';
  * 
  * @module components/data-files-list
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
@@ -446,20 +446,6 @@ export default Ember.Component.extend({
     return index > 0 ? index : 0;
   }),
 
-  // FIXME
-  // visibleFilesCount: Ember.computed({
-  //   get() {
-  //     this.get('__visibleFilesCount');
-  //   },
-  //   set(key, value) {
-  //     this.setProperties({
-  //       __prevVisibleFilesCount: this.get('__visibleFilesCount'),
-  //       __visibleFilesCount: value
-  //     });
-  //     return value;
-  //   }
-  // }),
-
   currentlyUploadingCount: Ember.computed({
     get() {
       this.get('__currentlyUploadingCount');
@@ -493,7 +479,8 @@ export default Ember.Component.extend({
     );
   },
 
-  // FIXME: on init, we should read current dirUploads from service
+  // NOTICE, IMPORTANT
+  // TODO: on init, we should read current dirUploads from service
   // and reset currentlyUploadingCount property value
   handleDirUploadsChanged({parentId, dirUploads}) {
     if (this.get('dir.id') === parentId) {

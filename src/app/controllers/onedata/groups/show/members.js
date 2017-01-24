@@ -1,14 +1,11 @@
 import Ember from 'ember';
-
-import ShowPermissionsControllerMixin from 'op-worker-gui/mixins/show-permissions-controller';
+import showPermissionsMixinFactory from 'op-worker-gui/mixin-factories/controllers/show-permissions';
 
 /**
- * See mixins/show-permission-controller for details.
- * @module controllers/onedata/groups/show/users
+ * See mixin-factories/controllers/show-permissions for details.
+ * @module controllers/onedata/spaces/show/users
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default Ember.Controller.extend(ShowPermissionsControllerMixin, {
-  permissionsType: 'members',
-});
+export default Ember.Controller.extend(showPermissionsMixinFactory(['user', 'group']));

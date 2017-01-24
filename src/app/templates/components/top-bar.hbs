@@ -12,8 +12,13 @@
       {{#link-to "index" class="navbar-brand top-bar-item clickable" tagName="div"}}
         <div class="provider-name-container">
           <div class="oneicon oneicon-provider top-bar-icon"></div>
-          <div class="label-provider">{{t 'components.topBar.provider'}}:</div>
-          <div class="provider-name truncate">{{session.sessionDetails.providerName}}</div>
+          <div class="provider-name truncate">
+            {{session.sessionDetails.providerName}}
+          </div>
+          {{#truncated-string class="provider-name" shrinkBy=32}}
+            
+            
+          {{/truncated-string}}
         </div>
       {{/link-to}}
     </div>
@@ -25,7 +30,7 @@
         <li class="dropdown profile-dropdown">
           <a href="#" class="dropdown-toggle top-bar-item toolbar-icon" data-toggle="dropdown"
             role="button" aria-haspopup="true" aria-expanded="false">
-              {{one-icon icon='user-profile' class='top-bar-icon'}} {{trim-string session.sessionDetails.userName 14}} <span class="caret"></span>
+              {{one-icon icon='user-profile' class='top-bar-icon'}} {{trim-string userName 14}} <span class="caret"></span>
           </a>
           <ul class="dropdown-menu dropdown-menu-down expand-left dropdown-menu-list">
             <li><a href="{{session.sessionDetails.manageProvidersURL}}">{{t 'components.topBar.manageProviders'}}</a></li>

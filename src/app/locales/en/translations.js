@@ -7,7 +7,7 @@ import filePermissions from './file-permissions';
  *
  * @module locales/en/translations
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
 */
 export default {
@@ -74,7 +74,6 @@ export default {
     topBar: {
       logout: 'Log out',
       manageProviders: 'Manage account',
-      provider: 'provider'
     },
     mainMenu: {
       data: 'data',
@@ -209,7 +208,6 @@ export default {
         remove: 'Remove',
         inviteUser: 'Invite user',
         inviteGroup: 'Invite group',
-        createSpace: 'Request space creation',
         joinSpace: 'Join space',
         joinAsSubgroup: 'Join as subgroup'
       },
@@ -442,10 +440,6 @@ export default {
         title: 'Invite group to the group',
         label: 'Pass the below token to the group you want to invite to group'
       },
-      requestSpaceCreation: {
-        title: 'Request space creation for the group',
-        label: 'Pass the below token to a provider of your choice. The token can be used to create a space for your group and grant support to the space.'
-      }
     },
     shareInfoHead: {
       path: 'Path',

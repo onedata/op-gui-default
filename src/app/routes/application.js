@@ -2,7 +2,7 @@
  * A main route, setting up whole application.
  * @module routes/spaces
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -13,10 +13,6 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
   mainMenuService: Ember.inject.service('main-menu'),
   session: Ember.inject.service('session'),
   loginRedirect: Ember.inject.service(),
-
-  activate() {
-    console.debug('app activate');
-  },
 
   actions: {
     goToItem(name) {

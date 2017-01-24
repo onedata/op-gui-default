@@ -4,7 +4,7 @@
  * Could list a Spaces for user, who can select the Space and configure it.
  * @module routes/spaces
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -14,7 +14,7 @@ export default Ember.Route.extend({
   mainRouteName: 'spaces',
 
   model() {
-    return this.store.findAll('space');
+    return this.modelFor('onedata').get('spaces');
   },
 
   actions: {

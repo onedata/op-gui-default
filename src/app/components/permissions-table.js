@@ -6,17 +6,26 @@
  *
  * @module components/permissions-table
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
 */
 
 import Ember from 'ember';
 
+const {
+  inject,
+  computed,
+  observer,
+  isArray,
+  RSVP: {Promise}
+} = Ember;
+
 export default Ember.Component.extend({
-  oneproviderServer: Ember.inject.service(),
-  commonModals: Ember.inject.service(),
-  notify: Ember.inject.service(),
-  store: Ember.inject.service(),
+  oneproviderServer: inject.service(),
+  commonModals: inject.service(),
+  notify: inject.service(),
+  store: inject.service(),
+  session: inject.service(),
 
   classNames: ['permissions-table'],
 
@@ -26,10 +35,11 @@ export default Ember.Component.extend({
   */
   subject: null,
 
-  isLoading: Ember.computed('isLocked', 'users.@each.isLoaded', 'groups.@each.isLoaded', function() {
-    let {isLocked, users, groups} =
-      this.getProperties('isLocked', 'users', 'groups');
-    return isLocked || users.some(p => !p.get('isLoaded')) || groups.some(p => !p.get('isLoaded'));
+  isLoading: computed('isLocked', 'users.@each.isLoaded', 'groups.@each.isLoaded', 
+    'isLoadingList', function() {
+      let {isLocked, users, groups, isLoadingList} =
+        this.getProperties('isLocked', 'users', 'groups', 'isLoadingList');
+      return isLocked || isLoadingList || users && users.some(p => !p.get('isLoaded')) || groups && groups.some(p => !p.get('isLoaded'));
   }),
 
   /** Unfortunately, some colors are used by spin.js and must be passed from JS code
@@ -49,6 +59,9 @@ export default Ember.Component.extend({
 
   permissionsSorting: ['owner'],
 
+  // FIXME jsdoc
+  isLoadingList: undefined,
+
   /**
    * Collection of permissions-base model subclasses instances.
    * Each represents a sigle entity with some permissions to set.
@@ -56,16 +69,30 @@ export default Ember.Component.extend({
    * It must be injected into component.
    */
   usersPermissions: null,
-  usersPermissionsSorted: Ember.computed.sort('usersPermissions', 'permissionsSorting'),
-  users: Ember.computed.mapBy('usersPermissions', 'owner'),
+  usersPermissionsSorted: computed.sort('usersPermissions', 'permissionsSorting'),
+  users: computed.mapBy('usersPermissions', 'owner'),
+  showUsersPermissions: computed('usersPermissions', function() {
+    return this.get('usersPermissions') != null;
+  }),
+  emptyUsersPermissions: computed('usersPermissions.length', function() {
+    let ps = this.get('usersPermissions');
+    return isArray(ps) && ps.get('length') === 0;
+  }),
 
   groupsPermissions: null,
-  groupsPermissionsSorted: Ember.computed.sort('groupsPermissions', 'permissionsSorting'),
-  groups: Ember.computed.mapBy('groupsPermissions', 'owner'),
+  groupsPermissionsSorted: computed.sort('groupsPermissions', 'permissionsSorting'),
+  groups: computed.mapBy('groupsPermissions', 'owner'),
+  showGroupsPermissions: computed('groupsPermissions', function() {
+    return this.get('groupsPermissions') != null;
+  }),
+  emptyGroupsPermissions: computed('groupsPermissions.length', function() {
+    let ps = this.get('groupsPermissions');
+    return isArray(ps) && ps.get('length') === 0;
+  }),
 
   availableGroups: function() {
     if (this.get('groupsPermissions')) {
-      return this.get('store').findAll('group');
+      return this.get('session.user.groups');
     } else {
       return null;
     }
@@ -77,12 +104,12 @@ export default Ember.Component.extend({
    */
   subjectType: null,
 
-  typeSingular: function() {
+  typeSingular: computed('type', function() {
     let type = this.get('type');
     return (type.slice(-1) === 's') ? type.slice(0, -1) : type;
-  }.property('type'),
+  }),
 
-  inviteButton: function() {
+  inviteButton: computed('type', function() {
     switch (this.get('type')) {
       case 'users':
         return 'user-add';
@@ -91,7 +118,7 @@ export default Ember.Component.extend({
       default:
         return null;
     }
-  }.property('type'),
+  }),
 
   /** Should permissions table be treated as modified and not saved?
    *  It is true when at least one permission model in collection is modified.
@@ -104,19 +131,19 @@ export default Ember.Component.extend({
     return upModified || gpModified;
   }.property('usersPermissions.@each.isModified', 'groupsPermissions.@each.isModified'),
 
-  isModifiedChanged: function() {
+  isModifiedChanged: observer('isModified', function() {
     this.sendAction('modifiedChanged', this.get('isModified'), this.get('subjectType'));
-  }.observes('isModified'),
+  }),
 
   activePermissions: null,
 
-  allPermissions: function() {
+  allPermissions: computed('usersPermissions', 'groupsPermissions', function() {
     return [].concat(
       this.get('usersPermissions') && this.get('usersPermissions').toArray() || []
     ).concat(
       this.get('groupsPermissions') && this.get('groupsPermissions').toArray() || []
     );
-  }.property('usersPermissions', 'groupsPermissions'),
+  }),
 
   actions: {
     /** Change state of single permission checkbox */
@@ -148,7 +175,7 @@ export default Ember.Component.extend({
           );
         }
       });
-      let masterPromise = Ember.RSVP.Promise.all(promises);
+      let masterPromise = Promise.all(promises);
       masterPromise.finally(() => this.set('isLocked', false));
       masterPromise.catch((error) => {
         error = error || this.get('i18n').t('common.unknownError');
@@ -164,7 +191,7 @@ export default Ember.Component.extend({
       this.get('allPermissions').forEach(function(permission) {
         permission.reset();
       });
-      return new Ember.RSVP.Promise((resolve) => {
+      return new Promise((resolve) => {
         resolve();
       });
     },

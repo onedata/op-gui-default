@@ -5,7 +5,7 @@ import Ember from 'ember';
  * Beside toolbar buttons, contains a set of modals for toolbar actions.
  * @module components/data-files-list-toolbar
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
@@ -252,11 +252,6 @@ export default Ember.Component.extend({
     },
 
     renameModalOpened() {
-      // TODO: should use autofocus of modal bs-form-element, but it does not work
-      // $('*').focus(function(event) {
-      //   debugger;
-      // });
-
       this.$().find('input').focus().select();
     },
 
@@ -280,7 +275,7 @@ export default Ember.Component.extend({
       let fileId = this.get('fileForChunks.id');
       // TODO: if fileId null...
 
-      this.get('store').query('file-distribution', { filter: { fileId: fileId } }).then(
+      this.get('store').query('file-distribution', { fileId }).then(
         (fbs) => {
           this.set('fileBlocks', fbs);
         },

@@ -69,6 +69,16 @@
       opacity: 0.25;
     }
   }
+
+  // legacy version for OZ - probably to remove in future
+  .white-on-parent-hover {
+    color: transparent !important;
+  }
+  &:hover {
+    .white-on-parent-hover {
+      color: white !important;
+    }
+  }
 }
 
 .floater {

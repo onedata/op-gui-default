@@ -6,7 +6,7 @@ import RESTSerializer from 'ember-data/serializers/rest';
  *
  * @module adapters/onedata-websocket
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default RESTSerializer.extend({
@@ -34,6 +34,8 @@ export default RESTSerializer.extend({
       }
     });
 
+    // NOTICE, IMPORTANT
+    // TODO: modified keys are not propertly detected for relationships
     snapshot.eachRelationship((key, relationship) => {
       if (options.keys ? options.keys.includes(key) : true) {
         if (relationship.kind === 'belongsTo') {

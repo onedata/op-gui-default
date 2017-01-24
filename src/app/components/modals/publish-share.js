@@ -5,7 +5,7 @@ import Ember from 'ember';
  *
  * @module modals/publish-share
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
@@ -13,6 +13,7 @@ export default Ember.Component.extend({
   store: Ember.inject.service(),
   i18n: Ember.inject.service(),
   oneproviderServer: Ember.inject.service(),
+  session: Ember.inject.service(),
 
   /** @abstract */
   modalId: null,
@@ -61,7 +62,7 @@ export default Ember.Component.extend({
   },
 
   fetchHandleServices: Ember.on('init', function() {
-    const fetchPromise = this.get('store').findAll('handle-service');
+    let fetchPromise = this.get('session.user').get('handleServices');
     fetchPromise.then((hsList) => {
       if (hsList) {
         this.set('availableHandleServices', hsList);

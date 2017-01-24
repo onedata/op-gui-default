@@ -21,6 +21,16 @@
 </div>
 
 <table class="one-table normal permissions">
+  {{#if isListRejected}}
+    <tbody class="one-tbody">
+      <tr class="one-tr">
+        <td class="one-td info-cell" colspan="42">
+          Currently some of permissions list cannot be loaded. Please try again later.
+        </td>
+      </tr>
+    </tbody>
+  {{/if}}
+
   {{#if isLoading}}
     {{#one-overlay fog=true}}
       <div class="spinner-container spinner-centered spinner-middle overlay-fog">
@@ -29,7 +39,7 @@
     {{/one-overlay}}
   {{/if}}
 
-  {{#if (not (eq usersPermissions null))}}
+  {{#if showUsersPermissions}}
 
     <thead class="one-thead">
       <th class="one-th one-first">
@@ -73,36 +83,37 @@
         <th class="one-th">{{t 'components.permissionsTable.createSpace'}}</th>
         <th class="one-th">{{t 'components.permissionsTable.joinSpace'}}</th>
         <th class="one-th">{{t 'components.permissionsTable.leaveSpace'}}</th>
-        <th class="one-th">{{t 'components.permissionsTable.getSupport'}}</th>
       {{/if}}
     </thead>
 
-    {{#if (eq usersPermissions.length 0)}}
-
     <tbody class="one-tbody">
-      <tr class="one-tr">
-        {{!-- A magic number to colspan all columns :) --}}
-        <td class="one-td info-cell" colspan="42">
-          {{t (concat 'components.permissionsTable.noUsers.' subjectType)}}
-        </td>
-      </tr>
+      {{#if emptyUsersPermissions}}
+
+        <tr class="one-tr">
+          {{!-- A magic number to colspan all columns :) --}}
+          <td class="one-td info-cell" colspan="42">
+            {{#if isLoading}}
+              Loading...
+            {{else}}
+              {{t (concat 'components.permissionsTable.noUsers.' subjectType)}}
+            {{/if}}
+          </td>
+        </tr>
+
+      {{else}}
+        
+        {{#each usersPermissionsSorted as |perm|}}
+          {{permissions-table-row type='users' subjectType=subjectType
+            permissions=perm isActive=(eq activePermissions.id perm.id)
+            activatePermissions="activatePermissions" togglePermission="togglePermission"}}
+        {{/each}}
+
+      {{/if}}
     </tbody>
-
-    {{else}}
-
-    <tbody class="one-tbody">
-      {{#each usersPermissionsSorted as |perm|}}
-        {{permissions-table-row type='users' subjectType=subjectType
-          permissions=perm isActive=(eq activePermissions.id perm.id)
-          activatePermissions="activatePermissions" togglePermission="togglePermission"}}
-      {{/each}}
-    </tbody>
-
-    {{/if}}
 
   {{/if}}
 
-  {{#if (not (eq groupsPermissions null))}}
+  {{#if showGroupsPermissions}}
 
     <thead class="one-thead">
       <th class="one-th one-first">
@@ -146,33 +157,35 @@
         <th class="one-th">{{t 'components.permissionsTable.createSpace'}}</th>
         <th class="one-th">{{t 'components.permissionsTable.joinSpace'}}</th>
         <th class="one-th">{{t 'components.permissionsTable.leaveSpace'}}</th>
-        <th class="one-th">{{t 'components.permissionsTable.getSupport'}}</th>
       {{/if}}
     </thead>
 
-    {{#if (eq groupsPermissions.length 0)}}
-
     <tbody class="one-tbody">
-      <tr class="one-tr">
-        {{!-- A magic number to colspan all columns :) --}}
-        <td class="one-td info-cell" colspan="42">
-          {{t (concat 'components.permissionsTable.noGroups.' subjectType)}}
-        </td>
-      </tr>
+      {{#if emptyGroupsPermissions}}
+      
+        <tr class="one-tr">
+          {{!-- A magic number to colspan all columns :) --}}
+          <td class="one-td info-cell" colspan="42">
+            {{#if isLoading}}
+              Loading...
+            {{else}}
+              {{t (concat 'components.permissionsTable.noGroups.' subjectType)}}
+            {{/if}}
+          </td>
+        </tr>
+      
+      
+      {{else}}
+
+        {{#each groupsPermissionsSorted as |perm|}}
+          {{permissions-table-row type='groups' subjectType=subjectType
+            permissions=perm isActive=(eq activePermissions.id perm.id)
+            activatePermissions="activatePermissions" togglePermission="togglePermission"
+            availableGroups=availableGroups}}
+        {{/each}}
+
+      {{/if}}
     </tbody>
-
-    {{else}}
-
-    <tbody class="one-tbody">
-      {{#each groupsPermissionsSorted as |perm|}}
-        {{permissions-table-row type='groups' subjectType=subjectType
-          permissions=perm isActive=(eq activePermissions.id perm.id)
-          activatePermissions="activatePermissions" togglePermission="togglePermission"
-          availableGroups=availableGroups}}
-      {{/each}}
-    </tbody>
-
-    {{/if}}
 
   {{/if}}
 

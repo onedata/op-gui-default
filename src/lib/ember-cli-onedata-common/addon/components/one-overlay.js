@@ -40,6 +40,7 @@ export default Ember.Component.extend({
   fog: true,
 
   didInsertElement() {
+    this._super(...arguments);
     run.scheduleOnce('afterRender', this, function() {
       let $parent = this.$().parent();
       let parentPosition = $parent.css('position');

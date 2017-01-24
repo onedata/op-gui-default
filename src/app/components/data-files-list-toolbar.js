@@ -216,6 +216,7 @@ export default Ember.Component.extend({
   }),
 
   didInsertElement() {
+    this._super(...arguments);
     this.makeTooltips();
     console.debug('Binding upload button for files toolbar');
     // NOTE: file upload component has dir set by data-files-list component,

@@ -18,6 +18,7 @@ export default Ember.Mixin.create({
   // TODO: deregister event from sidebar on willDestroyElement
   // maybe use: this.on('willDestroyElement', () => { sidebar.off(...) } ) etc.
   didInsertElement() {
+    this._super(...arguments);
     run.scheduleOnce('afterRender', this, function() {
       let sidebar = $('.secondary-sidebar');
       let drop = this.$('.dropdown-menu');

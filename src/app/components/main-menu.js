@@ -39,6 +39,7 @@ export default Ember.Component.extend({
   }.property('session.sessionDetails'),
 
   didInsertElement() {
+    this._super(...arguments);
     run.scheduleOnce('afterRender', this, function() {
       // TODO: old code for responsiveness, use property bindings for visible
       $('nav.primary-sidebar').hover(() => {

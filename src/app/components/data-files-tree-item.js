@@ -25,6 +25,7 @@ export default Ember.Component.extend({
   level: null,
 
   didInsertElement() {
+    this._super(...arguments);
     this.updateTruncateSize();
     this.get('eventsBus').on('secondarySidebar:resized', this.get('updateTruncateSizeFun'));
   },

@@ -66,6 +66,7 @@ export default Ember.Component.extend({
   },
 
   didInsertElement() {
+    this._super(...arguments);
     run.scheduleOnce('afterRender', this, function() {
       this.set('$filesTable', this.$().closest('.data-files-list').find('.files-table'));
       // TODO: Currently sticky spinner is disabled due to bugs

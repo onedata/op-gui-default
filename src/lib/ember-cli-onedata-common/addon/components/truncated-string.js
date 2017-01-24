@@ -30,6 +30,7 @@ export default Ember.Component.extend({
   __changeMaxWidthFun: null,
 
   didInsertElement() {
+    this._super(...arguments);
     let {
       parentSelector,
       shrinkBy

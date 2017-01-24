@@ -254,6 +254,7 @@ export default Ember.Component.extend({
   }),
 
   didInsertElement() {
+    this._super(...arguments);
     let r = this.get('fileUploadService.resumable');
 
     // TODO: use component selector this.$().find(...)

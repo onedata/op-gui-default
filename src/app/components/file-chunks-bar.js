@@ -18,6 +18,7 @@ export default Ember.Component.extend({
   fileBlocks: null,
 
   didInsertElement() {
+    this._super(...arguments);
     run.scheduleOnce('afterRender', this, function() {
       this.set('canvas', this.$().find('canvas'));
       this.redrawCanvas();

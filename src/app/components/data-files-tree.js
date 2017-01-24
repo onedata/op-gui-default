@@ -30,6 +30,7 @@ export default Ember.Component.extend({
   rootDir: null,
 
   didInsertElement() {
+    this._super(...arguments);
     this.bindResizeHandler();
   },
 

@@ -34,6 +34,7 @@ export default Ember.Component.extend({
   },
 
   didInsertElement() {
+    this._super(...arguments);
     let setMaxHeightFun = this.get('setMaxHeightFun');
     run.scheduleOnce('afterRender', this, function() {
       setMaxHeightFun();

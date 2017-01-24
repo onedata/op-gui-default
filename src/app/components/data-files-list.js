@@ -499,6 +499,7 @@ export default Ember.Component.extend({
   },
 
   didInsertElement() {
+    this._super(...arguments);
     let eventsBus = this.get('eventsBus');
 
     let __computeFileLabelMaxWidth = this.computeFileLabelMaxWidth.bind(this);

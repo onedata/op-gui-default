@@ -57,6 +57,7 @@ export default Ember.Component.extend({
   ),
 
   didInsertElement() {
+    this._super(...arguments);
     run.scheduleOnce('afterRender', this, function() {
       this.$().find('ul').addClass('nav-tabs');
     });

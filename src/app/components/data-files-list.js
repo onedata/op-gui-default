@@ -4,10 +4,13 @@ import conflictProviderId from 'op-worker-gui/utils/conflict-provider-id';
 const {
   computed,
   inject,
-  A,
   run,
   observer,
-  on
+  on,
+  assert,
+  run: {
+    debounce
+  }
 } = Ember;
 
 /**
@@ -259,25 +262,17 @@ export default Ember.Component.extend({
    * Filtered collection of ``files`` that are loaded.
    * @type {Computed<File[]>}
    */
-  loadedFiles: computed('files.@each.isLoaded', function() {
-    return this.get('files').filter(f => f.get('isLoaded'));
-  }),
+  loadedFiles: computed.filterBy('files', 'isLoaded', true),
 
   /**
    * Collection of files that are displayed in files browser.
-   * For order of display see ``visibleFilesSorted``.
    * @type {Computed<File[]>}
    */
-  visibleFiles: computed('loadedFiles', function() {
-    return this.get('loadedFiles').filter(f => !f.get('isBroken'));
-  }),
+  visibleFiles: computed.filterBy('loadedFiles', 'isBroken', false),
 
-  /**
-   * List of files that are displayed in files browser.
-   * Currently files are sorted by backend and we do not change this.
-   * @type {Computed<File[]>}
-   */
-  visibleFilesSorted: computed.alias('visibleFiles'),
+  selectedFiles: computed.filterBy('visibleFiles', 'isSelected', true),
+
+  providerId: computed.alias('session.sessionDetails.providerId'),
 
   /**
    * An information about File for displaying it on files list.
@@ -290,55 +285,57 @@ export default Ember.Component.extend({
   /**
    * A final model for displaying ``fileRow``.
    * Generates objects of type ``FileRowInfo`` for each File
-   * in visibleFilesSorted that contain ``file`` a reference to File model
+   * in visibleFiles that contain ``file`` a reference to File model
    * and ``providerLabel`` - only if the file has conflicting name and provider ID
    * that is _not_ the current provider.
    * @type {Computed<FileRowInfo>}
    */
-  fileRows: computed('visibleFilesSorted.@each.{name,provider}',
-    'session.sessionDetails.providerId', function() {
-    
-    let visibleFilesSorted = this.get('visibleFilesSorted');
-    let providerId = this.get('session.sessionDetails.providerId');
-    
-    if (!visibleFilesSorted) {
-      return A();
+
+  observeProviderLabels: observer('visibleFiles.@each.{name,provider}',
+    'providerId', function() {
+      debounce(this, this.updateProviderLabels, 100);
     }
+  ),
 
-    let filesMap = new Map();
-    visibleFilesSorted.forEach(f => {
+  updateProviderLabels() {
+    let {
+      visibleFiles,
+      providerId
+    } = this.getProperties('visibleFiles', 'providerId');
+
+    // maps: file name -> array of files with that name
+    let nameFilesMap = new Map();
+    visibleFiles.forEach(f => {
       let name = f.get('name');
-      if (filesMap.has(name)) {
-        filesMap.get(name).push(f);
+      if (nameFilesMap.has(name)) {
+        nameFilesMap.get(name).push(f);
       } else {
-        filesMap.set(name, [f]);
+        nameFilesMap.set(name, [f]);
       }
-    });
-    
-    let fileRows = [];
-    
-    filesMap.forEach(files => {
-      if (files.length > 1) {
-        let providerLabels = conflictProviderId(files.mapBy('provider'));
-        for (let i=0; i<files.length; i+=1) {
-          let file = files[i];
-          fileRows.push(Object.create({
-            providerLabel: file.get('provider') === providerId ? null : providerLabels[i],
-            file: files[i]
-          }));
+
+      nameFilesMap.forEach(files => {
+        assert(
+          'files list for name should not be empty',
+          files.length > 0
+        );
+
+        if (files.length > 1) {
+          let providerLabels = conflictProviderId(files.mapBy('provider'));
+          for (let i = 0; i < files.length; i += 1) {
+            let file = files[i];
+            file.set(
+              'listProviderLabel',
+              file.get('provider') === providerId ? null : providerLabels[i]
+            );
+          }
+
+        } else {
+          files[0].set('listProviderLabel', undefined);
         }
-
-      } else {
-        fileRows.push(Object.create({
-          file: files[0]
-        }));
-      }
+      });
     });
+  },
 
-    return A(fileRows);
-  }),
-
-  selectedFiles: computed.filterBy('visibleFiles', 'isSelected', true),
 
   /**
    * True if there is nothing to display in files browser.
@@ -346,7 +343,8 @@ export default Ember.Component.extend({
    * @type {Computed<Boolean>}
    */
   dirIsEmpty: computed('visibleFiles.length', function() {
-    let dirIsEmpty = !this.get('visibleFiles') || this.get('visibleFiles.length') === 0;
+    let visibleFiles = this.get('visibleFiles');
+    let dirIsEmpty = !visibleFiles || visibleFiles.get('length') === 0;
     return dirIsEmpty;
   }),
 
@@ -631,12 +629,12 @@ export default Ember.Component.extend({
   },
 
   findNearestSelectedIndex(fileIndex) {
-    let {visibleFilesSorted, selectedFiles} =
-      this.getProperties('visibleFilesSorted', 'selectedFiles');
+    let {visibleFiles, selectedFiles} =
+      this.getProperties('visibleFiles', 'selectedFiles');
 
     // [index: Number, distanceFromFile: Number]
     let selectedFilesIndexes = selectedFiles.map(sf => {
-      let index = visibleFilesSorted.indexOf(sf);
+      let index = visibleFiles.indexOf(sf);
       return [index, Math.abs(index-fileIndex)];
     });
     let nearest = selectedFilesIndexes.reduce((prev, current) => {
@@ -655,20 +653,20 @@ export default Ember.Component.extend({
    * @param {File} file
    */
   selectRangeToFile(file) {
-    let {visibleFilesSorted, lastSelectedFile} =
-      this.getProperties('visibleFilesSorted', 'lastSelectedFile');
-    let fileIndex = visibleFilesSorted.indexOf(file);
+    let {visibleFiles, lastSelectedFile} =
+      this.getProperties('visibleFiles', 'lastSelectedFile');
+    let fileIndex = visibleFiles.indexOf(file);
 
     let startIndex;
     if (lastSelectedFile) {
-      startIndex = visibleFilesSorted.indexOf(lastSelectedFile);
+      startIndex = visibleFiles.indexOf(lastSelectedFile);
     } else {
       startIndex = this.findNearestSelectedIndex(fileIndex);
     }   
 
     let indexA = Math.min(startIndex, fileIndex);
     let indexB = Math.max(startIndex, fileIndex);
-    visibleFilesSorted.slice(indexA, indexB+1).forEach(f => f.set('isSelected', true));
+    visibleFiles.slice(indexA, indexB+1).forEach(f => f.set('isSelected', true));
   },
 
   actions: {

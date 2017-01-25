@@ -82,15 +82,15 @@ export default Ember.Component.extend({
   top: computed('startRow', '$filesTable', function() {
     let startRow = this.get('startRow');
     let $filesTable = this.get('$filesTable');
-    let $row = $filesTable.find(`.file-row-index-${startRow}`);
-    if ($row.length === 1) {
-      return $row.position().top;
+    let row = $filesTable.find('.file-row')[startRow];
+    if (row.length) {
+      return row.offsetTop;
     } else {
       // if startRow is not rendered yet for loader, use last row's bottom
       // so we have a small bottom loader no matter if there are loading rows
-      $row = $filesTable.find(`.file-row-index-${startRow-1}`);
-      if ($row.length === 1) {
-        return $row.position().top + $row.height();
+      row = $filesTable.find('.file-row')[startRow-1];
+      if (row) {
+        return row.offsetTop + row.offsetHeight;
       }
     }
   }),

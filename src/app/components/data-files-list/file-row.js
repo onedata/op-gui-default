@@ -29,7 +29,6 @@ export default Ember.Component.extend({
   classNameBindings: [
     'highlightClass',
     'isDownloading:selection-background-pulse',
-    'indexClass',
     'isNewlyCreated:notice-background-pulse'
   ],
 
@@ -42,10 +41,6 @@ export default Ember.Component.extend({
     return this.get('file.isSelected') && 'active' ||
       this.get('file.isEditingMetadata') && 'metadata-opened' ||
       '';
-  }),
-
-  indexClass: computed('listIndex', function() {
-    return `file-row-index-${this.get('listIndex')}`;
   }),
 
   isNewlyCreated: computed.alias('file.isNewlyCreated'),
@@ -70,7 +65,7 @@ export default Ember.Component.extend({
    * for distinguishing conflicting files.
    * @type {String}
    */
-  providerLabel: null,
+  providerLabel: computed.alias('file.listProviderLabel'),
 
   /**
    * If true, the file is currently downloaded, so it will be indicated in GUI.

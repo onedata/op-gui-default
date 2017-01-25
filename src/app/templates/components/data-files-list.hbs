@@ -69,26 +69,34 @@
       </td>
     </tr>
   {{/if}}
-  {{#each fileRows as |fileRow index|}}
   {{!-- TODO: open file when selected and enter pressed --}}
-    {{data-files-list/file-row
-      providerLabel=fileRow.providerLabel
-      file=fileRow.file
-      openDirInBrowser='openDirInBrowser'
-      downloadFile='downloadFile' fileClicked='handleFileClicked'
-      clearFilesSelection='clearFilesSelection'
-      readOnly=readOnly
-      listIndex=index
-      labelMaxWidth=fileLabelMaxWidth
-      openFileShareModal='openFileShareModal'
-      toggleFileMetadata='toggleFileMetadata'
-      watchAppear=(or (eq index fileIndexToWatchVisibility) (eq index (dec visibleFiles.length)))
-      onAppear=(action "fileAppeared" index)
+  {{#each files as |file index|}}
+    {{#if (and file.isLoaded (not file.isBroken))}}
+      {{data-files-list/file-row
+        file=file
+        openDirInBrowser='openDirInBrowser'
+        downloadFile='downloadFile' fileClicked='handleFileClicked'
+        clearFilesSelection='clearFilesSelection'
+        readOnly=readOnly
+        listIndex=index
+        labelMaxWidth=fileLabelMaxWidth
+        openFileShareModal='openFileShareModal'
+        toggleFileMetadata='toggleFileMetadata'
+        watchAppear=(or (eq index fileIndexToWatchVisibility) (eq index (dec visibleFiles.length)))
+        onAppear=(action "fileAppeared" index)
       }}
-    {{#if fileRow.file.isEditingMetadata}}
-      {{data-files-list/file-metadata-row file=fileRow.file readOnly=readOnly}}
+      {{#if file.isEditingMetadata}}
+        {{data-files-list/file-metadata-row file=file readOnly=readOnly}}
+      {{/if}}
     {{/if}}
   {{/each}}
+
+  {{!--<ul>
+    {{#each files as |file|}}
+      <li>{{file.name}}</li>
+    {{/each}}
+  </ul>--}}
+
     <tr class="file-row-load-more">
       <td colspan=999>
         {{#if isLoadingMoreFiles}}

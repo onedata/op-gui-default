@@ -83,7 +83,7 @@ export default Ember.Component.extend({
     let startRow = this.get('startRow');
     let $filesTable = this.get('$filesTable');
     let row = $filesTable.find('.file-row')[startRow];
-    if (row.length) {
+    if (row) {
       return row.offsetTop;
     } else {
       // if startRow is not rendered yet for loader, use last row's bottom

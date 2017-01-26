@@ -168,7 +168,7 @@ export default Ember.Component.extend({
 
   init() {
     this._super(...arguments);
-    this._observeFiles();
+    this._observeLoadedFiles();
     this.resetProperties();
     this.dirChanged();
   },
@@ -268,7 +268,7 @@ export default Ember.Component.extend({
   _updateLoadedFiles() {
     this.set(
       'loadedFiles',
-      this.get('files').filter('isLoaded', true)
+      this.get('files').filterBy('isLoaded', true)
     );
   },
 

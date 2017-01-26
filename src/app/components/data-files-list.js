@@ -10,7 +10,8 @@ const {
   assert,
   run: {
     debounce
-  }
+  },
+  A
 } = Ember;
 
 /**
@@ -167,6 +168,7 @@ export default Ember.Component.extend({
 
   init() {
     this._super(...arguments);
+    this._observeFiles();
     this.resetProperties();
     this.dirChanged();
   },
@@ -243,8 +245,8 @@ export default Ember.Component.extend({
    * need any loader.
    * @type {Computed<Boolean>}
    */
-  areLastRequestedFilesLoaded: computed('totalAheadFilesCount', 'loadedFiles.length', function() {
-    return this.get('totalAheadFilesCount') <= this.get('loadedFiles.length');
+  areLastRequestedFilesLoaded: computed('totalAheadFilesCount', 'loadedFilesCount', function() {
+    return this.get('totalAheadFilesCount') <= this.get('loadedFilesCount');
   }),
 
   isPushAfterFetchMoreDone: computed('totalAheadFilesCount', 'files.length', function() {
@@ -252,20 +254,47 @@ export default Ember.Component.extend({
   }),
 
   /**
-   * Collection of dir children. These are not files that are displayed.
-   * See ``visibleFiles``.
+   * Collection of dir children.
+   * These files are used by template and are filtered by
+   * ``is-file-loaded`` helper to select files that should be presented.
    * @type {Computed<File[]>}
    */
-  files: computed.alias('dir.children'),
+  files: computed.alias('dir.children'),  
+
+  _observeLoadedFiles: observer('dir.children.@each.isLoaded', function() {
+    debounce(this, this._updateLoadedFiles, 100);
+  }),
+  
+  _updateLoadedFiles() {
+    this.set(
+      'loadedFiles',
+      this.get('files').filter('isLoaded', true)
+    );
+  },
 
   /**
    * Filtered collection of ``files`` that are loaded.
+   * It is updated by ``_updateLoadedFiles`` invoked with debounce
+   * by ``_observeLoadedFiles``.
+   * 
+   * NOTE that template _does not_ use this list,
+   * see ``visibleFiles`` for details.
    * @type {Computed<File[]>}
    */
-  loadedFiles: computed.filterBy('files', 'isLoaded', true),
+  loadedFiles: A(),
+
+  loadedFilesCount: computed.alias('loadedFiles.length'),
 
   /**
-   * Collection of files that are displayed in files browser.
+   * Collection of files that are should be displayed in files browser.
+   * 
+   * NOTE that template _does not_ use this list,
+   * because it is created with filter, which creates a new Array every time.
+   * The templace uses its own helpers to filter the list.
+   * 
+   * NOTE that this computed property and a ``is-file-visible`` helper
+   * should use the same conditions to filter visible files!
+   * 
    * @type {Computed<File[]>}
    */
   visibleFiles: computed.filterBy('loadedFiles', 'isBroken', false),

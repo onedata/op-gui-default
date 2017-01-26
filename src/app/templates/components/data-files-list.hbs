@@ -71,7 +71,7 @@
   {{/if}}
   {{!-- TODO: open file when selected and enter pressed --}}
   {{#each files as |file index|}}
-    {{#if (and file.isLoaded (not file.isBroken))}}
+    {{#if (is-file-visible file)}}
       {{data-files-list/file-row
         file=file
         openDirInBrowser='openDirInBrowser'
@@ -91,11 +91,6 @@
     {{/if}}
   {{/each}}
 
-  {{!--<ul>
-    {{#each files as |file|}}
-      <li>{{file.name}}</li>
-    {{/each}}
-  </ul>--}}
 
     <tr class="file-row-load-more">
       <td colspan=999>

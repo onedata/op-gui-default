@@ -7,6 +7,9 @@ const {
   observer,
   RSVP: {
     Promise
+  },
+  String: {
+    capitalize
   }
 } = Ember;
 
@@ -444,7 +447,7 @@ export default Ember.Component.extend({
       let {i18n, notify} = this.getProperties('i18n', 'notify');
       let file = model;
       let type = i18n.t('common.' + (file.get('isDir') ? 'directory' : 'file'));
-      type = String.capitalize(type.toString());
+      type = capitalize(type.toString());
       if (success) {
         notify.info(i18n.t('components.dataFilesListToolbar.renameFileModal.success', {
           type: type,

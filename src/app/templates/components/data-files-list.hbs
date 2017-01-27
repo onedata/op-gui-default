@@ -10,11 +10,87 @@
   </div>
 {{/if}}
 
-{{#unless filesTableIsVisible}}
+{{#if filesTableIsVisible}}
 
-<div class="empty-model">
-  <div class="empty-model-container">
-    <div class="empty-model-image empty-dir-image"></div>
+  <table class="table table-strips files-table relative">
+    <thead>
+      <th>
+        {{t 'components.dataFilesList.files'}}
+      </th>
+      <th class="hidden-xs">
+        {{t 'components.dataFilesList.size'}}
+      </th>
+      {{!-- TODO: disabled in beta4 --}}
+      {{!-- <th class="hidden-xs hidden-sm">
+    {{t 'components.dataFilesList.permissions'}}
+      </th> --}}
+      <th class="hidden-xs">
+        {{t 'components.dataFilesList.modification'}}
+      </th>
+    </thead>
+    <tbody>
+      {{#if (or currentlyUploadingCount isWaitingForPushAfterUpload)}}
+        <tr class="file-row-uploading selection-background-pulse first-level">
+          <td colspan=99 class="file-list-col-file">
+            <div class="file-icon">
+              {{one-icon icon='upload'}}
+            </div>
+            <div class="file-label-container">
+              <div class="file-label truncate">
+                {{#if currentlyUploadingCount}}
+                  {{t 'components.dataFilesList.uploadIndicator'
+                    currentlyUploadingCount=currentlyUploadingCount
+                  }}
+                {{else if isWaitingForPushAfterUpload}}
+                  {{t 'components.dataFilesList.uploadFinishedWait'}}
+                {{/if}}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {{/if}}
+      {{!-- TODO: open file when selected and enter pressed --}}
+      {{#each files as |file index|}}
+        {{#if (and file.isLoaded (not file.isBroken))}}
+          {{data-files-list/file-row
+            file=file
+            openDirInBrowser='openDirInBrowser'
+            downloadFile='downloadFile'
+            fileClicked='handleFileClicked'
+            clearFilesSelection='clearFilesSelection'
+            readOnly=readOnly 
+            listIndex=index 
+            labelMaxWidth=fileLabelMaxWidth 
+            openFileShareModal='openFileShareModal'
+            toggleFileMetadata='toggleFileMetadata'
+            watchAppear=(or (eq index fileIndexToWatchVisibility) (eq index (dec visibleFiles.length)))
+            onAppear=(action "fileAppeared" index) 
+          }}
+          {{#if file.isEditingMetadata}}
+            {{data-files-list/file-metadata-row file=file readOnly=readOnly}}
+          {{/if}}
+        {{/if}}
+      {{/each}}
+
+      <tr class="file-row-load-more">
+        <td colspan=999>
+          {{#if isLoadingMoreFiles}}
+            <div class="spinner-container spinner-centered spinner-64">
+              {{spin-spinner scale=0.4 lines=12 length=20 width=10}}
+            </div>
+          {{/if}}
+        </td>
+      </tr>
+    </tbody>
+
+    {{data-files-list-loader startRow=loadingFileIndex rowsCount=visibleFilesSorted.length}}
+  </table>
+
+{{else if (and dirIsEmpty firstLoadDone)}}
+
+  <div class="empty-model">
+    <div class="empty-model-container">
+      <div class="empty-model-image empty-dir-image"></div>
       {{#if (and uploadEnabled (not fileUpload.locked))}}
         <div class="empty-model-message">
           Nothing here yet.
@@ -27,83 +103,7 @@
           This directory is empty.
         </div>
       {{/if}}
+    </div>
   </div>
-</div>
 
-{{else}}
-
-<table class="table table-strips files-table relative">
-  <thead>
-  <th>
-    {{t 'components.dataFilesList.files'}}
-  </th>
-  <th class="hidden-xs">
-    {{t 'components.dataFilesList.size'}}
-  </th>
-  {{!-- TODO: disabled in beta4 --}}
-  {{!-- <th class="hidden-xs hidden-sm">
-    {{t 'components.dataFilesList.permissions'}}
-  </th> --}}
-  <th class="hidden-xs">
-    {{t 'components.dataFilesList.modification'}}
-  </th>
-  </thead>
-  <tbody>
-  {{#if (or currentlyUploadingCount isWaitingForPushAfterUpload)}}
-    <tr class="file-row-uploading selection-background-pulse first-level">
-      <td colspan=99 class="file-list-col-file">
-        <div class="file-icon">
-          {{one-icon icon='upload'}}
-        </div>
-        <div class="file-label-container">
-          <div class="file-label truncate">
-            {{#if currentlyUploadingCount}}
-              {{t 'components.dataFilesList.uploadIndicator'
-                currentlyUploadingCount=currentlyUploadingCount
-              }}
-            {{else if isWaitingForPushAfterUpload}}
-              {{t 'components.dataFilesList.uploadFinishedWait'}}
-            {{/if}}
-          </div>
-        </div>
-      </td>
-    </tr>
-  {{/if}}
-  {{!-- TODO: open file when selected and enter pressed --}}
-  {{#each files as |file index|}}
-    {{#if (and file.isLoaded (not file.isBroken))}}
-      {{data-files-list/file-row
-        file=file
-        openDirInBrowser='openDirInBrowser'
-        downloadFile='downloadFile' fileClicked='handleFileClicked'
-        clearFilesSelection='clearFilesSelection'
-        readOnly=readOnly
-        listIndex=index
-        labelMaxWidth=fileLabelMaxWidth
-        openFileShareModal='openFileShareModal'
-        toggleFileMetadata='toggleFileMetadata'
-        watchAppear=(or (eq index fileIndexToWatchVisibility) (eq index (dec visibleFiles.length)))
-        onAppear=(action "fileAppeared" index)
-      }}
-      {{#if file.isEditingMetadata}}
-        {{data-files-list/file-metadata-row file=file readOnly=readOnly}}
-      {{/if}}
-    {{/if}}
-  {{/each}}
-
-
-    <tr class="file-row-load-more">
-      <td colspan=999>
-        {{#if isLoadingMoreFiles}}
-        <div class="spinner-container spinner-centered spinner-64">
-          {{spin-spinner scale=0.4 lines=12 length=20 width=10}}
-        </div>
-        {{/if}}
-      </td>
-    </tr>
-  </tbody>
-
-{{data-files-list-loader startRow=loadingFileIndex
-  rowsCount=visibleFilesSorted.length}}
-</table>
-{{/unless}}
+{{/if}}

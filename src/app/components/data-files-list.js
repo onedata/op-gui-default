@@ -380,31 +380,46 @@ export default Ember.Component.extend({
 
 
   /**
-   * True if there is nothing to display in files browser.
+   * True if there is no files to display in files browser.
    * However, there can be some children files, but they cannot be displayed.
-   * @type {Computed<Boolean>}
+   * Returns ``undefined`` if we cannot evaluate this (eg. on initial loading).
+   * @type {Computed<Boolean|undefined>}
    */
   dirIsEmpty: computed('visibleFiles.length', function() {
     let visibleFiles = this.get('visibleFiles');
     // visibleFiles == null means, that it was no initialized yet,
     // so we don't know if dir is empty
-    return visibleFiles != null && visibleFiles.get('length') === 0;
+    return visibleFiles == null ? undefined : visibleFiles.get('length') === 0;
   }),
 
-  filesTableIsVisible: computed('dirIsEmpty', 'currentlyUploadingCount', 'isWaitingForPushAfterUpload', function() {
-    let {
-      dirIsEmpty,
-      // even if dir is empty, when we upload first files, we want to see the table
-      currentlyUploadingCount,
-      // finished uploading, but waiting for files to receive - table should be presented
-      isWaitingForPushAfterUpload
-    } = this.getProperties(
-      'dirIsEmpty', 
-      'currentlyUploadingCount', 
-      'isWaitingForPushAfterUpload'
-    );
-    return !dirIsEmpty || currentlyUploadingCount || isWaitingForPushAfterUpload;
+  showEmptyDirMessage: computed('dirIsEmpty', 'firstLoadDone', function() {
+    return this.get('dirIsEmpty') === true && this.get('firstLoadDone');
   }),
+
+  filesTableIsVisible: computed(
+    'dirIsEmpty',
+    'currentlyUploadingCount',
+    'isWaitingForPushAfterUpload',
+    'firstLoadDone',
+    function() {
+      let {
+        dirIsEmpty,
+        // even if dir is empty, when we upload first files, we want to see the table
+        currentlyUploadingCount,
+        // finished uploading, but waiting for files to receive - table should be presented
+        isWaitingForPushAfterUpload,
+        firstLoadDone
+      } = this.getProperties(
+        'dirIsEmpty', 
+        'currentlyUploadingCount', 
+        'isWaitingForPushAfterUpload',
+        'firstLoadDone'
+      );
+      return firstLoadDone && (
+        dirIsEmpty === false || currentlyUploadingCount || isWaitingForPushAfterUpload
+      );
+    }
+  ),
 
   /**
    * Checks if each in ``files`` collection is ready to read.
@@ -418,19 +433,31 @@ export default Ember.Component.extend({
    * True if a "global loader" that blocks all
    * @type {Computed<Boolean>}
    */
-  showGlobalLoader: computed('firstLoadDone', 'isFilesLoading', 'isLoadingMoreFiles', function() {
-    let {
-      firstLoadDone,
-      isLoadingMoreFiles,
-      isFilesLoading
-    } = this.getProperties(
-      'firstLoadDone',
-      'isFilesLoading',
-      'isLoadingMoreFiles'
-    );
+  showGlobalLoader: computed.not('firstLoadDone'),
 
-    return !firstLoadDone && !isLoadingMoreFiles && isFilesLoading;
-  }),
+  // showGlobalLoader: computed('firstLoadDone', 'isFilesLoading', 'isLoadingMoreFiles', function() {
+  //   let {
+  //     firstLoadDone,
+  //     isLoadingMoreFiles,
+  //     isFilesLoading
+  //   } = this.getProperties(
+  //     'firstLoadDone',
+  //     'isFilesLoading',
+  //     'isLoadingMoreFiles'
+  //   );
+  //   return !firstLoadDone || isFilesLoading && !isLoadingMoreFiles;
+  // }),
+
+  __FIXMEDebug: observer(
+    'filesTableIsVisible',
+    'firstLoadDone',
+    'isFilesLoading',
+    'showGlobalLoader',
+    'showEmptyDirMessage',
+    function() {
+      console.log('debug');
+    }
+  ),
 
   _recomputeLabelMaxWidthOnTableVisible: observer('filesTableIsVisible', function() {
     if (this.get('filesTableIsVisible')) {

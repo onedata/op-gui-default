@@ -86,7 +86,7 @@
     {{data-files-list-loader startRow=loadingFileIndex rowsCount=visibleFilesSorted.length}}
   </table>
 
-{{else if (and dirIsEmpty firstLoadDone)}}
+{{else if showEmptyDirMessage}}
 
   <div class="empty-model">
     <div class="empty-model-container">

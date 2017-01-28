@@ -507,11 +507,6 @@ html, body {
           }
         }
       }
-
-      // special styles for sidebar lists which are trees
-      ul.tree {
-
-      }
     }
 
     // TODO: assuming, that this content is always on secondary-sidebar right
@@ -582,6 +577,8 @@ html, body {
 
   > * {
     display: table-cell;
+    // TODO enable when hack from .btn removed
+    // vertical-align: middle;
   }
 
   > *:first-child {
@@ -594,6 +591,9 @@ html, body {
   }
 
   .btn {
+    // TODO these hacks could be removed if:
+    // .form-control style for input will not have a strange Bootstrap border
+
     // a hack to pull up
     margin-top: -2px;
 

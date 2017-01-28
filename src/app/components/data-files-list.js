@@ -347,7 +347,7 @@ export default Ember.Component.extend({
 
     // maps: file name -> array of files with that name
     let nameFilesMap = new Map();
-    visibleFiles.forEach(f => {
+    for (let f of visibleFiles || []) {
       let name = f.get('name');
       if (nameFilesMap.has(name)) {
         nameFilesMap.get(name).push(f);
@@ -355,7 +355,7 @@ export default Ember.Component.extend({
         nameFilesMap.set(name, [f]);
       }
 
-      nameFilesMap.forEach(files => {
+      for (let [, files] of nameFilesMap) {
         assert(
           'files list for name should not be empty',
           files.length > 0
@@ -374,8 +374,8 @@ export default Ember.Component.extend({
         } else {
           files[0].set('listProviderLabel', undefined);
         }
-      });
-    });
+      }
+    }
   },
 
 

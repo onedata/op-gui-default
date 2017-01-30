@@ -6,7 +6,7 @@ import RouteRejectHandler from 'op-worker-gui/mixins/route-reject-handler';
  *
  * @module routes/data
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Route.extend(RouteRejectHandler, {
@@ -16,7 +16,7 @@ export default Ember.Route.extend(RouteRejectHandler, {
 
   model(params) {
     return this.handleReject(
-      this.store.findRecord('data-space', params.data_space_id)
+      this.store.findRecord('space', params.data_space_id)
     );
   },
 

@@ -1,6 +1,11 @@
 import Ember from 'ember';
 import FileChunksBar from 'op-worker-gui/utils/file-chunks-bar';
 
+const {
+  run,
+  observer
+} = Ember;
+
 /**
  * Draw a bar with file chunks (blocks) using function from utils.
  * @module components/file-chunks-bar
@@ -13,8 +18,11 @@ export default Ember.Component.extend({
   fileBlocks: null,
 
   didInsertElement() {
-    this.set('canvas', this.$().find('canvas'));
-    this.redrawCanvas();
+    this._super(...arguments);
+    run.scheduleOnce('afterRender', this, function() {
+      this.set('canvas', this.$().find('canvas'));
+      this.redrawCanvas();
+    });
   },
 
   isRendered: false,
@@ -22,21 +30,36 @@ export default Ember.Component.extend({
   isLoading: false,
 
   // should use new everytime?
-  redrawCanvas: function() {
+  redrawCanvas: observer('canvas', 'file.size', 'fileBlocks.blocks', function() {
+    // FIXME check if it returns nested properties
+    let {
+      file: {
+        size
+      },
+      fileBlocks: {
+        blocks
+      },
+      canvas
+    } = this.getProperties('file.size', 'fileBlocks.blocks', 'canvas');
 
-    if (this.get('file.size') && this.get('fileBlocks.blocks')) {
+
+    if (size && blocks) {
       try {
-        this.set('isRenderFailed', false);
-        this.set('isLoading', true);
-        new FileChunksBar(this.get('canvas'), {
-          file_size: this.get('file.size'),
-          chunks: this.get('fileBlocks.blocks')
+        this.setProperties({
+          isRenderFailed: false,
+          isLoading: true
         });
-        this.set('isLoading', false);
-        this.set('isRendered', true);
+        new FileChunksBar(canvas, {
+          file_size: size,
+          chunks: blocks
+        });
+        this.setProperties({
+          isRendered: true,
+          isLoading: false
+        });
       } catch (error) {
         this.set('isRenderFailed', false);
       }
     }
-  }.observes('canvas', 'file', 'file.size', 'fileBlocks', 'fileBlocks.blocks')
+  })
 });

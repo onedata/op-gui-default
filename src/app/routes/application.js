@@ -2,7 +2,7 @@
  * A main route, setting up whole application.
  * @module routes/spaces
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -13,10 +13,6 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
   mainMenuService: Ember.inject.service('main-menu'),
   session: Ember.inject.service('session'),
   loginRedirect: Ember.inject.service(),
-
-  activate() {
-    console.debug('app activate');
-  },
 
   actions: {
     goToItem(name) {
@@ -29,24 +25,31 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
   },
 
   initSession: Ember.on('init', function() {
-    let p = this.get('session').initSession();
+    let {
+      session,
+      loginRedirect
+    } = this.getProperties('session', 'loginRedirect');
 
-    p.then(
-      () => {
-        console.debug('initSession resolved');
-        this.get('loginRedirect').clearTimeouts();
-      },
-      // TODO: translations
-      () => {
-        this.get('messageBox').open({
-          type: 'error',
-          allowClose: false,
-          title: 'Session initialization error',
-          message: 'Fatal error: session cannot be initialized'
-        });
-      }
-    );
+    let sessionInitialization = session.initSession();
 
-    return p;
+    sessionInitialization.then(() => {
+      console.debug('route:application: initSession resolved');
+    });
+    // TODO: translations
+    sessionInitialization.catch(() => {
+      console.debug('route:application: initSession rejected');
+      this.get('messageBox').open({
+        type: 'error',
+        allowClose: false,
+        title: 'Session initialization error',
+        message: 'Fatal error: session cannot be initialized'
+      });
+    });
+
+    sessionInitialization.finally(() => {
+      loginRedirect.onSessionInitFinished();
+    });
+
+    return sessionInitialization;
   }),
 });

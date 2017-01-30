@@ -6,11 +6,12 @@ import SettingsDropMixin from 'op-worker-gui/mixins/components/settings-drop';
  * Component does not have groups manipulation logic - actions are sent to parent components or services.
  * @module components/group-settings-drop
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend(SettingsDropMixin, {
   commonModals: Ember.inject.service(),
+  messageBox: Ember.inject.service(),
 
   /**
     Items in "group settings" dropright menu
@@ -72,11 +73,6 @@ export default Ember.Component.extend(SettingsDropMixin, {
         action: 'joinSpace'
       },
       {
-        icon: 'space-add',
-        label: i18n.t('components.groupsMenu.drop.createSpace'),
-        action: 'requestSpaceCreation'
-      },
-      {
         icon: 'remove',
         label: i18n.t('components.groupsMenu.drop.remove'),
         action: 'removeGroup'
@@ -102,7 +98,7 @@ export default Ember.Component.extend(SettingsDropMixin, {
       this.get('messageBox').open({
         title: i18n.t('common.featureNotSupportedShort'),
         type: 'warning',
-        allowClose: false,
+        allowClose: true,
         message: i18n.t('common.featureNotSupportedLong')
       });
 
@@ -122,13 +118,6 @@ export default Ember.Component.extend(SettingsDropMixin, {
       this.get('commonModals').openModal('token', {
         type: 'userJoinGroup',
         funArgs: [this.get('group.id')],
-      });
-    },
-
-    requestSpaceCreation() {
-      this.get('commonModals').openModal('token', {
-        type: 'requestSpaceCreation',
-        funArgs: [this.get('group.id')]
       });
     },
 

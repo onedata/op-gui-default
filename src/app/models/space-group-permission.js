@@ -1,17 +1,14 @@
-import Ember from 'ember';
 import DS from 'ember-data';
-import PermissionsModelSpaceMixin from 'op-worker-gui/mixins/permissions-model-space';
+import permissionModelFactory from 'op-worker-gui/mixin-factories/models/permission';
+import FLAG_NAMES from 'op-worker-gui/constants/permission-space-flags';
 
 /**
  * A set of single Space permissions for a single Group
  * @module models/space-group-permission
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default DS.Model.extend(PermissionsModelSpaceMixin, {
-  systemGroup: DS.belongsTo('systemGroup', {async: true}),
-
-  /** Common alias for owner - in this case group */
-  owner: Ember.computed.alias('systemGroup'),
-});
+export default DS.Model.extend(
+  permissionModelFactory(FLAG_NAMES, 'space', 'systemGroup')
+);

@@ -1,8 +1,4 @@
 import DS from 'ember-data';
+import createFilePropertyModel from 'op-worker-gui/mixin-factories/models/file-property';
 
-export default DS.Model.extend({
-  file: DS.belongsTo('file-public', {async: true}),
-  basic: DS.attr('object-string', { defaultValue: '{}'}),
-  json: DS.attr('object-string', { defaultValue: '{}'}),
-  rdf: DS.attr('string', { defaultValue: ''} ),
-});
+export default DS.Model.extend(createFilePropertyModel('public'));

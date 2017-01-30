@@ -1,6 +1,10 @@
 import Ember from 'ember';
 import layout from '../templates/components/one-overlay';
 
+const {
+  run
+} = Ember;
+
 /**
  * An overlay element that covers its parent with yielded content.
  * 
@@ -36,12 +40,15 @@ export default Ember.Component.extend({
   fog: true,
 
   didInsertElement() {
-    let $parent = this.$().parent();
-    let parentPosition = $parent.css('position');
-    if (parentPosition === 'static') {
-      $parent.css('position', 'relative');
-    }
-    this.set('_origParentPosition', parentPosition);
+    this._super(...arguments);
+    run.scheduleOnce('afterRender', this, function() {
+      let $parent = this.$().parent();
+      let parentPosition = $parent.css('position');
+      if (parentPosition === 'static') {
+        $parent.css('position', 'relative');
+      }
+      this.set('_origParentPosition', parentPosition);
+    });
   },
 
   willDestroyElement() {

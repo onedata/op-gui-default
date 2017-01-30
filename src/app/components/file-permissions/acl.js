@@ -1,9 +1,20 @@
 import Ember from 'ember';
 import ACE from 'op-worker-gui/utils/access-control-entity';
 
+const {
+  computed,
+  on,
+  observer,
+  inject,
+  run,
+  RSVP: {
+    Promise
+  }
+} = Ember;
+
 export default Ember.Component.extend({
-  store: Ember.inject.service(),
-  fileSystemTree: Ember.inject.service(),
+  store: inject.service(),
+  fileSystemTree: inject.service(),
 
   init() {
     this._super();
@@ -23,8 +34,13 @@ export default Ember.Component.extend({
   },
 
   didInsertElement() {
-    this.get('setMaxHeightFun')();
-    $(window).on('resize', this.get('setMaxHeightFun'));
+    this._super(...arguments);
+    let setMaxHeightFun = this.get('setMaxHeightFun');
+    run.scheduleOnce('afterRender', this, function() {
+      setMaxHeightFun();
+      $(window).on('resize', this.get('setMaxHeightFun'));
+    });
+    
   },
 
   willDestroyElement() {
@@ -38,7 +54,7 @@ export default Ember.Component.extend({
    */
   mixedAcl: false,
 
-  mixedAclChanged: Ember.on('init', Ember.observer('mixedAcl', function() {
+  mixedAclChanged: on('init', observer('mixedAcl', function() {
     if (this.get('mixedAcl')) {
       this.setProperties({
         statusBlocked: false,
@@ -61,12 +77,12 @@ export default Ember.Component.extend({
   error: null,
   isLoadingModel: true,
 
-  aclTmp: function() {
+  aclTmp: computed('acl.@each.subject', function() {
     return JSON.stringify(this.get('acl'));
-  }.property('acl.@each.subject'),
+  }),
 
   // TODO: change to be better synchronized with current file
-  dataSpace: Ember.computed.alias('fileSystemTree.selectedSpace'),
+  dataSpace: computed.alias('fileSystemTree.selectedSpace'),
 
   // -- we need these for displaying users/groups list for set permissions
 
@@ -74,46 +90,40 @@ export default Ember.Component.extend({
    * @param {String} type - one of: user, group
    */
   fetchSystemModel(type) {
-    const permModel = `${type}Permissions`;
-    const systemModel = `system${type.capitalize()}`;
     const thisModel = `system${type.capitalize()}sModel`;
+    let listModel = `${type}List`;
+    let systemModel = `system${type.capitalize()}`;
+    let space = this.get('dataSpace');
 
-    return new Ember.RSVP.Promise((resolve, reject) => {
-      if (this.get('dataSpace')) {
-        this.get('dataSpace.space')
-          .then(space => {
-            space.get(permModel).then(ups => {
-              const suPromises = ups.map(up => up.get(systemModel));
-              const allSuPromise = Ember.RSVP.Promise.all(suPromises);
-              allSuPromise.then(suList => {
-                this.set(thisModel, suList);
-                resolve();
-              });
-              allSuPromise.catch(error => {
-                console.warn(`Error on getting system ${type}s for ACL: ${error.message}`);
-                this.set(thisModel, null);
-                reject();
-              });
-            });
-          })
-          .catch(error => {
-            console.error(`Error on getting space for ACL: ${error.message}`);
-            this.set(thisModel, null);
-            reject();
-          });
-      }
+    let fetch = new Promise((resolve, reject) => {
+      let getSpace = space.get(listModel);
+      getSpace.then(list => {
+        let getPermissions = list.get('permissions');
+        getPermissions.then(permissions => {
+          let getSystems = Promise.all(
+            permissions.map(p => p.get(systemModel))
+          );
+          getSystems.then(resolve);
+          getSystems.catch(reject);
+        });
+        getPermissions.catch(error => reject(error));
+      });
+      getSpace.catch(reject);
     });
+    fetch.then(permissions => this.set(thisModel, permissions));
+    fetch.catch(() => this.set(thisModel, null));
+    return fetch;
   },
 
   // -- try to fetch system users/groups list for selector
 
-  dataSpaceChanged: function() {
+  dataSpaceChanged: on('init', observer('dataSpace', function() {
     this.set('isLoadingModel', true);
     const promises = [
       this.fetchSystemModel('user'),
       this.fetchSystemModel('group')
     ];
-    Ember.RSVP.Promise.all(promises)
+    Promise.all(promises)
       .then(() => this.set('isLoadingModel', false))
       .catch(() => this.setProperties({
         statusBlocked: true,
@@ -121,38 +131,34 @@ export default Ember.Component.extend({
         statusMessage: 'List of available users or groups could not be loaded',
         statusType: 'error'
       }));
-  }.observes('dataSpace').on('init'),
+  })),
 
   // -- convert systemUsers/Groups RecordArrays to selectors elements
 
-  systemUsers: function() {
+  systemUsers: computed('systemUsersModel.@each.{name,id}', function() {
     const models = this.get('systemUsersModel');
-    if (models && models.every(m => m && m.get('isLoaded'))) {
-      return models.map(m => {
-        return { id: m.get('id'), text: m.get('name') };
-      });
-    } else {
-      return [];
-    }
-  }.property('systemUsersModel'),
+    let selectData = models.map(m => ({
+      id: m.get('id'),
+      text: m.get('name')
+    }));
+    return selectData;
+  }),
 
-  systemGroups: function() {
+  systemGroups: computed('systemGroupsModel.@each.{name,id}', function() {
     const models = this.get('systemGroupsModel');
-    if (models && models.every(m => m && m.get('isLoaded'))) {
-      return models.map(m => {
-        return { id: m.get('id'), text: m.get('name') };
-      });
-    } else {
-      return [];
-    }
-  }.property('systemGroupsModel'),
+    let selectData = models.map(m => ({
+      id: m.get('id'),
+      text: m.get('name')
+    }));
+    return selectData;
+  }),
 
-  setMaxHeightFun: function() {
+  setMaxHeightFun: computed(function() {
     return () => {
       $('#edit-permissions-modal .modal-dialog .modal-content .ace-items')
         .css('max-height', $(window).height() - 300);
     };
-  }.property().readOnly(),
+  }).readOnly(),
 
   /**
    * ACL is valid if all of its elements are valid.

@@ -4,18 +4,15 @@
  *
  * @module routes/spaces/show/users
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
 import Ember from 'ember';
-import ShowPermissionsRouteMixin from 'op-worker-gui/mixins/show-permissions-route';
+import showPermissionsMixinFactory from 'op-worker-gui/mixin-factories/routes/show-permissions';
 
-export default Ember.Route.extend(ShowPermissionsRouteMixin, {
+export default Ember.Route.extend(showPermissionsMixinFactory('spaces'), {
   oneproviderServer: Ember.inject.service(),
-
-  permissionsType: 'users',
-  routeType: 'spaces',
 
   actions: {
     inviteItem() {

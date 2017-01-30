@@ -1,6 +1,10 @@
 import Ember from 'ember';
 import layout from 'ember-cli-onedata-common/templates/components/truncated-string';
 
+const {
+  run
+} = Ember;
+
 export default Ember.Component.extend({
   layout,
 
@@ -26,27 +30,36 @@ export default Ember.Component.extend({
   __changeMaxWidthFun: null,
 
   didInsertElement() {
-    let parentSelector = this.get('parentSelector');
-    let parent = parentSelector ? this.$().closest(parentSelector) : this.$().parent();
-    let shrinkBy = this.get('shrinkBy') || 0;
-    let $element = this.$();
-    let changeMaxWidth = (/*event*/) => {
-      let maxWidth = parent.width();
-      $element.css({
-        maxWidth: (parseInt(maxWidth) - shrinkBy)
-      });
-    };
+    this._super(...arguments);
+    let {
+      parentSelector,
+      shrinkBy
+    } = this.getProperties('parentSelector', 'shrinkBy');
+    shrinkBy = shrinkBy || 0;
 
-    this.set('__changeMaxWidthFun', changeMaxWidth);
+    // FIXME: this performance degradation workaround can be ineffective...
 
-    $(window).resize(changeMaxWidth);
-    if (this.get('eventsBus')) {
-      this.get('eventsBus').on('secondarySidebar:resized', changeMaxWidth);
-    }
+    run.scheduleOnce('afterRender', this, function() {
+      let parent = parentSelector ? this.$().closest(parentSelector) : this.$().parent();
+      let $element = this.$();
+      let changeMaxWidth = (/*event*/) => {
+        let maxWidth = parent.width();
+        $element.css({
+          maxWidth: (parseInt(maxWidth) - shrinkBy)
+        });
+      };
 
-    changeMaxWidth();
+      this.set('__changeMaxWidthFun', changeMaxWidth);
 
-    this.updateTooltipText();
+      $(window).resize(changeMaxWidth);
+      if (this.get('eventsBus')) {
+        this.get('eventsBus').on('secondarySidebar:resized', changeMaxWidth);
+      }
+
+      changeMaxWidth();
+
+      this.updateTooltipText();
+    });
   },
 
   willDestroyElement() {

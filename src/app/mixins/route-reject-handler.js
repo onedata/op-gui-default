@@ -7,13 +7,13 @@ import Ember from 'ember';
  * ```
  * fallbackRoute: 'data.index',
  * model(params) {
- *   return this.handleReject(this.store.findRecord('data-space', params.data_space_id));
+ *   return this.handleReject(this.store.findRecord('space', params.data_space_id));
  * },
  * ```
  * On model reject, the application will redirect to route specified by ``fallbackRoute`` property
  * @module mixins/route-reject-handler
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Mixin.create({

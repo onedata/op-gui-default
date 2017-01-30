@@ -4,34 +4,43 @@
  *
  * @module components/spaces-menu
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
 */
 
 import Ember from 'ember';
 
+const {
+  observer,
+  computed,
+  inject
+} = Ember;
+
 export default Ember.Component.extend({
-  secondaryMenu: Ember.inject.service(),
-  store: Ember.inject.service(),
-  notify: Ember.inject.service(),
-  oneproviderServer: Ember.inject.service(),
-  commonModals: Ember.inject.service(),
-  commonLoader: Ember.inject.service(),
+  secondaryMenu: inject.service(),
+  store: inject.service(),
+  notify: inject.service(),
+  oneproviderServer: inject.service(),
+  commonModals: inject.service(),
+  commonLoader: inject.service(),
+  session: inject.service(),
 
   spaces: null,
-  validSpaces: function() {
-    return this.get('spaces').filter((s) => s.get('isLoaded'));
-  }.property('spaces', 'spaces.[]', 'spaces.@each.isLoaded'),
+  validSpaces: computed.filterBy('spaces', 'isLoaded', true),
   spacesSorting: ['isDefault:desc', 'name'],
-  validSpacesSorted: Ember.computed.sort('validSpaces', 'spacesSorting'),
+  validSpacesSorted: computed.sort('validSpaces', 'spacesSorting'),
 
-  activeSpace: Ember.computed.alias('secondaryMenu.activeSpace'),
+  activeSpace: computed.alias('secondaryMenu.activeSpace'),
 
-  isLoading: function() {
-    return !this.get('spaces.length') || this.get('spaces').any((s) => !s.get('name'));
-  }.property('spaces', 'spaces.length', 'spaces.@each.name'),
+  // TODO: if in trouble, also assume, that spaces.length === 0 means that isLoading is true
+  isLoading: computed('isWorking', 'spaces.@each.isLoaded', function() {
+    let { spaces, isWorking } = this.getProperties('spaces', 'isWorking');
+    return !spaces ||
+      spaces.any(s => !s || !s.get('isLoaded')) ||
+      isWorking;
+  }),
 
-  isLoadingChanged: function() {
+  isLoadingChanged: observer('isLoading', function() {
     if (this.get('isLoading')) {
       this.setProperties({
         'commonLoader.isLoading': true,
@@ -45,7 +54,7 @@ export default Ember.Component.extend({
         'commonLoader.messageSecondary': null,
       });
     }
-  }.observes('isLoading'),
+  }),
 
   /*** Variables for actions and modals ***/
 
@@ -55,7 +64,7 @@ export default Ember.Component.extend({
   isJoiningSpace: false,
   joinSpaceToken: null,
 
-  isRenameModalOpened: Ember.computed('openedModal', {
+  isRenameModalOpened: computed('openedModal', {
     get() {
       return this.get('openedModal') === 'rename';
     },
@@ -68,7 +77,7 @@ export default Ember.Component.extend({
   }),
 
   spaceToRemove: null,
-  isRemoveModalOpened: Ember.computed('openedModal', {
+  isRemoveModalOpened: computed('openedModal', {
     get() {
       return this.get('openedModal') === 'remove';
     },
@@ -80,7 +89,7 @@ export default Ember.Component.extend({
     }
   }),
 
-  isLeaveModalOpened: Ember.computed('openedModal', {
+  isLeaveModalOpened: computed('openedModal', {
     get() {
       return this.get('openedModal') === 'leave';
     },
@@ -102,7 +111,9 @@ export default Ember.Component.extend({
     }
   }.observes('activeSpace'),
 
-  didInsertElement() {
+  init() {
+    this._super(...arguments);
+
     // reset spaces expanded state
     this.get('spaces').forEach((s) => s.set('isExpanded', false));
 
@@ -141,9 +152,11 @@ export default Ember.Component.extend({
     _submitCreateSpace() {
       // set isSavingSpace one more time, because we can reach this action from input text
       let name = this.get('newSpaceName');
+      let user = this.get('session.user');
       let s = this.get('store').createRecord('space', {
         name: name,
         hasViewPrivilege: true,
+        user
       });
       let savePromise = s.save();
       savePromise.then(
@@ -200,71 +213,38 @@ export default Ember.Component.extend({
     },
 
     setAsHome(space) {
-      this.set('isLoading', true);
+      this.set('isWorking', true);
 
-      let currentHome = this.get('spaces').find((s) => s.get('isDefault'));
+      let user = this.get('session.user');
+      let {id: spaceId, name: spaceName} = space.getProperties('id', 'name');
+      console.debug(`Will set new home space to ${spaceId}`);
 
-      let setNewHome = () => {
-        console.debug(`Will set new home space to ${space.get('id')}`);
-        space.set('isDefault', true);
-        let savePromise = space.save();
-        savePromise.then(
-          () => {
-            this.spaceActionMessage('info', 'setAsHomeSuccess', space.get('name'));
-          },
-          (error) => {
-            this.get('notify').error(
-              this.get('i18n').t('components.spacesMenu.notify.setAsHomeFailed', {
-                spaceName: space.get('name')
-              }) + ': ' +
-                (error && error.message) || this.get('i18n').t('common.unknownError')
-            );
-            space.rollbackAttributes();
-            if (currentHome) {
-              currentHome.set('isDefault', true);
-              // NOTE: this save is not checked for error
-              // if there is error no setting current home to default, we got some serious problem...
-              currentHome.save().catch((error) => {
-                console.error(`Cannot rollback ${currentHome.get('id')} to default space: ${error.message}`);
-              });
-            } else {
-              console.warn(`No current home to rollback`);
-            }
-          }
+      user.set('defaultSpaceId', spaceId);
+
+      let savePromise = user.save();
+
+      savePromise.then(() => {
+        this.spaceActionMessage('info', 'setAsHomeSuccess', spaceName);
+      });
+
+      savePromise.catch(error => {
+        this.get('notify').error(
+          this.get('i18n').t('components.spacesMenu.notify.setAsHomeFailed', {
+            spaceName
+          }) + ': ' +
+            (error && error.message) || this.get('i18n').t('common.unknownError')
         );
-
-        savePromise.finally(() => {
-          this.set('isLoading', false);
+        let reloadUser = user.reload();
+        reloadUser.catch(() => {
+          console.warn('Reloading User model after alias set failure failed - rolling back local User record');
+          user.rollbackAttributes();
         });
-      };
+      });
 
-      if (currentHome) {
-        // remove isDefault from current home space
-        currentHome.set('isDefault', false);
-        let unsetCurrentHomePromise = currentHome.save();
-        unsetCurrentHomePromise.then(
-          () => {
-            console.debug(`Unsetting home space ${currentHome.get('id')} success`);
-            setNewHome();
-          },
-          (error) => {
-            console.error(`Unsetting home space ${currentHome.get('id')} failed`);
-            this.get('notify').error(
-              this.get('i18n').t('components.spacesMenu.notify.setAsHomeFailed', {
-                spaceName: space.get('name')
-              }) + ': ' +
-                (error && error.message) || this.get('i18n').t('common.unknownError')
-            );
-            currentHome.rollbackAttributes();
-            this.set('isLoading', false);
-          }
-        );
-      } else {
-        // there is some error, because current home should be found
-        // anyway, force set new home
-        console.warn(`No current home space to be unset!`);
-        setNewHome();
-      }
+      savePromise.finally(() => {
+        this.set('isWorking', false);
+      });
+      
     },
 
     submitLeaveSpace() {

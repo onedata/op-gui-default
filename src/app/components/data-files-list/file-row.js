@@ -1,5 +1,17 @@
 import Ember from 'ember';
 
+const {
+  computed,
+  run,
+  observer,
+  RSVP: {
+    Promise
+  },
+  String: {
+    htmlSafe
+  }
+} = Ember;
+
 /**
  * Represents a row with file in files list.
  * 
@@ -17,26 +29,21 @@ export default Ember.Component.extend({
   classNameBindings: [
     'highlightClass',
     'isDownloading:selection-background-pulse',
-    'indexClass',
     'isNewlyCreated:notice-background-pulse'
   ],
 
-  fileLabelStyle: Ember.computed('labelMaxWidth', function() {
+  fileLabelStyle: computed('labelMaxWidth', function() {
     let style = `max-width: ${this.get('labelMaxWidth')}px;`;
-    return Ember.String.htmlSafe(style);
+    return htmlSafe(style);
   }),
 
-  highlightClass: Ember.computed('file.isSelected', 'file.isEditingMetadata', function() {
+  highlightClass: computed('file.isSelected', 'file.isEditingMetadata', function() {
     return this.get('file.isSelected') && 'active' ||
       this.get('file.isEditingMetadata') && 'metadata-opened' ||
       '';
   }),
 
-  indexClass: Ember.computed('listIndex', function() {
-    return `file-row-index-${this.get('listIndex')}`;
-  }),
-
-  isNewlyCreated: Ember.computed.alias('file.isNewlyCreated'),
+  isNewlyCreated: computed.alias('file.isNewlyCreated'),
 
   /**
    * To inject - a file that the row represents
@@ -58,7 +65,7 @@ export default Ember.Component.extend({
    * for distinguishing conflicting files.
    * @type {String}
    */
-  providerLabel: null,
+  providerLabel: computed.alias('file.listProviderLabel'),
 
   /**
    * If true, the file is currently downloaded, so it will be indicated in GUI.
@@ -115,7 +122,7 @@ export default Ember.Component.extend({
    * Returns a function that checks if this element is visible and if, sends action.
    * @type {Function}
    */
-  checkVisibilityFun: Ember.computed(function() {
+  checkVisibilityFun: computed(function() {
     const self = this;
     return function() {
       if (self.$().visible()) {
@@ -128,14 +135,17 @@ export default Ember.Component.extend({
    * A label that is actually displayed in GUI.
    * @type {String}
    */
-  displayedFileLabel: Ember.computed('label', 'file.name', function() {
+  displayedFileLabel: computed('label', 'file.name', function() {
     return this.get('label') || this.get('file.name');
   }),
 
   didInsertElement() {
-    if (this.get('watchAppear')) {
-      this.enableVisibilityChecking();
-    }
+    this._super(...arguments);
+    run.scheduleOnce('afterRender', this, function() {
+      if (this.get('watchAppear')) {
+        this.enableVisibilityChecking();
+      }
+    });
   },
 
   willDestroyElement() {
@@ -159,14 +169,14 @@ export default Ember.Component.extend({
       this.sendAction('openDirInBrowser', this.get('file'));
     } else {
       this.set('isDownloading', true);
-      const p = new Ember.RSVP.Promise((resolve, reject) => {
+      const p = new Promise((resolve, reject) => {
         this.sendAction('downloadFile', this.get('file'), resolve, reject);
       });
       p.finally(() => this.set('isDownloading', false));
     }
   },
 
-  toggleVisibilityChecking: Ember.observer('watchAppear', function() {
+  toggleVisibilityChecking: observer('watchAppear', function() {
     if (this.get('watchAppear')) {
       this.enableVisibilityChecking();
     } else {

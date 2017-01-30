@@ -1,5 +1,13 @@
 import Ember from 'ember';
 
+const {
+  run,
+  computed,
+  String :{
+    htmlSafe
+  }
+} = Ember;
+
 /**
  * A loader element that covers all files that are new in last ``fetchMoreFiles``
  * request. It covers always from previous loaded files list to bottom of table.
@@ -26,7 +34,7 @@ export default Ember.Component.extend({
    */
   $filesTable: null,
 
-  style: Ember.computed('top', '$filesTable', function() {
+  style: computed('top', '$filesTable', function() {
     let style = 'display: none;';
 
     const startRow = this.get('startRow');
@@ -36,7 +44,7 @@ export default Ember.Component.extend({
         style = `display: block; top: ${top}px;`;
       }
     }
-    return Ember.String.htmlSafe(style);
+    return htmlSafe(style);
   }),
 
   __stickyFun: null,
@@ -58,9 +66,12 @@ export default Ember.Component.extend({
   },
 
   didInsertElement() {
-    this.set('$filesTable', this.$().closest('.data-files-list').find('.files-table'));
-    // TODO: Currently sticky spinner is disabled due to bugs
-    // this.bindSticky();
+    this._super(...arguments);
+    run.scheduleOnce('afterRender', this, function() {
+      this.set('$filesTable', this.$().closest('.data-files-list').find('.files-table'));
+      // TODO: Currently sticky spinner is disabled due to bugs
+      // this.bindSticky();
+    });
   },
 
   willDestroyElement() {
@@ -68,18 +79,18 @@ export default Ember.Component.extend({
     // this.unbindSticky();
   },
 
-  top: Ember.computed('startRow', function() {
+  top: computed('startRow', '$filesTable', function() {
     let startRow = this.get('startRow');
     let $filesTable = this.get('$filesTable');
-    let $row = $filesTable.find(`.file-row-index-${startRow}`);
-    if ($row.length === 1) {
-      return $row.position().top;
+    let row = $filesTable.find('.file-row')[startRow];
+    if (row) {
+      return row.offsetTop;
     } else {
       // if startRow is not rendered yet for loader, use last row's bottom
       // so we have a small bottom loader no matter if there are loading rows
-      $row = $filesTable.find(`.file-row-index-${startRow-1}`);
-      if ($row.length === 1) {
-        return $row.position().top + $row.height();
+      row = $filesTable.find('.file-row')[startRow-1];
+      if (row) {
+        return row.offsetTop + row.offsetHeight;
       }
     }
   }),

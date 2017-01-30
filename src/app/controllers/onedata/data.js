@@ -9,8 +9,5 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Controller.extend({
-  fileBrowser: Ember.inject.service(),
-
-  invalidRootDir: Ember.computed.alias('fileBrowser.invalidRootDir'),
-  dir: Ember.computed.alias('fileBrowser.dir'),
+  fileBrowser: Ember.inject.service()
 });

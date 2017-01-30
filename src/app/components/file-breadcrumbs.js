@@ -40,6 +40,7 @@ export default Ember.Component.extend({
   elementsToShow: Infinity,
 
   didInsertElement() {
+    this._super(...arguments);
     this.checkWidth();
     this.set('__checkWidthFun', () => {
       this.set('elementsToShow', Infinity);

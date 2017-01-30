@@ -1,14 +1,20 @@
 import Ember from 'ember';
 
+const {
+  inject,
+  computed,
+  run
+} = Ember;
+
 export default Ember.Component.extend({
-  notify: Ember.inject.service(),
+  notify: inject.service(),
 
   classNames: ['metadata-panel'],
 
   /**
    * A metadata record to edit in this panel.
    * To inject.
-   * @type {Ember.ObjectProxy<FileProperty>}
+   * @type {ObjectProxy<FileProperty>}
    */
   metadataProxy: null,
 
@@ -26,32 +32,35 @@ export default Ember.Component.extend({
     this._super(...arguments);
   },
 
-  metadata: Ember.computed.oneWay('metadataProxy.content'),
+  metadata: computed.oneWay('metadataProxy.content'),
 
-  metadataIsModified: Ember.computed('metadata.hasDirtyAttributes', function() {
+  metadataIsModified: computed('metadata.hasDirtyAttributes', function() {
     return this.get('metadata.hasDirtyAttributes');
   }),
 
-  saveEnabled: Ember.computed('metadataIsModified', 'isSaving',
+  saveEnabled: computed('metadataIsModified', 'isSaving',
     function() {
       return this.get('metadataIsModified') && !this.get('isSaving');
     }
   ),
 
-  removeAvailable: Ember.computed('metadata.isNew',
+  removeAvailable: computed('metadata.isNew',
     function() {
       return !this.get('metadata.isNew');
     }
   ),
 
-  removeEnabled: Ember.computed('isSaving',
+  removeEnabled: computed('isSaving',
     function() {
       return !this.get('isSaving');
     }
   ),
 
   didInsertElement() {
-    this.$().find('ul').addClass('nav-tabs');
+    this._super(...arguments);
+    run.scheduleOnce('afterRender', this, function() {
+      this.$().find('ul').addClass('nav-tabs');
+    });
   },
 
   actions: {

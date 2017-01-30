@@ -1,7 +1,15 @@
 import Ember from 'ember';
 
 const {
-  computed
+  computed,
+  run,
+  assert,
+  inject,
+  A,
+  String: {
+    htmlSafe
+  },
+  on
 } = Ember;
 
 /**
@@ -25,7 +33,7 @@ const UploadingFile = Ember.Object.extend({
   init() {
     this._super(...arguments);
     let rfile = this.get('resumableFile');
-    Ember.assert(
+    assert(
       'resumableFile injected to UploadingFile cannot be null',
       rfile
     );
@@ -46,10 +54,10 @@ const CLEAR_AFTER_COMPLETE_TIMEOUT_MS = 250;
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
-  fileUploadService: Ember.inject.service('file-upload'),
-  notify: Ember.inject.service(),
-  oneproviderServer: Ember.inject.service(),
-  session: Ember.inject.service(),
+  fileUploadService: inject.service('file-upload'),
+  notify: inject.service(),
+  oneproviderServer: inject.service(),
+  session: inject.service(),
 
   classNames: ['file-upload'],
   classNameBindings: ['isPanelVisible:file-upload-visible:file-upload-hidden'],
@@ -60,7 +68,7 @@ export default Ember.Component.extend({
    * @private
    * @type {UploadingFile[]}
    */
-  uploadingFiles: Ember.A(),
+  uploadingFiles: A(),
 
   /**
    * If true, panel is visible
@@ -124,12 +132,12 @@ export default Ember.Component.extend({
   },
 
   clearFiles() {
-    this.set('uploadingFiles', Ember.A());
+    this.set('uploadingFiles', A());
   },
 
   _resetProperties() {
     this.setProperties({
-      uploadingFiles: Ember.A(),
+      uploadingFiles: A(),
     });
   },
 
@@ -229,11 +237,11 @@ export default Ember.Component.extend({
   // TODO: make progress bar component
   progressBarStyle: computed('percentageProgress', function() {
     let pp = this.get('percentageProgress');
-    Ember.assert(
+    assert(
       'file-upload percentage progress should be between 0..100',
       pp >= 0 && pp <= 100
     );
-    return Ember.String.htmlSafe(
+    return htmlSafe(
       `width:${pp}%;`
     );
   }),
@@ -247,6 +255,7 @@ export default Ember.Component.extend({
   }),
 
   didInsertElement() {
+    this._super(...arguments);
     let r = this.get('fileUploadService.resumable');
 
     // TODO: use component selector this.$().find(...)
@@ -265,14 +274,15 @@ export default Ember.Component.extend({
 
     // bind some callbacks for ResumableJS events
     // events not bound: onPause, onFileSuccess, onCancel, onUploadStart
-
-    r.on('fileAdded', callbacks.onFileAdded);
-    r.on('complete', callbacks.onComplete);
-    r.on('fileError', callbacks.onFileError);
-    r.on('fileProgress', callbacks.onFileProgress);
+    run.scheduleOnce('afterRender', this, function() {
+      r.on('fileAdded', callbacks.onFileAdded);
+      r.on('complete', callbacks.onComplete);
+      r.on('fileError', callbacks.onFileError);
+      r.on('fileProgress', callbacks.onFileProgress);
+    });
   },
 
-  registerComponentInService: function() {
+  registerComponentInService: on('init', function() {
     this.set('fileUploadService.component', this);
-  }.on('init'),
+  }),
 });

@@ -16,6 +16,12 @@
 
 import Ember from 'ember';
 
+const {
+  String: {
+    htmlSafe
+  }
+} = Ember;
+
 export default Ember.Helper.helper(function(params) {
   let value = params[0];
   let isModified = params[1];
@@ -27,5 +33,5 @@ export default Ember.Helper.helper(function(params) {
 
   // TODO: use icon helper
   var html = '<span class="one-checkbox '+cssClasses+'" aria-hidden="true"></span>';
-  return new Ember.String.htmlSafe(html);
+  return htmlSafe(html);
 });

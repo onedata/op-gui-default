@@ -1,5 +1,12 @@
 import Ember from 'ember';
 
+const {
+  inject,
+  computed,
+  observer,
+  run
+} = Ember;
+
 /**
  * Pseudo-selector (specifically, a dropdown) to change data-spaces in data view.
  *
@@ -13,22 +20,22 @@ import Ember from 'ember';
  */
 export default Ember.Component.extend({
   classNames: ['data-spaces-select'],
-  fileSystemTree: Ember.inject.service(),
-  commonLoader: Ember.inject.service(),
+  fileSystemTree: inject.service(),
+  commonLoader: inject.service(),
 
   /** List of DataSpace records */
   spaces: null,
-  validSpaces: function() {
+  validSpaces: computed('spaces', 'spaces.[]', 'spaces.@each.isLoaded', function() {
     return this.get('spaces').filter((s) => s.get('isLoaded'));
-  }.property('spaces', 'spaces.[]', 'spaces.@each.isLoaded'),
+  }),
   spacesSorting: ['isDefault:desc', 'name'],
-  spacesSorted: Ember.computed.sort('validSpaces', 'spacesSorting'),
+  spacesSorted: computed.sort('validSpaces', 'spacesSorting'),
 
-  isLoading: function() {
+  isLoading: computed('spaces', 'spaces.length', 'spaces.@each.name', function() {
     return !this.get('spaces.length') || this.get('spaces').any((s) => !s.get('name'));
-  }.property('spaces', 'spaces.length', 'spaces.@each.name'),
+  }),
 
-  isLoadingChanged: function() {
+  isLoadingChanged: observer('isLoading', function() {
     if (this.get('isLoading')) {
       this.setProperties({
         'commonLoader.isLoading': true,
@@ -42,21 +49,25 @@ export default Ember.Component.extend({
         'commonLoader.messageSecondary': null,
       });
     }
-  }.observes('isLoading'),
+  }),
 
   /** Space currently selected */
-  selectedSpace: Ember.computed.alias('fileSystemTree.selectedSpace'),
+  selectedSpace: computed.alias('fileSystemTree.selectedSpace'),
 
-  prevSelectedSpace: Ember.computed.alias('fileSystemTree.prevSelectedSpace'),
+  prevSelectedSpace: computed.alias('fileSystemTree.prevSelectedSpace'),
 
-  selectedSpaceDidChange: function() {
-    console.debug(`Spaces Select component: selected space changed to ${this.get('selectedSpace.id')}`);
-    if (this.get('selectedSpace')) {
-      this.sendAction('goToDataSpace', this.get('selectedSpace.id'));
+  selectedSpaceDidChange: observer('selectedSpace.id', function() {
+    let selectedSpaceId = this.get('selectedSpace.id');
+    console.debug(`Spaces Select component: selected space changed to ${selectedSpaceId}`);
+    if (selectedSpaceId) {
+      run.scheduleOnce('afterRender', () => {
+        this.sendAction('goToDataSpace', selectedSpaceId);
+      });
     }
-  }.observes('selectedSpace'),
+  }),
 
-  didInsertElement() {
+  init() {
+    this._super(...arguments);
     this.isLoadingChanged();
     this.selectedSpaceDidChange();
   },

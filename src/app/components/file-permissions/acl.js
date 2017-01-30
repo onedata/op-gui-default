@@ -6,6 +6,7 @@ const {
   on,
   observer,
   inject,
+  run,
   RSVP: {
     Promise
   }
@@ -33,8 +34,13 @@ export default Ember.Component.extend({
   },
 
   didInsertElement() {
-    this.get('setMaxHeightFun')();
-    $(window).on('resize', this.get('setMaxHeightFun'));
+    this._super(...arguments);
+    let setMaxHeightFun = this.get('setMaxHeightFun');
+    run.scheduleOnce('afterRender', this, function() {
+      setMaxHeightFun();
+      $(window).on('resize', this.get('setMaxHeightFun'));
+    });
+    
   },
 
   willDestroyElement() {
@@ -71,9 +77,9 @@ export default Ember.Component.extend({
   error: null,
   isLoadingModel: true,
 
-  aclTmp: function() {
+  aclTmp: computed('acl.@each.subject', function() {
     return JSON.stringify(this.get('acl'));
-  }.property('acl.@each.subject'),
+  }),
 
   // TODO: change to be better synchronized with current file
   dataSpace: computed.alias('fileSystemTree.selectedSpace'),

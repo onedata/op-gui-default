@@ -48,6 +48,7 @@ export default Ember.Component.extend({
   // TODO: deregister event from sidebar on willDestroyElement
   // maybe use: this.on('willDestroyElement', () => { sidebar.off(...) } ) etc.
   didInsertElement() {
+    this._super(...arguments);
     let scrollParentSelector = this.get('scrollParentSelector');
     let drop = this.$('.dropdown-menu');
     let updater = bindFloater(drop);

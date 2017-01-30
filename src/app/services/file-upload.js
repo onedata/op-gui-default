@@ -66,13 +66,17 @@ export default Ember.Service.extend({
   },
 
   handleDataFilesListDirChanged({dir}) {
-    let dirId = dir.get('id');
-    let dirUploads = this.get('dirUploads' + dirId);
-    if (dirUploads) {
-      this.get('eventsBus').trigger('fileUpload:dirUploadsChanged', {
-        parentId: dirId,
-        dirUploads: dirUploads
-      });
+    this.set('dir', dir);
+
+    if (dir) {
+      let dirId = dir.get('id');
+      let dirUploads = this.get('dirUploads' + dirId);
+      if (dirUploads) {
+        this.get('eventsBus').trigger('fileUpload:dirUploadsChanged', {
+          parentId: dirId,
+          dirUploads: dirUploads
+        });
+      }
     }
   },
 

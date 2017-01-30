@@ -1,6 +1,18 @@
 import Ember from 'ember';
 import conflictProviderId from 'op-worker-gui/utils/conflict-provider-id';
 
+const {
+  computed,
+  inject,
+  run,
+  observer,
+  on,
+  assert,
+  run: {
+    debounce
+  }
+} = Ember;
+
 /**
  * Files and subdirectories browser for single directory.
  * For file operations, see ``data-files-list-toolbar`` component.
@@ -36,18 +48,18 @@ import conflictProviderId from 'op-worker-gui/utils/conflict-provider-id';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
-  store: Ember.inject.service(),
-  fileSystemTree: Ember.inject.service(),
-  errorNotifier: Ember.inject.service(),
-  fileBrowser: Ember.inject.service(),
-  notify: Ember.inject.service(),
-  fileUpload: Ember.inject.service(),
-  commonLoader: Ember.inject.service(),
-  i18n: Ember.inject.service(),
-  oneproviderServer: Ember.inject.service(),
-  messageBox: Ember.inject.service(),
-  eventsBus: Ember.inject.service(),
-  session: Ember.inject.service(),
+  store: inject.service(),
+  fileSystemTree: inject.service(),
+  errorNotifier: inject.service(),
+  fileBrowser: inject.service(),
+  notify: inject.service(),
+  fileUpload: inject.service(),
+  commonLoader: inject.service(),
+  i18n: inject.service(),
+  oneproviderServer: inject.service(),
+  messageBox: inject.service(),
+  eventsBus: inject.service(),
+  session: inject.service(),
 
   classNames: ['data-files-list'],
 
@@ -155,7 +167,7 @@ export default Ember.Component.extend({
 
   init() {
     this._super(...arguments);
-    this.resetProperties();
+    this.dirChanged();
   },
 
   /**
@@ -177,20 +189,20 @@ export default Ember.Component.extend({
    * True if all children files of the ``dir`` are loaded (using backend paging).
    * @type {Computed<Boolean>}
    */
-  areAllFilesLoaded: Ember.computed.alias('dir.allChildrenLoaded'),
+  areAllFilesLoaded: computed.alias('dir.allChildrenLoaded'),
 
   /**
    * One of: data, shared, public
    * @type {Computed<String>}
    */
-  downloadMode: Ember.computed.alias('browserLocation'),
+  downloadMode: computed.alias('browserLocation'),
 
   /**
    * True, if fetch more files has been requested but not completed.
    * @private
    * @type {Boolean}
    */
-  isLoadingMoreFiles: Ember.computed('fetchMoreFilesRequested', 'isPushAfterFetchMoreDone', function() {
+  isLoadingMoreFiles: computed('fetchMoreFilesRequested', 'isPushAfterFetchMoreDone', function() {
     return this.get('fetchMoreFilesRequested') || !this.get('isPushAfterFetchMoreDone');
   }),
 
@@ -198,7 +210,7 @@ export default Ember.Component.extend({
    * A type of used model of ``dir`` deduced from used file brower mode.
    * @type {Computed<String>}
    */
-  fileModelType: Ember.computed('downloadMode', function() {
+  fileModelType: computed('downloadMode', function() {
     switch (this.get('downloadMode')) {
       case 'data':
         return 'file';
@@ -218,7 +230,7 @@ export default Ember.Component.extend({
    * It is used to render a ``data-files-list-loader`` overlay on "loading" file rows.
    * @type {Number}
    */
-  loadingFileIndex: Ember.computed('areLastRequestedFilesLoaded', 'isFilesLoading', 'readyFilesCount', function() {
+  loadingFileIndex: computed('areLastRequestedFilesLoaded', 'isFilesLoading', 'readyFilesCount', function() {
     if (this.get('isFilesLoading') || !this.get('areLastRequestedFilesLoaded')) {
       return this.get('readyFilesCount');
     }
@@ -230,44 +242,79 @@ export default Ember.Component.extend({
    * need any loader.
    * @type {Computed<Boolean>}
    */
-  areLastRequestedFilesLoaded: Ember.computed('totalAheadFilesCount', 'loadedFiles.length', function() {
-    return this.get('totalAheadFilesCount') <= this.get('loadedFiles.length');
+  areLastRequestedFilesLoaded: computed('totalAheadFilesCount', 'loadedFilesCount', function() {
+    return this.get('totalAheadFilesCount') <= this.get('loadedFilesCount');
   }),
 
-  isPushAfterFetchMoreDone: Ember.computed('totalAheadFilesCount', 'files.length', function() {
+  isPushAfterFetchMoreDone: computed('totalAheadFilesCount', 'files.length', function() {
     return this.get('totalAheadFilesCount') <= (this.get('files.length') || 0);
   }),
 
   /**
-   * Collection of dir children. These are not files that are displayed.
-   * See ``visibleFiles``.
+   * Collection of dir children.
+   * These files are used by template and are filtered by
+   * ``is-file-loaded`` helper to select files that should be presented.
    * @type {Computed<File[]>}
    */
-  files: Ember.computed.alias('dir.children'),
+  files: computed.alias('dir.children'),  
+
+  _observeLoadedFiles: observer('files.@each.isLoaded', 'firstLoadDone', function() {
+    if (this.get('firstLoadDone')) {
+      debounce(this, this._updateLoadedFiles, 50);
+    }
+  }),
+  
+  _updateLoadedFiles() {
+    this.set(
+      'loadedFiles',
+      this.get('files').filterBy('isLoaded', true)
+    );
+  },
 
   /**
    * Filtered collection of ``files`` that are loaded.
+   * It is updated by ``_updateLoadedFiles`` invoked with debounce
+   * by ``_observeLoadedFiles``.
+   * 
+   * NOTE that template _does not_ use this list,
+   * see ``visibleFiles`` for details.
    * @type {Computed<File[]>}
    */
-  loadedFiles: Ember.computed('files.@each.isLoaded', function() {
-    return this.get('files').filter(f => f.get('isLoaded'));
-  }),
+  loadedFiles: null,
+
+  loadedFilesCount: computed.alias('loadedFiles.length'),
 
   /**
-   * Collection of files that are displayed in files browser.
-   * For order of display see ``visibleFilesSorted``.
+   * Collection of files that are should be displayed in files browser.
+   * 
+   * NOTE that template _does not_ use this list,
+   * because it is created with filter, which creates a new Array every time.
+   * The templace uses its own helpers to filter the list.
+   * 
+   * NOTE that this computed property and a ``is-file-visible`` helper
+   * should use the same conditions to filter visible files!
+   * 
    * @type {Computed<File[]>}
    */
-  visibleFiles: Ember.computed('loadedFiles', function() {
-    return this.get('loadedFiles').filter(f => !f.get('isBroken'));
+  visibleFiles: computed('loadedFiles.@each.isBroken', function() {
+    let loadedFiles = this.get('loadedFiles');
+    if (loadedFiles == null) {
+      return loadedFiles;
+    } else {
+      return loadedFiles.filterBy('isBroken', false);
+    }
   }),
 
-  /**
-   * List of files that are displayed in files browser.
-   * Currently files are sorted by backend and we do not change this.
-   * @type {Computed<File[]>}
-   */
-  visibleFilesSorted: Ember.computed.alias('visibleFiles'),
+  selectedFiles: computed('visibleFiles.@each.isSelected', function() {
+    let visibleFiles = this.get('visibleFiles');
+    if (visibleFiles == null) {
+      return visibleFiles;
+    } else {
+      return visibleFiles.filterBy('isSelected', true);
+    }
+  }),
+
+  providerId: computed.alias('session.sessionDetails.providerId'),
 
   /**
    * An information about File for displaying it on files list.
@@ -280,109 +327,137 @@ export default Ember.Component.extend({
   /**
    * A final model for displaying ``fileRow``.
    * Generates objects of type ``FileRowInfo`` for each File
-   * in visibleFilesSorted that contain ``file`` a reference to File model
+   * in visibleFiles that contain ``file`` a reference to File model
    * and ``providerLabel`` - only if the file has conflicting name and provider ID
    * that is _not_ the current provider.
    * @type {Computed<FileRowInfo>}
    */
-  fileRows: Ember.computed('visibleFilesSorted.@each.{name,provider}',
-    'session.sessionDetails.providerId', function() {
-    
-    let visibleFilesSorted = this.get('visibleFilesSorted');
-    let providerId = this.get('session.sessionDetails.providerId');
-    
-    if (!visibleFilesSorted) {
-      return Ember.A();
+
+  observeProviderLabels: observer('visibleFiles.@each.{name,provider}',
+    'providerId', function() {
+      debounce(this, this.updateProviderLabels, 100);
     }
+  ),
 
-    let filesMap = new Map();
-    visibleFilesSorted.forEach(f => {
+  updateProviderLabels() {
+    let {
+      visibleFiles,
+      providerId
+    } = this.getProperties('visibleFiles', 'providerId');
+
+    // maps: file name -> array of files with that name
+    let nameFilesMap = new Map();
+    for (let f of visibleFiles || []) {
       let name = f.get('name');
-      if (filesMap.has(name)) {
-        filesMap.get(name).push(f);
+      if (nameFilesMap.has(name)) {
+        nameFilesMap.get(name).push(f);
       } else {
-        filesMap.set(name, [f]);
+        nameFilesMap.set(name, [f]);
       }
-    });
-    
-    let fileRows = [];
-    
-    filesMap.forEach(files => {
-      if (files.length > 1) {
-        let providerLabels = conflictProviderId(files.mapBy('provider'));
-        for (let i=0; i<files.length; i+=1) {
-          let file = files[i];
-          fileRows.push(Ember.Object.create({
-            providerLabel: file.get('provider') === providerId ? null : providerLabels[i],
-            file: files[i]
-          }));
+
+      for (let [, files] of nameFilesMap) {
+        assert(
+          'files list for name should not be empty',
+          files.length > 0
+        );
+
+        if (files.length > 1) {
+          let providerLabels = conflictProviderId(files.mapBy('provider'));
+          for (let i = 0; i < files.length; i += 1) {
+            let file = files[i];
+            file.set(
+              'listProviderLabel',
+              file.get('provider') === providerId ? null : providerLabels[i]
+            );
+          }
+
+        } else {
+          files[0].set('listProviderLabel', undefined);
         }
-
-      } else {
-        fileRows.push(Ember.Object.create({
-          file: files[0]
-        }));
       }
-    });
+    }
+  },
 
-    return Ember.A(fileRows);
-  }),
-
-  selectedFiles: Ember.computed.filterBy('visibleFiles', 'isSelected', true),
 
   /**
-   * True if there is nothing to display in files browser.
+   * True if there is no files to display in files browser.
    * However, there can be some children files, but they cannot be displayed.
-   * @type {Computed<Boolean>}
+   * Returns ``undefined`` if we cannot evaluate this (eg. on initial loading).
+   * @type {Computed<Boolean|undefined>}
    */
-  dirIsEmpty: Ember.computed('visibleFiles.length', function() {
-    let dirIsEmpty = !this.get('visibleFiles') || this.get('visibleFiles.length') === 0;
-    return dirIsEmpty;
+  dirIsEmpty: computed('visibleFiles.length', function() {
+    let visibleFiles = this.get('visibleFiles');
+    // visibleFiles == null means, that it was no initialized yet,
+    // so we don't know if dir is empty
+    return visibleFiles == null ? undefined : visibleFiles.get('length') === 0;
   }),
 
-  filesTableIsVisible: Ember.computed('dirIsEmpty', 'currentlyUploadingCount', 'isWaitingForPushAfterUpload', function() {
-    let props = this.getProperties('dirIsEmpty', 'currentlyUploadingCount', 'isWaitingForPushAfterUpload');
-    let filesTableIsVisible = !props.dirIsEmpty || props.currentlyUploadingCount || props.isWaitingForPushAfterUpload;
-    if (filesTableIsVisible) {
-      Ember.run.scheduleOnce('afterRender', this, function() {
-        this.computeFileLabelMaxWidth();
-      });
-    }
-    return filesTableIsVisible;
+  showEmptyDirMessage: computed('dirIsEmpty', 'firstLoadDone', function() {
+    return this.get('dirIsEmpty') === true && this.get('firstLoadDone');
   }),
+
+  filesTableIsVisible: computed(
+    'dirIsEmpty',
+    'currentlyUploadingCount',
+    'isWaitingForPushAfterUpload',
+    'firstLoadDone',
+    function() {
+      let {
+        dirIsEmpty,
+        // even if dir is empty, when we upload first files, we want to see the table
+        currentlyUploadingCount,
+        // finished uploading, but waiting for files to receive - table should be presented
+        isWaitingForPushAfterUpload,
+        firstLoadDone
+      } = this.getProperties(
+        'dirIsEmpty', 
+        'currentlyUploadingCount', 
+        'isWaitingForPushAfterUpload',
+        'firstLoadDone'
+      );
+      return firstLoadDone && (
+        dirIsEmpty === false || currentlyUploadingCount || isWaitingForPushAfterUpload
+      );
+    }
+  ),
 
   /**
    * Checks if each in ``files`` collection is ready to read.
    * @type {Computed<Booblean>}
    */
-  isFilesLoading: Ember.computed('files.isUpdating', 'files.@each.isLoaded', function() {
-    return this.get('files.isUpdating') || this.get('files').any(f => !f.get('isLoaded'));
+  isFilesLoading: computed('files.isPending', 'files.@each.isLoaded', function() {
+    return this.get('files.isPending') || this.get('files').any(f => !f.get('isLoaded'));
   }),
 
   /**
    * True if a "global loader" that blocks all
    * @type {Computed<Boolean>}
    */
-  showGlobalLoader: Ember.computed('firstLoadDone', 'isFilesLoading', 'isLoadingMoreFiles', function() {
-    let props = this.getProperties(
-      'firstLoadDone',
-      'isFilesLoading',
-      'isLoadingMoreFiles'
-    );
+  showGlobalLoader: computed.not('firstLoadDone'),
 
-    if (!props.firstLoadDone && !props.isLoadingMoreFiles &&
-      (props.isFilesLoading)) {
-
-      this.set('firstLoadDone', true);
-      return true;
-    } else {
-      return false;
+  _recomputeLabelMaxWidthOnTableVisible: observer('filesTableIsVisible', function() {
+    if (this.get('filesTableIsVisible')) {
+      run.scheduleOnce('afterRender', this, function() {
+        this.computeFileLabelMaxWidth();
+      });
     }
   }),
 
+  _registerFirstLoadObserver() {
+    this.addObserver('isFilesLoading', this, '_checkFirstLoad');
+    this._checkFirstLoad();
+  },
+
+  _checkFirstLoad() {
+    if (!this.get('isFilesLoading') && !this.get('firstLoadDone')) {
+      this.set('firstLoadDone', true);
+      this.removeObserver('isFilesLoading', this, '_checkFirstLoad');
+    }
+  },
+
   // TODO: there is an assumption that the push brings at least one visible file
   // if there will be problems with push, please fix this by watching if push failed
-  filesListChanged: Ember.observer('visibleFiles.length', function() {
+  filesListChanged: observer('visibleFiles.length', function() {
     let visibleFilesLength = this.get('visibleFiles.length');
     let __prevVisibleFilesLength = this.get('__prevVisibleFilesLength');
     if (__prevVisibleFilesLength != null && __prevVisibleFilesLength < visibleFilesLength) {
@@ -396,7 +471,7 @@ export default Ember.Component.extend({
   /**
    * When files push come, increase number of files in ``totalAheadFilesCount``
    */
-  updateTotalAheadFilesCount: Ember.observer('files.length', function() {
+  updateTotalAheadFilesCount: observer('files.length', function() {
     let filesLength = this.get('files.length');
     let totalAheadFilesCount = this.get('totalAheadFilesCount');
     let fetchMoreFilesRequested = this.get('fetchMoreFilesRequested');
@@ -406,7 +481,7 @@ export default Ember.Component.extend({
     }
   }),
 
-  toggleLoader: Ember.on('init', Ember.observer('showGlobalLoader', 'commonLoader.isLoading', 'commonLoader.type', function() {
+  toggleLoader: on('init', observer('showGlobalLoader', 'commonLoader.isLoading', 'commonLoader.type', function() {
     if (this.get('showGlobalLoader')) {
       // prevent loader stealing
       if (!this.get('commonLoader.isLoading')) {
@@ -423,12 +498,15 @@ export default Ember.Component.extend({
             break;
         }
 
-        this.get('commonLoader').setProperties({
-          isLoading: true,
-          solidBackground: true,
-          message: this.get('i18n').t('components.dataFilesList.updatingMessage'),
-          area: area,
-          type: 'filesUpdate'
+        // schedule after render because it can be invoked at init
+        run.scheduleOnce('afterRender', this, function() {
+          this.get('commonLoader').setProperties({
+            isLoading: true,
+            solidBackground: true,
+            message: this.get('i18n').t('components.dataFilesList.updatingMessage'),
+            area: area,
+            type: 'filesUpdate'
+          });
         });
       }
     // prevent closing other types of loader
@@ -441,7 +519,7 @@ export default Ember.Component.extend({
    * Which file with index should be watched for visibility.
    * @type {Number}
    */
-  fileIndexToWatchVisibility: Ember.computed('visibleFiles.length', 'preloadAheadIndexes', function() {
+  fileIndexToWatchVisibility: computed('visibleFiles.length', 'preloadAheadIndexes', function() {
     let index = this.get('visibleFiles.length') - this.get('preloadAheadIndexes') - 1;
     return index > 0 ? index : 0;
   }),
@@ -460,7 +538,7 @@ export default Ember.Component.extend({
   }),
 
   // TODO VFS-2753: don't know if this code works
-  currentlyUploadingCountChanged: Ember.observer('currentlyUploadingCount', function() {
+  currentlyUploadingCountChanged: observer('currentlyUploadingCount', function() {
     let {currentlyUploadingCount, __prevCurrentlyUploadingCount} =
       this.getProperties('currentlyUploadingCount', '__prevCurrentlyUploadingCount');
     if (!currentlyUploadingCount && __prevCurrentlyUploadingCount) {
@@ -489,26 +567,29 @@ export default Ember.Component.extend({
   },
 
   didInsertElement() {
+    this._super(...arguments);
     let eventsBus = this.get('eventsBus');
 
     let __computeFileLabelMaxWidth = this.computeFileLabelMaxWidth.bind(this);
     eventsBus.on('secondarySidebar:resized', this, 'computeFileLabelMaxWidth');
-    $(window).on('resize.dataFilesList', __computeFileLabelMaxWidth);
-    setTimeout(__computeFileLabelMaxWidth, 50);
-
     eventsBus.on('fileUpload:dirUploadsChanged', this, 'handleDirUploadsChanged');
 
-    this.dirChanged();
     if (this.get('uploadEnabled')) {
-      console.debug('Binding upload area for files list');
-      this.get('fileUpload').assignDrop(this.$());
+      run.scheduleOnce('afterRender', this, function() {
+        console.debug('Binding upload area for files list');
+        $(window).on('resize.dataFilesList', __computeFileLabelMaxWidth);
+        setTimeout(__computeFileLabelMaxWidth, 50);
+        this.get('fileUpload').assignDrop(this.$());
+      });
     }
   },
 
   willDestroyElement() {
-    this.setGlobalDir(null);
+    this._super(...arguments);
 
     let ebus = this.get('eventsBus');
+
+    ebus.trigger('dataFilesList:dirChanged', {dir: null});
 
     ebus.off('secondarySidebar:resized', this, 'computeFileLabelMaxWidth');
     ebus.off('fileUpload:dirUploadsChanged', this, 'handleDirUploadsChanged');
@@ -516,15 +597,10 @@ export default Ember.Component.extend({
     $(window).off('.dataFilesList');
   },
 
-  /**
-   * Sets global file browser state.
-   * @param {File} dir
-   */
-  setGlobalDir(dir) {
-    this.setProperties({
-      'fileUpload.dir': dir,
-      'fileBrowser.dir': dir
-    });
+  didDestroyElement() {
+    this._super(...arguments);
+    let ebus = this.get('eventsBus');
+    ebus.trigger('dataFilesList:dirChanged', {dir: null});
   },
 
   /**
@@ -537,21 +613,25 @@ export default Ember.Component.extend({
       fetchMoreFilesError: null,
       readyFilesCount: 0,
       totalAheadFilesCount: 0,
+      currentlyUploadingCount: 0,
       firstLoadDone: false,
+      loadedFiles: null,
     });
+    this._registerFirstLoadObserver();
+    this._observeLoadedFiles();
   },
 
-  dirChanged: Ember.observer('dir', function() {
-    this.set('currentlyUploadingCount', 0);
-    let {dir, eventsBus} = this.getProperties('dir', 'eventsBus');
-    this.setGlobalDir(dir);
-    this.get('fileSystemTree').expandDir(dir);
+  dirChanged: observer('dir', function() {
     this.resetProperties();
-
-    eventsBus.trigger('dataFilesList:dirChanged', {dir: dir});
+    let {dir, eventsBus} = this.getProperties('dir', 'eventsBus');
+    this.get('fileSystemTree').expandDir(dir);
+    
+    run.scheduleOnce('afterRender', this, function() {
+      eventsBus.trigger('dataFilesList:dirChanged', { dir });
+    });
   }),
 
-  fileDownloadServerMethod: Ember.computed('downloadMode', function() {
+  fileDownloadServerMethod: computed('downloadMode', function() {
     switch (this.get('downloadMode')) {
       case 'data':
         return 'getFileDownloadUrl';
@@ -611,7 +691,7 @@ export default Ember.Component.extend({
     return p;
   },
 
-  isShowingMetadata: Ember.computed('metadataFile', function() {
+  isShowingMetadata: computed('metadataFile', function() {
     return !!this.get('metadataFile');
   }),
 
@@ -620,12 +700,12 @@ export default Ember.Component.extend({
   },
 
   findNearestSelectedIndex(fileIndex) {
-    let {visibleFilesSorted, selectedFiles} =
-      this.getProperties('visibleFilesSorted', 'selectedFiles');
+    let {visibleFiles, selectedFiles} =
+      this.getProperties('visibleFiles', 'selectedFiles');
 
     // [index: Number, distanceFromFile: Number]
     let selectedFilesIndexes = selectedFiles.map(sf => {
-      let index = visibleFilesSorted.indexOf(sf);
+      let index = visibleFiles.indexOf(sf);
       return [index, Math.abs(index-fileIndex)];
     });
     let nearest = selectedFilesIndexes.reduce((prev, current) => {
@@ -644,20 +724,20 @@ export default Ember.Component.extend({
    * @param {File} file
    */
   selectRangeToFile(file) {
-    let {visibleFilesSorted, lastSelectedFile} =
-      this.getProperties('visibleFilesSorted', 'lastSelectedFile');
-    let fileIndex = visibleFilesSorted.indexOf(file);
+    let {visibleFiles, lastSelectedFile} =
+      this.getProperties('visibleFiles', 'lastSelectedFile');
+    let fileIndex = visibleFiles.indexOf(file);
 
     let startIndex;
     if (lastSelectedFile) {
-      startIndex = visibleFilesSorted.indexOf(lastSelectedFile);
+      startIndex = visibleFiles.indexOf(lastSelectedFile);
     } else {
       startIndex = this.findNearestSelectedIndex(fileIndex);
     }   
 
     let indexA = Math.min(startIndex, fileIndex);
     let indexB = Math.max(startIndex, fileIndex);
-    visibleFilesSorted.slice(indexA, indexB+1).forEach(f => f.set('isSelected', true));
+    visibleFiles.slice(indexA, indexB+1).forEach(f => f.set('isSelected', true));
   },
 
   actions: {

@@ -23,21 +23,23 @@ export default Ember.Route.extend(RouteRejectHandler, {
   },
 
   afterModel(file/*, transition*/) {
-    this.set('invalid', false);
+    let invalid = false;
 
     if (file.get('isDeleted')) {
       console.error('Loaded file is deleted');
       // TODO: translate
       this.get('notify').error(`Cannot start file browser, because selected directory is marked as deleted`);
-      this.set('invalid', true);
+      invalid = true;
     }
 
     if (!file.get('isDir')) {
       console.error('Loaded file is not a directory - it cannot be viewed in browser');
       // TODO: translate
       this.get('notify').error(`Cannot start file browser, because selected directory is not valid`);
-      this.set('invalid', true);
+      invalid = true;
     }
+
+    this.set('ivalid', true);
 
     // @todo this sometimes runs too early and getSpaceIdForFile does not work
     //let loadedDirSpaceId = this.get('fileSystemTree').getSpaceIdForFile(file);

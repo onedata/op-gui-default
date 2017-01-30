@@ -8,7 +8,8 @@ const {
   A,
   String: {
     htmlSafe
-  }
+  },
+  on
 } = Ember;
 
 /**
@@ -281,7 +282,7 @@ export default Ember.Component.extend({
     });
   },
 
-  registerComponentInService: function() {
+  registerComponentInService: on('init', function() {
     this.set('fileUploadService.component', this);
-  }.on('init'),
+  }),
 });

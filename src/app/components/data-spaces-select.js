@@ -3,7 +3,8 @@ import Ember from 'ember';
 const {
   inject,
   computed,
-  observer
+  observer,
+  run
 } = Ember;
 
 /**
@@ -55,10 +56,13 @@ export default Ember.Component.extend({
 
   prevSelectedSpace: computed.alias('fileSystemTree.prevSelectedSpace'),
 
-  selectedSpaceDidChange: observer('selectedSpace', function() {
-    console.debug(`Spaces Select component: selected space changed to ${this.get('selectedSpace.id')}`);
-    if (this.get('selectedSpace')) {
-      this.sendAction('goToDataSpace', this.get('selectedSpace.id'));
+  selectedSpaceDidChange: observer('selectedSpace.id', function() {
+    let selectedSpaceId = this.get('selectedSpace.id');
+    console.debug(`Spaces Select component: selected space changed to ${selectedSpaceId}`);
+    if (selectedSpaceId) {
+      run.scheduleOnce('afterRender', () => {
+        this.sendAction('goToDataSpace', selectedSpaceId);
+      });
     }
   }),
 

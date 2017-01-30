@@ -435,30 +435,6 @@ export default Ember.Component.extend({
    */
   showGlobalLoader: computed.not('firstLoadDone'),
 
-  // showGlobalLoader: computed('firstLoadDone', 'isFilesLoading', 'isLoadingMoreFiles', function() {
-  //   let {
-  //     firstLoadDone,
-  //     isLoadingMoreFiles,
-  //     isFilesLoading
-  //   } = this.getProperties(
-  //     'firstLoadDone',
-  //     'isFilesLoading',
-  //     'isLoadingMoreFiles'
-  //   );
-  //   return !firstLoadDone || isFilesLoading && !isLoadingMoreFiles;
-  // }),
-
-  __FIXMEDebug: observer(
-    'filesTableIsVisible',
-    'firstLoadDone',
-    'isFilesLoading',
-    'showGlobalLoader',
-    'showEmptyDirMessage',
-    function() {
-      console.log('debug');
-    }
-  ),
-
   _recomputeLabelMaxWidthOnTableVisible: observer('filesTableIsVisible', function() {
     if (this.get('filesTableIsVisible')) {
       run.scheduleOnce('afterRender', this, function() {
@@ -522,12 +498,15 @@ export default Ember.Component.extend({
             break;
         }
 
-        this.get('commonLoader').setProperties({
-          isLoading: true,
-          solidBackground: true,
-          message: this.get('i18n').t('components.dataFilesList.updatingMessage'),
-          area: area,
-          type: 'filesUpdate'
+        // schedule after render because it can be invoked at init
+        run.scheduleOnce('afterRender', this, function() {
+          this.get('commonLoader').setProperties({
+            isLoading: true,
+            solidBackground: true,
+            message: this.get('i18n').t('components.dataFilesList.updatingMessage'),
+            area: area,
+            type: 'filesUpdate'
+          });
         });
       }
     // prevent closing other types of loader
@@ -606,9 +585,11 @@ export default Ember.Component.extend({
   },
 
   willDestroyElement() {
-    this.setGlobalDir(null);
+    this._super(...arguments);
 
     let ebus = this.get('eventsBus');
+
+    ebus.trigger('dataFilesList:dirChanged', {dir: null});
 
     ebus.off('secondarySidebar:resized', this, 'computeFileLabelMaxWidth');
     ebus.off('fileUpload:dirUploadsChanged', this, 'handleDirUploadsChanged');
@@ -616,15 +597,10 @@ export default Ember.Component.extend({
     $(window).off('.dataFilesList');
   },
 
-  /**
-   * Sets global file browser state.
-   * @param {File} dir
-   */
-  setGlobalDir(dir) {
-    this.setProperties({
-      'fileUpload.dir': dir,
-      'fileBrowser.dir': dir
-    });
+  didDestroyElement() {
+    this._super(...arguments);
+    let ebus = this.get('eventsBus');
+    ebus.trigger('dataFilesList:dirChanged', {dir: null});
   },
 
   /**
@@ -637,6 +613,7 @@ export default Ember.Component.extend({
       fetchMoreFilesError: null,
       readyFilesCount: 0,
       totalAheadFilesCount: 0,
+      currentlyUploadingCount: 0,
       firstLoadDone: false,
       loadedFiles: null,
     });
@@ -645,13 +622,13 @@ export default Ember.Component.extend({
   },
 
   dirChanged: observer('dir', function() {
-    this.set('currentlyUploadingCount', 0);
-    let {dir, eventsBus} = this.getProperties('dir', 'eventsBus');
-    this.setGlobalDir(dir);
-    this.get('fileSystemTree').expandDir(dir);
     this.resetProperties();
+    let {dir, eventsBus} = this.getProperties('dir', 'eventsBus');
+    this.get('fileSystemTree').expandDir(dir);
     
-    eventsBus.trigger('dataFilesList:dirChanged', {dir: dir});
+    run.scheduleOnce('afterRender', this, function() {
+      eventsBus.trigger('dataFilesList:dirChanged', { dir });
+    });
   }),
 
   fileDownloadServerMethod: computed('downloadMode', function() {

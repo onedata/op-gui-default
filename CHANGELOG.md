@@ -6,6 +6,10 @@ CHANGELOG
 
 ### 3.0.0-rc12
 
+* VFS-2968 Fixing hanging "Waiting for Onezone session" message
+* VFS-2969 Improved performance of files list
+* VFS-2943 Improved design of provider name in top
+* VFS-2661 Major refactor of model; using User model with resources relations instead of findAll
 * VFS-2921 Fixing missing file after upload (finalizing file upload after RPC completion)
 * VFS-2417 Moved common op-gui and oz-gui features to ember-cli-onedata-common addon; major refactoring
 * VFS-2865 Fixing metadata panel showing up

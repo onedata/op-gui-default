@@ -158,7 +158,9 @@ export default SessionService.extend({
     this.get('server').sessionRPC().then((data) => {
       console.debug("RESOLVE SESSION REQ");
       console.debug('data: ' + JSON.stringify(data));
-      if (data.sessionValid === true) {
+      let isSessionValid = (data.sessionValid === true);
+      this.set('sessionValid', isSessionValid);
+      if (isSessionValid) {
         this.onResolveSessionValid(data);
       } else {
         this.onResolveSessionInvalid();

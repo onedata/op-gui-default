@@ -452,9 +452,7 @@ export default {
     notifyMessage: 'Requested path not found'
   },
   login: {
-    message: "Waiting for Oneprovider session...",
-    messageSecondary: "If you are not logged in to this Oneprovider, you will be " +
-      "redirected to Onezone login page automatically in {{nSeconds}} seconds..."
+    message: "Authenticating..."
   },
   groups: {
     title: 'Groups',

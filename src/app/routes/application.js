@@ -25,24 +25,31 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
   },
 
   initSession: Ember.on('init', function() {
-    let p = this.get('session').initSession();
+    let {
+      session,
+      loginRedirect
+    } = this.getProperties('session', 'loginRedirect');
 
-    p.then(
-      () => {
-        console.debug('initSession resolved');
-        this.get('loginRedirect').clearTimeouts();
-      },
-      // TODO: translations
-      () => {
-        this.get('messageBox').open({
-          type: 'error',
-          allowClose: false,
-          title: 'Session initialization error',
-          message: 'Fatal error: session cannot be initialized'
-        });
-      }
-    );
+    let sessionInitialization = session.initSession();
 
-    return p;
+    sessionInitialization.then(() => {
+      console.debug('route:application: initSession resolved');
+    });
+    // TODO: translations
+    sessionInitialization.catch(() => {
+      console.debug('route:application: initSession rejected');
+      this.get('messageBox').open({
+        type: 'error',
+        allowClose: false,
+        title: 'Session initialization error',
+        message: 'Fatal error: session cannot be initialized'
+      });
+    });
+
+    sessionInitialization.finally(() => {
+      loginRedirect.onSessionInitFinished();
+    });
+
+    return sessionInitialization;
   }),
 });

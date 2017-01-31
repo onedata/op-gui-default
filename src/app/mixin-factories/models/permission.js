@@ -83,8 +83,8 @@ function create(flagNames, subjectType, systemEntityName) {
     * @returns {boolean} true if at least one mod* flag is true
     */
     isModified: computed(...modFlags, function() {
-      let flagValues = Object.values(this.getProperties(...modFlags));
-      return flagValues.indexOf(true) !== -1;
+      let flags = this.getProperties(...modFlags);
+      return Object.keys(flags).any(key => flags[key] === true);
     }),
 
     /**

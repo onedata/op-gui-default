@@ -1,0 +1,20 @@
+/// Specific modals styles, for generic modal style see: modal.scss
+.modal-dialog {
+  .message-icon {
+    font-size: 64px;
+
+    &.info {
+      color: #5FC489; // TODO: onedata color
+    }
+    &.warning {
+      color: #FDC64E; // TODO: onedata color
+    }
+    &.error {
+      color: #EC3438; // TODO: onedata color
+    }
+  }
+
+  .message-text {
+    padding-left: 30px;
+  }
+}

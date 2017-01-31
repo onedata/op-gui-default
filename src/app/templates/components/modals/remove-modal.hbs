@@ -1,0 +1,27 @@
+{{#bs-modal open=open body=false footer=false
+    id=modalId
+    title=title
+    openAction="open"
+    openedAction="opened"
+    keyboard=(not isLoading)
+    autoClose=(not isLoading)
+    backdropClose=(not isLoading)
+    closeButton=false
+  }}
+  {{#bs-modal-body}}
+    {{status-panel blocking=true type="question" message=label}}
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#spin-button-onedata buttonType="submit"
+      action=(action "submit")
+      class="btn btn-danger no-outline" spinnerColor="#fff"
+      inFlight=isLoading
+      disabled=isLoading
+    }}
+      {{t "common.modal.yes"}}
+    {{/spin-button-onedata}}
+    {{#bs-button action=(action "close" target=footer) type="default"}}
+      {{t "common.modal.no"}}
+    {{/bs-button}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}

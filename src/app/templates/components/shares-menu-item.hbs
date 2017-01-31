@@ -1,0 +1,18 @@
+<div class="secondary-sidebar-item first-level">
+  <span class="item-element item-click-area"
+    {{action (unless isExpanded 'expand' (action (mut undefProp)))}}>
+    <span class="item-element item-icon">
+      {{one-icon icon='share-collection' class='color-share'}}
+    </span>
+
+    <span class="item-element item-label" title="{{share.name}}">
+      <div class="truncate truncate-secondary-sidebar-select">
+        {{share.name}}
+      </div>
+    </span>
+
+  </span>
+
+  {{share-settings-drop share=share openSettingsModal='openSettingsModal'}}
+
+</div>

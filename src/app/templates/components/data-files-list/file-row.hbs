@@ -1,0 +1,28 @@
+<td id="file-{{file.id}}" class="file-list-col-file hover-parent">
+  <div class="file-icon">
+    {{file-icon file=file}}
+  </div>
+  <div class="file-label-container">
+    <div class="file-label truncate" style={{fileLabelStyle}}>
+      {{#if file.isBroken}}
+        <em>{{t 'components.dataFilesList.fileIsBroken'}}</em>
+      {{else if providerLabel}}
+        {{displayedFileLabel}}<span class="file-provider-label">@provider</span><span class="file-provider-label-name">@{{providerLabel}}</span>
+      {{else}}
+        {{displayedFileLabel}}
+      {{/if}}
+    </div>
+  </div>
+  {{data-files-list/file-row-tools file=file readOnly=readOnly
+    shareFile='shareFile' toggleFileMetadata='toggleFileMetadata'}}
+</td>
+<td class="hidden-xs file-list-col-size file-list-col-text nowrap">
+  {{file.sizeHumanReadable}}
+</td>
+{{!-- TODO: disabled in beta4 --}}
+{{!-- <td class="col-permissions hidden-xs hidden-sm file-list-col-permissions nowrap">
+  {{file.permissionsHumanReadable}}
+</td> --}}
+<td class="hidden-xs file-list-col-modification file-list-col-text nowrap">
+  {{file.modificationMoment}}
+</td>

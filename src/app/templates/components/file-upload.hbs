@@ -1,0 +1,34 @@
+{{!-- TODO: translations --}}
+{{!-- TODO: styles --}}
+
+<div class="panel file-upload-panel">
+  <div class="panel-heading">
+    {{!-- TODO: count --}}
+    {{t 'components.fileUpload.titleUpload' count=uploadingFiles.length}}
+  </div>
+  <div class="panel-body">
+    
+    <div class="resumable-progress">
+      <table>
+        <tr>
+          <td>
+            <div class="progress-container">
+              <div class="progress-bar" style={{progressBarStyle}}></div>
+            </div>
+          </td>
+          <td class="progress-text" nowrap="nowrap">{{percentageProgress}}%</td>
+          {{!-- TODO: buttons, cancel etc. --}}
+        </tr>
+      </table>
+    </div>
+
+    <ul class="resumable-list">
+      {{#each uploadingFiles as |ufile index|}}
+        {{uploading-file resumableFile=ufile.resumableFile
+          progress=ufile.progress completed=ufile.completed
+          error=ufile.error}}
+      {{/each}}
+    </ul>
+
+  </div>
+</div>

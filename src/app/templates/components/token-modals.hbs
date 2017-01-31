@@ -1,0 +1,34 @@
+{{#bs-modal openedAction='getToken' open=isOpened body=false footer=false
+    title=modalTitle closeAction='closeModal'
+    id=modalId}}
+  {{#bs-modal-body}}
+    {{#if inviteToken}}
+      {{#bs-form model=this}}
+        <div class="modal-row">
+          {{modalLabel}}
+        </div>
+        <div class="modal-row">
+          {{input-copy inputValue=inviteToken}}
+        </div>
+      {{/bs-form}}
+    {{else}}
+        <div class="one-row">
+          {{#if errorMessage}}
+            <div class="loading-label">
+              {{t "common.modal.fetchingTokenError"}}
+            </div>
+          {{else}}
+            <div class="loading-throbber"></div>
+            <div class="loading-label">
+              {{t "common.modal.fetchingToken"}}
+            </div>
+          {{/if}}
+        </div>
+    {{/if}}
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#bs-button action=(action "close" target=footer) type="primary"}}
+      {{t "common.modal.ok"}}
+    {{/bs-button}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}

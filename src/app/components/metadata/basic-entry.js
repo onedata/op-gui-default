@@ -2,7 +2,6 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   tagName: 'tr',
-  classNameBindings: ['isRecent:animated', 'isRecent:flash', ''],
 
   /**
    * To inject.
@@ -11,13 +10,6 @@ export default Ember.Component.extend({
    * @default
    */
   readOnly: false,
-
-  /**
-   * To inject.
-   * Truthy if this entry should flash itself, because it was recently added.
-   * @type {Boolean}
-   */
-  isRecent: false,
 
   /**
    * To inject
@@ -32,9 +24,6 @@ export default Ember.Component.extend({
 
   init() {
     this._super(...arguments);
-    if (this.get('isRecent')) {
-      this.sendAction('clearRecentKey');
-    }
   },
 
   /**

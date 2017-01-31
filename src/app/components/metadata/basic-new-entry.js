@@ -1,9 +1,21 @@
 import Ember from 'ember';
 
+const {
+  computed,
+  observer,
+  run: {
+    debounce
+  },
+  RSVP: {
+    Promise
+  },
+  A
+} = Ember;
+
 export default Ember.Component.extend({
   tagName: 'tr',
   classNames: ['basic-new-entry'],
-  classNameBindings: ['invalidClass'],
+  classNameBindings: ['isInvalid:invalid'],
 
   /**
    * Truthy when we invoked action to submit this new entry to all basic
@@ -22,20 +34,16 @@ export default Ember.Component.extend({
   init() {
     this._super(...arguments);
     if (!this.get('existingKeys')) {
-      this.set('existingKeys', Ember.A());
+      this.set('existingKeys', A());
     }
   },
-
-  invalidClass: Ember.computed('isValid', 'newKey', function() {
-    return !this.get('isValid') && this.get('newKey') ? 'invalid' : '';
-  }),
 
   /**
    * The ``basic-new-entry`` editor is not empty, so we can add new empty
    * entry row.
    * @type {Boolean}
    */
-  createNewEntryAvailable: Ember.computed('newKey', 'newValue', 'isValid', function() {
+  createNewEntryAvailable: computed('newKey', 'newValue', 'isValid', function() {
     const props = this.getProperties('newKey', 'newValue', 'isValid');
     return props.newKey && props.newValue && props.isValid;
   }),
@@ -45,8 +53,8 @@ export default Ember.Component.extend({
    * Otherwise, it is presented as invalid.
    * @type {Boolean}
    */
-  isValid: Ember.computed('existingKeys.[]', 'newKey', 'newValue', function() {
-    return this.get('newKey') && this.get('newValue') &&
+  isValid: computed('existingKeys.[]', 'newKey', 'newValue', function() {
+    return this.get('newKey') != null && this.get('newValue') != null &&
       !this.get('existingKeys').includes(this.get('newKey'));
   }),
 
@@ -68,7 +76,7 @@ export default Ember.Component.extend({
    */
   submit() {
     this.set('isSubmitting');
-    const p = new Ember.RSVP.Promise((resolve) => {
+    const p = new Promise((resolve) => {
       this.sendAction('createNewEntry', this.get('newKey'), this.get('newValue'), resolve);
     });
     p.then(() => {
@@ -86,10 +94,18 @@ export default Ember.Component.extend({
    * Notify parent about changes in entry, so it can attach the new entry to
    * whole basic metadata.
    */
-  valuesChanged: Ember.observer('newKey', 'newValue', 'isValid', function() {
-    const props = this.getProperties('newKey', 'newValue', 'isValid');
-    this.sendAction('entryChanged', props.newKey, props.newValue, props.isValid);
+  valuesChanged: observer('newKey', 'newValue', 'isValid', function() {
+    debounce(this, '_submitEntryChanged', 100);
   }),
+
+  _submitEntryChanged() {
+    // FIXME
+    console.debug('submit entry changed');
+    let {
+      newKey, newValue, isValid
+    } = this.getProperties('newKey', 'newValue', 'isValid');
+    this.sendAction('entryChanged', newKey, newValue, isValid);
+  },
 
   actions: {
     /**

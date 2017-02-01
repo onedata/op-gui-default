@@ -9,10 +9,15 @@
 import Ember from 'ember';
 import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
 
+const {
+  inject: {
+    service
+  },
+  on
+} = Ember;
+
 export default Ember.Route.extend(ApplicationRouteMixin, {
-  mainMenuService: Ember.inject.service('main-menu'),
-  session: Ember.inject.service('session'),
-  loginRedirect: Ember.inject.service(),
+  session: service(),
 
   actions: {
     goToItem(name) {
@@ -24,11 +29,10 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
     }
   },
 
-  initSession: Ember.on('init', function() {
+  initSession: on('init', function() {
     let {
-      session,
-      loginRedirect
-    } = this.getProperties('session', 'loginRedirect');
+      session
+    } = this.getProperties('session');
 
     let sessionInitialization = session.initSession();
 
@@ -44,10 +48,6 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
         title: 'Session initialization error',
         message: 'Fatal error: session cannot be initialized'
       });
-    });
-
-    sessionInitialization.finally(() => {
-      loginRedirect.onSessionInitFinished();
     });
 
     return sessionInitialization;

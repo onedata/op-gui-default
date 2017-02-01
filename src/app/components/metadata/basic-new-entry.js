@@ -15,7 +15,7 @@ const {
 export default Ember.Component.extend({
   tagName: 'tr',
   classNames: ['basic-new-entry'],
-  classNameBindings: ['isInvalid:invalid'],
+  classNameBindings: ['isValid::invalid'],
 
   /**
    * Truthy when we invoked action to submit this new entry to all basic

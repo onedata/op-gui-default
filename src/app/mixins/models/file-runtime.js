@@ -68,9 +68,12 @@ export default Ember.Mixin.create({
    * Return true if this file is a dir and not all chilren are loaded from backend.
    * If this is not a dir, return undefined.
    */
-  allChildrenLoaded: computed('totalChildrenCount', 'children.length', 'isDir', function () {
-    if (this.get('isDir')) {
-      return this.get('totalChildrenCount') <= this.get('children.length');
+  allChildrenAreKnown: computed('totalChildrenCount', 'children.{isSettled,length}', 'isDir', function () {
+    let {
+      totalChildrenCount, children, isDir
+    } = this.getProperties('totalChildrenCount', 'children', 'isDir');
+    if (isDir) {
+      return children.get('isSettled') && totalChildrenCount <= children.get('content').canonicalState.length;
     }
   }),
 

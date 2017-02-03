@@ -20,7 +20,7 @@ export default Ember.Component.extend({
   didInsertElement() {
     this._super(...arguments);
     run.scheduleOnce('afterRender', this, function() {
-      this.set('canvas', this.$().find('canvas'));
+      this.set('$canvas', this.$('canvas'));
       this.redrawCanvas();
     });
   },
@@ -30,18 +30,15 @@ export default Ember.Component.extend({
   isLoading: false,
 
   // should use new everytime?
-  redrawCanvas: observer('canvas', 'file.size', 'fileBlocks.blocks', function() {
-    // FIXME check if it returns nested properties
+  redrawCanvas: observer('$canvas', 'file.size', 'fileBlocks.blocks', function() {
     let {
-      file: {
-        size
-      },
-      fileBlocks: {
-        blocks
-      },
-      canvas
-    } = this.getProperties('file.size', 'fileBlocks.blocks', 'canvas');
+      file,
+      fileBlocks,
+      $canvas
+    } = this.getProperties('$canvas', 'file', 'fileBlocks', 'canvas');
 
+    let size = file.get('size');
+    let blocks = fileBlocks.get('blocks');
 
     if (size && blocks) {
       try {
@@ -49,7 +46,7 @@ export default Ember.Component.extend({
           isRenderFailed: false,
           isLoading: true
         });
-        new FileChunksBar(canvas, {
+        new FileChunksBar($canvas, {
           file_size: size,
           chunks: blocks
         });

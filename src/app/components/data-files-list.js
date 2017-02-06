@@ -189,7 +189,7 @@ export default Ember.Component.extend({
    * True if all children files of the ``dir`` are loaded (using backend paging).
    * @type {Computed<Boolean>}
    */
-  areAllFilesLoaded: computed.alias('dir.allChildrenLoaded'),
+  areAllFilesKnown: computed.alias('dir.allChildrenAreKnown'),
 
   /**
    * One of: data, shared, public
@@ -870,13 +870,13 @@ export default Ember.Component.extend({
      */
     fileAppeared(/*index*/) {
       const props = this.getProperties(
-        'areAllFilesLoaded',
+        'areAllFilesKnown',
         'fetchMoreFilesRequested',
         'fetchMoreFilesError',
         'isFilesLoading'
       );
       if (!props.isFilesLoading &&
-        !props.areAllFilesLoaded &&
+        !props.areAllFilesKnown &&
         !props.fetchMoreFilesRequested &&
         !props.fetchMoreFilesError) {
           this.send('fetchMoreFiles');

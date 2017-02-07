@@ -21,6 +21,7 @@ const {
  */
 export default Ember.Controller.extend({
   fileBrowser: service(),
+  commonLoader: service(),
 
   spaces: alias('model'),
 

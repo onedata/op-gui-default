@@ -9,7 +9,7 @@ const {
 
 const DEFAULT_OPTIONS = {
   nonEmpty: false
-}
+};
 
 /**
  * Create a Mixin for onedata subroute that uses one of User's collection.

@@ -4,6 +4,7 @@ const {
   inject: {
     service
   },
+  computed,
   computed: {
     alias
   },

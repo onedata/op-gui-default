@@ -12,8 +12,13 @@ import getDefaultSpace from 'op-worker-gui/utils/get-default-space';
  */
 export default Ember.Controller.extend({
   goToDefaultSpace() {
-    console.debug(`controllers/onedata/spaces/index: Will try to go to default space`);
-    this.transitionToRoute('onedata.spaces.show', getDefaultSpace(this.get('model')));
+    console.debug(`controller:onedata.spaces.index: Will try to go to default space`);
+    let defaultSpace = getDefaultSpace(this.get('model'));
+    if (defaultSpace) {
+      this.transitionToRoute('onedata.spaces.show', defaultSpace);
+    } else {
+      console.debug(`controller:onedata.spaces.index: No space to go`);
+    }
   },
 
   /**

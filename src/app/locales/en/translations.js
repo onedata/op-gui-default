@@ -507,5 +507,15 @@ export default {
         }
       }
     }
+  },
+  spacesError: {
+    fetchFailure: 'An error occured on fetching spaces list.',
+    noSpaceSupported: 'This provider does not support any space.',
+    errorCauses: 'It may be a sync error or failure of the provider.',
+    advice: 'Please try to refresh the page or contact system administrator.'
+  },
+  error: {
+    cannotLoadResource: 'A fatal error occured: the requested resource cannot be loaded.',
+    tryRefreshOrContact: 'You can try to refresh the page or contact administrators.'
   }
 };

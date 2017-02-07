@@ -1,12 +1,18 @@
 import Ember from 'ember';
+import userCollectionModel from 'ember-cli-onedata-common/mixin-factories/routes/user-collection-model';
 
-// TODO: doc
-export default Ember.Route.extend({
+/**
+ * A Groups secondary sidebar.
+ *
+ * It lists groups to which user belongs to.
+ * 
+ * @module routes/onedata/groups
+ * @author Jakub Liput
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+export default Ember.Route.extend(userCollectionModel('groups'), {
   mainRouteName: 'groups',
-
-  model() {
-    return this.modelFor('onedata').get('groups');
-  },
 
   actions: {
     /** Show submenu for Group */

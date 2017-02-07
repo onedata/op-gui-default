@@ -528,27 +528,28 @@ html, body {
       .inner-content {
         padding-top: $content-padding;
       }
+    }
 
-      .content-error {
-        margin-top: 20px;
-        font-size: 2em;
-        text-align: center;
-      }
+    .content-error {
+      margin-top: 20px;
+      font-size: 2em;
+      text-align: center;
+    }
 
-      .content-error-icon {
-        width: 100%;
-        margin-top: 40px;
-        font-size: 128px;
-        text-align: center;
+    .content-error-icon {
+      width: 100%;
+      margin-top: 40px;
+      font-size: 128px;
+      text-align: center;
 
-        .icon-overlay {
-          margin-top: 0;
-          font-size: 256px;
-          transform: translateY(-25%);
-         
-          &.ban {
-            color: $color-red-ban;
-          }
+      .icon-overlay {
+        margin-top: 0;
+        font-size: 256px;
+        // translateX is a HACK because icon under overlay is not properly centered (maybe fault of font icon)
+        transform: translateY(-25%) translateX(2px);
+        
+        &.ban {
+          color: $color-red-ban;
         }
       }
     }

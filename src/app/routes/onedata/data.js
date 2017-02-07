@@ -1,5 +1,5 @@
 /**
- * Lists a Spaces whose allows to browse files in sub-routes.
+ * Lists Spaces to browse files in sub-routes.
  *
  * @module routes/data
  * @author Jakub Liput
@@ -8,19 +8,18 @@
  */
 
 import Ember from 'ember';
+import userCollectionModel from 'ember-cli-onedata-common/mixin-factories/routes/user-collection-model';
 
 const {
-  inject
+  inject: {
+    service
+  }
 } = Ember;
 
-export default Ember.Route.extend({
-  fileSystemTree: inject.service(),
+export default Ember.Route.extend(userCollectionModel('spaces', { nonEmpty: true }), {
+  fileSystemTree: service(),
 
   mainRouteName: 'data',
-
-  model() {
-    return this.modelFor('onedata').get('spaces');
-  },
 
   afterModel(dataSpaces) {
     this.set('fileSystemTree.spaces', dataSpaces);

@@ -1,27 +1,55 @@
 {{!-- A Spaces view: sidebar with spaces list and content (if fit to screen) --}}
 {{page-title (t 'data.title')}}
 
-{{!-- Secondary top bar --}}
-<div class="secondary-top-bar">
-  {{#unless fileBrowser.invalidRootDir}}
-    {{file-breadcrumbs file=(readonly fileBrowser.dir) changeDir="openDirInBrowser"}}
-  {{/unless}}
+{{#if isLoadingSpaces}}
+
+<div class="common-loader">
+  <div class="common-loader-container">
+    <div class="common-loader-spinner">
+      {{spin-spinner scale=1 lines=12 length=20 width=10 top="40%"}}
+    </div>
+    <div class="common-loader-message-container">
+      <div class="common-loader-message">
+        {{#if message}}
+          {{message}}
+        {{else}}
+          {{t 'components.commonLoader.synchronizingSpaces'}}
+        {{/if}}
+      </div>
+      {{#if messageSecondary}}
+        <div class="common-loader-message secondary">
+          {{messageSecondary}}
+        </div>
+      {{/if}}
+    </div>
+  </div>
 </div>
 
-<div class="lower-main-content">
 
-  {{!-- Secondary sidebar --}}
-  <nav class="secondary-sidebar">
-    {{data-spaces-select spaces=model goToDataSpace="goToDataSpace"}}
-    {{outlet "data-space-sidebar"}}
-  </nav>
-
-  <div class="resize-handler data-sidebar-resize-handler transparent"
-    id="data-sidebar-resize-handler">
+{{else}}
+  {{!-- Secondary top bar --}}
+  <div class="secondary-top-bar">
+    {{#unless fileBrowser.invalidRootDir}}
+      {{file-breadcrumbs file=(readonly fileBrowser.dir) changeDir="openDirInBrowser"}}
+    {{/unless}}
   </div>
 
-  <div id="content-scroll">
-    {{outlet "data-content-scroll"}}
-  </div>
+  <div class="lower-main-content">
 
-</div>
+    {{!-- Secondary sidebar --}}
+    <nav class="secondary-sidebar">
+      {{data-spaces-select spaces=model goToDataSpace="goToDataSpace"}}
+      {{outlet "data-space-sidebar"}}
+    </nav>
+
+    <div class="resize-handler data-sidebar-resize-handler transparent"
+      id="data-sidebar-resize-handler">
+    </div>
+
+    <div id="content-scroll">
+      {{outlet "data-content-scroll"}}
+    </div>
+
+  </div>
+{{/if}}
+

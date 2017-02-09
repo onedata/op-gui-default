@@ -1,7 +1,7 @@
 /**
- * Returns space/data-space that should be loaded by default
+ * Returns a space that should be loaded by default
  * when entering index of spaces or data-spaces.
- * @return {Space|DataSpace}
+ * @return {Space}
  */
 export default function(spaces) {
   let selectedSpace;
@@ -9,12 +9,12 @@ export default function(spaces) {
   if (defaultSpace) {
     selectedSpace = defaultSpace;
   } else {
-    console.debug('No default data-space found - go to first data-space instead');
+    console.debug('util:get-default-space: No default data-space found - choose data-space instead');
     const firstSpace = spaces.sortBy('name').objectAt(0);
     if (firstSpace) {
       selectedSpace = firstSpace;
     } else {
-      console.debug('get-default-space: no data-spaces exist');
+      console.debug('util:get-default-space: No data-spaces exist');
     }
   }
   return selectedSpace;

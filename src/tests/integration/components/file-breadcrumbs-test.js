@@ -10,6 +10,7 @@ import {
 } from 'mocha';
 import startApp from 'op-worker-gui/tests/helpers/start-app';
 import hbs from 'htmlbars-inline-precompile';
+import waitFor from 'ember-cli-onedata-common/utils/wait-for';
 
 describe('Integration: FileBreadcrumbsComponent', function() {
   setupComponentTest('file-breadcrumbs', {
@@ -48,19 +49,8 @@ describe('Integration: FileBreadcrumbsComponent', function() {
 
     this.render(hbs`{{file-breadcrumbs file=file}}`);
 
-    let doneCalled = false;
-
-    file.addObserver('dirsPath', this, function() {
-      Ember.run.scheduleOnce('afterRender', this, function() {
-        if (file.get('dirsPath')) {
-          expect(this.$()).to.contain(file.get('name'));
-          if (!doneCalled) {
-            doneCalled = true;
-            done();
-          }
-        }
-      });
-    });
+    let fileName = file.get('name');
+    waitFor(() => this.$().text().match(fileName), {resolve: done});
 
     file.updateDirsPath();
   });
@@ -78,19 +68,8 @@ describe('Integration: FileBreadcrumbsComponent', function() {
 
     this.render(hbs`{{file-breadcrumbs file=file2}}`);
 
-    let doneCalled = false;
-
-    file2.addObserver('dirsPath', this, function() {
-      Ember.run.scheduleOnce('afterRender', this, function() {
-        if (file2.get('dirsPath')) {
-          expect(this.$()).to.contain(file1.get('name'));
-          if (!doneCalled) {
-            doneCalled = true;
-            done();
-          }
-        }
-      });
-    });
+    let fileName = file1.get('name');
+    waitFor(() => this.$().text().match(fileName), {resolve: done});
 
     file2.updateDirsPath();
   });

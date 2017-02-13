@@ -1,19 +1,13 @@
 .data-spaces-select {
-  -moz-appearance: none;
-  -ms-appearance: none;
-  -o-appearance: none;
-  appearance: none;
-
   width: 100%;
-  text-transform: uppercase;
   color: #56616E;
   background-color: transparent;
-  border: none;
+  border: 0;
   border-radius: 0;
 
   .form-control {
     font-size: inherit;
-    border: none;
+    border: 0;
     border-radius: none;
     -webkit-box-shadow: none;
     box-shadow: none;
@@ -28,10 +22,6 @@
 }
 
 .secondary-sidebar {
-  // root directory item
-  .root-item {
-  }
-
   .tree-expand-icon {
     font-size: $secondary-sidebar-icon-font-size * 0.75;
   }
@@ -72,32 +62,15 @@
     padding-left: ($secondary-sidebar-item-padding + 44px) !important;
   }
 
-  .level-3 .secondary-sidebar-item {
-    padding-left: ($secondary-sidebar-item-padding + 66px) !important;
-  }
-
-  .level-4 .secondary-sidebar-item {
-    padding-left: ($secondary-sidebar-item-padding + 88px) !important;
-  }
-
-  .level-5 .secondary-sidebar-item {
-    padding-left: ($secondary-sidebar-item-padding + 110px) !important;
-  }
-
-  .level-6 .secondary-sidebar-item {
-    padding-left: ($secondary-sidebar-item-padding + 132px) !important;
-  }
-
-  .level-7 .secondary-sidebar-item {
-    padding-left: ($secondary-sidebar-item-padding + 154px) !important;
-  }
-
 }
 
 // TODO
 
 .table.files-table {
   position: relative;
+
+  @include vendor-prefix(user-select, none);
+  cursor: default;
 
   thead {
     th {
@@ -108,8 +81,8 @@
     }
   }
 
-  tbody{
-    tr {
+  tbody {
+    tr.first-level {
       line-height: 32px;
 
       &:hover {
@@ -120,6 +93,10 @@
         background-color: $onedata-light-azure;
       }
 
+      &.metadata-opened {
+        background-color: $onedata-light-gray;
+      }
+
       td {
         // disable Bootstrap colors - use tr color
         background-color: transparent !important;
@@ -127,20 +104,72 @@
         // make text in rows aligned vertically middle
         line-height: inherit;
 
+        &.file-list-col-text {
+          vertical-align: middle;
+        }
+
         &.col-permissions {
           font-family: monospace;
         }
 
         .file-icon {
-          float: left;
+          display: table-cell;
           width: 40px;
           margin-left: -6px;
           font-size: 32px !important;
           text-align: left;
         }
-        .file-label {
-          float: left;
-          margin-left: 20px;
+        .file-label-container {
+          display: table-cell;
+          position: relative;
+
+          .file-label {
+            position: absolute;
+            margin-left: 10px;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            @include vendor-prefix(user-select, none);
+
+            .file-provider-label {
+              color: $onedata-red;
+            }
+            .file-provider-label-name {
+              color: $onedata-red;
+              font-weight: bold;
+            }
+          }
+        }
+        .file-row-tools {
+          position: absolute;
+          top: 0;
+          right: 0;
+          height: 100%;
+          .oneicon {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-right: 10px;
+            font-size: 30px;
+            cursor: pointer;
+          }
+
+          .file-tool {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+          }
+
+          // metadata tool is on the left of first right tool
+          .file-tool-metadata {
+            right: 32px;
+
+            &.active {
+              color: $onedata-red;
+            }
+          }
         }
       }
     }
@@ -150,18 +179,21 @@
 /// file list table column styles
 
 .file-list-col-file {
-  width: 100%;
+  position: relative !important;
 }
 .file-list-col-size {
-  width: 140px;
-  max-width: 140px;
+  width: 95px;
+  min-width: 95px;
+  max-width: 95px;
 }
 .file-list-col-permissions {
   width: 140px;
+  min-width: 140px;
   max-width: 140px;
 }
 .file-list-col-modification {
   width: 140px;
+  min-width: 140px;
   max-width: 140px;
 }
 
@@ -170,7 +202,7 @@
     color: $onedata-red;
 }
 
-&.file-drag {
+.file-drag {
   .drop-area {
     display: block;
   }
@@ -189,12 +221,38 @@
   border-radius: 10px;
 
   .oneicon {
-    display: block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     font-size: 200px;
-    height: 100%;
     text-align: center;
   }
 }
+
+.data-files-list-toolbar {
+  .dropdown .dropdown-menu {
+    // correct X of dropdown for toolbar
+    transform: translateX(5px);
+
+    &.dropdown-menu-list {
+      > li:not(.divider) {
+        > a {
+          padding-top: 5px;
+          padding-bottom: 5px;
+          padding-right: 15px;
+
+          font-size: 0.9em;
+
+          .item-icon {
+            font-size: 28px;
+          }
+        }
+      }
+    }
+  }
+}
+
 
 // modals
 
@@ -255,8 +313,77 @@
   .data-files-list {
     height: 100%;
   }
+
+  .file-row-load-more {
+    height: 64px;
+  }
 }
 
-.file-upload {
+.data-files-list-loader {
+  // is floating above files list
+  position: absolute;
+  z-index: 1100;
+  left: 0;
+  right: 0;
+  // render always to the bottom of its parent (which should be files list table)
+  bottom: 0;
+  background-color: rgba($onedata-light-gray, .5);
 
+  .data-files-list-loader-gradient {
+    min-height: 100px;
+    max-height: 100%;
+    @include linear-gradient($onedata-light-gray, rgba($onedata-light-gray, 0));
+
+
+    .spinner-container {
+      width: 100%;
+    }
+
+  }
+
+  .spinner-container {
+    top: 30px;
+  }
+}
+
+.empty-dir-image {
+  background-image: url("/assets/images/empty-dir.svg");
+}
+
+.selection-background-pulse {
+  animation: azure-pulse 3s infinite;
+}
+
+.notice-background-pulse {
+  animation: light-azure-pulse-onetime 0.75s;
+}
+
+@keyframes azure-pulse {
+  0% {
+    background-color: $onedata-light-azure;
+  }
+  50% {
+    background-color: $onedata-azure;
+  }
+  100% {
+    background-color: $onedata-light-azure;
+  }
+}
+
+@keyframes light-azure-pulse-onetime {
+  0% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: $onedata-azure;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.file-tool {
+  &:hover {
+    color: $onedata-red;
+  }
 }

@@ -5,7 +5,7 @@
  * @param {Boolean} value - true/false state as in checkbox (checked/unchecked)
  * @param {Boolean} isModified - true indicates that the value of checkbox
  *   was modified without saving
- * @returns {string} an icon span
+ * @returns {Handlebars.SafeString} an icon span
  *
  * @module helpers/bool-option
  * @todo maybe it should be a Component
@@ -15,6 +15,12 @@
 */
 
 import Ember from 'ember';
+
+const {
+  String: {
+    htmlSafe
+  }
+} = Ember;
 
 export default Ember.Helper.helper(function(params) {
   let value = params[0];
@@ -27,5 +33,5 @@ export default Ember.Helper.helper(function(params) {
 
   // TODO: use icon helper
   var html = '<span class="one-checkbox '+cssClasses+'" aria-hidden="true"></span>';
-  return new Ember.Handlebars.SafeString(html);
+  return htmlSafe(html);
 });

@@ -1,5 +1,7 @@
 import Ember from 'ember';
 
+import getDefaultSpace from 'op-worker-gui/utils/get-default-space';
+
 /**
  * A global state of file browser
  * @module service/file-system-tree
@@ -8,11 +10,56 @@ import Ember from 'ember';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Service.extend(Ember.Evented, {
-  store: Ember.inject.service('store'),
+  store: Ember.inject.service(),
 
   spaces: null,
   selectedSpace: null,
   prevSelectedSpace: null,
+
+  isLoading: null,
+
+  /**
+   * Stores ids of dirs that cannot be opened (eg. were rejected on request to backend).
+   * @type Set<String>
+   */
+  failedDirs: null,
+
+  init() {
+    this._super();
+    this.set('failedDirs', new Set());
+  },
+
+  /**
+   * Opens a metadata editor for specified file in opened file browsers.
+   * If file has no metadata, initialize it by creating a record (but not saving it).
+   *
+   * @param  {File} file
+   */
+  openMetadataEditor(file) {
+    file.get('fileProperty').then(
+      (metadata) => {
+        if (!metadata) {
+          const fileType = file.get('constructor.modelName');
+          const metadataType =
+            (fileType === 'file-shared') ? 'filePropertyShared' : 'fileProperty';
+          metadata = this.get('store').createRecord(metadataType, {
+            file: file
+          });
+          file.set('fileProperty', metadata);
+        }
+      }
+    );
+
+    file.set('isEditingMetadata', true);
+  },
+
+  closeMetadataEditor(file) {
+    file.set('isEditingMetadata', false);
+  },
+
+  rootDirs: Ember.computed('spaces.[]', function() {
+    return this.get('spaces').mapBy('rootDir');
+  }),
 
   rootSpaces: function() {
     let rootSpaces = {};
@@ -20,21 +67,19 @@ export default Ember.Service.extend(Ember.Evented, {
       rootSpaces[s.get('rootDir.id')] = s.get('id');
     });
     return rootSpaces;
-  }.property('spaces.@each.rootDir.id'),
+  }.property('rootDirs.id'),
 
   spacesChanged: function() {
     console.debug(`FST: Spaces changed: len ${this.get('spaces.length')}, prev: ${this.get('prevSelectedSpace')}`);
-    if (!this.get('prevSelectedSpace') && this.get('spaces.length') > 0) {
-      let defaultSpace = this.get('spaces').find((s) => s.get('isDefault'));
-      console.debug('FST: spaces: ' + this.get('spaces').map((s) => s.get('isDefault')));
-      if (defaultSpace) {
-        console.debug(`FST: Will set new selectedSpace: ${defaultSpace.get('name')}`);
-      } else {
-        console.debug('FST: no selectedSpace!');
-      }
+    const dataSpaces = this.get('spaces');
+    let newSpaceToSelect;
+    if (!this.get('prevSelectedSpace') && this.get('spaces.length') > 0 &&
+      dataSpaces.get('isUpdating') === false) {
+
+      newSpaceToSelect = getDefaultSpace(dataSpaces);
 
       this.set('prevSelectedSpace', this.get('selectedSpace'));
-      this.set('selectedSpace', defaultSpace);
+      this.set('selectedSpace', newSpaceToSelect);
     }
   }.observes('spaces', 'spaces.[]', 'spaces.@each.isDefault'),
 
@@ -51,24 +96,37 @@ export default Ember.Service.extend(Ember.Evented, {
     }
   },
 
-  // TODO: cache of tree
-  dirsPath(file) {
-    return file ? file.dirsPath() : [];
-  },
-
+  /**
+   * Expands all directories (File) to root of directory tree from the File
+   *
+   * @param {File|Ember.ObjectProxy} file - a leaf file of the files tree
+   * @returns {Promise} promise that will resolve when all dirs in tree to
+   *  the file are expanded
+   */
   expandDir(file) {
     return new Ember.RSVP.Promise((resolve) => {
-      let path = this.dirsPath(file);
+      // using invocation from property, because file can be an ObjectProxy
+      file.get('resolveDirsPath').apply(file).then(
+        (path) => {
+          let parentsLength = path.length - 1;
+          for (let i=0; i<parentsLength; ++i) {
+            path[i].set('isExpanded', true);
+          }
+          resolve();
+        }
+      );
       // TODO: this.rootDir should be the same as first element of path
       // TODO: check if dir to expand is child of previous dir?
       // TODO: should last dir in path be expanded?
-      let parentsLength = path.length - 1;
-      for (let i=0; i<parentsLength; ++i) {
-        path[i].set('isExpanded', true);
-      }
-
-      resolve();
     });
 
+  },
+
+  toggleMetadataEditor(file) {
+    if (file.get('isEditingMetadata')) {
+      this.closeMetadataEditor(file);
+    } else {
+      this.openMetadataEditor(file);
+    }
   }
 });

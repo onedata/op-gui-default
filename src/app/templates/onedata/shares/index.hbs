@@ -1,0 +1,19 @@
+{{#if (gt model.length 0)}}
+  {{outlet}}
+{{else}}
+{{!-- TODO: translate --}}
+
+<div class="empty-model">
+  <div class="empty-model-container">
+    <div class="empty-model-image empty-shares-image"></div>
+    <div class="empty-model-message">
+      You do not have access to any share.
+    </div>
+    <div class="empty-model-message secondary">
+      You can share a directory using
+      <span class="inline-button">{{one-icon icon='share'}}</span>
+      tool in files browser.
+    </div>
+  </div>
+</div>
+{{/if}}

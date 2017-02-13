@@ -9,7 +9,14 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand top-bar-item" href="#"></a>
+      {{#link-to "index" class="navbar-brand top-bar-item clickable" tagName="div"}}
+        <div class="provider-name-container">
+          <div class="oneicon oneicon-provider top-bar-icon"></div>
+          <div class="provider-name truncate">
+            {{session.sessionDetails.providerName}}
+          </div>
+        </div>
+      {{/link-to}}
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -19,7 +26,7 @@
         <li class="dropdown profile-dropdown">
           <a href="#" class="dropdown-toggle top-bar-item toolbar-icon" data-toggle="dropdown"
             role="button" aria-haspopup="true" aria-expanded="false">
-              {{icon 'user-profile' 'top-bar-icon'}} {{trim-string session.sessionDetails.userName 14}} <span class="caret"></span>
+              {{one-icon icon='user-profile' class='top-bar-icon'}} {{trim-string userName 14}} <span class="caret"></span>
           </a>
           <ul class="dropdown-menu dropdown-menu-down expand-left dropdown-menu-list">
             <li><a href="{{session.sessionDetails.manageProvidersURL}}">{{t 'components.topBar.manageProviders'}}</a></li>

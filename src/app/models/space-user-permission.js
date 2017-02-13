@@ -1,18 +1,14 @@
 import DS from 'ember-data';
-import PermissionsBase from './base/permissions-base';
+import permissionModelFactory from 'op-worker-gui/mixin-factories/models/permission';
+import FLAG_NAMES from 'op-worker-gui/constants/permission-space-flags';
 
 /**
  * A set of single Space permissions for a single User
  * @module models/space-user-permission
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default PermissionsBase.extend({
-  user: DS.belongsTo('spaceUser', {async: true}),
-
-  /** Common alias for owner - in this case group */
-  owner: function() {
-    return this.get('user');
-  }.property('user')
-});
+export default DS.Model.extend(
+  permissionModelFactory(FLAG_NAMES, 'space', 'systemUser')
+);

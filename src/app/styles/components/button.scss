@@ -60,13 +60,18 @@
   @include btn-before-oneicon($icon-name, -3px, 14px, 24px);
 }
 
-.btn-permissions {
+// outlined button, for historical reasons, it has 2 classes
+.btn-permissions, .btn-outline {
   padding: 5px 30px;
   border-radius: 2px !important;
   border-width: 1px !important;
   border-style: solid !important;
   text-transform: uppercase;
-  background-color: white;
+  background-color: transparent;
+
+  &:hover {
+    background-color: white;
+  }
 
   // support for spin-button
   &.disabled,
@@ -81,6 +86,13 @@
     left: 20px !important;
   }
 
+  &.btn-publish {
+    color: $onedata-green-save;
+
+    &:not(.in-flight) {
+      @include btn-before-oneicon-permissions($oneicon-menu-shared);
+    }
+  }
   &.btn-save {
     color: $onedata-green-save;
 
@@ -95,14 +107,4 @@
       @include btn-before-oneicon-permissions($oneicon-checkbox-x);
     }
   }
-}
-
-.btn-right {
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px;
-}
-
-.btn-left {
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
 }

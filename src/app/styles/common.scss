@@ -2,13 +2,17 @@ $responsive-multiplier: 1 !default;
 
 // default for desktop TODO: move to desktop-common
 $sidebar-width: 68px !default;
-$top-bar-height: 72px !default;
+$top-bar-height: 80px !default;
 $global-min-width: 1000px !default;
+$provider-name-conainer-width: 360px !default;
 // $secondary-sidebar-width: 352px;
 $secondary-sidebar-width: 352px !default;
-$secondary-sidebar-item-padding: $secondary-sidebar-width * 0.077 !default;
+$secondary-sidebar-width-max-addition: 400px;
+$secondary-sidebar-item-padding: 22px !default;
 
 $content-padding: 12px !default;
+
+$navbar-padding-horizontal: 15px !default;
 
 $top-bar-background-color: $onedata-snow !default;
 $top-bar-foreground-color: $onedata-topbar-graphite !default;
@@ -25,16 +29,41 @@ $top-bar-icon-font-size: 32px !default;
 
 $table-checkbox-size: 48px !default;
 
+$secondary-top-bar-height: 50px;
+
+$public-top-height: 180px;
+
 $transition-time: 0.25s !default;
 
 // TODO: should be used with Bootstrap SASS
 $font-family-sans-serif: 'Open Sans';
 
+// routes-specific styles
+
+@import 'public';
+@import 'data';
+@import 'groups';
+@import 'shares';
+
 html, body {
   font-family: $font-family-sans-serif !important;
+  background-color: $color-main-background;
+
+  // TODO: only input[type=text] ?
+  .form-control {
+    border-radius: 0;
+    border: solid 1px #B6C7D3;
+
+    &:focus {
+      box-shadow: none;
+      border: solid 1px #545C74;
+    }
+  }
 }
 
 #app {
+  $brand-top-padding: 15px;
+
   header {
     position: fixed;
     top: 0;
@@ -47,12 +76,20 @@ html, body {
     // TODO
     //transition: left 0.25s;
 
+    $top-bar-separator-border: solid 1px $color-toolbar-separator;
+
     .navbar {
       height: $top-bar-height;
       margin-bottom: 0;
       border: none;
+      border-bottom: $top-bar-separator-border;
       border-radius: 0;
       background: none;
+
+      .container-fluid {
+        padding-left: $navbar-padding-horizontal;
+        padding-right: $navbar-padding-horizontal;
+      }
 
       .top-bar-item {
         // important because we want all items height to fit bar height
@@ -76,15 +113,49 @@ html, body {
         }
       }
 
-      .navbar-brand {
-        width: 156px;
-        margin-left: 32px;
-        margin-right: 62px;
-        // TODO: svg
-        background-image: url("/assets/images/logo-dark.svg");
-        background-position: center left;
-        background-size: auto 26px;
-        background-repeat: no-repeat;
+      .navbar-header {
+        // 4px to align with border for sidebar items hover left line
+        margin-left: 4px - $navbar-padding-horizontal;
+
+        .navbar-brand {
+          position: relative;
+          width: 156px;
+          margin-left: $secondary-sidebar-item-padding;
+          margin-right: 62px;
+          background-image: url("/assets/images/logo-dark.svg");
+          background-position-x: left;
+          background-position-y: $brand-top-padding;
+          background-size: auto 26px;
+          background-repeat: no-repeat;
+
+          .provider-name-container {
+            // make sure to be able to contain provider label and name
+            width: $provider-name-conainer-width + 32px;
+            position: absolute;
+            top: 50%;
+            left: -4px;
+            transform: translateY(-50%) translateY(20px);
+            font-size: 12px;
+
+            line-height: 22px;
+
+            .top-bar-icon {
+              display: block;
+              float: left;
+              font-size: 22px !important;
+              line-height: inherit;
+              color: #000;
+            }
+
+            .provider-name {
+              display: block;
+              float: left;
+              max-width: $provider-name-conainer-width;
+              line-height: inherit;
+              margin-left: 4px;
+            }
+          }
+        }
       }
 
       .top-bar-icon {
@@ -94,7 +165,7 @@ html, body {
 
       // TODO: left only for first, disable right for last
       .toolbar-group {
-        border-right: solid 1px $color-toolbar-separator;
+        border-right: $top-bar-separator-border;
 
         &.navbar-right {
           &:first-of-type {
@@ -108,8 +179,8 @@ html, body {
         // TODO: probably > li can be used... consider it
         // TODO: .top-bar-item
         > li > a {
-          // important because we want all items height to fit bar height
-          min-height: $top-bar-height !important;
+          padding-top: $top-bar-height * .25;
+          padding-bottom: 0px;
         }
 
         .profile-dropdown {
@@ -156,7 +227,7 @@ html, body {
         background-image: url("/assets/images/logo-short-light.svg");
         background-size: 40px 26px;
         background-repeat: no-repeat;
-        background-position: center center;
+        background-position: center $brand-top-padding;
       }
 
       // TODO
@@ -171,9 +242,12 @@ html, body {
           font-size: 40px;
         }
 
-        &.active a,
-        a:hover {
+        &.active a {
           background-color: $sidebar-item-hover-color;
+        }
+
+        a:hover {
+          background-color: rgba($sidebar-item-hover-color, 0.55);
         }
 
         a {
@@ -216,16 +290,54 @@ html, body {
 
     background: $content-background-color;
 
+    .resize-handler {
+      position: absolute;
+      z-index: 1000;
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      cursor: ew-resize;
+
+      .transparent {
+        color: transparent;
+      }
+
+      &.data-sidebar-resize-hander {
+        top: $secondary-top-bar-height;
+      }
+    }
+
+    // an element that should be inside main content
+    // and is above sidebar and content-scroll
+    // is serves as a contextual navigation
+    .secondary-top-bar {
+      position: relative;
+      padding-top: 12px;
+      padding-left: 27px * $responsive-multiplier;
+      height: $secondary-top-bar-height;
+      border-bottom: $color-secondary-top-bar-separator solid 2px;
+    }
+
+    .lower-main-content {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: $secondary-top-bar-height;
+      bottom: 0;
+    }
+
     nav.secondary-sidebar {
+      position: relative;
       float: left;
       overflow-x: hidden;
       overflow-y: auto;
       height: 100%;
 
-      max-width: $secondary-sidebar-width;
+      max-width: $secondary-sidebar-width + $secondary-sidebar-width-max-addition;
+      width: $secondary-sidebar-width;
       min-width: $secondary-sidebar-width;
 
-      border-right: #E6E6E6 2px solid;
+      border-right: $color-secondary-sidebar-separator 2px solid;
 
       // TODO: responsive variables?
       .secondary-sidebar-header {
@@ -246,7 +358,7 @@ html, body {
           padding-left: 33px * $responsive-multiplier; // SPACES is moved right slightly
           padding-bottom: 16px;
           padding-right: 27px * $responsive-multiplier;
-          font-size: 11pt;
+          font-size: $secondary-sidebar-font-size;
         }
 
         figure {
@@ -295,7 +407,9 @@ html, body {
 
         .item-icon {
           display: table-cell;
-          width: 1.5em;
+          min-width: 32px;
+          width: 32px;
+          max-width: 32px;
           vertical-align: middle;
           font-size: $secondary-sidebar-icon-font-size;
           text-align: center;
@@ -303,7 +417,6 @@ html, body {
 
         .item-label {
           display: table-cell;
-          width: 100%;
           vertical-align: middle;
           font-size: $secondary-sidebar-font-size;
           padding-left: 1em;
@@ -350,6 +463,9 @@ html, body {
             // TODO: this causes a left "margin" of horizontal lines...
             border-left: 5px solid;
             border-left-color: transparent;
+            &:hover {
+              border-left-color: $onedata-light-gray;
+            }
           }
 
           &.active.first-level {
@@ -391,16 +507,12 @@ html, body {
           }
         }
       }
-
-      // special styles for sidebar lists which are trees
-      ul.tree {
-
-      }
     }
 
     // TODO: assuming, that this content is always on secondary-sidebar right
     // other content-scroll types should be made
     #content-scroll {
+      position: relative;
       float: none;
       overflow-y: auto;
       overflow-x: hidden; // TODO: it's probably some hack
@@ -409,6 +521,36 @@ html, body {
       // to achieve proper alignment with secondary sidebar header line
       // we do not set top padding of content
       padding-top: 0;
+
+      background-color: $color-main-background;
+
+      // add a padding-top if not added already
+      .inner-content {
+        padding-top: $content-padding;
+      }
+
+      .content-error {
+        margin-top: 20px;
+        font-size: 2em;
+        text-align: center;
+      }
+
+      .content-error-icon {
+        width: 100%;
+        margin-top: 40px;
+        font-size: 128px;
+        text-align: center;
+
+        .icon-overlay {
+          margin-top: 0;
+          font-size: 256px;
+          transform: translateY(-25%);
+         
+          &.ban {
+            color: $color-red-ban;
+          }
+        }
+      }
     }
   }
 
@@ -435,6 +577,8 @@ html, body {
 
   > * {
     display: table-cell;
+    // TODO enable when hack from .btn removed
+    // vertical-align: middle;
   }
 
   > *:first-child {
@@ -447,6 +591,9 @@ html, body {
   }
 
   .btn {
+    // TODO these hacks could be removed if:
+    // .form-control style for input will not have a strange Bootstrap border
+
     // a hack to pull up
     margin-top: -2px;
 
@@ -490,34 +637,6 @@ html, body {
   max-width: $secondary-sidebar-width - 110px;
 }
 
-.truncate-secondary-sidebar-item {
-  max-width: $secondary-sidebar-width - 70px;
-
-  &.level-1 {
-    max-width: $secondary-sidebar-width - 100px;
-  }
-
-  &.level-2 {
-    max-width: $secondary-sidebar-width - 120px;
-  }
-
-  &.level-3 {
-    max-width: $secondary-sidebar-width - 140px;
-  }
-
-  &.level-4 {
-    max-width: $secondary-sidebar-width - 160px;
-  }
-
-  &.level-5 {
-    max-width: $secondary-sidebar-width - 180px;
-  }
-
-  &.level-6 {
-    max-width: $secondary-sidebar-width - 200px;
-  }
-}
-
 .truncate-drop {
   max-width: $secondary-sidebar-width - 70px;
 }
@@ -537,22 +656,178 @@ html, body {
   outline: none !important;
 }
 
-.is-loading {
-  position: relative;
+.relative {
+  position: relative !important;
+}
 
-  &::after {
-    position: absolute;
-    background-repeat: no-repeat;
-    top: 0;
-    left: 0;
+.oneicon {
+  position: relative;
+  display: inline-block;
+}
+
+/* Safari and Chrome */
+@-webkit-keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+.rotating {
+  display: inline-block;
+  -webkit-animation: rotating 2s linear infinite;
+  -moz-animation: rotating 2s linear infinite;
+  -ms-animation: rotating 2s linear infinite;
+  -o-animation: rotating 2s linear infinite;
+  animation: rotating 2s linear infinite;
+}
+
+.full-size {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+// insert a <td> to allow other cells to be fixed width
+.table-space-fill {
+  width: auto !important;
+  max-width: initial !important;
+  min-width: initial !important;
+}
+
+// for debugging
+.service-debugger {
+  position: fixed;
+  width: 400px;
+  height: 150px;
+  bottom: 0;
+  right: 0;
+  border: 1px solid black;
+  background-color: white;
+  padding: 10px;
+
+  .inner-scroll {
     width: 100%;
     height: 100%;
-    background-color: rgba(white, 0.5);
-    background-image: url("/assets/images/loading-128.gif");
-    background-position: center 30px;
-    content: ' ';
+    overflow: auto;
   }
 }
 
-// TODO: temporary
-@import 'data';
+// style for messages that covers main content
+// this evolved from handling empty collections, so we have double class names
+
+.empty-model, .main-content-message {
+  // below drop-zone
+  z-index: 99;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding: 20px;
+
+  .empty-model-container, .main-content-message-container {
+    padding-top: 40px;
+
+    .empty-model-image, .main-content-message-image {
+      width: 100%;
+      height: 128px;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+
+    .empty-model-message, .main-content-message-text {
+      position: relative;
+      width: 100%;
+      margin-top: 20px;
+      font-size: 32px;
+      text-align: center;
+
+      &.secondary {
+        position: relative;
+        margin-top: 10px;
+        font-size: 24px;
+      }
+    }
+  }
+}
+
+
+.inline-button {
+  position: relative;
+  top: 12px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 2em;
+}
+
+
+/// New look experimental
+
+.op-panel {
+  padding: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-top-width: 6px;
+  border-top-style: solid;
+  background-color: $color-panel-background;
+
+  &.op-panel-background {
+    background-repeat: no-repeat;
+    background-position: 102% 40px;
+    padding-right: 200px;
+    background-size: 200px 200px;
+
+    // additional styles for file browser, to not trim a background gfx
+    .data-files-list {
+      min-height: 200px;
+    }
+  }
+
+  &.op-panel-azure, &.op-panel-metadata {
+    border-color: $color-panel-azure;
+    &.op-panel-background {
+      background-image: url(/assets/images/panels/metadata.svg);
+    }
+  }
+
+  &.op-panel-red, &.op-panel-files {
+    border-color: $color-panel-red;
+    &.op-panel-background {
+      background-image: url(/assets/images/panels/files.svg);
+    }
+  }
+
+  &.op-panel-green {
+    border-color: $color-panel-green;
+  }
+
+  &.op-panel-graphite {
+    border-color: $color-panel-graphite;
+  }
+}

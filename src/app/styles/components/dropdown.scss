@@ -107,12 +107,12 @@ $dropdown-bg: #2B3037;
   }
 
   &.dropdown-menu-settings {
-    width: 200px;
+    width: 220px;
     border-radius: 0px !important;
 
     li {
       color: white;
-      padding: 4px;
+      padding: 4px 6px;
       border-radius: 0px !important;
 
       .item-icon {
@@ -122,6 +122,12 @@ $dropdown-bg: #2B3037;
       .item-label {
         font-size: 9pt !important;
         text-transform: uppercase;
+      }
+
+      &.menu-group-name {
+        margin: 10px 0 5px 0;
+        color: rgba(255,255,255,0.75);
+        pointer-events: none;
       }
     }
   }

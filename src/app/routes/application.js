@@ -2,33 +2,54 @@
  * A main route, setting up whole application.
  * @module routes/spaces
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
 import Ember from 'ember';
+import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
 
-export default Ember.Route.extend({
-  mainMenuService: Ember.inject.service('main-menu'),
-  session: Ember.inject.service('session'),
-
-  activate() {
-    console.debug('app activate');
+const {
+  inject: {
+    service
   },
+  on
+} = Ember;
+
+export default Ember.Route.extend(ApplicationRouteMixin, {
+  session: service(),
 
   actions: {
     goToItem(name) {
-      this.transitionTo(`${name}.index`);
+      this.transitionTo(`onedata.${name}.index`);
+    },
+
+    transitionTo() {
+      this.transitionTo(...arguments);
     }
   },
 
-  initSession: function () {
-    // @todo This returns a promise. We should display a loading page here
-    // and transition to proper page on promise resolve.
-    this.get('session').initSession(false).then(
-      () => {
-        console.log('initSession resolved');
-      }
-    );
-  }.on('init')
+  initSession: on('init', function() {
+    let {
+      session
+    } = this.getProperties('session');
+
+    let sessionInitialization = session.initSession();
+
+    sessionInitialization.then(() => {
+      console.debug('route:application: initSession resolved');
+    });
+    // TODO: translations
+    sessionInitialization.catch(() => {
+      console.debug('route:application: initSession rejected');
+      this.get('messageBox').open({
+        type: 'error',
+        allowClose: false,
+        title: 'Session initialization error',
+        message: 'Fatal error: session cannot be initialized'
+      });
+    });
+
+    return sessionInitialization;
+  }),
 });

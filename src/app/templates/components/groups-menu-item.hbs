@@ -1,0 +1,22 @@
+<div class="secondary-sidebar-item first-level">
+  <span class="item-element item-click-area"
+    {{action (unless isExpanded 'expand' (action (mut undefProp)))}}>
+    <span class="item-element item-icon">
+      {{one-icon icon='groups' class='color-space'}}
+    </span>
+
+    <span class="item-element item-label" title="{{group.name}}">
+      <div class="truncate truncate-secondary-sidebar-select">
+        {{group.name}}
+      </div>
+    </span>
+
+  </span>
+
+  {{group-settings-drop group=group openSettingsModal='openSettingsModal'}}
+
+</div>
+
+{{#if isExpanded}}
+  {{groups-submenu group=group openSubmenuEntry="openSubmenuEntry"}}
+{{/if}}

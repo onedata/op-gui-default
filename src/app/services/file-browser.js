@@ -1,5 +1,9 @@
 import Ember from 'ember';
 
+const {
+  inject
+} = Ember;
+
 /**
  * A global state and set of actions for file browser elements rendered in various
  * routes: data-files-list, data-files-list-toolbar.
@@ -13,14 +17,22 @@ import Ember from 'ember';
  */
 
 export default Ember.Service.extend({
-  store: Ember.inject.service('store'),
-  errorNotifier: Ember.inject.service('error-notifier'),
-  fileSystemTree: Ember.inject.service('file-system-tree'),
+  fileSystemTree: inject.service(),
+  eventsBus: inject.service(),
+
+  invalidRootDir: false,
 
   /**
    * Current dir opened in file browser.
    */
   dir: null,
+
+  init() {
+    this._super(...arguments);
+    this.get('eventsBus').on('dataFilesList:dirChanged', ({ dir }) => {
+      this.set('dir', dir);
+    });
+  },
 
   // TODO: multiple select only with ctrl
   selectFile(file) {

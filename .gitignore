@@ -49,8 +49,23 @@ crashlytics-build.properties
 # Created by .ignore support plugin (hsz.mobi)
 
 # docker image artefact
-dockerimage.report.txt
-dockerimage.sha
+docker-build-list.json
+docker-build-report.txt
 
 # compiled app
 rel
+
+# test results
+src/tests/test-results.xml
+
+# OSX
+.DS_Store
+
+# Visual Studio Code
+.vscodeignore
+.vscode/
+jsconfig.json
+typings/
+
+# ES Lint (currently we force developers to use only JSHint)
+.eslintrc.js

@@ -1,0 +1,20 @@
+{{page-title (t 'groups.show.members.title')}}
+
+{{#if canViewPermissions}}
+  {{permissions-table subjectType="group" subject=subject
+    usersPermissions=usersPermissions
+    groupsPermissions=groupsPermissions
+    isLoadingList=isLoadingList
+    isListRejected=isListRejected}}
+{{else}}
+  {{#one-icon tagName="div" icon="group" class="content-error-icon"}}
+    {{#one-overlay fog=false}}
+      {{one-icon tagName="div" icon="ban-left-thin" class="content-error-icon icon-overlay ban"}}
+    {{/one-overlay}}
+  {{/one-icon}}
+  <div class="inner-content content-error">
+    {{t "common.noPrivileges"
+      privileges=(t "groups.show.viewPrivileges")
+    }}
+  </div>
+{{/if}}

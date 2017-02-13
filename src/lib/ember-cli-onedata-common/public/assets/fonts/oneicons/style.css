@@ -1,0 +1,288 @@
+@font-face {
+  font-family: 'oneicons';
+  src:  url('fonts/oneicons.eot?1x45va');
+  src:  url('fonts/oneicons.eot?1x45va#iefix') format('embedded-opentype'),
+    url('fonts/oneicons.ttf?1x45va') format('truetype'),
+    url('fonts/oneicons.woff?1x45va') format('woff'),
+    url('fonts/oneicons.svg?1x45va#oneicons') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="oneicon-"], [class*=" oneicon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'oneicons' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.oneicon-clipboard-copy:before {
+  content: "\e956";
+}
+.oneicon-ban-left-thin:before {
+  content: "\e955";
+}
+.oneicon-add-filled:before {
+  content: "\e900";
+}
+.oneicon-add:before {
+  content: "\e901";
+}
+.oneicon-arrow-down:before {
+  content: "\e902";
+}
+.oneicon-arrow-right:before {
+  content: "\e903";
+}
+.oneicon-arrow-up:before {
+  content: "\e904";
+}
+.oneicon-ban-left:before {
+  content: "\e905";
+}
+.oneicon-checkbox-check:before {
+  content: "\e906";
+}
+.oneicon-checkbox-empty:before {
+  content: "\e907";
+}
+.oneicon-checkbox-filled:before {
+  content: "\e908";
+}
+.oneicon-checkbox-option:before {
+  content: "\e909";
+}
+.oneicon-checkbox-x:before {
+  content: "\e90a";
+}
+.oneicon-checkbox:before {
+  content: "\e90b";
+}
+.oneicon-close:before {
+  content: "\e90c";
+}
+.oneicon-collection-create:before {
+  content: "\e90d";
+}
+.oneicon-copy:before {
+  content: "\e90e";
+}
+.oneicon-cut:before {
+  content: "\e90f";
+}
+.oneicon-file:before {
+  content: "\e910";
+}
+.oneicon-folder-new:before {
+  content: "\e911";
+}
+.oneicon-folder-open:before {
+  content: "\e912";
+}
+.oneicon-folder-share:before {
+  content: "\e913";
+}
+.oneicon-folder:before {
+  content: "\e914";
+}
+.oneicon-group-add:before {
+  content: "\e915";
+}
+.oneicon-group-invite:before {
+  content: "\e916";
+}
+.oneicon-group-leave-group:before {
+  content: "\e917";
+}
+.oneicon-group:before {
+  content: "\e918";
+}
+.oneicon-groups:before {
+  content: "\e919";
+}
+.oneicon-home-outline:before {
+  content: "\e91a";
+}
+.oneicon-home:before {
+  content: "\e91b";
+}
+.oneicon-inbox:before {
+  content: "\e91c";
+}
+.oneicon-join:before {
+  content: "\e91d";
+}
+.oneicon-key:before {
+  content: "\e91e";
+}
+.oneicon-leave-space:before {
+  content: "\e91f";
+}
+.oneicon-lock:before {
+  content: "\e920";
+}
+.oneicon-menu-collection:before {
+  content: "\e921";
+}
+.oneicon-menu-data:before {
+  content: "\e922";
+}
+.oneicon-menu-groups:before {
+  content: "\e923";
+}
+.oneicon-menu-links:before {
+  content: "\e924";
+}
+.oneicon-menu-providers:before {
+  content: "\e925";
+}
+.oneicon-menu-recent:before {
+  content: "\e926";
+}
+.oneicon-menu-shared:before {
+  content: "\e927";
+}
+.oneicon-menu-token:before {
+  content: "\e928";
+}
+.oneicon-menu-trash:before {
+  content: "\e929";
+}
+.oneicon-metadata:before {
+  content: "\e92a";
+}
+.oneicon-move-down:before {
+  content: "\e92b";
+}
+.oneicon-move-up:before {
+  content: "\e92c";
+}
+.oneicon-password-change:before {
+  content: "\e92d";
+}
+.oneicon-provider-add:before {
+  content: "\e92e";
+}
+.oneicon-provider-default:before {
+  content: "\e92f";
+}
+.oneicon-provider-home:before {
+  content: "\e930";
+}
+.oneicon-provider:before {
+  content: "\e931";
+}
+.oneicon-providers-outline:before {
+  content: "\e932";
+}
+.oneicon-remove:before {
+  content: "\e933";
+}
+.oneicon-rename:before {
+  content: "\e934";
+}
+.oneicon-search:before {
+  content: "\e935";
+}
+.oneicon-settings:before {
+  content: "\e936";
+}
+.oneicon-share-collection:before {
+  content: "\e937";
+}
+.oneicon-share:before {
+  content: "\e938";
+}
+.oneicon-sign-error:before {
+  content: "\e939";
+}
+.oneicon-sign-info:before {
+  content: "\e93a";
+}
+.oneicon-sign-question:before {
+  content: "\e93b";
+}
+.oneicon-sign-warning:before {
+  content: "\e93c";
+}
+.oneicon-social-dropbox:before {
+  content: "\e93d";
+}
+.oneicon-social-egi:before {
+  content: "\e93e";
+}
+.oneicon-social-facebook:before {
+  content: "\e93f";
+}
+.oneicon-social-github:before {
+  content: "\e940";
+}
+.oneicon-social-google:before {
+  content: "\e941";
+}
+.oneicon-social-indigo:before {
+  content: "\e942";
+}
+.oneicon-social-plgrid:before {
+  content: "\e943";
+}
+.oneicon-space-add:before {
+  content: "\e944";
+}
+.oneicon-space-default:before {
+  content: "\e945";
+}
+.oneicon-space-empty:before {
+  content: "\e946";
+}
+.oneicon-space-error:before {
+  content: "\e947";
+}
+.oneicon-space-home:before {
+  content: "\e948";
+}
+.oneicon-space-join:before {
+  content: "\e949";
+}
+.oneicon-space-reload:before {
+  content: "\e94a";
+}
+.oneicon-space:before {
+  content: "\e94b";
+}
+.oneicon-star-empty:before {
+  content: "\e94c";
+}
+.oneicon-star:before {
+  content: "\e94d";
+}
+.oneicon-support:before {
+  content: "\e94e";
+}
+.oneicon-upload:before {
+  content: "\e94f";
+}
+.oneicon-user-add:before {
+  content: "\e950";
+}
+.oneicon-user-profile:before {
+  content: "\e951";
+}
+.oneicon-user:before {
+  content: "\e952";
+}
+.oneicon-view-grid:before {
+  content: "\e953";
+}
+.oneicon-view-list:before {
+  content: "\e954";
+}
+

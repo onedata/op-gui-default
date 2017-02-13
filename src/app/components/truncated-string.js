@@ -1,1 +1,0 @@
-../../../gui/common_assets/js/components/truncated-string.js

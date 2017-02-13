@@ -4,7 +4,7 @@ $min-width-mobile: 300px;
 $max-width-mobile: 760px;
 
 $min-width-tablet: $max-width-mobile + 1;
-$max-width-tablet: 1220px;
+$max-width-tablet: 1260px;
 
 $min-width-desktop-small: $max-width-tablet + 1;
 $max-width-desktop-small: 1356px;
@@ -32,6 +32,17 @@ $secondary-sidebar-item-height: 60px;
   #{$name}: #{$argument};
 }
 
+@mixin linear-gradient($top, $bottom){
+    background: $top; /* Old browsers */
+    background: -moz-linear-gradient(top,  $top 0%, $bottom 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,$top), color-stop(100%,$bottom)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  $top 0%,$bottom 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  $top 0%,$bottom 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  $top 0%,$bottom 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  $top 0%,$bottom 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+}
+
 /// Bootstrap
 
 // Bootstrap variables
@@ -50,6 +61,7 @@ $screen-lg-min: $min-width-desktop-medium;
   margin-right: 0px;
 }
 
+@import 'colors-common';
 @import 'onedata-common';
 
 @import 'colors';
@@ -63,6 +75,7 @@ $screen-lg-min: $min-width-desktop-medium;
     @import 'components/one-table-common';
     @import 'components/one-table-desktop';
     @import 'components/dropdown';
+    @import 'components/common-loader-op';
 }
 
 @media screen
@@ -75,6 +88,7 @@ $screen-lg-min: $min-width-desktop-medium;
     @import 'components/one-table-common';
     @import 'components/one-table-desktop';
     @import 'components/dropdown';
+    @import 'components/common-loader-op';
 }
 
 @media screen
@@ -87,6 +101,7 @@ $screen-lg-min: $min-width-desktop-medium;
     @import 'components/one-table-common';
     @import 'components/one-table-desktop';
     @import 'components/dropdown';
+    @import 'components/common-loader-op';
 }
 
 @media screen
@@ -113,10 +128,27 @@ $screen-lg-min: $min-width-desktop-medium;
     @import 'components/dropdown';
 }
 
+// original stylesheet for ember-power-select
+@import "ember-power-select";
+
+// OP components
 @import 'components/modal';
 @import 'components/button';
 @import 'components/notify';
 @import 'components/file-upload';
 @import 'components/permissions-table';
-@import 'components/spin-button-base';
+@import 'components/modal-types';
+@import 'components/file-permissions';
+@import 'components/metadata-panel';
+@import 'components/share-info-head';
+@import 'components/file-breadcrumbs';
+@import "components/ember-power-select";
+
+// onedata-common components
+@import 'components/button-common';
 @import 'components/common-loader';
+@import 'components/message-box-modal';
+@import 'components/one-option-button';
+@import 'components/one-overlay';
+@import 'components/select2';
+@import 'components/spin-button-base';

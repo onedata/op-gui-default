@@ -1,3 +1,5 @@
+{{!-- NOTE: this file has vary high code redundancy, because the permissions view will be rewritten completely --}}
+
 {{!-- Users permissions table for single Space --}}
 <div class="row row-permissions-buttons hidden-xs hidden-sm">
   {{!-- NOTE: currently these buttons are copied in bottom of this file --}}
@@ -18,37 +20,176 @@
   {{/spin-button-onedata}}
 </div>
 
-<div class="one-table normal {{if isLocked 'is-loading'}}">
-  <div class="one-thead">
-    <div class="one-th one-first">
-      <div class="cell-body">
-        <div class="item-element item-label">{{title}}</div>
-        <div class="item-element item-icon item-tool" {{action 'invite'}}>
-          <figure class="icon">
-            {{icon inviteButton}}
-            <figcaption>{{t 'components.permissionsTable.inviteButton' type=typeSingular}}</figcaption>
-          </figure>
-        </div>
+<table class="one-table normal permissions">
+  {{#if isListRejected}}
+    <tbody class="one-tbody">
+      <tr class="one-tr">
+        <td class="one-td info-cell" colspan="42">
+          Currently some of permissions list cannot be loaded. Please try again later.
+        </td>
+      </tr>
+    </tbody>
+  {{/if}}
+
+  {{#if isLoading}}
+    {{#one-overlay fog=true}}
+      <div class="spinner-container spinner-centered spinner-middle overlay-fog">
+        {{spin-spinner scale=0.8 lines=12 length=20 width=10}}
       </div>
-    </div>
-    <div class="one-th">{{t 'components.permissionsTable.viewSpace'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.modifySpace'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.removeSpace'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.inviteUser'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.removeUser'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.inviteGroup'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.removeGroup'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.inviteProvider'}}</div>
-    <div class="one-th">{{t 'components.permissionsTable.removeProvider'}}</div>
-  </div>
-  <div class="one-tbody">
-    {{#each permissionsSorted as |perm|}}
-      {{permissions-table-row permissions=perm isActive=(eq activePermissions.id perm.id)
-        activatePermissions="activatePermissions" togglePermission="togglePermission"}}
-    {{/each}}
-  </div>
-</div>
+    {{/one-overlay}}
+  {{/if}}
+
+  {{#if showUsersPermissions}}
+
+    <thead class="one-thead">
+      <th class="one-th one-first">
+        <div class="cell-body">
+          <div class="item-element item-label">
+            {{t 'components.permissionsTable.tableTitle.users'}}
+          </div>
+          <div class="item-element item-icon item-tool"
+            {{action (if (eq subjectType 'space') 'inviteUserToSpace' 'inviteUserToGroup')}}>
+            <figure class="icon">
+              {{one-icon icon='user-add'}}
+              <figcaption>{{t 'components.permissionsTable.inviteButton.user'}}</figcaption>
+            </figure>
+          </div>
+        </div>
+      </th>
+      {{#if (eq subjectType "space")}}
+        <th class="one-th">{{t 'components.permissionsTable.viewSpace'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.writeFiles'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.manageShares'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.modifySpace'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.removeSpace'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.inviteUser'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.removeUser'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.inviteGroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.removeGroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.inviteProvider'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.removeProvider'}}</th>
+      {{/if}}
+      {{#if (eq subjectType "group")}}
+        <th class="one-th">{{t 'components.permissionsTable.viewGroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.modifyGroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.removeGroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.inviteUser'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.removeUser'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.inviteGroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.removeSubgroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.joinGroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.createSpace'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.joinSpace'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.leaveSpace'}}</th>
+      {{/if}}
+    </thead>
+
+    <tbody class="one-tbody">
+      {{#if emptyUsersPermissions}}
+
+        <tr class="one-tr">
+          {{!-- A magic number to colspan all columns :) --}}
+          <td class="one-td info-cell" colspan="42">
+            {{#if isLoading}}
+              Loading...
+            {{else}}
+              {{t (concat 'components.permissionsTable.noUsers.' subjectType)}}
+            {{/if}}
+          </td>
+        </tr>
+
+      {{else}}
+        
+        {{#each usersPermissionsSorted as |perm|}}
+          {{permissions-table-row type='users' subjectType=subjectType
+            permissions=perm isActive=(eq activePermissions.id perm.id)
+            activatePermissions="activatePermissions" togglePermission="togglePermission"}}
+        {{/each}}
+
+      {{/if}}
+    </tbody>
+
+  {{/if}}
+
+  {{#if showGroupsPermissions}}
+
+    <thead class="one-thead">
+      <th class="one-th one-first">
+        <div class="cell-body">
+          <div class="item-element item-label">
+            {{t 'components.permissionsTable.tableTitle.groups'}}
+          </div>
+          <div class="item-element item-icon item-tool"
+            {{action (if (eq subjectType 'space') 'inviteGroupToSpace' 'inviteGroupToGroup')}}>
+            <figure class="icon">
+              {{one-icon icon='group-invite'}}
+              <figcaption>{{t 'components.permissionsTable.inviteButton.group'}}</figcaption>
+            </figure>
+          </div>
+        </div>
+      </th>
+      {{#if (eq subjectType "space")}}
+        <th class="one-th">{{t 'components.permissionsTable.viewSpace'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.writeFiles'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.manageShares'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.modifySpace'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.removeSpace'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.inviteUser'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.removeUser'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.inviteGroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.removeGroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.inviteProvider'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.removeProvider'}}</th>
+      {{/if}}
+      {{#if (eq subjectType "group")}}
+        <th class="one-th">{{t 'components.permissionsTable.viewGroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.modifyGroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.setPrivileges'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.removeGroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.inviteUser'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.removeUser'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.inviteGroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.removeSubgroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.joinGroup'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.createSpace'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.joinSpace'}}</th>
+        <th class="one-th">{{t 'components.permissionsTable.leaveSpace'}}</th>
+      {{/if}}
+    </thead>
+
+    <tbody class="one-tbody">
+      {{#if emptyGroupsPermissions}}
+      
+        <tr class="one-tr">
+          {{!-- A magic number to colspan all columns :) --}}
+          <td class="one-td info-cell" colspan="42">
+            {{#if isLoading}}
+              Loading...
+            {{else}}
+              {{t (concat 'components.permissionsTable.noGroups.' subjectType)}}
+            {{/if}}
+          </td>
+        </tr>
+      
+      
+      {{else}}
+
+        {{#each groupsPermissionsSorted as |perm|}}
+          {{permissions-table-row type='groups' subjectType=subjectType
+            permissions=perm isActive=(eq activePermissions.id perm.id)
+            activatePermissions="activatePermissions" togglePermission="togglePermission"
+            availableGroups=availableGroups}}
+        {{/each}}
+
+      {{/if}}
+    </tbody>
+
+  {{/if}}
+
+</table>
 
 <div class="row row-permissions-buttons hidden-md hidden-lg">
   {{#spin-button-onedata

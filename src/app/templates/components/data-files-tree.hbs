@@ -1,10 +1,10 @@
 <ul>
   <li>
     <div id="tree-dir-{{rootDir.id}}"
-      class="secondary-sidebar-item root-item dir-item single-selectable onedata-red">
+      class="secondary-sidebar-item root-item dir-item single-selectable onedata-red {{if (eq rootDir.id fileBrowser.dir.id) 'active' ''}}">
       <div class="item-element item-click-area" {{action 'openDirInBrowser' rootDir}}>
         <span class="item-element item-icon">
-          {{icon "folder-open" "color-directory"}}
+          {{one-icon icon="folder-open" class="color-directory"}}
         </span>
         <span class="item-element item-label">
           {{t 'components.dataFilesTree.rootDirectory'}}
@@ -13,7 +13,8 @@
     </div>
   </li>
   <li>
-    {{data-files-tree-node rootDir=rootDir openDirInBrowser='openDirInBrowser'
-      level=1}}
+    {{!-- level == 2 because first level is root --}}
+    {{data-files-tree-list rootDir=rootDir openDirInBrowser='openDirInBrowser'
+      level=2}}
   </li>
 </ul>

@@ -7,8 +7,8 @@
 */
 
 import Ember from 'ember';
-import Resolver from 'ember/resolver';
-import loadInitializers from 'ember/load-initializers';
+import Resolver from 'ember-resolver';
+import loadInitializers from 'ember-load-initializers';
 import config from './config/environment';
 
 let App;
@@ -31,7 +31,7 @@ if (config.environment === 'development') {
   script.src = location.protocol + '//' + (location.host || 'localhost').split(':')[0] +
     ':35729/livereload.js?snipver=1';
   head.appendChild(script);
-  console.log("Loaded livereload script");
+  console.debug("Loaded livereload script");
 }
 
 export default App;

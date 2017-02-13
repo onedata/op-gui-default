@@ -1,0 +1,34 @@
+/// common-loader styles specific for OP
+
+.common-loader {
+  &.loader-area-app {
+    left: 0;
+    top: 0;
+  }
+
+  &.loader-area-main-content {
+    left: $sidebar-width;
+    top: $top-bar-height;
+  }
+
+  &.loader-area-secondary-sidebar {
+    left: $sidebar-width;
+    width: $secondary-sidebar-width;
+    top: $top-bar-height;
+  }
+
+  &.loader-area-content {
+    left: $sidebar-width + $secondary-sidebar-width;
+    top: $top-bar-height;
+  }
+
+  &.loader-area-content-with-secondary-top {
+    left: $sidebar-width + $secondary-sidebar-width;
+    top: $top-bar-height + $secondary-top-bar-height;
+  }
+
+  &.loader-area-public-content {
+    left: 0;
+    top: $public-top-height;
+  }
+}

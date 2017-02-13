@@ -1,0 +1,20 @@
+{{#bs-modal open=open body=false footer=false
+    title=title
+    id='message-box'
+    closedAction='closed'
+    keyboard=allowClose
+    autoClose=allowClose
+    backdropClose=allowClose
+    closeButton=false
+  }}
+  {{#bs-modal-body}}
+    {{status-panel blocking=true type=type message=message}}
+  {{/bs-modal-body}}
+  {{#if allowClose}}
+    {{#bs-modal-footer as |footer|}}
+      {{#bs-button action=(action "close" target=footer) type="primary"}}
+        {{t "common.modal.ok"}}
+      {{/bs-button}}
+    {{/bs-modal-footer}}
+  {{/if}}
+{{/bs-modal}}

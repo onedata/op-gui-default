@@ -1,47 +1,82 @@
 import Ember from 'ember';
 
+const {
+  run,
+  inject,
+  computed
+} = Ember;
+
 /**
- * Container for data-files-tree-nodes.
+ * Container for data-files-tree-list(s).
  *
  * Sends actions:
- * - openDirInBrowser(fileId) - open dir for browsing
+ * - openDirInBrowser(file) - open dir for browsing
  * @module components/data-files-tree
  * @author Jakub Liput
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
-  fileSystemTreeService: Ember.inject.service('fileSystemTree'),
+  fileBrowser: inject.service(),
+  fileSystemTreeService: inject.service('fileSystemTree'),
+  eventsBus: inject.service(),
 
   classNames: ['data-files-tree'],
 
   /**
-    Reference to File - root of the filesystem showed in tree.
-    Note, that only chilren of this File will be showed in tree (root will be hidden).
-  */
+   * Reference to File - root of the filesystem showed in tree.
+   * @type File
+   */
   rootDir: null,
 
-  /*** Bind with main-menu service, TODO: use mixin or something? ***/
-  SERVICE_API: ['setRootDir'],
+  didInsertElement() {
+    this._super(...arguments);
+    this.bindResizeHandler();
+  },
 
-  /** Listen on mainMenuService's events */
-  listen: function() {
-    let fileSystemTreeService = this.get('fileSystemTreeService');
-    this.SERVICE_API.forEach(name => fileSystemTreeService.on(name, this, name));
-  }.on('init'),
+  willDestroyElement() {
+    $(window).off('resize', this.get('updateResizeHandlerPositionFun'));
+  },
 
-  /** Deregister event listener from main-menu service */
-  cleanup: function() {
-    let fileSystemTreeService = this.get('fileSystemTreeService');
-    this.SERVICE_API.forEach(name => fileSystemTreeService.off(name, this, name));
-  }.on('willDestroyElement'),
+  updateResizeHandlerPositionFun: computed(function() {
+    const $resizeHandler = $('#data-sidebar-resize-handler');
+    const $secondarySidebar = $('.secondary-sidebar');
+    return function() {
+      $resizeHandler.css('left', $secondarySidebar.width() - $resizeHandler.width()/2);
+    };
+  }),
 
-  /*** Service API ***/
+  /**
+   * Enables "resize handler" - a invisible separator, that allows to change
+   * width of secondary-sidebar.
+   */
+  bindResizeHandler() {
+    run.scheduleOnce('afterRender', this, function() {
+      const handleSelector = '#data-sidebar-resize-handler';
+      const $resizeHandler = $(handleSelector);
+      // resize handler is positioned absolutely to main-content
+      this.get('updateResizeHandlerPositionFun')();
+      const self = this;
+      $('.secondary-sidebar').resizable({
+        handleSelector: handleSelector,
+        resizeHeight: false,
+        onDrag(e, $el, newWidth/*, newHeight, opt*/) {
+          $resizeHandler.css('left', newWidth - $resizeHandler.width()/2);
+          self.get('eventsBus').trigger('secondarySidebar:resized');
+        },
+        onDragEnd(/*e, $el, opt*/) {
+          self.get('updateResizeHandlerPositionFun')();
+          self.get('eventsBus').trigger('secondarySidebar:resized');
+        },
+      });
+      $(window).on('resize', this.get('updateResizeHandlerPositionFun'));
+    });
+  },
 
   actions: {
     /** Typically invoked by actions passed up from tree nodes */
-    openDirInBrowser(fileId) {
-      this.sendAction('openDirInBrowser', fileId);
+    openDirInBrowser(file) {
+      this.sendAction('openDirInBrowser', file);
     }
   }
 });

@@ -84,7 +84,7 @@ export default Ember.Mixin.create({
 
   modificationMoment: computed('modificationTime', function () {
     let timestamp = this.get('modificationTime');
-    return timestamp ? moment(timestamp * 1000).format('YYYY-MM-DD HH:MM') : '-';
+    return timestamp ? moment(timestamp * 1000).format('YYYY-MM-DD HH:mm') : '-';
   }),
 
   permissionsHumanReadable: computed('permissions', function () {

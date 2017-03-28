@@ -4,6 +4,13 @@
 CHANGELOG
 ---------
 
+### 3.0.0-rc13
+
+* VFS-3126 Fixing share info modal infinite loader
+* HOTFIX Fixing date display in file modification date
+* VFS-3004 Upgrading Ember to 2.11; upgrading dependencies
+
+
 ### 3.0.0-rc12
 
 * VFS-2968 Fixing hanging "Waiting for Onezone session" message

@@ -2,7 +2,7 @@
 {{page-title (t 'data.dataSpace.dir.title')}}
 
 {{modals/share-info open=isShowingShareInfo
-    share=(and isShowingShareInfo (or share fileShareFile.share))
+    share=(if isShowingShareInfo share null)
     transitionTo="transitionTo"
   }}
 

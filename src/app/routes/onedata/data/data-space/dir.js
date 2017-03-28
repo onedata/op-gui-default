@@ -98,33 +98,17 @@ export default Ember.Route.extend(RouteRejectHandler, {
      *
      * @param {File} file
      */
-    openFileShareModal(file, resolveAction) {
-      const p = file.get('share').then(
-        (share) => {
-          if (share) {
-            // we already got a Share, show info
-            this.controller.set('isShowingShareInfo', true);
-          } else {
-            // we do not have a Share - open create modal
-            this.controller.set('isCreatingShare', true);
-          }
-          if (resolveAction) {
-            resolveAction();
-          }
-        },
-        () => {
-          this.controller.set('isCreatingShare', true);
-          if (resolveAction) {
-            resolveAction();
-          }
-        }
-      );
-
-      p.finally(() => {
-        this.controller.setProperties({
-          fileShareFile: file,
-          share: null,
-        });
+    openFileShareModal(file) {
+      if (file.get('hasShare')) {
+        // we already got a Share, show info
+        this.controller.set('isShowingShareInfo', true);
+      } else {
+        // we do not have a Share - open create modal
+        this.controller.set('isCreatingShare', true);
+      }
+      this.controller.setProperties({
+        fileShareFile: file,
+        share: file.get('share'),
       });
     },
 

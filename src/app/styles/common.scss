@@ -146,7 +146,7 @@ html, body {
               line-height: inherit;
               color: #000;
             }
-
+            
             .provider-name {
               display: block;
               float: left;
@@ -830,5 +830,26 @@ html, body {
 
   &.op-panel-graphite {
     border-color: $color-panel-graphite;
+  }
+}
+
+.about-info-list {
+  list-style: none;
+  padding-left: 0;
+  li {
+    line-height: 150%;
+    .one-label {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .about-label {
+      font-weight: bold;
+    }
+    .about-info {
+      margin-left: 4px;
+    }
+    .about-info.truncate {
+      max-width: 280px;
+    }
   }
 }

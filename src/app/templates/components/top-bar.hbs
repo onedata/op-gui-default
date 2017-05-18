@@ -15,6 +15,11 @@
           <div class="provider-name truncate">
             {{session.sessionDetails.providerName}}
           </div>
+          {{#if session.sessionDetails.serviceVersion}}
+            <div class="provider-version truncate">
+              version {{session.sessionDetails.serviceVersion}}
+            </div>
+          {{/if}}
         </div>
       {{/link-to}}
     </div>

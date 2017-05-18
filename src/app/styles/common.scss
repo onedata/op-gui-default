@@ -146,13 +146,24 @@ html, body {
               line-height: inherit;
               color: #000;
             }
+            
+            $provider-version-width: 200px;
 
             .provider-name {
               display: block;
               float: left;
-              max-width: $provider-name-conainer-width;
+              max-width: $provider-name-conainer-width - $provider-version-width;
               line-height: inherit;
               margin-left: 4px;
+            }
+            
+            .provider-version {
+              display: block;
+              float: left;
+              max-width: $provider-version-width;
+              line-height: inherit;
+              margin-left: 10px;
+              color: rgba(black, .5);
             }
           }
         }

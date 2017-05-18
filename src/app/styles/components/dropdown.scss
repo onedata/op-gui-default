@@ -12,6 +12,14 @@ $dropdown-bg: #2B3037;
 
   // TODO: use scss mixins to triangle arrow
 
+  .dropdown-menu-separator {
+    border-top: 1px solid rgba(0,0,0,0.3);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-top: 3px;
+    margin-bottom: 3px;
+    pointer-events: none;
+  }
+
   &.dropdown-menu-down {
     min-width: 150px;
 

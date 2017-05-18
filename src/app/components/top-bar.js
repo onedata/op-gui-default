@@ -16,5 +16,13 @@ export default Ember.Component.extend({
   /** Session is needed for account dropdown */
   session: inject.service(),
 
-  userName: computed.alias('session.user.name')
+  aboutOpened: false,
+
+  userName: computed.alias('session.user.name'),
+  
+  actions: {
+    showAbout() {
+      this.set('aboutOpened', true);
+    },
+  },
 });

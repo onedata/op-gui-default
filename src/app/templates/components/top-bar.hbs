@@ -36,6 +36,8 @@
           <ul class="dropdown-menu dropdown-menu-down expand-left dropdown-menu-list">
             <li><a href="{{session.sessionDetails.manageProvidersURL}}">{{t 'components.topBar.manageProviders'}}</a></li>
             <li><a href="/logout.html">{{t 'components.topBar.logout'}}</a></li>
+            <li class="dropdown-menu-separator"></li>
+            <li><a href="javascript(0);" {{action (action "showAbout")}}>{{t 'components.topBar.about'}}</a></li>
           </ul>
         </li>
       </ul>
@@ -43,3 +45,5 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
+
+{{modals/about-modal open=aboutOpened}}

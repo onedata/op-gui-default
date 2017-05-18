@@ -74,6 +74,7 @@ export default {
     topBar: {
       logout: 'Log out',
       manageProviders: 'Manage account',
+      about: 'About this provider',
     },
     mainMenu: {
       data: 'data',
@@ -87,6 +88,12 @@ export default {
       providers: 'providers'
     },
     modals: {
+      aboutModal: {
+        title: 'About this provider',
+        providerName: 'Provider name:',
+        serviceVersion: 'Service version:',
+        registeredIn: 'Registered in Zone:',
+      },
       renameModal: {
         renameSuccess: 'Element "{{oldName}}" renamed to "{{newName}}"',
         renameFailed: 'Element "{{oldName}}" rename to "{{newName}}" failed due to an error',

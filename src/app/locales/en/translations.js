@@ -91,7 +91,7 @@ export default {
       aboutModal: {
         title: 'About this provider',
         providerName: 'Provider name:',
-        serviceVersion: 'Service version:',
+        version: 'Version:',
         registeredIn: 'Registered in Zone:',
       },
       renameModal: {

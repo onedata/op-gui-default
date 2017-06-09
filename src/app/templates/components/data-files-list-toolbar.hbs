@@ -151,7 +151,7 @@
               {{#each fileBlocksSorted as |fb|}}
               <tr>
                 <td class="provider-name">
-                  {{#bs-tooltip tagName="div" class="truncate" title=fb.provider.name}}
+                  {{#bs-tooltip tagName="div" class="truncate" title=fb.getProvider.name}}
                     {{fb.getProvider.name}}
                   {{/bs-tooltip}}
                 </td>

@@ -4,6 +4,11 @@
 CHANGELOG
 ---------
 
+### 3.0.0-rc15
+
+* VFS-3172 Display Provider software version
+
+
 ### 3.0.0-rc13
 
 * VFS-3126 Fixing share info modal infinite loader

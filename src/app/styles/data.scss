@@ -259,6 +259,10 @@
 // file chunks
 
 .file-blocks-table {
+  th:first-of-type {
+    padding-right: 20px;
+  }
+
   canvas.file-chunks {
     // NOTE: should be synchronized with utils/file-chunks-bar.js
     width: 320px;
@@ -291,12 +295,16 @@
   }
 
   .provider-name {
-    width: 260px;
-    max-width: 260px;
-
+    padding-right: 10px;
     .truncate {
       max-width: 150px;
+      @media screen and (min-width: 1261px) {
+        max-width: 450px;
+      }
     }
+  }
+  .chunks {
+    width: 340px;
   }
 }
 

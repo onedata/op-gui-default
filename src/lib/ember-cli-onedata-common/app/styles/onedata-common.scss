@@ -134,8 +134,12 @@
   }
 }
 
+.tooltip .tooltip-inner {
+  word-wrap: break-word;
+}
+
 .fixed-center {
-  position: fixed;
+  position: fixed !important;
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
@@ -155,6 +159,15 @@
 .danger-message {
   font-weight: bold;
   color: $color-danger;
+}
+
+/// name-conflict component
+
+.conflict-label {
+  opacity: 0.75;
+}
+.conflict-at {
+  opacity: 0.5;
 }
 
 // Bootstrap extensions

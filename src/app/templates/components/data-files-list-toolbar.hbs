@@ -148,10 +148,9 @@
               {{#each fileBlocksSorted as |fb|}}
               <tr>
                 <td class="provider-name">
-                  <div class="truncate">
+                  {{#truncated-string}}
                     {{fb.getProvider.name}}
-                    {{bs-tooltip title=fb.getProvider.name}}
-                  </div>
+                  {{/truncated-string}}
                 </td>
                 <td class="chunks">
                   {{file-chunks-bar file=fileForChunks fileBlocks=fb}}

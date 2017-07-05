@@ -27,13 +27,10 @@
 {{else}}
   {{#each items as |item|}}
     <li>
-      {{#bs-tooltip id=item.id tagName='a' title=item.tooltip
-        class=(concat "top-bar-item toolbar-icon " (if item.disabled 'disabled'))
-        disabled=item.disabled
-        click=(action (if item.action item.action (action (mut undefProp))))
-        }}
-          {{one-icon icon=item.icon class='top-bar-icon'}}
-      {{/bs-tooltip}}
+      <a id={{item.id}} class="top-bar-item toolbar-icon {{if item.disabled "disabled"}}" disabled={{item.disabled}} {{action (if item.action item.action (action (mut undefProp)))}}>
+        {{one-icon icon=item.icon class='top-bar-icon'}}
+        {{bs-tooltip placement="bottom" title=item.tooltip}}
+      </a>
     </li>
   {{/each}}
 {{/if}}
@@ -151,9 +148,10 @@
               {{#each fileBlocksSorted as |fb|}}
               <tr>
                 <td class="provider-name">
-                  {{#bs-tooltip tagName="div" class="truncate" title=fb.getProvider.name}}
+                  <div class="truncate">
                     {{fb.getProvider.name}}
-                  {{/bs-tooltip}}
+                    {{bs-tooltip title=fb.getProvider.name}}
+                  </div>
                 </td>
                 <td class="chunks">
                   {{file-chunks-bar file=fileForChunks fileBlocks=fb}}

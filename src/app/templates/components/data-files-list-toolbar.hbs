@@ -67,6 +67,7 @@
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata buttonType="submit"
+      action=(if createFileName (action "submitCreateFile" "dir"))
       class="btn btn-primary no-outline" spinnerColor="#fff"
       inFlight=isCreatingFileWorking disabled=(unless createFileName true)}}
       {{t "common.modal.create"}}
@@ -90,6 +91,7 @@
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata buttonType="submit"
+      action=(if createFileName (action "submitCreateFile" "file"))
       class="btn btn-primary no-outline" spinnerColor="#fff"
       inFlight=isCreatingFileWorking disabled=(unless createFileName true)}}
       {{t "common.modal.create"}}

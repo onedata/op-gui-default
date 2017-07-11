@@ -62,6 +62,7 @@
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata buttonType="submit"
+      action=(action "submitJoinGroup")
       class="btn btn-primary no-outline" spinnerColor="#fff"
       inFlight=isJoiningGroupWorking disabled=(unless inputToken true)}}
       {{t "common.modal.join"}}
@@ -128,6 +129,7 @@
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata buttonType="submit"
+      action=(action "submitJoinAsSubgroup")
       class="btn btn-primary no-outline" spinnerColor="#fff"
       inFlight=isJoiningAsSubgroupWorking disabled=(unless inputToken true)}}
       {{t "common.modal.join"}}
@@ -149,6 +151,7 @@
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata buttonType="submit"
+      action=(action "submitJoinSpace")
       class="btn btn-primary no-outline" spinnerColor="#fff"
       inFlight=isJoiningSpaceWorking disabled=(unless inputToken true)}}
       {{t "common.modal.join"}}
@@ -177,6 +180,7 @@
   {{!-- TODO: disabled --}}
   {{#bs-modal-footer as |footer|}}
     {{#spin-button-onedata buttonType="submit"
+      action=(action "submitLeaveParentGroup")
       class="btn btn-primary no-outline" spinnerColor="#fff"
       inFlight=isLeaveParentGroupWorking disabled=false}}
       {{t "common.modal.ok"}}

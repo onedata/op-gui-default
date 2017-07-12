@@ -168,6 +168,20 @@ export default Ember.Component.extend({
   init() {
     this._super(...arguments);
     this.dirChanged();
+    this.registerUploadErrorHandler();
+  },
+
+
+  registerUploadErrorHandler() {
+    let eventsBus = this.get('eventsBus');
+    let setLastUploadFailed = function () {
+      this.set('lastUploadFailed', true);
+    };
+    eventsBus.on('fileUpload:uploadAllFailed', this, setLastUploadFailed);
+    this.on(
+      'willDestroyElement',
+      () => eventsBus.off('fileUpload:uploadAllFailed', this, setLastUploadFailed)
+    );
   },
 
   /**
@@ -543,7 +557,11 @@ export default Ember.Component.extend({
       this.getProperties('currentlyUploadingCount', '__prevCurrentlyUploadingCount');
     if (!currentlyUploadingCount && __prevCurrentlyUploadingCount) {
       console.debug(`Batch upload finished for ${this.get('dir.name')}`);
-      this.set('isWaitingForPushAfterUpload', true);
+      if (!this.get('lastUploadFailed')) {
+        this.set('isWaitingForPushAfterUpload', true);
+      } else {
+        this.set('lastUploadFailed');
+      }
     }
   }),
 

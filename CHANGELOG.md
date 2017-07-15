@@ -4,6 +4,13 @@
 CHANGELOG
 ---------
 
+### 17.06.0-beta1 - 17.06.0-beta6
+
+* VFS-3068 Fixing bug: do not stuck on finalizing file upload after all files upload failure
+* VFS-3414 Fixing modals button actions
+* VFS-3390 Improved names truncating and tooltips for long names
+
+
 ### 3.0.0-rc15
 
 * VFS-3172 Display Provider software version

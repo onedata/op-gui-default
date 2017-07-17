@@ -252,7 +252,11 @@ export default Ember.Component.extend({
     return (file) => {
       // Handle progress for both the file and the overall upload
       let ufile = this.addOrGetUploadingFile(file);
-      ufile.set('progress', file.progress());
+      if (file.size === 0) {
+        ufile.set('progress', file.isComplete() ? 1 : 0);
+      } else {
+        ufile.set('progress', file.progress());
+      }
     };
   }),
 

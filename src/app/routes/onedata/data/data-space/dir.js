@@ -39,7 +39,7 @@ export default Ember.Route.extend(RouteRejectHandler, {
       invalid = true;
     }
 
-    this.set('ivalid', true);
+    this.set('invalid', invalid);
 
     // @todo this sometimes runs too early and getSpaceIdForFile does not work
     //let loadedDirSpaceId = this.get('fileSystemTree').getSpaceIdForFile(file);

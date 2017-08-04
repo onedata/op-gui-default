@@ -86,6 +86,14 @@
     {{data-files-list-loader startRow=loadingFileIndex rowsCount=visibleFilesSorted.length}}
   </table>
 
+{{else if showNoPermissionsMessage}}
+
+  {{#route-error icon="folder"}}
+    {{t "common.noPrivileges"
+      privileges=(t 'components.dataFilesList.noViewPrivileges')
+    }}
+  {{/route-error}}
+  
 {{else if showEmptyDirMessage}}
 
   <div class="empty-model">

@@ -353,7 +353,8 @@ export default {
         metadataDeleteSuccess: 'Deleted metadata for file "{{fileName}}"',
       },
       uploadIndicator: 'Uploading: {{currentlyUploadingCount}} file(s) left...',
-      uploadFinishedWait: 'Finalizing the upload...'
+      uploadFinishedWait: 'Finalizing the upload...',
+      noViewPrivileges: 'view content of this directory',
     },
     metadataPanel: {
       saveAllChanges: 'Save all changes',

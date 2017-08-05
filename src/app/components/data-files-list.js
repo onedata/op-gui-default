@@ -406,9 +406,7 @@ export default Ember.Component.extend({
     return visibleFiles == null ? undefined : visibleFiles.get('length') === 0;
   }),
 
-  showNoPermissionsMessage: computed('dir.canViewDir', function() {
-    return this.get('dir.canViewDir') === false;
-  }),
+  showNoPermissionsMessage: computed.equal('dir.canViewDir', false),
   
   showEmptyDirMessage: computed('dirIsEmpty', 'firstLoadDone', function() {
     return this.get('dirIsEmpty') === true && this.get('firstLoadDone');

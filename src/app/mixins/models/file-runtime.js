@@ -137,11 +137,13 @@ export default Ember.Mixin.create({
 
   selectedFilesType: computed('selectedFiles.@each.type', function () {
     const sf = this.get('selectedFiles');
-    let firstType = sf.length > 0 ? sf[0].get('type') : undefined;
-    if (sf.length > 0 && sf.every(f => f.get('type') === firstType)) {
-      return firstType;
-    } else {
-      return 'mixed';
+    if (sf) {
+      let firstType = sf.length > 0 ? sf[0].get('type') : undefined;
+      if (sf.length > 0 && sf.every(f => f.get('type') === firstType)) {
+        return firstType;
+      } else {
+        return 'mixed';
+      }
     }
   }),
 

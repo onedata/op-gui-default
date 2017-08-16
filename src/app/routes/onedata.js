@@ -8,6 +8,11 @@ const {
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
   session: inject.service(),
 
+  beforeModel() {
+    // Added to remember about invoking super for AuthenticatedRouteMixin
+    this._super(...arguments);
+  },
+  
   model() {
     return this.get('session.user');
   },

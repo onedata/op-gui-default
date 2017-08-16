@@ -24,6 +24,7 @@ export default Route.extend(UnauthenticatedRouteMixin, {
   },
 
   beforeModel() {
+    this._super(...arguments);
     this.redirectIfSessionInitialized();
   },
 

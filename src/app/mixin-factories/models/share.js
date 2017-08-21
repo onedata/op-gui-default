@@ -24,6 +24,11 @@ let FILE_RELATION = {
   public: 'file-public'
 };
 
+let HANDLE_RELATION = {
+  regular: 'handle',
+  public: 'handle-public'
+};
+
 let CONTAINER_DIR_RELATION = {
   regular: 'file-shared',
   public: 'file-public'
@@ -35,6 +40,7 @@ let CONTAINER_DIR_RELATION = {
  */
 function create(type) {
   let fileRelation = FILE_RELATION[type];
+  let handleRelation = HANDLE_RELATION[type];
   let containerDirRelation = CONTAINER_DIR_RELATION[type];
 
   assert(
@@ -59,7 +65,7 @@ function create(type) {
       async: true
     }),
 
-    handle: belongsTo('handle', {
+    handle: belongsTo(handleRelation, {
       async: true
     }),
 

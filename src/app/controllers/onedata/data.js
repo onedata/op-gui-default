@@ -20,6 +20,7 @@ const {
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Controller.extend({
+  i18n: service(),
   fileBrowser: service(),
   commonLoader: service(),
 

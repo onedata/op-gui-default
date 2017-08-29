@@ -19,6 +19,7 @@ const {
   inject,
   observer,
   on,
+  get,
   computed: { readOnly },
 } = Ember;
 
@@ -364,29 +365,44 @@ export default Ember.Component.extend(PromiseLoadingMixin, ForceReloadCollection
     },
 
     submitJoinAsSubgroup() {
-      let token = this.get('inputToken') && this.get('inputToken').trim();
-      let group = this.get('modalGroup');
-      let promise = this.promiseLoading(this.get('oneproviderServer')
-        .groupJoinGroup(this.get('modalGroup.id'), token)).then(
+      let {
+        inputToken,
+        modalGroup: group,
+        oneproviderServer,
+        i18n,
+        reloadCollectionTimeout,
+        notify,
+      } = this.getProperties(
+        'inputToken',
+        'modalGroup',
+        'oneproviderServer',
+        'i18n',
+        'reloadCollectionTimeout',
+        'notify'
+      );
+      let token = inputToken && inputToken.trim();
+      let promise = this.promiseLoading(
+        oneproviderServer.groupJoinGroup(get(group, 'id'), token)
+      ).then(
           (data) => {
-            let message = this.get('i18n').t('components.groupsMenu.notify.joinAsSubgroupSuccess', {
-              thisGroupName: group.get('name'),
+            let message = i18n.t('components.groupsMenu.notify.joinAsSubgroupSuccess', {
+              thisGroupName: get(group, 'name'),
               groupName: data.groupName
             });
-            this.get('notify').info(message);
+            notify.info(message);
           },
           (error) => {
             console.log(error.message);
-            let message = this.get('i18n').t('components.groupsMenu.notify.joinAsSubgroupFailed', {
-              groupName: group.get('name'),
+            let message = i18n.t('components.groupsMenu.notify.joinAsSubgroupFailed', {
+              groupName: get(group, 'name'),
             });
             message = message + ': ' + error.message;
-            this.get('notify').error(message);
+            notify.error(message);
           }
       );
       promise.finally(() => {
         this.scheduleReloadCollection();
-        setTimeout(() => group.reload(), 750);
+        setTimeout(() => group.reload(), reloadCollectionTimeout);
         this.setProperties({
           inputToken: null,
           isJoiningAsSubgroupWorking: false,

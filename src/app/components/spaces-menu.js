@@ -10,13 +10,17 @@
 
 import Ember from 'ember';
 
+import ForceReloadCollectionMixin from 'op-worker-gui/mixins/force-reload-collection';
+
 const {
   observer,
   computed,
-  inject
+  inject,
+  on,
+  computed: { readOnly },
 } = Ember;
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(ForceReloadCollectionMixin, {
   secondaryMenu: inject.service(),
   store: inject.service(),
   notify: inject.service(),
@@ -26,12 +30,14 @@ export default Ember.Component.extend({
   session: inject.service(),
 
   spaces: null,
+  collection: readOnly('spaces'),
+  
   validSpaces: computed.filterBy('spaces', 'isLoaded', true),
   spacesSorting: ['isDefault:desc', 'name'],
   validSpacesSorted: computed.sort('validSpaces', 'spacesSorting'),
 
   activeSpace: computed.alias('secondaryMenu.activeSpace'),
-
+  
   // TODO: if in trouble, also assume, that spaces.length === 0 means that isLoading is true
   isLoading: computed('isWorking', 'spaces.@each.isLoaded', function() {
     let { spaces, isWorking } = this.getProperties('spaces', 'isWorking');
@@ -40,7 +46,7 @@ export default Ember.Component.extend({
       isWorking;
   }),
 
-  isLoadingChanged: observer('isLoading', function() {
+  isLoadingChanged: on('init', observer('isLoading', function() {
     if (this.get('isLoading')) {
       this.setProperties({
         'commonLoader.isLoading': true,
@@ -54,8 +60,8 @@ export default Ember.Component.extend({
         'commonLoader.messageSecondary': null,
       });
     }
-  }),
-
+  })),
+  
   /*** Variables for actions and modals ***/
 
   isCreatingSpace: false,
@@ -116,8 +122,6 @@ export default Ember.Component.extend({
 
     // reset spaces expanded state
     this.get('spaces').forEach((s) => s.set('isExpanded', false));
-
-    this.isLoadingChanged();
   },
 
   spaceActionMessage(notifyType, messageId, spaceName) {
@@ -200,6 +204,7 @@ export default Ember.Component.extend({
         }
       );
       serverPromise.finally(() => {
+        this.scheduleReloadCollection();
         this.set('isJoiningSpaceWorking', false);
         this.set('isJoiningSpace', false);
       });

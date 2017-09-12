@@ -43,7 +43,19 @@
                     {{/truncated-string}}
                   </td>
                   <td class="chunks">
-                    {{file-chunks-bar file=fileForChunks fileBlocks=fb}}
+                    {{#if fb.neverSynchronized}}
+                      <div class="file-chunks never-synchronized">
+                        <span>
+                          {{t "components.dataFilesListToolbar.fileChunksModal.neverSynchronized"}}
+                        </span>
+                      </div>
+                      {{bs-tooltip
+                        placement="bottom"
+                        title=(t "components.dataFilesListToolbar.fileChunksModal.neverSynchronizedHint")
+                      }}
+                    {{else}}
+                      {{file-chunks-bar file=fileForChunks fileBlocks=fb}}
+                    {{/if}}
                   </td>
                 </tr>
                 {{/each}}

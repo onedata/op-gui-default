@@ -1,0 +1,20 @@
+{{#bs-modal open=open body=false footer=false
+    title=(t "services.session.connectionClosed.title")
+    id="reconnect-websocket"
+    keyboard=false
+    autoClose=false
+    backdropClose=false
+    closeButton=false
+  }}
+  {{#bs-modal-body}}
+    {{status-panel blocking=true type=type message=message}}
+  {{/bs-modal-body}}
+  
+  {{#if (eq mode "waiting")}}
+    {{#bs-modal-footer as |footer|}}
+      {{#bs-button action=(action "reconnectNow") type="primary"}}
+        {{t "services.session.connectionClosed.reconnectNow"}}
+      {{/bs-button}}
+    {{/bs-modal-footer}}
+  {{/if}}
+{{/bs-modal}}

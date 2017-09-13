@@ -68,11 +68,11 @@ export default SessionService.extend({
     // Ask the server for session details when the WebSocket connection
     // is established
     return (/*event*/) => {
+      this.resolveSession();
       this.setProperties({
         websocketWasOpened: true,
         websocketOpen: true
       });
-      this.resolveSession();
     };
   }.property(),
 

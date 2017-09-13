@@ -32,7 +32,7 @@ export default SessionCore.extend({
   browser: Ember.inject.service(),
 
   reconnectModal: Ember.Object.create(),
-  
+    
   init() {
     this._super();
     this.setProperties({
@@ -227,6 +227,9 @@ export default SessionCore.extend({
     if (this.get('websocketOpen')) {
       this.resetReconnectionTries();
       this.set('reconnectModal', Ember.Object.create());
+      if (this.get('sessionValid') === false) {
+        window.location.reload();
+      }
     }
   }),
 });

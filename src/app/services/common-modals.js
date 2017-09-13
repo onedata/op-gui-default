@@ -18,6 +18,17 @@ export default Ember.Service.extend({
 
   openModal(type, params) {
     this.set('component.modalParams', params);
-    this.set('component.' + snakeToCamel('opened-' + type), true);
+    this.set(openedProperty(type), true);
+  },
+  
+  closeModal(type) {
+    if (this.get('component')) {
+      this.set('component.modalParams', null);
+      this.set(openedProperty(type), false);
+    }
   },
 });
+
+function openedProperty(type) {
+  return 'component.' + snakeToCamel('opened-' + type);
+}

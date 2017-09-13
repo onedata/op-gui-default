@@ -13,6 +13,10 @@
 import Ember from 'ember';
 import SessionService from 'ember-simple-auth/services/session';
 
+const {
+  computed,
+} = Ember;
+
 export default SessionService.extend({
   server: Ember.inject.service(),
   store: Ember.inject.service(),
@@ -64,17 +68,18 @@ export default SessionService.extend({
   /**
    * Returns a function that shout be bound to websocket onopen event.
    */
-  onWebSocketOpen: function() {
+  onWebSocketOpen: computed(function() {
     // Ask the server for session details when the WebSocket connection
     // is established
     return (/*event*/) => {
-      this.resolveSession();
-      this.setProperties({
-        websocketWasOpened: true,
-        websocketOpen: true
+      this.resolveSession().finally(() => {
+        this.setProperties({
+          websocketWasOpened: true,
+          websocketOpen: true
+        });
       });
     };
-  }.property(),
+  }),
 
   /**
    * Returns a function that shout be bound to websocket onerror event.
@@ -155,7 +160,7 @@ export default SessionService.extend({
     console.debug('session.resolveSession');
     // Request session data
     // TODO: no reject handling
-    this.get('server').sessionRPC().then((data) => {
+    return this.get('server').sessionRPC().then((data) => {
       console.debug("RESOLVE SESSION REQ");
       console.debug('data: ' + JSON.stringify(data));
       let isSessionValid = (data.sessionValid === true);

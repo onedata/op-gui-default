@@ -7,7 +7,7 @@
     closeButton=false
   }}
   {{#bs-modal-body}}
-    {{status-panel blocking=true type="loading" message=message}}
+    {{status-panel blocking=true type=type message=message}}
   {{/bs-modal-body}}
   
   {{#if (eq mode "waiting")}}

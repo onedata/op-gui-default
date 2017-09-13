@@ -41,8 +41,6 @@ export default SessionCore.extend({
     });
   },
 
-  websocketWasOpened: false,
-
   /**
    * Produce a localized description message when WebSocket conntection is closed
    *
@@ -69,11 +67,10 @@ export default SessionCore.extend({
     let i18n = this.get('i18n');
     return (event) => {
       this.set('websocketOpen', false);
-      let automaticReconnect = true;
+      this.set('websocketWasClosed', true);
       let message;
 
       if (!this.get('websocketWasOpened')) {
-        automaticReconnect = false;
         message = i18n.t('services.session.connectionClosed.messageNotOpened');
         if (this.get('browser.browser.browserCode') === 'safari') {
           message += ': ' + i18n.t('services.session.connectionClosed.reasons.safariCert');
@@ -98,6 +95,7 @@ export default SessionCore.extend({
       open: true,
       title: this.get('i18n').t('services.session.connectionClosed.title'),
       type: 'error',
+      mode: 'cannotOpen',
       allowClose: false,
       message: message
     });
@@ -109,6 +107,7 @@ export default SessionCore.extend({
       metadata: {isReconnector: true},
       title: this.get('i18n').t('services.session.connectionClosed.title'),
       message: this.get('i18n').t('services.session.maxReconnectionsExceeded'),
+      mode: 'limitExceeded',
       type: 'error',
       allowClose: false
     });
@@ -117,7 +116,17 @@ export default SessionCore.extend({
   openCountdownModal() {
     this.get('reconnectModal').setProperties({
       open: true,
+      type: 'loading',
       mode: 'waiting',
+    });
+  },
+  
+  openReconnectingModal() {
+    this.get('reconnectModal').setProperties({
+      title: this.get('i18n').t('services.session.connectionClosed.title'),
+      type: 'loading',
+      mode: 'reconnecting',
+      message: this.get('i18n').t('services.session.connectionClosed.reconnecting')
     });
   },
 
@@ -181,14 +190,6 @@ export default SessionCore.extend({
     this.set('reconnectInterval', newReconnectInterval);
   },
 
-  openReconnectingModal() {
-    this.get('reconnectModal').setProperties({
-      title: this.get('i18n').t('services.session.connectionClosed.title'),
-      type: 'loading',
-      message: this.get('i18n').t('services.session.connectionClosed.reconnecting')
-    });
-  },
-
   websocketReconnect() {
     this.incrementProperty('reconnectionsCount');
     this.openReconnectingModal();
@@ -224,7 +225,8 @@ export default SessionCore.extend({
   websocketOpenChanged: observer('websocketOpen', function() {
     clearTimeout(this.get('reconnectionTimeout'));
     // the WS has been opened again
-    if (this.get('websocketOpen')) {
+    if (this.get('websocketWasClosed') && this.get('websocketOpen')) {
+      this.set('websocketWasClosed', false);
       this.resetReconnectionTries();
       this.set('reconnectModal', Ember.Object.create());
       if (this.get('sessionValid') === false) {

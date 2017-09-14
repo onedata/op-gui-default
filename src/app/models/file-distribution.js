@@ -36,7 +36,9 @@ export default DS.Model.extend({
       - 0-10b, 15-20b, 60-100b
     - the file (which has a id = fileId) should have size >= last number (in this example >= 100b)
   */
-  blocks: DS.attr(),
+  blocks: DS.attr({defaultValue: []}),
 
-  fileId: DS.attr('string')
+  fileId: DS.attr('string'),
+  
+  neverSynchronized: DS.attr('boolean', { defaultValue: false }),
 });

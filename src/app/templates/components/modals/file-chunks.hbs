@@ -1,0 +1,82 @@
+{{#bs-modal open=open body=false footer=false size="lg"
+    id=modalId
+    title=(t "components.dataFilesListToolbar.fileChunksModal.title")
+    openAction=(action "open")
+    closedAction=(action "closed")
+    keyboard=true
+    autoClose=true
+    backdropClose=true
+    closeButton=false
+  }}
+  {{#bs-modal-body}}
+    <div class="container-fluid">
+      <div class="modal-row large-space">
+        {{t "components.dataFilesListToolbar.fileChunksModal.text"}}
+        <strong>{{fileForChunks.name}}</strong>
+      </div>
+      <div class="modal-row large-space">
+        {{#if chunksModalError}}
+
+          <div class="one-row">
+            {{t "components.dataFilesListToolbar.fileChunksModal.error"}}: {{chunksModalError}}
+          </div>
+
+        {{else}}
+
+          {{#if fileBlocksSorted}}
+            {{!-- NOTE: there is an assumption that every fb has other provider --}}
+            <table class="table file-blocks-table">
+              <thead>
+                <th>
+                  {{t "components.dataFilesListToolbar.fileChunksModal.providerName"}}
+                </th>
+                <th>
+                  {{t "components.dataFilesListToolbar.fileChunksModal.dataDitribution"}}
+                </th>
+              </thead>
+              <tbody>
+                {{#each fileBlocksSorted as |fb|}}
+                <tr>
+                  <td class="provider-name">
+                    {{#truncated-string}}
+                      {{fb.getProvider.name}}
+                    {{/truncated-string}}
+                  </td>
+                  <td class="chunks">
+                    {{#if fb.neverSynchronized}}
+                      <div class="file-chunks never-synchronized">
+                        <span>
+                          {{t "components.dataFilesListToolbar.fileChunksModal.neverSynchronized"}}
+                        </span>
+                      </div>
+                      {{bs-tooltip
+                        placement="bottom"
+                        title=(t "components.dataFilesListToolbar.fileChunksModal.neverSynchronizedHint")
+                      }}
+                    {{else}}
+                      {{file-chunks-bar file=fileForChunks fileBlocks=fb}}
+                    {{/if}}
+                  </td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          {{else}}
+            <div class="one-row">
+              <div class="loading-throbber"></div>
+              <div class="loading-label">
+                {{t "components.dataFilesListToolbar.fileChunksModal.loading"}}
+              </div>
+            </div>
+          {{/if}}
+          
+        {{/if}}
+      </div>
+    </div>
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#bs-button action=(action "close" target=footer) type="primary"}}
+      {{t "common.modal.close"}}
+    {{/bs-button}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}

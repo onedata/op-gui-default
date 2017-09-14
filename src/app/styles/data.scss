@@ -263,15 +263,43 @@
     padding-right: 20px;
   }
 
-  canvas.file-chunks {
-    // NOTE: should be synchronized with utils/file-chunks-bar.js
-    width: 320px;
-    height: 20px;
+  // NOTE: should be synchronized with utils/file-chunks-bar.js
+  $file-chunks-width: 320px;
+  $file-chunks-height: 20px;
+  .file-chunks {
+    position: relative;
+    
+    width: $file-chunks-width;
+    height: $file-chunks-height;
 
     border-left: 1px solid $onedata-graphite;
     border-right: 1px solid $onedata-graphite;
 
     background-color: #F2F2F2;
+    
+    font-size: 0.8em;
+    line-height: $file-chunks-height;
+    text-align: center;
+    
+    &.never-synchronized {
+      border-left: none;
+      border-right: none;
+      
+      $-bars-opacity: .6;
+      $-bars-color: rgba(255, 255, 255, $-bars-opacity);
+      
+      background-image: linear-gradient(
+        -45deg, 
+        $-bars-color 25%, 
+        transparent 25%, 
+        transparent 50%, 
+        $-bars-color 25%, 
+        $-bars-color 75%, 
+        transparent 75%, 
+        transparent
+      );
+      background-size: 50px 50px;
+    }
 
     &.error {
       background-color: transparent;

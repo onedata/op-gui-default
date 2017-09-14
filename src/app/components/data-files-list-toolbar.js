@@ -1,3 +1,12 @@
+/**
+ * Provides set of tools for file manipulation and getting info.
+ * Beside toolbar buttons, contains a set of modals for toolbar actions.
+ * @module components/data-files-list-toolbar
+ * @author Jakub Liput
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 
 const {
@@ -13,14 +22,6 @@ const {
   }
 } = Ember;
 
-/**
- * Provides set of tools for file manipulation and getting info.
- * Beside toolbar buttons, contains a set of modals for toolbar actions.
- * @module components/data-files-list-toolbar
- * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
- * @license This software is released under the MIT license cited in 'LICENSE.txt'.
- */
 export default Ember.Component.extend({
   notify: inject.service('notify'),
   fileUpload: inject.service('fileUpload'),
@@ -31,10 +32,6 @@ export default Ember.Component.extend({
   classNames: ['data-files-list-toolbar', 'nav', 'navbar-nav', 'navbar-right', 'toolbar-group'],
 
   fileForChunks: null,
-  fileBlocksSorting: ['provider.name'],
-  fileBlocksSorted: computed.sort('fileBlocks', 'fileBlocksSorting'),
-
-  chunksModalError: null,
 
   init() {
     this._super(...arguments);
@@ -286,30 +283,18 @@ export default Ember.Component.extend({
     },
 
     showChunks() {
-      this.set('isFileChunksModal', true);
-      this.set('fileForChunks', this.get('dir.singleSelectedFile'));
-      let fileId = this.get('fileForChunks.id');
-      // TODO: if fileId null...
-
-      this.get('store').query('file-distribution', { fileId }).then(
-        (fbs) => {
-          this.set('fileBlocks', fbs);
-        },
-        (error) => {
-          console.error('Error loading file blocks: ' + error.message);
-          this.set('chunksModalError', error.message);
-        }
-      );
+      this.setProperties({
+        isFileChunksModal: true,
+        fileForChunks: this.get('dir.singleSelectedFile'),
+      });
     },
-
+    
     chunksModalClosed() {
       this.setProperties({
         fileForChunks: null,
-        fileBlocks: null,
-        chunksModalError: null
       });
     },
-
+    
     editFileMetadata() {
       const file = this.get('dir.singleSelectedFile');
       const fileSystemTree = this.get('fileSystemTree');

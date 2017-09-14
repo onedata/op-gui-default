@@ -7,6 +7,7 @@ export default {
     messageNotOpened: 'WebSocket connection could not be estabilished',
     reconnectWait: 'Will try to reconnect in {{secs}} seconds...',
     reconnecting: 'Reconnecting...',
+    reconnectNow: 'Reconnect now',
     reasons: {
       notOpened: 'WebSocket connection could not be estabilished',
       // code: 1006
@@ -18,8 +19,4 @@ export default {
         ' server is unavailable or the SSL certificate is not valid (e.g. it is self-signed).'
     }
   },
-  connectionReopened: {
-    title: 'WebSocket connection reopened',
-    message: 'WebSocket connection restored successfully!'
-  }
 };

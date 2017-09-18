@@ -4,6 +4,27 @@
 CHANGELOG
 ---------
 
+### 17.06.1
+
+* VFS-3455 Refactored reconnect Websocket modal
+* VFS-3600 Refactored file distribution modal
+* VFS-3561 Fixed crash of spaces and groups view when new one is created
+* VFS-3560 Fixed lack of handle-public relation in model when a share is public
+* VFS-3402 Fixed redirection from login route when authenticated
+* VFS-3421 Showing no permissions to view directory message when necessary
+* VFS-3303 Fix files progress upload indicator when uploading empty file (0 bytes) 
+
+
+### 17.06.0-rc2
+
+* No changes in GUI since 17.06.0-rc1
+
+
+### 17.06.0-rc1
+
+* No changes in GUI since 17.06.0-beta6
+
+
 ### 17.06.0-beta1 - 17.06.0-beta6
 
 * VFS-3068 Fixing bug: do not stuck on finalizing file upload after all files upload failure

@@ -1,6 +1,6 @@
 {
   "name": "op-worker-gui",
-  "version": "17.06.0-beta6",
+  "version": "17.06.1",
   "description": "GUI for op-worker",
   "private": true,
   "directories": {

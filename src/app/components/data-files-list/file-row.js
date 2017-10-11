@@ -65,7 +65,7 @@ export default Ember.Component.extend({
    * for distinguishing conflicting files.
    * @type {String}
    */
-  providerLabel: computed.alias('file.listProviderLabel'),
+  providerLabel: computed.alias('file.conflictLabel'),
 
   /**
    * If true, the file is currently downloaded, so it will be indicated in GUI.

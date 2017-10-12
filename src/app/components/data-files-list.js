@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import conflictProviderId from 'op-worker-gui/utils/conflict-provider-id';
+import addConflictLabels from 'ember-cli-onedata-common/utils/add-conflict-labels';
 
 const {
   computed,
@@ -7,7 +7,6 @@ const {
   run,
   observer,
   on,
-  assert,
   run: {
     debounce
   }
@@ -354,45 +353,13 @@ export default Ember.Component.extend({
   ),
 
   updateProviderLabels() {
-    let {
+    const {
       visibleFiles,
       providerId
     } = this.getProperties('visibleFiles', 'providerId');
-
-    // maps: file name -> array of files with that name
-    let nameFilesMap = new Map();
-    for (let f of visibleFiles || []) {
-      let name = f.get('name');
-      if (nameFilesMap.has(name)) {
-        nameFilesMap.get(name).push(f);
-      } else {
-        nameFilesMap.set(name, [f]);
-      }
-
-      for (let [, files] of nameFilesMap) {
-        assert(
-          'files list for name should not be empty',
-          files.length > 0
-        );
-
-        if (files.length > 1) {
-          let providerLabels = conflictProviderId(files.mapBy('provider'));
-          for (let i = 0; i < files.length; i += 1) {
-            let file = files[i];
-            file.set(
-              'listProviderLabel',
-              file.get('provider') === providerId ? null : providerLabels[i]
-            );
-          }
-
-        } else {
-          files[0].set('listProviderLabel', undefined);
-        }
-      }
-    }
+    addConflictLabels(visibleFiles, 'name', 'provider', providerId);
   },
-
-
+  
   /**
    * True if there is no files to display in files browser.
    * However, there can be some children files, but they cannot be displayed.

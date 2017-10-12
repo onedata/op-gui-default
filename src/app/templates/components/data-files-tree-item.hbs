@@ -7,7 +7,11 @@
   <span class="item-element item-click-area"  {{action 'browseDir' file}}>
     <span class="item-label">
       <div class="truncate truncate-secondary-sidebar-item">
-        {{file.name}}
+        {{#if file.conflictLabel}}
+          {{file.name}}<span class="file-provider-label-name">@{{file.conflictLabel}}</span>
+        {{else}}
+          {{file.name}}
+        {{/if}}
       </div>
     </span>
   </span>

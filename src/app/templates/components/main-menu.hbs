@@ -29,7 +29,10 @@
 
     {{main-menu-item name="groups" title=(t 'components.mainMenu.groups')
       icon="menu-groups" goToItem='goToItem'}}
-
+      
+    {{main-menu-item name="transfers" title=(t 'components.mainMenu.transfers')
+      icon="menu-transfers" goToItem='goToItem'}}
+      
     {{#if onezoneUrl}}
       {{main-menu-item name="token" title=(t 'components.mainMenu.token')
         icon="menu-token" link=(concat onezoneUrl "?expand_tokens=true")

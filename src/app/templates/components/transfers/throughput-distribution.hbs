@@ -1,0 +1,16 @@
+<h2>Throughput distribution</h2>
+
+<div class="row">
+  {{#bs-button action=(action "toggleDirection")}}
+    direction: {{transfersDirection}}
+  {{/bs-button}}
+</div>
+<div class="row">
+  <ul>
+    {{#each spaceTransfers as |t|}}
+      <li>
+        {{get (get providersMap t.providerId) "name"}} ({{t.providerId}}): {{bytes-to-string t.bytesPerSec}}/s
+      </li>
+    {{/each}}
+  </ul>
+</div>

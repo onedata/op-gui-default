@@ -99,8 +99,7 @@ export default Ember.Component.extend({
   }),
 
   _submitEntryChanged() {
-    // FIXME
-    console.debug('submit entry changed');
+    // TODO: fix problems with entry change
     let {
       newKey, newValue, isValid
     } = this.getProperties('newKey', 'newValue', 'isValid');

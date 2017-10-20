@@ -1,0 +1,31 @@
+{{!-- Content for transfers for single space --}}
+{{page-title (t "transfers.show.title")}}
+
+{{#transfers/transfers-container space=model as |tData|}}
+  <div class="row">
+    <div class="col-xs-12">
+      {{transfers/providers-map
+        providers=tData.providers
+        providerTransferConnections=tData.providerTransferConnections
+      }}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      {{transfers/throughput-distribution
+        providers=tData.providers
+        providerTransfers=tData.providerTransfers
+      }}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      {{transfers/live-stats-table
+        transfers=tData.transfers
+      }}
+    </div>
+  </div>
+
+{{/transfers/transfers-container}}

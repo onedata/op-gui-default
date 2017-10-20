@@ -1,0 +1,17 @@
+{{!-- FIXME use table as in onepanel-gui --}}
+<h2>Live transfers</h2>
+<ul>
+  <li>file name, user name, started at, transferred, files number (processed?)</li>
+  {{#each transfers as |transfer|}}
+    <li>{{transfer.fileName}}, {{transfer.userName}}, {{transfer.startedAt}}, {{transfer.totalBytes}}, {{transfer.totalFiles}}</li>
+    {{!-- {{#if (eq openedTransferId transfer.id)}} --}}
+    {{#if true}}
+    <li>
+      {{transfers/live-stats-table/transfer-details
+        transferStats=transfer.stats
+      }}
+    </li>
+    {{/if}}
+  {{/each}}
+</ul>
+

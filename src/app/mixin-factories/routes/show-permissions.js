@@ -10,8 +10,9 @@
 import Ember from 'ember';
 
 const {
+  Mixin,
   on,
-  run
+  run,
 } = Ember;
 
 /**
@@ -19,14 +20,13 @@ const {
  * @param {string} permissionType eg. user, group
  */
 function create(routeType) {
-  let mixin = Ember.Mixin.create({
+  let mixin = Mixin.create({
     model() {
       return this.modelFor(`onedata.${routeType}.show`);
     },
 
     setupController(controller, model) {
       this._super(controller, model);
-      controller.changeMenuActiveOption();
     },
 
     onDeactivate: on('deactivate', function() {
@@ -46,7 +46,14 @@ function create(routeType) {
 
       reload: function() {
         this.refresh();
-      }
+      },
+      
+      didTransition() {
+        run.scheduleOnce('afterRender', () => {
+          this.controller.changeMenuActiveOption();
+        });
+        return true;
+      },
     }
   });
 

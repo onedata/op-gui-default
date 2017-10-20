@@ -1,0 +1,15 @@
+<h2>Providers map of dist.</h2>
+<ul>
+  {{#each providers as |prov|}}
+    <li>{{prov.name}}</li>
+  {{/each}}
+</ul>
+<hr>
+<ul>
+  {{#each providerTransferConnections as |con|}}
+    <li>x {{con.[0]}} -- {{con.[1]}}</li>
+  {{/each}}
+</ul>
+<hr>
+
+{{yield}}

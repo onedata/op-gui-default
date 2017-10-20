@@ -21,8 +21,8 @@ export default Ember.Controller.extend({
   },
 
   onSpaceChange: function() {
-    if (this.get('model')) {
+  if (this.get('model')) {
       this.changeMenuActiveItem();
     }
-  }.observes('model'),
+  },
 });

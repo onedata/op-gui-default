@@ -59,6 +59,12 @@ Router.map(function() {
         });
     });
 
+    // onedata/transfers/ - browse transfers view for spaces
+    this.route('transfers', function() {
+      // onedata/transfers/:space_id - show transfers view for specified Space
+      this.route('show', {path: ':space_id'});
+    });
+    
   });
 
   // /public - a root of all views that does not use authentication (public)

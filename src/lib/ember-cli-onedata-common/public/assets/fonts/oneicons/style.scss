@@ -2,11 +2,10 @@
 
 @font-face {
   font-family: 'oneicons';
-  src:  url('#{$icomoon-font-path}/oneicons.eot?8fp96n');
-  src:  url('#{$icomoon-font-path}/oneicons.eot?8fp96n#iefix') format('embedded-opentype'),
-    url('#{$icomoon-font-path}/oneicons.ttf?8fp96n') format('truetype'),
-    url('#{$icomoon-font-path}/oneicons.woff?8fp96n') format('woff'),
-    url('#{$icomoon-font-path}/oneicons.svg?8fp96n#oneicons') format('svg');
+  src:
+    url('#{$icomoon-font-path}/oneicons.ttf?nj650f') format('truetype'),
+    url('#{$icomoon-font-path}/oneicons.woff?nj650f') format('woff'),
+    url('#{$icomoon-font-path}/oneicons.svg?nj650f#oneicons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -59,11 +58,6 @@
 .oneicon-ban-left {
   &:before {
     content: $oneicon-ban-left;
-  }
-}
-.oneicon-block2 {
-  &:before {
-    content: $oneicon-block2;
   }
 }
 .oneicon-checkbox-check {
@@ -251,6 +245,11 @@
     content: $oneicon-menu-token;
   }
 }
+.oneicon-menu-transfers {
+  &:before {
+    content: $oneicon-menu-transfers;
+  }
+}
 .oneicon-menu-trash {
   &:before {
     content: $oneicon-menu-trash;
@@ -269,6 +268,11 @@
 .oneicon-move-up {
   &:before {
     content: $oneicon-move-up;
+  }
+}
+.oneicon-node {
+  &:before {
+    content: $oneicon-node;
   }
 }
 .oneicon-password-change {
@@ -416,6 +420,16 @@
     content: $oneicon-space-home;
   }
 }
+.oneicon-space-import-provider {
+  &:before {
+    content: $oneicon-space-import-provider;
+  }
+}
+.oneicon-space-import {
+  &:before {
+    content: $oneicon-space-import;
+  }
+}
 .oneicon-space-join {
   &:before {
     content: $oneicon-space-join;
@@ -444,6 +458,16 @@
 .oneicon-support {
   &:before {
     content: $oneicon-support;
+  }
+}
+.oneicon-tokens {
+  &:before {
+    content: $oneicon-tokens;
+  }
+}
+.oneicon-update {
+  &:before {
+    content: $oneicon-update;
   }
 }
 .oneicon-upload {

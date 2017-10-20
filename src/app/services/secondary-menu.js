@@ -76,8 +76,4 @@ export default Ember.Service.extend({
       activeOption: null,
     });
   },
-
-  resetActiveOption: function() {
-    this.set('activeOption', null);
-  }.observes('activeItem'),
 });

@@ -85,7 +85,8 @@ export default {
       spaces: 'spaces',
       groups: 'groups',
       token: 'tokens',
-      providers: 'providers'
+      providers: 'providers',
+      transfers: 'transfers',
     },
     modals: {
       aboutModal: {
@@ -267,6 +268,9 @@ export default {
         joinFailed: 'Failed to join group'
 
       }
+    },
+    transfersMenu: {
+      title: 'space data transfers',
     },
     sharesMenu: {
       title: 'shares',
@@ -518,6 +522,12 @@ export default {
         }
       }
     }
+  },
+  transfers: {
+    title: 'Transfers',
+    show: {
+      title: 'Transfers for space'
+    },
   },
   spacesError: {
     fetchFailure: 'An error occured on fetching spaces list.',

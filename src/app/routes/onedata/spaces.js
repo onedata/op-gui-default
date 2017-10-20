@@ -11,9 +11,21 @@
 import Ember from 'ember';
 import userCollectionModel from 'ember-cli-onedata-common/mixin-factories/routes/user-collection-model';
 
-export default Ember.Route.extend(userCollectionModel('spaces', { nonEmpty: true }), {
-  mainRouteName: 'spaces',
+const {
+  Route,
+  inject: { service },
+} = Ember;
 
+export default Route.extend(userCollectionModel('spaces', { nonEmpty: true }), {
+  mainRouteName: 'spaces',
+  
+  secondaryMenu: service(),
+
+  beforeModel() {
+    this._super(...arguments);
+    this.get('secondaryMenu').clear();
+  },
+  
   actions: {
     /** Show submenu for Space */
     goToSpace(space) {

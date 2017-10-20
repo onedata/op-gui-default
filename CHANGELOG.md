@@ -4,8 +4,9 @@
 CHANGELOG
 ---------
 
-### 17.06.1
+### Latest changes
 
+* VFS-3710 Using binary prefix units for displaying sizes (MiB, GiB, etc.)
 * VFS-3455 Refactored reconnect Websocket modal
 * VFS-3600 Refactored file distribution modal
 * VFS-3561 Fixed crash of spaces and groups view when new one is created

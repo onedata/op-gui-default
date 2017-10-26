@@ -1,0 +1,58 @@
+$provider-place-circle-size: 64px;
+$color-provider-online: $color-one-mint;
+$color-provider-offline: $color-one-red;
+
+@include animation-fg-color-change(
+  pulse-red-mint,
+  $color-one-red,
+  $color-one-mint
+);
+
+.provider-place {
+  position: relative;
+
+  &.online {
+    .circle {
+      border-color: $color-provider-online;
+      color: $color-provider-online;
+    }
+  }
+  
+  &.pending {
+    .circle {
+      @extend .animated;
+      @extend .infinite;
+      @extend .hinge;
+      @extend .pulse-red-mint;
+    }
+  }
+  
+  &.offline {
+    .circle {
+      border-color: $color-provider-offline;
+      color: $color-provider-offline;
+    }
+  }
+
+  .circle {
+    // initial size
+    width: $provider-place-circle-size;
+    height: $provider-place-circle-size;
+    font-size: ($provider-place-circle-size * 0.75);
+    border-radius: 50%;
+    border-width: 2px;
+    border-style: solid;
+    background-color: white;
+    cursor: pointer;
+
+    .one-icon {
+      position: static;
+      &::before {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%) translateX(-50%);
+        left: 50%;
+      }
+    }
+  }
+}

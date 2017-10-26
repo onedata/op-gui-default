@@ -65,6 +65,7 @@ $screen-lg-min: $min-width-desktop-medium;
 @import 'onedata-common';
 
 @import 'colors';
+@import 'animate';
 
 @media screen
   and (min-width: $min-width-desktop-large) {
@@ -143,6 +144,8 @@ $screen-lg-min: $min-width-desktop-medium;
 @import 'components/share-info-head';
 @import 'components/file-breadcrumbs';
 @import "components/ember-power-select";
+@import 'components/one-atlas';
+@import 'components/provider-place';
 
 // onedata-common components
 @import 'components/button-common';

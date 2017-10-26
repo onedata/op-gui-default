@@ -1,24 +1,28 @@
 <h2>Providers map of dist.</h2>
 <div style="height: 500px;">
 {{#one-atlas as |atlas|}}
+
+  <svg class="atlas-draw-layer" xmlns="http://www.w3.org/2000/svg">
+    {{#each providerTransferConnections as |con|}}
+      {{#atlas.position latitude=(get (get providersMap con.[0]) "latitude") longitude=(get (get providersMap con.[0])
+        "longitude") as |pa| }}
+        {{#atlas.position latitude=(get (get providersMap con.[1]) "latitude") longitude=(get (get providersMap con.[1])
+          "longitude") as |pb| }}
+          <line class="transfer" x1= {{pa.x}} y1= {{pa.y}} x2= {{pb.x}} y2= {{pb.y}} />
+        {{/atlas.position}}
+      {{/atlas.position}}
+    {{/each}}
+  </svg>
+  
   {{#each providers as |provider|}}
-    {{#atlas.point latitude=provider.latitude longitude=provider.longitude}}
-      {{provider-place provider=provider atlasWidth=atlas.width circleSizeScale=1.5}}
-    {{/atlas.point}}
+    {{#atlas.position latitude=provider.latitude longitude=provider.longitude as |position|}}
+      {{#position.point}}
+        {{provider-place provider=provider atlasWidth=atlas.width circleSizeScale=1.5}}
+      {{/position.point}}
+    {{/atlas.position}}
   {{/each}}
+  
 {{/one-atlas}}
 </div>
 
-<ul>
-  {{#each providers as |prov|}}
-    <li>{{prov.name}}</li>
-  {{/each}}
-</ul>
-<hr>
-<ul>
-  {{#each providerTransferConnections as |con|}}
-    <li>x {{con.[0]}} -- {{con.[1]}}</li>
-  {{/each}}
-</ul>
-<hr>
 {{yield}}

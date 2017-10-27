@@ -29,9 +29,11 @@ const transferList = PromiseObject.create({ promise: Promise.resolve({
       destination: 'p2',
       fileName: 'file1',
       userName: 'John Smith',
-      totalBytes: 3 * Math.pow(1024, 3),
-      startedAt: new Date(),
+      totalBytes: 3 * ONE_GB,
+      startedAt: new Date().toISOString(),
+      // FIXME: speed in B/s from backend, not from last minute
       stats: {
+        // FIXME: minute time-span stats (every 5 second)
         hour: {
           p1: _.range(60).map(i => i * ONE_MB),
           p3: _.range(60).map(i => i * 2 * ONE_MB),
@@ -40,6 +42,7 @@ const transferList = PromiseObject.create({ promise: Promise.resolve({
           p1: _.range(24).map(i => i * ONE_GB),
           p3: _.range(24).map(i => i * 2 * ONE_GB),
         },
+        // TODO: maybe to remove
         month: {
           p1: _.range(30).map(i => i * ONE_TB),
           p3: _.range(30).map(i => i * 2 * ONE_TB),

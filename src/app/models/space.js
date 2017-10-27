@@ -18,6 +18,10 @@ const {
   A,
 } = Ember;
 
+const ONE_MB = Math.pow(1024, 2);
+const ONE_GB = Math.pow(1024, 3);
+const ONE_TB = Math.pow(1024, 3);
+
 // FIXME: mocked
 const transferList = PromiseObject.create({ promise: Promise.resolve({
   list: PromiseArray.create({ promise: Promise.resolve(A([
@@ -29,16 +33,16 @@ const transferList = PromiseObject.create({ promise: Promise.resolve({
       startedAt: new Date(),
       stats: {
         hour: {
-          p1: _.range(60).map(i => i * Math.pow(1024, 2)),
-          p3: _.range(60).map(i => i * 2 * Math.pow(1024, 2)),
+          p1: _.range(60).map(i => i * ONE_MB),
+          p3: _.range(60).map(i => i * 2 * ONE_MB),
         },
         day: {
-          p1: _.range(24).map(i => i * Math.pow(1024, 3)),
-          p3: _.range(24).map(i => i * 2 * Math.pow(1024, 3)),
+          p1: _.range(24).map(i => i * ONE_GB),
+          p3: _.range(24).map(i => i * 2 * ONE_GB),
         },
         month: {
-          p1: _.range(30).map(i => i * Math.pow(1024, 4)),
-          p3: _.range(30).map(i => i * 2 * Math.pow(1024, 4)),
+          p1: _.range(30).map(i => i * ONE_TB),
+          p3: _.range(30).map(i => i * 2 * ONE_TB),
         }
       }
     },
@@ -50,16 +54,16 @@ const transferList = PromiseObject.create({ promise: Promise.resolve({
       startedAt: new Date(),
       stats: {
         hour: {
-          p1: _.range(60).map(i => i * Math.pow(1024, 2)),
-          p2: _.range(60).map(i => i * 2 * Math.pow(1024, 2)),
+          p1: _.range(60).map(i => i * ONE_MB),
+          p2: _.range(60).map(i => i * 2 * ONE_MB),
         },
         day: {
-          p1: _.range(24).map(i => i * Math.pow(1024, 3)),
-          p2: _.range(24).map(i => i * 2 * Math.pow(1024, 3)),
+          p1: _.range(24).map(i => i * ONE_GB),
+          p2: _.range(24).map(i => i * 2 * ONE_GB),
         },
         month: {
-          p1: _.range(30).map(i => i * Math.pow(1024, 4)),
-          p2: _.range(30).map(i => i * 2 * Math.pow(1024, 4)),
+          p1: _.range(30).map(i => i * ONE_TB),
+          p2: _.range(30).map(i => i * 2 * ONE_TB),
         }
       }
     },

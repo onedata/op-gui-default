@@ -9,6 +9,8 @@ const {
 } = Ember;
 
 export default Component.extend({
+  classNames: ['transfer-throughput-distribution'],
+
   /**
    * @virtual
    * @type {Array<Provider>}

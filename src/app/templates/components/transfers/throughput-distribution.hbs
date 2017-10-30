@@ -1,16 +1,18 @@
-<h2>Throughput distribution</h2>
+<h2><span class="one-label">Throughput distribution</span>
+  {{#bs-button-group value=transfersDirection type="radio" size="sm" class="pull-right"}}
+    {{#bs-button value='in'}}in{{/bs-button}}
+    {{#bs-button value='out'}}out{{/bs-button}}
+  {{/bs-button-group}}
+</h2>
 
-<div class="row">
-  {{#bs-button action=(action "toggleDirection")}}
-    direction: {{transfersDirection}}
-  {{/bs-button}}
-</div>
-<div class="row">
-  <ul>
+
+<div class="row chart-row">
+  {{transfers/throughput-distribution/chart providers=providers throughputData=spaceTransfers}}
+  {{!-- <ul>
     {{#each spaceTransfers as |t|}}
       <li>
         {{get (get providersMap t.providerId) "name"}} ({{t.providerId}}): {{bytes-to-string t.bytesPerSec}}/s
       </li>
     {{/each}}
-  </ul>
+  </ul> --}}
 </div>

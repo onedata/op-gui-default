@@ -132,6 +132,9 @@ $screen-lg-min: $min-width-desktop-medium;
 // original stylesheet for ember-power-select
 @import "ember-power-select";
 
+@import 'chartist';
+@import 'chartist-overrides';
+
 // OP components
 @import 'components/modal';
 @import 'components/button';
@@ -146,6 +149,8 @@ $screen-lg-min: $min-width-desktop-medium;
 @import "components/ember-power-select";
 @import 'components/one-atlas';
 @import 'components/provider-place';
+@import 'components/one-pie-chart';
+@import 'components/transfers';
 
 // onedata-common components
 @import 'components/button-common';

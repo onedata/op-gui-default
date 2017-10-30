@@ -9,6 +9,8 @@ import providerTransfers from 'op-worker-gui/utils/transfers/provider-transfers'
 import providerTransferConnections from 'op-worker-gui/utils/transfers/provider-transfer-connections';
 
 export default Component.extend({
+  classNames: ['transfers-container'],
+
   /**
    * @virtual
    * @type {Space}

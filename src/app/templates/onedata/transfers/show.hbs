@@ -3,16 +3,13 @@
 
 {{#transfers/transfers-container space=model as |tData|}}
   <div class="row">
-    <div class="col-xs-12">
+    <div class="col-xs-12 col-md-7">
       {{transfers/providers-map
         providers=tData.providers
         providerTransferConnections=tData.providerTransferConnections
       }}
     </div>
-  </div>
-
-  <div class="row">
-    <div class="col-xs-12">
+    <div class="col-xs-12 col-md-5">
       {{transfers/throughput-distribution
         providers=tData.providers
         providerTransfers=tData.providerTransfers

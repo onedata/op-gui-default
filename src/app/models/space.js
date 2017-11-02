@@ -18,6 +18,7 @@ const {
   A,
 } = Ember;
 
+const ONE_KB = 1024;
 const ONE_MB = Math.pow(1024, 2);
 const ONE_GB = Math.pow(1024, 3);
 const ONE_TB = Math.pow(1024, 3);
@@ -33,7 +34,10 @@ const transferList = PromiseObject.create({ promise: Promise.resolve({
       startedAt: new Date().toISOString(),
       // FIXME: speed in B/s from backend, not from last minute
       stats: {
-        // FIXME: minute time-span stats (every 5 second)
+        minute: {
+          p1: _.range(12).map(i => i * ONE_KB),
+          p3: _.range(12).map(i => i * 2 * ONE_KB),
+        },
         hour: {
           p1: _.range(60).map(i => i * ONE_MB),
           p3: _.range(60).map(i => i * 2 * ONE_MB),
@@ -43,10 +47,10 @@ const transferList = PromiseObject.create({ promise: Promise.resolve({
           p3: _.range(24).map(i => i * 2 * ONE_GB),
         },
         // TODO: maybe to remove
-        month: {
-          p1: _.range(30).map(i => i * ONE_TB),
-          p3: _.range(30).map(i => i * 2 * ONE_TB),
-        }
+        // month: {
+        //   p1: _.range(30).map(i => i * ONE_TB),
+        //   p3: _.range(30).map(i => i * 2 * ONE_TB),
+        // }
       }
     },
     {
@@ -56,6 +60,10 @@ const transferList = PromiseObject.create({ promise: Promise.resolve({
       totalBytes: 3 * Math.pow(1024, 3),
       startedAt: new Date(),
       stats: {
+        minute: {
+          p1: _.range(12).map(i => i * ONE_KB),
+          p2: _.range(12).map(i => i * 2 * ONE_KB),
+        },
         hour: {
           p1: _.range(60).map(i => i * ONE_MB),
           p2: _.range(60).map(i => i * 2 * ONE_MB),
@@ -64,10 +72,10 @@ const transferList = PromiseObject.create({ promise: Promise.resolve({
           p1: _.range(24).map(i => i * ONE_GB),
           p2: _.range(24).map(i => i * 2 * ONE_GB),
         },
-        month: {
-          p1: _.range(30).map(i => i * ONE_TB),
-          p2: _.range(30).map(i => i * 2 * ONE_TB),
-        }
+        // month: {
+        //   p1: _.range(30).map(i => i * ONE_TB),
+        //   p2: _.range(30).map(i => i * 2 * ONE_TB),
+        // }
       }
     },
   ]))}),

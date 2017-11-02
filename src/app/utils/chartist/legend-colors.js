@@ -31,7 +31,7 @@ export default function (options) {
         }
         let series = legend.find('.ct-series-' + index);
         series.find('.custom-color').remove();
-        legend.find('.ct-series-' + index).prepend(colorRect);
+        series.prepend(colorRect);
       });
     });
   };

@@ -1,18 +1,27 @@
 {{!-- use table as in onepanel-gui --}}
 <h2>Live transfers</h2>
-<ul>
-  <li>file name, user name, started at, transferred, files number (processed?)</li>
-  {{#each transfers as |transfer|}}
-    <li>{{transfer.fileName}}, {{transfer.userName}}, {{transfer.startedAt}}, {{transfer.totalBytes}}, {{transfer.totalFiles}}</li>
-    {{!-- {{#if (eq openedTransferId transfer.id)}} --}}
-    {{#if true}}
-    <li>
-      {{!-- FIXME: --}}
-      {{!-- {{transfers/live-stats-table/transfer-details
-        transferStats=transfer.stats
-      }} --}}
-    </li>
-    {{/if}}
-  {{/each}}
-</ul>
+{{#if _mobileMode}}
+  {{#if (eq _processedData.length 0)}}
+    <div class="row content-row">
+      <p>{{_tableCustomMessages.noDataToShow}}</p>
+    </div>
+  {{else}}
+    
+  {{/if}}
+{{else}}
+  {{models-table
+    data=_tableData
+    columns=_tableColumns
+    customIcons=_tableCustomIcons
+    customClasses=_tableCustomClasses
+    customMessages=_tableCustomMessages
+    showColumnsDropdown=false
+    showGlobalFilter=false
+    useFilteringByColumns=false
+    showComponentFooter=false
+    multipleColumnsSorting=false
+    rowTemplate="components/transfers/live-stats-table/row"
+    expandedRowTemplate="components/transfers/live-stats-table/expanded-row"}}
+{{/if}}
+
 

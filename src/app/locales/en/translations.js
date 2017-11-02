@@ -461,7 +461,15 @@ export default {
       publicUrl: 'Public URL',
       publicHandle: 'Public handle',
       publish: 'Publish',
-    }
+    },
+    transfers: {
+      liveTableStats: {
+        userName: 'Username',
+        startedAt: 'Started at',
+        totalBytes: 'Total bytes',
+        totalFiles: 'Total files',
+      },
+    },
   },
   notFound: {
     notifyMessage: 'Requested path not found'

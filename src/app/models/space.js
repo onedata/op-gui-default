@@ -21,7 +21,6 @@ const {
 const ONE_KB = 1024;
 const ONE_MB = Math.pow(1024, 2);
 const ONE_GB = Math.pow(1024, 3);
-const ONE_TB = Math.pow(1024, 3);
 
 // FIXME: mocked
 const transferList = PromiseObject.create({ promise: Promise.resolve({

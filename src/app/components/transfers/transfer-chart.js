@@ -1,3 +1,5 @@
+/* global Chartist */
+
 import Ember from 'ember';
 import _ from 'lodash';
 import moment from 'moment';
@@ -54,7 +56,7 @@ export default Component.extend({
     } = this.getProperties('_statsForTimeUnit', '_sortedProvidersIds');
     return _sortedProvidersIds.map(providerId =>
       _statsForTimeUnit[providerId] || []
-    )
+    );
   }),
 
   _timePeriod: computed('timeUnit', function () {
@@ -63,9 +65,9 @@ export default Component.extend({
       case 'minute':
         return [12, 'seconds'];
       case 'hour':
-        return [12, 'minutes'];
-      case 'day':
+        return [12, 'minutes'];      
       default:
+      case 'day':
         return [2, 'hours'];
     }
   }),

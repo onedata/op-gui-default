@@ -3,7 +3,7 @@ $chart-labels-font-size: 7pt;
 $chart-font-size-base: 8pt;
 $chart-tooltip-padding: $padding-small-vertical;
 $chart-tooltip-arrow-size: 20px;
-$chart-border-color: darken($onedata-light-gray, 10%);
+$chart-border-color: $one-main-border-color;
 
 .ct-chart {
   height: 200px;

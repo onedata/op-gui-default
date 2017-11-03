@@ -61,7 +61,7 @@ const transferList = PromiseObject.create({ promise: Promise.resolve({
       stats: {
         minute: {
           p1: _.range(12).map(i => i * ONE_KB),
-          p2: _.range(12).map(i => i * 2 * ONE_KB),
+          p2: _.range(12).map(i => i * 3 * ONE_KB),
         },
         hour: {
           p1: _.range(60).map(i => i * ONE_MB),

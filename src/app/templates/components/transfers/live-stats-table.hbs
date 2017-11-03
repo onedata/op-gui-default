@@ -6,7 +6,37 @@
       <p>{{_tableCustomMessages.noDataToShow}}</p>
     </div>
   {{else}}
-    
+    {{#one-collapsible-list as |list|}}
+      {{#each _tableData as |transfer|}}
+        {{#list.item as |listItem|}}
+          {{#listItem.header}}
+            <span class="item-icon-container">
+              {{!-- TODO: better icon --}}
+              {{one-icon icon="menu-transfers"}}
+            </span>
+            <span class="one-label">bla</span>
+          {{/listItem.header}}
+          {{#listItem.content}}
+            <div class="item-table">
+              <div class="item-table-content-cell">
+                {{#each _tableColumns as |column|}}
+                  <div class="row content-row">
+                    {{!-- using data processing similar to the one used by ember-models-table --}}
+                    <strong>{{column.title}}:</strong>
+                    <span class="one-label">{{get transfer column.propertyName}}</span>
+                  </div>
+                {{/each}}
+                {{#if listItem.isActive}}
+                  <div class="row content-row">
+                    {{transfers/live-stats-table/expanded-row record=transfer}}
+                  </div>
+                {{/if}}
+              </div>
+            </div>
+          {{/listItem.content}}
+        {{/list.item}}
+      {{/each}}
+    {{/one-collapsible-list}}
   {{/if}}
 {{else}}
   {{models-table

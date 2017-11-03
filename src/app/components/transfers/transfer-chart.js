@@ -1,10 +1,11 @@
-/* global Chartist */
-
 import Ember from 'ember';
 import _ from 'lodash';
 import moment from 'moment';
-import generateColors from 'op-worker-gui/utils/generate-colors';
-import legendColors from 'op-worker-gui/utils/chartist/legend-colors';
+import additionalXLabel from 'op-worker-gui/utils/chartist/additional-x-label';
+import shortHorizontalGrid from 'op-worker-gui/utils/chartist/short-horizontal-grid';
+import tooltip from 'op-worker-gui/utils/chartist/tooltip';
+import centerLineChart from 'op-worker-gui/utils/chartist/center-line-chart';
+import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
 
 const {
   Component,
@@ -12,7 +13,11 @@ const {
   get,
 } = Ember;
 
+const EXPECTED_STATS_NUMBER = 12;
+
 export default Component.extend({
+  classNames: ['transfer-chart'],
+
   /**
    * @type {Object}
    * @virtual
@@ -41,31 +46,27 @@ export default Component.extend({
     return get(stats, timeUnit);
   }),
 
-  _sortedProvidersIds: computed('_statsForTimeUnit', function () {
-    return Object.keys(this.get('_statsForTimeUnit')).sort();
-  }),
-
-  _providersColors: computed('_sortedProvidersIds', function () {
-    return generateColors(this.get('_sortedProvidersIds').length);
-  }),
-
-  _sortedStatsValues: computed('_sortedProvidersIds', function () {
-    const {
-      _statsForTimeUnit,
-      _sortedProvidersIds,
-    } = this.getProperties('_statsForTimeUnit', '_sortedProvidersIds');
-    return _sortedProvidersIds.map(providerId =>
-      _statsForTimeUnit[providerId] || []
-    );
+  _statsValues: computed('_statsForTimeUnit', function () {
+    const statsValues = _.range(EXPECTED_STATS_NUMBER).map(() => 0);
+    const _statsForTimeUnit = this.get('_statsForTimeUnit');
+    Object.keys(_statsForTimeUnit).forEach(key => {
+      let values = _statsForTimeUnit[key];
+      if (values.length < EXPECTED_STATS_NUMBER) {
+        values = _.range(EXPECTED_STATS_NUMBER - values.length).map(() => 0)
+          .concat(values);
+      }
+      values.forEach((value, index) => statsValues[index] += value);
+    });
+    return statsValues;
   }),
 
   _timePeriod: computed('timeUnit', function () {
     const timeUnit = this.get('timeUnit');
     switch (timeUnit) {
       case 'minute':
-        return [12, 'seconds'];
+        return [5, 'seconds'];
       case 'hour':
-        return [12, 'minutes'];      
+        return [5, 'minutes'];      
       default:
       case 'day':
         return [2, 'hours'];
@@ -87,34 +88,29 @@ export default Component.extend({
    * Chartist settings
    * @type {Object}
    */
-  _chartOptions: computed('_providersColors', function() {
-    const _providersColors = this.get('_providersColors');
+  _chartOptions: computed(function() {
     return {
       axisY: {
-        onlyInteger: true,
+        labelInterpolationFnc: (value) => {
+          return bytesToString(value) + '/s';
+        }
       },
       low: 0,
-      stackBars: true,
-      chartPadding: 30,
+      chartPadding: {
+        top: 30,
+        bottom: 10,
+        left: 30,
+        right: 30,
+      },
       plugins: [
-      //   maximizeBarWidth(),
-      //   additionalXLabel(),
-      //   barSumLabels(),
-      //   tooltip({
-      //     chartType: 'bar',
-      //     rangeInTitle: true,
-      //     renderAboveBarDescription: true,
-      //   }),
-      //   axisLabels({
-      //     xLabel: 'Time',
-      //     yLabel: 'Files',
-      //   }),
-      //   shortHorizontalGrid(),
-        Chartist.plugins.legend(),
-        legendColors({
-          colors: _providersColors,
+        additionalXLabel(),
+        shortHorizontalGrid(),
+        centerLineChart(),
+        tooltip({
+          chartType: 'line',
+          rangeInTitle: true,
+          topOffset: -17,
         }),
-      //   refreshLegendFilter(),
       ],
     };
   }),
@@ -123,38 +119,32 @@ export default Component.extend({
    * Data for chartist
    * @type {computed.Object}
    */
-  _chartData: computed('_sortedStatsValues.[]', function () {
+  _chartData: computed('_statsValues', function () {
     let {
-      _sortedStatsValues,
-      _sortedProvidersIds,
+      _statsValues,
       _chartValues,
-    } = this.getProperties('_sortedStatsValues', '_sortedProvidersIds', '_chartValues');
-    if (_sortedStatsValues && _sortedStatsValues.length > 0) {
-      while (_sortedStatsValues.length > _chartValues.length) {
-        _chartValues.push([]);
-      }
-      const statsValues = _sortedStatsValues.slice(1);
-      statsValues.forEach((values, index) => {
-        while (_chartValues[index].length) {
-          _chartValues[index].shift();
-        }
-        values.forEach(value => _chartValues[index].push(value));
-      });
-      return {
-        labels: _.range(1, _chartValues[0].length + 1).reverse()
-          .map(n => this.getChartLabel(n)),
-        series: _chartValues.map((values, index) => {
-          return {
-            name: _sortedProvidersIds[index], // TODO get name of the provider
-            data: _chartValues[index],
-            className: `ct-series-${index}`,
-          };
-        }),
-        lastLabel: this.getChartLabel(0),
-      };
-    } else {
-      return {};
+    } = this.getProperties(
+      '_statsValues',
+      '_chartValues'
+    );
+    while (_chartValues.length) {
+      _chartValues.shift();
     }
+    _statsValues.forEach(value => _chartValues.push(value));
+    return {
+      labels: _.range(1, _chartValues.length + 1).reverse()
+        .map(n => this.getChartLabel(n)),
+      series: [{
+        data: _chartValues,
+        tooltipElements: _statsValues.map((value) => [{
+          name: 'Throughput',
+          value: bytesToString(value) + '/s',
+          className: 'ct-series-a-tooltip',
+        }]),
+        className: 'ct-series-a',
+      }],
+      lastLabel: this.getChartLabel(0),
+    };
   }),
 
   init() {

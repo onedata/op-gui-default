@@ -54,6 +54,9 @@ $screen-sm-min: $min-width-tablet;
 $screen-md-min: $min-width-desktop-small;
 $screen-lg-min: $min-width-desktop-medium;
 
+$collapse-transition-time: .2s;
+$height-collapse-transition: max-height $collapse-transition-time linear;
+$collapse-transition: $height-collapse-transition, padding $collapse-transition-time linear, opacity $collapse-transition-time linear;
 
 @import "bootstrap";
 .row {
@@ -151,6 +154,10 @@ $screen-lg-min: $min-width-desktop-medium;
 @import 'components/provider-place';
 @import 'components/one-pie-chart';
 @import 'components/transfers';
+@import 'components/one-collapsible-list';
+@import 'components/one-collapsible-list-item';
+@import 'components/one-collapsible-list-item-header';
+@import 'components/one-collapsible-list-item-content';
 
 // onedata-common components
 @import 'components/button-common';

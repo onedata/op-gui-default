@@ -1,0 +1,22 @@
+$collapsible-list-item-padding: $padding-large-horizontal;
+$collapsible-list-item-btn-toggle-padding: 12px;
+$collapsible-list-item-header-opened: darken($onedata-light-gray, 5%);
+$collapsible-list-item-header-opened-hover: darken($onedata-light-gray, 9%);
+
+.one-collapsible-list-item {
+  background-color: inherit;
+  &.active {
+    background-color: $onedata-light-gray;
+    .one-collapsible-list-item-header.opened {
+      background-color: $collapsible-list-item-header-opened;
+      &:hover {
+        background-color: $collapsible-list-item-header-opened-hover;
+      }
+    }
+  }
+  .form {
+    .row {
+      padding: 0;
+    }
+  }
+}

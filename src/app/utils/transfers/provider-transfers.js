@@ -14,6 +14,12 @@ const {
  */
 
 /**
+ * @typedef {Object} InputTransferSpeed
+ * @property {string} dest
+ * @property {Object} bytesPerSec
+ */
+
+/**
  * Collection of:
  * ```
  * {
@@ -23,30 +29,29 @@ const {
  * }
  * ```
  * Each vector (source, dest) can occur only once! (a,b or b,a) can occur at the same time
+ * @param {Array<InputTransferSpeed>}
  * @returns {Array<ProviderTransfer>}
  */
 export default function providerTransfers(transfers) {  
   const result = [];
   _.forEach(
-    _.groupBy(transfers, t => get(t, 'destination')), 
+    _.groupBy(transfers, t => get(t, 'dest')), 
     (dtrans, dest) => {
       const bySource = {};
       // dtrans - array of transfers for destination === dest
       dtrans.forEach(dt => {
-        // obj: src provider -> last minute bytes
-        const hstats = dt.stats.hour;
-        for (let src in hstats) {
+        for (let src in dt.bytesPerSec) {
           if (!bySource[src]) {
             bySource[src] = 0;
           }
-          bySource[src] += _.last(hstats[src]);
+          bySource[src] += dt.bytesPerSec[src];
         }
       });
       _.forEach(bySource, (totalBytes, src) => {
         result.push({
           dest,
           src,
-          bytesPerSec: totalBytes/60,
+          bytesPerSec: totalBytes,
         });
       });
   });

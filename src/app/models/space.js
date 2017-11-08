@@ -2,16 +2,18 @@ import DS from 'ember-data';
 
 import isDefaultMixinFactory from 'ember-cli-onedata-common/mixin-factories/models/is-default';
 
-import mockBelongsTo from 'op-worker-gui/utils/mock-belongs-to';
+// FIXME: mocks commented out
 
-import {
-  mockCurrent as currentTransfers,
-  mockCompleted as completedTransfers,
-} from 'op-worker-gui/models/space-transfer-list';
+// import mockBelongsTo from 'op-worker-gui/utils/mock-belongs-to';
 
-import {
-  mockProviders as providers,
-} from 'op-worker-gui/models/space-provider-list';
+// import {
+//   mockCurrent as currentTransfers,
+//   mockCompleted as completedTransfers,
+// } from 'op-worker-gui/models/space-transfer-list';
+
+// import {
+//   mockProviders as providers,
+// } from 'op-worker-gui/models/space-provider-list';
 
 const {
   attr,
@@ -46,12 +48,12 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
   /** Collection of group permissions - effectively all rows in permissions table */
   groupList: belongsTo('space-group-list', { async: true }),
 
-  // FIXME: currently mocked, to uncomment
-  // currentTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
-  // completedTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
-  // providerList: belongsTo('space-provider-list', { async: true, inverse: null }),
+  currentTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),  
+  completedTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
+  providerList: belongsTo('space-provider-list', { async: true, inverse: null }),
 
-  currentTransferList: mockBelongsTo(currentTransfers),
-  completedTransferList: mockBelongsTo(completedTransfers),
-  providerList: mockBelongsTo(providers),
+  // FIXME: currently mocks
+  // currentTransferList: mockBelongsTo(currentTransfers),
+  // completedTransferList: mockBelongsTo(completedTransfers),
+  // providerList: mockBelongsTo(providers),
 });

@@ -466,7 +466,7 @@ export default {
       liveTableStats: {
         userName: 'Username',
         startedAt: 'Started at',
-        totalBytes: 'Total bytes',
+        totalBytes: 'Transferred',
         totalFiles: 'Total files',
       },
     },

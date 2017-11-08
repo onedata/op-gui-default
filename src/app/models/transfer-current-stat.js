@@ -13,8 +13,8 @@ const {
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Model.extend({
-  inProgress: attr('boolean'),
-  bytesTransferred: attr('number'),
+  timestamp: attr('number'),
+  transferredBytes: attr('number'),
   bytesPerSec: attr('object'),
 });
 

@@ -47,11 +47,11 @@ export default function providerTransfers(transfers) {
           bySource[src] += dt.bytesPerSec[src];
         }
       });
-      _.forEach(bySource, (totalBytes, src) => {
+      _.forEach(bySource, (bytesPerSec, src) => {
         result.push({
           dest,
           src,
-          bytesPerSec: totalBytes,
+          bytesPerSec,
         });
       });
   });

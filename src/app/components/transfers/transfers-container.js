@@ -25,11 +25,11 @@ export default Component.extend({
   // FIXME: transfers loading (private)
   // FIXME: transfers error (private)
 
-  providers: computed.reads('space.providerList.list.content'),
+  _currentStats: computed.reads('currentTransfers.@each.currentStat'),
+  
+  providers: computed.reads('space.providerList.queryList.content'),
   // FIXME: providers loading (important: yielded)
   // FIXME: providers error (important: yielded)
-
-  _currentStats: computed.reads('currentTransfers.@each.currentStat'),
   
   // FIXME: backend not implemented, using proxy.content
   transferSpeeds: computed(

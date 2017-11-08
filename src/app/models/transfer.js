@@ -9,12 +9,17 @@ const {
 } = DS;
 
 export default Model.extend(TransferRuntimeMixin, {
+  status: attr('string'),
   destination: attr('string'),
-  fileName: attr('string'),
-  userName: attr('string'),
-  totalBytes: attr('number'),
-  startedAt: attr('string'), // TODO: make ISO date type?
-
+  // FIXME: computed property with file name?
+  path: attr('string'),
+  isDir: attr('boolean'),
+  
+  startTime: attr('number'),
+  finishTime: attr('number'),
+  
+  systemUser: belongsTo('systemUser'),
+  
   currentStat: belongsTo('transfer-current-stat'),
 
   minuteStat: belongsTo('transfer-time-stat'),
@@ -35,7 +40,8 @@ import {
 import {
   mockRecord as mockTimeStat,
 } from 'op-worker-gui/models/transfer-time-stat';
- 
+
+// FIXME: outdated API
 export const mock1 = {
   destination: 'p2',
   fileName: 'file1',
@@ -48,6 +54,7 @@ export const mock1 = {
   dayStat: mockBelongsTo(mockTimeStat('day')),
 };
 
+// FIXME: outdated API
 export const mock2 = {
   destination: 'p3',
   fileName: 'file2',

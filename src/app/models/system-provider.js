@@ -1,5 +1,9 @@
 import DS from 'ember-data';
 
+const {
+  attr,
+} = DS;
+
 /**
  * A single Onedata provider representation
  * Created originally for file-distribution model.
@@ -9,7 +13,10 @@ import DS from 'ember-data';
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend({
-  name: DS.attr('string')
+  name: attr('string'),
+  latitude: attr('number'),
+  longitude: attr('number'),
+  status: attr('string'),
 });
 
 // -- FIXME: mocks ---

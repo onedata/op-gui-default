@@ -7,6 +7,7 @@ const {
   inject: {
     service,
   },
+  get,
 } = Ember;
 
 const START_TIME_FORMAT = 'D MMM YYYY H:mm:ss';
@@ -45,24 +46,30 @@ export default Ember.Component.extend({
     'sort-desc': 'oneicon oneicon-arrow-down',
   }),
 
+  // FIXME: make objects with required async data
   /**
    * Transfers converted to format used by table.
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   _tableData: computed('transfers.[]', function () {
     const transfers = this.get('transfers') || [];
-    return transfers.map(transfer => {
-      const startedAt = moment(transfer.startedAt);
+    // FIXME: debug
+    const _tableData = transfers.map(transfer => {
+      const startMoment = moment(transfer.startTime);
       return {
-        userName: transfer.userName,
-        startedAtComparable: startedAt.unix(),
-        startedAtReadable: startedAt.format(START_TIME_FORMAT),
-        totalBytes: transfer.totalBytes,
-        totalBytesReadable: bytesToString(transfer.totalBytes),
-        totalFiles: transfer.totalFiles,
-        stats: transfer.stats,
+        // TODO: get user name
+        userName: transfer.get('systemUser.name'),
+        startedAtComparable: transfer.startTime,
+        startedAtReadable: startMoment.format(START_TIME_FORMAT),
+        // FIXME: total bytes should be get from currentStat.transferredBytes
+        totalBytes: get(transfer, 'currentStat.transferredBytes'),
+        totalBytesReadable: bytesToString(get(transfer, 'currentStat.transferredBytes')),
+        // totalFiles: transfer.totalFiles,
+        // FIXME: api changed, no global stats object
+        // stats: get(transfer, stats)
       };
     });
+    return _tableData;
   }),
 
   /**

@@ -1,118 +1,126 @@
 import DS from 'ember-data';
-import Ember from 'ember';
 
 import isDefaultMixinFactory from 'ember-cli-onedata-common/mixin-factories/models/is-default';
 
-import PromiseArray from 'ember-cli-onedata-common/utils/ember/promise-array';
-import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
+import mockBelongsTo from 'op-worker-gui/utils/mock-belongs-to';
 
-import _ from 'lodash';
+import {
+  mockCurrent as currentTransfers,
+  mockCompleted as completedTransfers,
+} from 'op-worker-gui/models/space-transfer-list';
+
+import {
+  mockProviders as providers,
+} from 'op-worker-gui/models/space-provider-list';
 
 const {
   attr,
   belongsTo
 } = DS;
 
-const {
-  RSVP: { Promise },
-  A,
-} = Ember;
+// <<<<<<< HEAD
+// const {
+//   RSVP: { Promise },
+//   A,
+// } = Ember;
 
-const ONE_KB = 1024;
-const ONE_MB = Math.pow(1024, 2);
-const ONE_GB = Math.pow(1024, 3);
+// const ONE_KB = 1024;
+// const ONE_MB = Math.pow(1024, 2);
+// const ONE_GB = Math.pow(1024, 3);
 
-// FIXME: mocked
-const transferList = PromiseObject.create({ promise: Promise.resolve({
-  list: PromiseArray.create({ promise: Promise.resolve(A([
-    {
-      destination: 'p2',
-      fileName: 'file1',
-      userName: 'John Smith',
-      totalBytes: 3 * ONE_GB,
-      startedAt: new Date().toISOString(),
-      // FIXME: speed in B/s from backend, not from last minute
-      stats: {
-        minute: {
-          p1: _.range(12).map(i => i * ONE_KB),
-          p3: _.range(12).map(i => i * 2 * ONE_KB),
-        },
-        hour: {
-          p1: _.range(60).map(i => i * ONE_MB),
-          p3: _.range(60).map(i => i * 2 * ONE_MB),
-        },
-        day: {
-          p1: _.range(24).map(i => i * ONE_GB),
-          p3: _.range(24).map(i => i * 2 * ONE_GB),
-        },
-        // TODO: maybe to remove
-        // month: {
-        //   p1: _.range(30).map(i => i * ONE_TB),
-        //   p3: _.range(30).map(i => i * 2 * ONE_TB),
-        // }
-      }
-    },
-    {
-      destination: 'p3',
-      fileName: 'file2',
-      userName: 'David Grohlton',
-      totalBytes: 3 * Math.pow(1024, 3),
-      startedAt: new Date(),
-      stats: {
-        minute: {
-          p1: _.range(12).map(i => i * ONE_KB),
-          p2: _.range(12).map(i => i * 3 * ONE_KB),
-        },
-        hour: {
-          p1: _.range(60).map(i => i * ONE_MB),
-          p2: _.range(60).map(i => i * 2 * ONE_MB),
-        },
-        day: {
-          p1: _.range(24).map(i => i * ONE_GB),
-          p2: _.range(24).map(i => i * 2 * ONE_GB),
-        },
-        // month: {
-        //   p1: _.range(30).map(i => i * ONE_TB),
-        //   p2: _.range(30).map(i => i * 2 * ONE_TB),
-        // }
-      }
-    },
-  ]))}),
-})});
+// // FIXME: mocked
+// const transferList = PromiseObject.create({ promise: Promise.resolve({
+//   list: PromiseArray.create({ promise: Promise.resolve(A([
+//     {
+//       destination: 'p2',
+//       fileName: 'file1',
+//       userName: 'John Smith',
+//       totalBytes: 3 * ONE_GB,
+//       startedAt: new Date().toISOString(),
+//       // FIXME: speed in B/s from backend, not from last minute
+//       stats: {
+//         minute: {
+//           p1: _.range(12).map(i => i * ONE_KB),
+//           p3: _.range(12).map(i => i * 2 * ONE_KB),
+//         },
+//         hour: {
+//           p1: _.range(60).map(i => i * ONE_MB),
+//           p3: _.range(60).map(i => i * 2 * ONE_MB),
+//         },
+//         day: {
+//           p1: _.range(24).map(i => i * ONE_GB),
+//           p3: _.range(24).map(i => i * 2 * ONE_GB),
+//         },
+//         // TODO: maybe to remove
+//         // month: {
+//         //   p1: _.range(30).map(i => i * ONE_TB),
+//         //   p3: _.range(30).map(i => i * 2 * ONE_TB),
+//         // }
+//       }
+//     },
+//     {
+//       destination: 'p3',
+//       fileName: 'file2',
+//       userName: 'David Grohlton',
+//       totalBytes: 3 * Math.pow(1024, 3),
+//       startedAt: new Date(),
+//       stats: {
+//         minute: {
+//           p1: _.range(12).map(i => i * ONE_KB),
+//           p2: _.range(12).map(i => i * 3 * ONE_KB),
+//         },
+//         hour: {
+//           p1: _.range(60).map(i => i * ONE_MB),
+//           p2: _.range(60).map(i => i * 2 * ONE_MB),
+//         },
+//         day: {
+//           p1: _.range(24).map(i => i * ONE_GB),
+//           p2: _.range(24).map(i => i * 2 * ONE_GB),
+//         },
+//         // month: {
+//         //   p1: _.range(30).map(i => i * ONE_TB),
+//         //   p2: _.range(30).map(i => i * 2 * ONE_TB),
+//         // }
+//       }
+//     },
+//   ]))}),
+// })});
 
-const providerList = PromiseObject.create({ promise: Promise.resolve({
-  list: PromiseArray.create({ promise: Promise.resolve(A([
-    {
-      id: 'p1',
-      name: 'Provider One',
-      latitude: 10,
-      longitude: 20,
-      status: 'online',
-    },
-    {
-      id: 'p2',
-      name: 'Provider Two',
-      latitude: 40,
-      longitude: 60,
-      status: 'online',
-    },
-    {
-      id: 'p3',
-      name: 'Provider Three',
-      latitude: -20,
-      longitude: 30,
-      status: 'online',
-    },
-    {
-      id: 'p4',
-      name: 'Provider Four',
-      latitude: 50,
-      longitude: -50,
-      status: 'pending',
-    },
-  ]))}),
-})});
+// const providerList = PromiseObject.create({ promise: Promise.resolve({
+//   list: PromiseArray.create({ promise: Promise.resolve(A([
+//     {
+//       id: 'p1',
+//       name: 'Provider One',
+//       latitude: 10,
+//       longitude: 20,
+//       status: 'online',
+//     },
+//     {
+//       id: 'p2',
+//       name: 'Provider Two',
+//       latitude: 40,
+//       longitude: 60,
+//       status: 'online',
+//     },
+//     {
+//       id: 'p3',
+//       name: 'Provider Three',
+//       latitude: -20,
+//       longitude: 30,
+//       status: 'online',
+//     },
+//     {
+//       id: 'p4',
+//       name: 'Provider Four',
+//       latitude: 50,
+//       longitude: -50,
+//       status: 'pending',
+//     },
+//   ]))}),
+// })});
 
+// =======
+// >>>>>>> feature/VFS-3752-transfers-prototype
 /**
  * A configuration of a space - entry point for all options
  * that can be reached from "spaces" button in primary sidebar.
@@ -137,14 +145,16 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
 
   /** Collection of users permissions - effectively all rows in permissions table */
   userList: belongsTo('space-user-list', { async: true }),
-  
+
   /** Collection of group permissions - effectively all rows in permissions table */
   groupList: belongsTo('space-group-list', { async: true }),
 
   // FIXME: currently mocked, to uncomment
-  // transferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
+  // currentTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
+  // completedTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
   // providerList: belongsTo('space-provider-list', { async: true, inverse: null }),
-  
-  transferList,
-  providerList,
+
+  currentTransferList: mockBelongsTo(currentTransfers),
+  completedTransferList: mockBelongsTo(completedTransfers),
+  providerList: mockBelongsTo(providers),
 });

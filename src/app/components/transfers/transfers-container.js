@@ -3,6 +3,7 @@ import Ember from 'ember';
 const {
   Component,
   computed,
+  get,
 } = Ember;
 
 import providerTransfers from 'op-worker-gui/utils/transfers/provider-transfers';
@@ -18,9 +19,9 @@ export default Component.extend({
   space: undefined,
 
   /**
-   * Collection of Transfer model
+   * Collection of Transfer model for current transfers
    */
-  transfers: computed.reads('space.transferList.list.content'),
+  currentTransfers: computed.reads('space.currentTransferList.list'),
   // FIXME: transfers loading (private)
   // FIXME: transfers error (private)
 
@@ -28,12 +29,31 @@ export default Component.extend({
   // FIXME: providers loading (important: yielded)
   // FIXME: providers error (important: yielded)
 
+  _currentStats: computed.reads('currentTransfers.@each.currentStat'),
+  
+  // FIXME: backend not implemented, using proxy.content
+  transferSpeeds: computed(
+    'currentTransfers.[]',
+    '_currentStats.@each.bytesPerSec',
+    function () {
+      const transfers = this.get('currentTransfers');
+      // FIXME: each transfer has currentStat loaded
+      if (transfers) {
+        return transfers.map(t => ({
+          dest: get(t, 'destination'),
+          bytesPerSec: get(t, 'currentStat.content.bytesPerSec'),
+        })); 
+      }
+    }
+  ),
+
   /**
-   * See `util:transfers/provider-input-transfers` for type def. and generation
-   * @type {Array<ProviderInputTransfer>}
+   * See `util:transfers/provider-transfers` for type def. and generation
+   * @type {Array<ProviderTransfer>}
    */
-  providerTransfers: computed('transfers.[]', function () {
-    return providerTransfers(this.get('transfers'));
+  providerTransfers: computed('transferSpeeds.[]', function () {
+    const pt = providerTransfers(this.get('transferSpeeds'));
+    return pt;
   }),
 
   /**

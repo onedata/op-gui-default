@@ -133,7 +133,7 @@ export default function (options) {
       if (data.type === 'bar' && options.chartType === 'bar') {
         let groupNode = $(data.group._node),
           barNode = $(data.element._node);
-
+          
         barNode.mouseover(() => {
           let lastGroupNode = groupNode.parent().children().last();
           let lastGroupBar = $(lastGroupNode.children('line')[data.index]);
@@ -162,7 +162,8 @@ export default function (options) {
       if (data.type === 'point' && options.chartType === 'line') {
         let groupNode = $(data.group._node),
           pointNode = $(data.element._node);
-
+        tooltipData = data.series.tooltipElements && data.series.tooltipElements[data.index] ?
+          data.series.tooltipElements[data.index] : tooltipData;
         pointNode.mouseover(() => {
           // top position
           let rect = pointNode[0].getBoundingClientRect();

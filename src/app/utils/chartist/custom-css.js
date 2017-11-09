@@ -33,10 +33,18 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-export default function () {
+/* global Chartist */
+export default function (options) {
+  const defaultOptions = {
+    filterBySeriesIndex: false,
+  };
+  options = Chartist.extend({}, defaultOptions, options);
   return (chart) => {
     chart.on('draw', (data) => {
       let css = chart.data.customCss;
+      if (options.filterBySeriesIndex) {
+        css = css[data.seriesIndex];
+      }
       let elementCss = css && css[data.index] && css[data.index][data.type];
       if (elementCss) {
         let element = $(data.element.getNode());

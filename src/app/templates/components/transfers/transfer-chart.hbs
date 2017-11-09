@@ -1,1 +1,6 @@
-{{chartist-chart data=_chartData options=_chartOptions type="bar" class="hide-middle-x-labels"}}
+{{chartist-chart data=_chartData options=_chartOptions type="line" class="hide-middle-x-labels"}}
+{{#bs-button-group value=timeUnit type="radio" size="sm" class="pull-right"}}
+  {{#bs-button value='minute'}}Minut{{/bs-button}}
+  {{#bs-button value='hour'}}Hour{{/bs-button}}
+  {{#bs-button value='day'}}Day{{/bs-button}}
+{{/bs-button-group}}

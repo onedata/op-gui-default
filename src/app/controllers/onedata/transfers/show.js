@@ -10,6 +10,7 @@ import Ember from 'ember';
  */
 export default Ember.Controller.extend({
   secondaryMenu: Ember.inject.service(),
+  transfersPieChartDirection: 'out',
 
   changeMenuActiveItem() {    
     this.set('secondaryMenu.activeItem', this.get('model'));

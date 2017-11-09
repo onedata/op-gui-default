@@ -57,6 +57,7 @@
     "ember-export-application-global": "1.0.5",
     "ember-i18n": "4.5.0",
     "ember-i18n-test-helpers": "0.3.0",
+    "ember-invoke-action": "git+https://github.com/kliput/ember-invoke-action.git#ec5bf575516ef52a2084c33c1719ff25ebf9fc5f",
     "ember-load-initializers": "0.6.3",
     "ember-localstorage-adapter": "1.0.0-rc.1",
     "ember-lodash": "4.17.5",

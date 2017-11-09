@@ -1,11 +1,3 @@
-<h2><span class="one-label">Throughput distribution</span>
-  {{#bs-button-group value=transfersDirection type="radio" size="sm" class="pull-right"}}
-    {{#bs-button value='in'}}in{{/bs-button}}
-    {{#bs-button value='out'}}out{{/bs-button}}
-  {{/bs-button-group}}
-</h2>
-
-
 <div class="row chart-row">
   {{transfers/throughput-distribution/chart providers=providers throughputData=spaceTransfers}}
   {{!-- <ul>

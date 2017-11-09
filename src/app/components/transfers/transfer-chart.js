@@ -17,6 +17,9 @@ const {
 } = Ember;
 
 const EXPECTED_STATS_NUMBER = 12;
+const MINUTE_STATS_NUMBER = 12;
+const HOUR_STATS_NUMBER = 60;
+const DAY_STATS_NUMBER = 24;
 
 export default Component.extend({
   classNames: ['transfer-chart'],
@@ -51,6 +54,31 @@ export default Component.extend({
   _chartValues: [],
 
   /**
+   * @type {Ember.ComputedProperty<Object>}
+   */
+  _statsForTimeUnit: {},
+
+  /**
+   * A number of stats, that should be considered as a single chart value
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _statsUnitsPerChartValue: computed('timeUnit', function () {
+    let statsPerUnit;
+    switch (this.get('timeUnit')) {
+      case 'day':
+        statsPerUnit = DAY_STATS_NUMBER;
+        break;
+      case 'hour':
+        statsPerUnit = HOUR_STATS_NUMBER;
+        break;
+      case 'minute':
+      default:
+        statsPerUnit = MINUTE_STATS_NUMBER;
+    }
+    return statsPerUnit / EXPECTED_STATS_NUMBER;
+  }),
+
+  /**
    * Object with stats for specified time unit.
    * @type {Ember.ComputedProperty.Object}
    */
@@ -63,28 +91,35 @@ export default Component.extend({
   }),
 
   /**
-   * @type {Ember.ComputedProperty<Object>}
-   */
-  _statsForTimeUnit: {},
-
-  /**
    * Stats values for time unit. Values from this array will be copied
    * to the _chartValues.
    * @type {Ember.ComputedProperty<Array<number>>}
    */
   _statsValues: computed('_statsForTimeUnit', function () {
-    const statsValues = _.range(EXPECTED_STATS_NUMBER).map(() => 0);
-    const _statsForTimeUnit = this.get('_statsForTimeUnit');
-    console.log(_statsForTimeUnit);
+    const {
+      _statsForTimeUnit,
+      _statsUnitsPerChartValue,
+    } = this.getProperties('_statsForTimeUnit', '_statsUnitsPerChartValue');
+    const inputStatsValuesNumber = EXPECTED_STATS_NUMBER * _statsUnitsPerChartValue;
+    const statsValues = _.range(inputStatsValuesNumber).map(() => 0);
+
     Object.keys(_statsForTimeUnit).forEach(key => {
       let values = _statsForTimeUnit[key];
-      if (values.length < EXPECTED_STATS_NUMBER) {
-        values = _.range(EXPECTED_STATS_NUMBER - values.length).map(() => 0)
+      if (values.length < inputStatsValuesNumber) {
+        values = _.range(inputStatsValuesNumber - values.length).map(() => 0)
           .concat(values);
       }
       values.forEach((value, index) => statsValues[index] += value);
     });
-    return statsValues;
+    const scaledStats = [];
+    for (let i = 0; i < statsValues.length; i += _statsUnitsPerChartValue) {
+      let singleChartStat = 0;
+      for (let j = 0; j < _statsUnitsPerChartValue; j++) {
+        singleChartStat += statsValues[i + j];
+      }
+      scaledStats.push(singleChartStat / _statsUnitsPerChartValue);
+    }
+    return scaledStats;
   }),
 
   /**
@@ -95,12 +130,12 @@ export default Component.extend({
     const timeUnit = this.get('timeUnit');
     switch (timeUnit) {
       case 'minute':
-        return [5, 'seconds'];
+        return [60 / EXPECTED_STATS_NUMBER, 'seconds'];
       case 'hour':
-        return [5, 'minutes'];      
+        return [60 / EXPECTED_STATS_NUMBER, 'minutes'];      
       default:
       case 'day':
-        return [2, 'hours'];
+        return [24 / EXPECTED_STATS_NUMBER, 'hours'];
     }
   }),
   
@@ -133,8 +168,8 @@ export default Component.extend({
     chartPadding: {
       top: 30,
       bottom: 30,
-      left: 60,
-      right: 60,
+      left: 50,
+      right: 50,
     },
     plugins: [
       additionalXLabel(),

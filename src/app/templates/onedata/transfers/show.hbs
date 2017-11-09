@@ -17,11 +17,15 @@
           {{#bs-button value='out'}}out{{/bs-button}}
         {{/bs-button-group}}
       </h2>
-      {{transfers/throughput-distribution
-        providers=tData.providers
-        providerTransfers=tData.providerTransfers
-        transfersDirection=transfersPieChartDirection
-      }}
+      {{#if tData.currentTransfers.length}}
+        {{transfers/throughput-distribution
+          providers=tData.providers
+          providerTransfers=tData.providerTransfers
+          transfersDirection=transfersPieChartDirection
+        }}
+      {{else}}
+        There are no active transfers
+      {{/if}}
     </div>
   </div>
 

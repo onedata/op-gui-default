@@ -4,21 +4,30 @@
 {{#transfers/transfers-container space=model as |tData|}}
   <div class="row">
     <div class="col-xs-12 col-md-7">
+      <h2>Providers map of dist.</h2>
       {{transfers/providers-map
         providers=tData.providers
         providerTransferConnections=tData.providerTransferConnections
       }}
     </div>
     <div class="col-xs-12 col-md-5">
+      <h2><span class="one-label">Throughput distribution</span>
+        {{#bs-button-group value=transfersPieChartDirection type="radio" size="sm" class="pull-right"}}
+          {{#bs-button value='in'}}in{{/bs-button}}
+          {{#bs-button value='out'}}out{{/bs-button}}
+        {{/bs-button-group}}
+      </h2>
       {{transfers/throughput-distribution
         providers=tData.providers
         providerTransfers=tData.providerTransfers
+        transfersDirection=transfersPieChartDirection
       }}
     </div>
   </div>
 
   <div class="row">
     <div class="col-xs-12">
+      <h2>Live transfers</h2>
       {{transfers/live-stats-table
         transfers=tData.currentTransfers
       }}

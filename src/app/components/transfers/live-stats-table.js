@@ -60,7 +60,11 @@ export default Ember.Component.extend({
         totalBytes: transfer.totalBytes,
         totalBytesReadable: bytesToString(transfer.totalBytes),
         totalFiles: transfer.totalFiles,
-        stats: transfer.stats,
+        stats: {
+          minute: transfer.minuteStat,
+          hour: transfer.hourStat,
+          day: transfer.dayStat,
+        },
       };
     });
   }),

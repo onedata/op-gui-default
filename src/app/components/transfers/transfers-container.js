@@ -6,6 +6,7 @@ const {
   get,
 } = Ember;
 
+import SpaceTransfersUpdater from 'op-worker-gui/utils/space-transfers-updater';
 import providerTransfers from 'op-worker-gui/utils/transfers/provider-transfers';
 import providerTransferConnections from 'op-worker-gui/utils/transfers/provider-transfer-connections';
 
@@ -19,9 +20,17 @@ export default Component.extend({
   space: undefined,
 
   /**
+   * @type {SpaceTransfersUpdater}
+   */
+  transfersUpdater: undefined,
+  
+  _transfersUpdaterEnabled: true,
+  
+  /**
    * Collection of Transfer model for current transfers
    */
   currentTransfers: computed.reads('space.currentTransferList.list'),
+  completedTransfers: computed.reads('space.completedTransferList.list'),
   // FIXME: transfers loading (private)
   // FIXME: transfers error (private)
 
@@ -66,4 +75,28 @@ export default Component.extend({
   providerTransferConnections: computed('providerTransfers', function () {
     return providerTransferConnections(this.get('providerTransfers'));
   }),
+  
+  init() {
+    this._super(...arguments);
+    
+    const {
+      space,
+      _transfersUpdaterEnabled,
+    } = this.getProperties('space', '_transfersUpdaterEnabled');
+    
+    const transfersUpdater = SpaceTransfersUpdater.create({
+      isEnabled: _transfersUpdaterEnabled,
+      space,
+    });
+    
+    this.set('transfersUpdater', transfersUpdater);
+  },
+  
+  willDestroyElement() {
+    try {
+      this.get('transfersUpdater').destroy();
+    } finally {
+      this._super(...arguments);
+    }
+  },
 });

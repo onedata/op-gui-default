@@ -1,6 +1,8 @@
 import DS from 'ember-data';
+import Ember from 'ember';
 
 import TransferRuntimeMixin from 'op-worker-gui/mixins/models/transfer-runtime';
+import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
 
 const {
   Model,
@@ -8,23 +10,51 @@ const {
   belongsTo,
 } = DS;
 
+const {
+  computed,
+} = Ember;
+
 export default Model.extend(TransferRuntimeMixin, {
   status: attr('string'),
   destination: attr('string'),
   // FIXME: computed property with file name?
   path: attr('string'),
-  isDir: attr('boolean'),
+  
+  /**
+   * One of: dir, file, deleted, unknown
+   */
+  fileType: attr('string'),
   
   startTime: attr('number'),
   finishTime: attr('number'),
   
-  systemUser: belongsTo('systemUser'),
+  // TODO: this should be changed to systemUserId
+  systemUserId: attr('string'),
   
   currentStat: belongsTo('transfer-current-stat'),
 
   minuteStat: belongsTo('transfer-time-stat'),
   hourStat: belongsTo('transfer-time-stat'),
   dayStat: belongsTo('transfer-time-stat'),
+  monthStat: belongsTo('transfer-time-stat'),
+  
+  /**
+   * @type {Ember.ComputedProperty<PromiseObject<SystemProvider>>}
+   */
+  systemUser: computed('id', 'systemUserId', function () {
+    const {
+      id,
+      systemUserId,
+    } = this.getProperties('id', 'systemUserId');
+    return PromiseObject.create({
+      promise: this.store.queryRecord('system-user', {
+        id: systemUserId,
+        context: {
+          od_space: id,
+        },
+      })
+    });
+  }),
 });
 
 // -- FIXME: mocks --

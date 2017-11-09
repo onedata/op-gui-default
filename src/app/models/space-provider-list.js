@@ -16,9 +16,11 @@ const {
 export default Model.extend({
   list: attr('array'),
   space: belongsTo('space', { async: true }),
-  
-  // FIXME: temp name
-  queryList: computed('list.[]', function () {
+    
+  /**
+   * @type {Ember.ComputedProperty<PromiseObject<SystemProvider>>}
+   */
+  queryList: computed('id', 'list.[]', function () {
     const {
       id,
       list,
@@ -30,7 +32,7 @@ export default Model.extend({
             id: providerId,
             context: {
               od_space: id,
-            }
+            },
           })
         )),
       }); 

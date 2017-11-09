@@ -21,12 +21,13 @@
                   <div class="row content-row">
                     {{!-- using data processing similar to the one used by ember-models-table --}}
                     <strong>{{column.title}}:</strong>
+                    {{!-- FIXME: will probably not work with new API --}}
                     <span class="one-label">{{get transfer column.propertyName}}</span>
                   </div>
                 {{/each}}
                 {{#if listItem.isActive}}
                   <div class="row content-row chart-row">
-                    {{transfers/live-stats-table/expanded-row record=transfer}}
+                    {{transfers/live-stats-table/expanded-row transfer=transfer}}
                   </div>
                 {{/if}}
               </div>

@@ -45,30 +45,42 @@ export default Ember.Component.extend({
     'sort-asc': 'oneicon oneicon-arrow-up',
     'sort-desc': 'oneicon oneicon-arrow-down',
   }),
-
+  
   // FIXME: make objects with required async data
+  // FIXME: handle loading of data (async - table shoul present loading state)
   /**
    * Transfers converted to format used by table.
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  _tableData: computed('transfers.[]', function () {
+  _tableData: computed('transfers.@each.isLoaded', function () {
     const transfers = this.get('transfers') || [];
     // FIXME: debug
-    const _tableData = transfers.map(transfer => {
-      const startMoment = moment(transfer.startTime);
-      return {
-        // TODO: get user name
-        userName: transfer.get('systemUser.name'),
-        startedAtComparable: transfer.startTime,
-        startedAtReadable: startMoment.format(START_TIME_FORMAT),
-        // FIXME: total bytes should be get from currentStat.transferredBytes
-        totalBytes: get(transfer, 'currentStat.transferredBytes'),
-        totalBytesReadable: bytesToString(get(transfer, 'currentStat.transferredBytes')),
-        // totalFiles: transfer.totalFiles,
-        // FIXME: api changed, no global stats object
-        // stats: get(transfer, stats)
-      };
-    });
+    const _tableData = transfers
+      .filter(t => get(t, 'isLoaded'))
+      .map(transfer => {
+        
+        // FIXME: test forcing stats to be fetched
+        window._mistat = get(transfer, 'minuteStat');
+        window._hstat = get(transfer, 'hourStat');
+        window._dstat = get(transfer, 'dayStat');
+        window._mostat = get(transfer, 'monthStat');
+        
+        const startTimestamp = get(transfer, 'startTime');
+        const startMoment = moment.unix(startTimestamp);
+        // FIXME: async properties - add loading states?
+        const transferredBytes = get(transfer, 'currentStat.transferredBytes');
+        const transferredFiles = get(transfer, 'currentStat.transferredFiles');
+        const userName = get(transfer, 'systemUser.name');
+        return {
+          // FIXME: user name is async, so it should be in loading state
+          userName,
+          startedAtComparable: startTimestamp,
+          startedAtReadable: startMoment.format(START_TIME_FORMAT),
+          totalBytes: transferredBytes,
+          totalBytesReadable: bytesToString(transferredBytes),
+          totalFiles: transferredFiles,
+        };
+      });
     return _tableData;
   }),
 

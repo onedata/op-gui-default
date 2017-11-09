@@ -7,6 +7,7 @@ import tooltip from 'op-worker-gui/utils/chartist/tooltip';
 import centerLineChart from 'op-worker-gui/utils/chartist/center-line-chart';
 import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
 import axisLabels from 'op-worker-gui/utils/chartist/axis-labels';
+import TransferTimeStatUpdater from 'op-worker-gui/utils/transfer-time-stat-updater';
 
 const {
   Component,
@@ -23,12 +24,12 @@ const DAY_STATS_NUMBER = 24;
 
 export default Component.extend({
   classNames: ['transfer-chart'],
-
+  
   /**
-   * @type {Object}
    * @virtual
+   * @type {Transfer}
    */
-  stats: undefined,
+  transfer: undefined,
 
   /**
    * Last update time
@@ -71,25 +72,27 @@ export default Component.extend({
       case 'hour':
         statsPerUnit = HOUR_STATS_NUMBER;
         break;
-      case 'minute':
       default:
+      case 'minute':
         statsPerUnit = MINUTE_STATS_NUMBER;
     }
     return statsPerUnit / EXPECTED_STATS_NUMBER;
   }),
 
+  // FIXME: this should be auto updated
   /**
    * Object with stats for specified time unit.
    * @type {Ember.ComputedProperty.Object}
    */
-  _statsContainerForTimeUnit: computed('stats', 'timeUnit', function () {
+  _statsContainerForTimeUnit: computed('transfers', 'timeUnit', function () {
     const {
-      stats,
+      transfer,
       timeUnit,
-    } = this.getProperties('stats', 'timeUnit');
-    return get(stats, timeUnit);
+    } = this.getProperties('transfer', 'timeUnit');
+    const asyncProperty = `${timeUnit}Stat`;
+    return get(transfer, timeUnit);
   }),
-
+  
   /**
    * Stats values for time unit. Values from this array will be copied
    * to the _chartValues.
@@ -231,6 +234,12 @@ export default Component.extend({
   init() {
     this._super(...arguments);
     this.set('_chartValues', []);
+    
+    const updater = TransferTimeStatUpdater.create({
+      isEnabled: false,
+      
+    });
+    this.set('updater', TransferTimeStatUpdater);
   },
 
   getChartLabel(offset) {

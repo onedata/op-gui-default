@@ -20,6 +20,7 @@ export default Model.extend({
 
 // --- FIXME: mock ---
 
+// FIXME: this mock is outdated
 export function mockRecord(
   inProgress,
   bytesTransferred,

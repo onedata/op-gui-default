@@ -33,7 +33,6 @@
  */
 
 import Ember from 'ember';
-import { invoke, invokeAction } from 'ember-invoke-action';
 
 const {
   computed,
@@ -61,7 +60,7 @@ export default Ember.Component.extend({
    * Selected items change handler
    * @type {Function}
    */
-  selectionChanged: null,
+  selectionChanged: () => {},
 
   /**
    * Filtered items change handler
@@ -143,7 +142,12 @@ export default Ember.Component.extend({
       let {
         _selectedItemValues,
         _availableItemValues,
-      } = this.getProperties('_selectedItemValues', '_availableItemValues');
+        selectionChanged,
+      } = this.getProperties(
+        '_selectedItemValues',
+        '_availableItemValues',
+        'selectionChanged'
+      );
       let isOnList = _selectedItemValues.includes(itemValue);
       if (selectionState === undefined) {
         if ((selectionState === undefined || selectionState === false) &&
@@ -154,7 +158,7 @@ export default Ember.Component.extend({
           _selectedItemValues.pushObject(itemValue);
         }
       }
-      invokeAction(this, 'selectionChanged', _selectedItemValues.toArray());
+      selectionChanged(_selectedItemValues.toArray());
     },
     notifyValue(itemValue, exists) {
       // next() to avoid multiple modification in a single render,
@@ -167,7 +171,7 @@ export default Ember.Component.extend({
             _availableItemValues.pushObject(itemValue);
           } else if (!exists && isOnList) {
             _availableItemValues.removeObject(itemValue);
-            invoke(this, 'toggleItemSelection', itemValue, false);
+            this.send('toggleItemSelection', itemValue, false);
           }
           debounce(this, '_filtrationChanged', 1);
         }
@@ -177,18 +181,20 @@ export default Ember.Component.extend({
       let {
         _areAllItemsSelected,
         _availableItemValues,
-        _selectedItemValues
+        _selectedItemValues,
+        selectionChanged,
       } = this.getProperties(
         '_areAllItemsSelected',
         '_availableItemValues',
-        '_selectedItemValues'
+        '_selectedItemValues',
+        'selectionChanged'
       );
       if (_areAllItemsSelected) {
         _selectedItemValues.clear();
       } else {
         _selectedItemValues.addObjects(_availableItemValues);
       }
-      invokeAction(this, 'selectionChanged', _selectedItemValues.toArray());
+      selectionChanged(_selectedItemValues.toArray());
     },
     collapseList(visibility) {
       if (visibility === undefined) {

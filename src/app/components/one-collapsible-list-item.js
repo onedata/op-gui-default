@@ -1,5 +1,4 @@
 import Ember from 'ember';
-import { invoke, invokeAction } from 'ember-invoke-action';
 const {
   computed,
   computed: {
@@ -49,7 +48,9 @@ export default Ember.Component.extend({
    * Item selection change handler. Injected by one-collapsible-list.
    * @type {Function}
    */
-  toggleItemSelection: null,
+  toggleItemSelection: () => {},
+
+  toggle: () => {},
 
   /**
    * List of selected list items
@@ -67,7 +68,7 @@ export default Ember.Component.extend({
    * Item value notification handler. Sends to parent value of this item.
    * @type {Function}
    */
-  _notifyValue: null,
+  _notifyValue: () => {},
 
   /**
    * If true, list is collapsed
@@ -143,18 +144,20 @@ export default Ember.Component.extend({
       let {
         _matchesSearchQuery,
         _isSelected,
-        selectionValue
+        selectionValue,
+        _notifyValue
       } = this.getProperties(
         '_matchesSearchQuery',
         '_isSelected',
-        'selectionValue'
+        'selectionValue',
+        '_notifyValue'
       );
       // Add/remove item value from list after filter
       if (selectionValue !== null) {
         if (!_matchesSearchQuery && !_isSelected) {
-          invokeAction(this, '_notifyValue', selectionValue, false);
+          _notifyValue(selectionValue, false);
         } else if (_matchesSearchQuery) {
-          invokeAction(this, '_notifyValue', selectionValue, true);
+          _notifyValue(selectionValue, true);
         }
       }
     }
@@ -171,7 +174,7 @@ export default Ember.Component.extend({
       eventsBus.on(closeEventName, () => this.set('isActive', false));
     }
     if (selectionValue !== null) {
-      invokeAction(this, '_notifyValue', selectionValue, true);
+      this.get('_notifyValue')(selectionValue, true);
     }
   },
 
@@ -179,7 +182,7 @@ export default Ember.Component.extend({
     try {
       let selectionValue = this.get('selectionValue');
       if (selectionValue !== null) {
-        invokeAction(this, '_notifyValue', selectionValue, false);
+        this.get('_notifyValue')(selectionValue, false);
       }
     } finally {
       this._super(...arguments);
@@ -197,7 +200,7 @@ export default Ember.Component.extend({
     let matches = targetElement.text().toLowerCase()
       .search(_searchQuery.trim().toLowerCase()) > -1;
     if (matches !== _matchesSearchQuery && !matches) {
-      invoke(this, 'toggle', false);
+      this.send('toggle', false);
     }
     this.set('_matchesSearchQuery', matches);
   },
@@ -208,7 +211,7 @@ export default Ember.Component.extend({
         return;
       }
       if (this.get('accordionMode')) {
-        invokeAction(this, 'toggle', this.get('elementId'), opened);
+        this.get('toggle')(this.get('elementId'), opened);
       } else {
         if (opened !== undefined) {
           this.set('isActive', !!opened);
@@ -218,7 +221,7 @@ export default Ember.Component.extend({
       }
     },
     toggleSelection() {
-      invokeAction(this, 'toggleItemSelection', this.get('selectionValue'));
+      this('toggleItemSelection')(this.get('selectionValue'));
     }
   }
 });

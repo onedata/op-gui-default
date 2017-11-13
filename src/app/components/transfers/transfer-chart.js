@@ -89,7 +89,6 @@ export default Component.extend({
       transfer,
       timeUnit,
     } = this.getProperties('transfer', 'timeUnit');
-    const asyncProperty = `${timeUnit}Stat`;
     return get(transfer, timeUnit);
   }),
   
@@ -239,7 +238,7 @@ export default Component.extend({
       isEnabled: false,
       
     });
-    this.set('updater', TransferTimeStatUpdater);
+    this.set('updater', updater);
   },
 
   getChartLabel(offset) {

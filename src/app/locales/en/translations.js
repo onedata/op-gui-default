@@ -464,10 +464,14 @@ export default {
     },
     transfers: {
       liveTableStats: {
+        path: 'File/directory',
         userName: 'Username',
         startedAt: 'Started at',
         totalBytes: 'Transferred',
         totalFiles: 'Total files',
+        cellFileName: {
+          deleted: 'deleted',
+        }
       },
     },
   },

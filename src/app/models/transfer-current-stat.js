@@ -15,6 +15,7 @@ const {
 export default Model.extend({
   timestamp: attr('number'),
   transferredBytes: attr('number'),
+  transferredFiles: attr('number'),
   bytesPerSec: attr('object'),
 });
 

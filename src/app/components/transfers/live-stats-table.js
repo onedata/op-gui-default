@@ -48,6 +48,7 @@ export default Ember.Component.extend({
   
   // FIXME: make objects with required async data
   // FIXME: handle loading of data (async - table shoul present loading state)
+  // FIXME: this should be a static reference to array to prevent re-rendering
   /**
    * Transfers converted to format used by table.
    * @type {Ember.ComputedProperty<Array<Object>>}
@@ -65,6 +66,8 @@ export default Ember.Component.extend({
         window._dstat = get(transfer, 'dayStat');
         window._mostat = get(transfer, 'monthStat');
         
+        const path = get(transfer, 'path');
+        const fileType = get(transfer, 'fileType');
         const startTimestamp = get(transfer, 'startTime');
         const startMoment = moment.unix(startTimestamp);
         // FIXME: async properties - add loading states?
@@ -73,12 +76,15 @@ export default Ember.Component.extend({
         const userName = get(transfer, 'systemUser.name');
         return {
           // FIXME: user name is async, so it should be in loading state
+          path,
+          fileType,
           userName,
           startedAtComparable: startTimestamp,
           startedAtReadable: startMoment.format(START_TIME_FORMAT),
           totalBytes: transferredBytes,
           totalBytesReadable: bytesToString(transferredBytes),
           totalFiles: transferredFiles,
+          isLoadingCurrentStat: false, // FIXME: true if loading async currentStat
         };
       });
     return _tableData;
@@ -91,6 +97,11 @@ export default Ember.Component.extend({
   _tableColumns: computed(function () {
     const i18n = this.get('i18n');
     return [{
+      propertyName: 'path',
+      title: i18n.t(I18N_PREFIX + 'path'),
+      component: 'transfers/live-stats-table/cell-file-name',
+    },
+    {
       propertyName: 'userName',
       title: i18n.t(I18N_PREFIX + 'userName'),
     }, {

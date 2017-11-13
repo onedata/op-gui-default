@@ -81,4 +81,17 @@
       border-bottom: none;
     }
   }
+  
+  // FIXME: should they be here? draft of styles
+  
+  .transfer-file-icon {
+    font-size: 32px;
+    float: left;
+  }
+  
+  .transfer-file-name {
+    line-height: 32px;
+    padding-left: 12px;
+    float: left;
+  }
 }

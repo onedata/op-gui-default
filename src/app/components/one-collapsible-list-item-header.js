@@ -16,7 +16,6 @@
  */
 
 import Ember from 'ember';
-import { invoke, invokeAction } from 'ember-invoke-action';
 
 const {
   observer,
@@ -44,6 +43,8 @@ export default Ember.Component.extend({
    * @type {boolean}
    */
   isCollapsible: true,
+
+  toggle: () => {},
 
   /**
    * A selector for elements, which click actions should be ignored by item 
@@ -84,7 +85,7 @@ export default Ember.Component.extend({
       (event.target.msMatchesSelector && event.target.msMatchesSelector(selector))) {
       event.stopPropagation();
     } else {
-      invoke(this, 'toggle');
+      this.send('toggle');
     }
   },
 
@@ -95,7 +96,7 @@ export default Ember.Component.extend({
      */
     toggle(opened) {
       if (!this.get('_isItemFixed') && this.get('isCollapsible')) {
-        invokeAction(this, 'toggle', opened);
+        this.get('toggle')(opened);
       }
     }
   }

@@ -2,7 +2,8 @@
 {{page-title (t "transfers.show.title")}}
 
 {{#transfers/transfers-container space=model as |tData|}}
-  {{!-- <div class="row">
+  <div class="row">
+    
     <div class="col-xs-12 col-md-7">
       <h2>Providers map of dist.</h2>
       {{transfers/providers-map
@@ -10,6 +11,7 @@
         providerTransferConnections=tData.providerTransferConnections
       }}
     </div>
+    
     <div class="col-xs-12 col-md-5">
       <h2><span class="one-label">Throughput distribution</span>
         {{#bs-button-group value=transfersPieChartDirection type="radio" size="sm" class="pull-right"}}
@@ -27,7 +29,8 @@
         There are no active transfers
       {{/if}}
     </div>
-  </div> --}}
+    
+  </div>
 
   <div class="row">
     <div class="col-xs-12">

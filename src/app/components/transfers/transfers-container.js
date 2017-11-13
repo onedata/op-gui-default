@@ -34,35 +34,50 @@ export default Component.extend({
   // FIXME: transfers loading (private)
   // FIXME: transfers error (private)
 
+  /**
+   * @type {Ember.ComputedProperty<Array<TransferCurrentStat>>}
+   */
   _currentStats: computed.reads('currentTransfers.@each.currentStat'),
+  
+  _completedStats: computed.reads('completedTransfers.@each.currentStat'),
   
   providers: computed.reads('space.providerList.queryList.content'),
   // FIXME: providers loading (important: yielded)
   // FIXME: providers error (important: yielded)
   
   // FIXME: backend not implemented, using proxy.content
+  /**
+   * @type {Ember.ComputedProperty<InputTransferSpeed>}
+   */
+  // FIXME: temporarily changed do completed states
   transferSpeeds: computed(
-    'currentTransfers.[]',
-    '_currentStats.@each.bytesPerSec',
+    'completedTransfers.[]',
+    '_completedStats.@each.isLoaded',
     function () {
-      const transfers = this.get('currentTransfers');
+      const transfers = this.get('completedTransfers');
       // FIXME: each transfer has currentStat loaded
       if (transfers) {
-        return transfers.map(t => ({
+        var ts = transfers.map(t => ({
           dest: get(t, 'destination'),
-          bytesPerSec: get(t, 'currentStat.content.bytesPerSec'),
+          bytesPerSec: get(t, '_completedStat.bytesPerSec'),
         })); 
+        console.debug('debug me');
+        return ts;
       }
     }
   ),
 
   /**
    * See `util:transfers/provider-transfers` for type def. and generation
-   * @type {Array<ProviderTransfer>}
+   * @type {Ember.ComputedProperty<Array<ProviderTransfer>|undefined>}
    */
   providerTransfers: computed('transferSpeeds.[]', function () {
-    const pt = providerTransfers(this.get('transferSpeeds'));
-    return pt;
+    const transferSpeeds = this.get('transferSpeeds');
+    if (transferSpeeds) {
+      const pt = providerTransfers(this.get('transferSpeeds'));
+      console.debug('debug me');
+      return pt;
+    }
   }),
 
   /**
@@ -70,10 +85,16 @@ export default Component.extend({
    * Order in connection is random; each pair can occur once.
    * See `util:transfers/provider-transfer-connections`
    * `[['a', 'b'], ['c', 'a'], ['b', 'c']]`
-   * @type {Array<ProviderTransferConnection>}
+   * @type {Ember.ComputedProperty<Array<ProviderTransferConnection|undefined>>}
    */
   providerTransferConnections: computed('providerTransfers', function () {
-    return providerTransferConnections(this.get('providerTransfers'));
+    // FIXME: debugging
+    const providerTransfers = this.get('providerTransfers');
+    if (providerTransfers) {
+      var x = providerTransferConnections(providerTransfers);
+      console.debug('debug me');
+      return x; 
+    }
   }),
   
   init() {

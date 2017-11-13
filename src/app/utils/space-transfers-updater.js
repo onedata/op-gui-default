@@ -162,13 +162,12 @@ export default EmberObject.extend({
     const _completedWatcher = Looper.create({
       immediate: true,
     });
-    _currentWatcher
+    // FIXME: too often
+    _completedWatcher
       .on('tick', () =>
         safeExec(this, 'fetchCompleted')
       );
-      
-    // FIXME: completedWatcher
-      
+         
     this.setProperties({
       _currentWatcher,
       _completedWatcher,
@@ -198,6 +197,7 @@ export default EmberObject.extend({
     return this.fetchList('current');
   },
   
+  // FIXME: currentStat for completed transfers should be fetched/refreshed only once
   fetchCompleted() {
     return this.fetchList('completed');
   },
@@ -212,7 +212,7 @@ export default EmberObject.extend({
       // .then(ctl => {
       //   console.debug('reloaded: ' + ctl);
       // })
-      // .then(list => Promise.all(list.map(t => t.reload())))
+      .then(transferList => transferList.get('list'))
       .then(list => Promise.all(list.map(t => t.belongsTo('currentStat').reload())))
       // .then(transfers => tranfer.belongsTo('currentStat').reload())
       .catch(error => this.set(`${type}Error`, error))

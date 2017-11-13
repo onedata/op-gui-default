@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import _ from 'lodash';
 
 const {
   Component,
@@ -37,9 +38,9 @@ export default Component.extend({
   /**
    * @type {Ember.ComputedProperty<Array<TransferCurrentStat>>}
    */
-  _currentStats: computed.reads('currentTransfers.@each.currentStat'),
+  _currentStats: computed.mapBy('currentTransfers', 'currentStat'),
   
-  _completedStats: computed.reads('completedTransfers.@each.currentStat'),
+  _completedStats: computed.mapBy('completedTransfers', 'currentStat'),
   
   providers: computed.reads('space.providerList.queryList.content'),
   // FIXME: providers loading (important: yielded)
@@ -51,15 +52,15 @@ export default Component.extend({
    */
   // FIXME: temporarily changed do completed states
   transferSpeeds: computed(
-    'completedTransfers.[]',
-    '_completedStats.@each.isLoaded',
+    'currentTransfers.[]',
+    '_currentStats.@each.isSettled',
     function () {
-      const transfers = this.get('completedTransfers');
+      const transfers = this.get('currentTransfers');
       // FIXME: each transfer has currentStat loaded
-      if (transfers) {
+      if (transfers && _.every(this.get('_currentStats'), s => get(s, 'isSettled'))) {
         var ts = transfers.map(t => ({
           dest: get(t, 'destination'),
-          bytesPerSec: get(t, '_completedStat.bytesPerSec'),
+          bytesPerSec: get(t, 'currentStat.bytesPerSec'),
         })); 
         console.debug('debug me');
         return ts;

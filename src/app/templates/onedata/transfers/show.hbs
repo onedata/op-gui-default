@@ -19,7 +19,7 @@
           {{#bs-button value='out'}}out{{/bs-button}}
         {{/bs-button-group}}
       </h2>
-      {{#if tData.currentTransfers.length}}
+      {{#if tData.providerTransfers.length}}
         {{transfers/throughput-distribution
           providers=tData.providers
           providerTransfers=tData.providerTransfers

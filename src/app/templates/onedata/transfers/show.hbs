@@ -4,7 +4,7 @@
 {{#transfers/transfers-container space=model as |tData|}}
   <div class="row">
     <div class="col-xs-12 col-md-7 map-column">
-      <h2>Providers map of dist.</h2>
+      <h2>{{t "components.transfers.providersMapOfDist"}}</h2>
       {{transfers/providers-map
         providers=tData.providers
         providerTransferConnections=tData.providerTransferConnections
@@ -12,10 +12,10 @@
     </div>
     
     <div class="col-xs-12 col-md-5">
-      <h2><span class="one-label">Throughput distribution</span>
+      <h2><span class="one-label">{{t "components.transfers.throughputDistribution"}}</span>
         {{#bs-button-group value=transfersPieChartDirection type="radio" size="sm" class="pull-right"}}
-          {{#bs-button value='in'}}in{{/bs-button}}
-          {{#bs-button value='out'}}out{{/bs-button}}
+          {{#bs-button value="in"}}{{t "components.transfers.in"}}{{/bs-button}}
+          {{#bs-button value="out"}}{{t "components.transfers.out"}}{{/bs-button}}
         {{/bs-button-group}}
       </h2>
       {{#if tData.providerTransfers.length}}
@@ -25,14 +25,14 @@
           transfersDirection=transfersPieChartDirection
         }}
       {{else}}
-        There are no active transfers
+        {{t "components.transfers.noActiveTransfers"}}
       {{/if}}
     </div>
   </div>
 
   <div class="row">
     <div class="col-xs-12">
-      <h2>Live transfers</h2>
+      <h2>{{t "components.transfers.activeTransfers"}}</h2>
       {{transfers/live-stats-table
         transfers=tData.currentTransfers
       }}
@@ -41,7 +41,7 @@
   
   <div class="row">
     <div class="col-xs-12">
-      <h2>Completed transfers</h2>
+      <h2>{{t "components.transfers.completedTransfers"}}</h2>
       {{transfers/live-stats-table
         transfers=tData.completedTransfers
       }}

@@ -108,3 +108,34 @@
     }
   }
 }
+
+.btn-group {
+  .btn {
+    font-weight: bold;
+    border: 2px solid $color-one-blue-gray !important;
+    & + .btn {
+      margin-left: -2px;
+    }
+    &.btn-default {
+      &:not(.active) {
+        background-color: $color-one-white;
+        color: $color-one-blue-gray !important;
+        &:focus,
+        &.focus,
+        &:hover,
+        &:active {
+          background-color: lighten($color-one-blue-gray, 50%);
+        }
+      }
+      &.active {
+        background-color: $color-one-blue-gray;
+        &:focus,
+        &.focus,
+        &:hover,
+        &:active {
+          background-color: darken($color-one-blue-gray, 7%);
+        }
+      }
+    }
+  }
+}

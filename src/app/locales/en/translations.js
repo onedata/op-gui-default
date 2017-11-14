@@ -471,7 +471,8 @@ export default {
         totalFiles: 'Total files',
         cellFileName: {
           deleted: 'deleted',
-        }
+        },
+        noTransfersToShow: 'No transfers to show',
       },
     },
   },

@@ -14,7 +14,7 @@ const START_TIME_FORMAT = 'D MMM YYYY H:mm:ss';
 const I18N_PREFIX = 'components.transfers.liveTableStats.';
 
 export default Ember.Component.extend({
-  classNames: ['transfers-live-stats-table'],
+  classNames: ['transfers-live-stats-table', 'transfers-table'],
 
   i18n: service(),
 
@@ -44,6 +44,26 @@ export default Ember.Component.extend({
   _tableCustomIcons: Ember.Object.create({
     'sort-asc': 'oneicon oneicon-arrow-up',
     'sort-desc': 'oneicon oneicon-arrow-down',
+  }),
+
+  /**
+   * Custom classes for ember-models-table addon.
+   * @type {Ember.Object}
+   */
+  _tableCustomClasses: computed(function () {
+    return Ember.Object.create({
+      table: 'table',
+    });
+  }),
+
+  /**
+   * Custom messages for ember-models-table addon.
+   * @type {Ember.Object}
+   */
+  _tableCustomMessages: computed('noDataToShowMessage', function () {
+    return Ember.Object.create({
+      noDataToShow: this.get('i18n').t(I18N_PREFIX + 'noTransfersToShow'),
+    });
   }),
   
   // FIXME: make objects with required async data

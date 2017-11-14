@@ -15,12 +15,14 @@ export default OnePieChart.extend({
   className: ['throughput-distribution-chart'],
 
   /**
+   * @virtual
    * Array of all providers, that takes part in transfers.
    * @type {Array<Provider>}
    */
   providers: [],
 
   /**
+   * @virtual
    * Space transfers throughput data
    * @type {Array<SpaceTransfer>}
    */
@@ -29,7 +31,7 @@ export default OnePieChart.extend({
   /**
    * @override
    */
-  data: computed('throughputData.[]', function () {
+  data: computed('providers.[]', 'throughputData.[]', function () {
     const {
       providers,
       throughputData,

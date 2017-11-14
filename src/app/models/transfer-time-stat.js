@@ -13,12 +13,12 @@ const {
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Model.extend({
-  inProgress: attr('boolean'),
-  bytesTransferred: attr('number'),
-  bytesPerSec: attr('number'),
+  timestamp: attr('number'),
+  type: attr('string'),
+  stats: attr('object'),
 });
 
-// --- FIXME: mock ---
+// --- FIXME: mock is outdated ---
 
 import _ from 'lodash';
  

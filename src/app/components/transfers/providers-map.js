@@ -10,6 +10,7 @@ const {
 export default Component.extend({
   /**
    * @virtual
+   * Cannot be null or undefined!
    * @type {Array<Provider>}
    */
   providers: undefined,
@@ -21,13 +22,18 @@ export default Component.extend({
    * @type {Array<Array[string,string]>}
    */
   providerTransferConnections: undefined,
-  
+    
   /**
    * Maps provider id => Provider model
    * @type {Ember.ComputedProperty<object>}
    */
   providersMap: computed('providers.[]', function () {
     const providers = this.get('providers');
-    return _.zipObject(_.map(providers, 'id'), providers);
+    if (providers) {
+      return _.zipObject(_.map(providers, 'id'), providers);
+    } else {
+      console.warn('component:transfers/providers-map: providers list is null');
+      return null;
+    }
   }),
 });

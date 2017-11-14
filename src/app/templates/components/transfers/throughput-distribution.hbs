@@ -1,10 +1,6 @@
 <div class="row chart-row">
-  {{transfers/throughput-distribution/chart providers=providers throughputData=spaceTransfers}}
-  {{!-- <ul>
-    {{#each spaceTransfers as |t|}}
-      <li>
-        {{get (get providersMap t.providerId) "name"}} ({{t.providerId}}): {{bytes-to-string t.bytesPerSec}}/s
-      </li>
-    {{/each}}
-  </ul> --}}
+  {{!-- FIXME: a loading container --}}
+  {{#if chartDataIsLoaded}}
+    {{transfers/throughput-distribution/chart providers=providers throughputData=spaceTransfers}}
+  {{/if}}
 </div>

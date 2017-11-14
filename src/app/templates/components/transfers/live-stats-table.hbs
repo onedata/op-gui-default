@@ -5,7 +5,7 @@
     </div>
   {{else}}
     {{#one-collapsible-list as |list|}}
-      {{#each _tableData as |transfer|}}
+      {{#each _tableData as |tableRowData|}}
         {{#list.item as |listItem|}}
           {{#listItem.header}}
             <span class="item-icon-container">
@@ -21,13 +21,12 @@
                   <div class="row content-row">
                     {{!-- using data processing similar to the one used by ember-models-table --}}
                     <strong>{{column.title}}:</strong>
-                    {{!-- FIXME: will probably not work with new API --}}
-                    <span class="one-label">{{get transfer column.propertyName}}</span>
+                    <span class="one-label">{{get tableRowData column.propertyName}}</span>
                   </div>
                 {{/each}}
                 {{#if listItem.isActive}}
                   <div class="row content-row chart-row">
-                    {{transfers/live-stats-table/expanded-row transfer=transfer}}
+                    {{transfers/live-stats-table/expanded-row record=tableRowData}}
                   </div>
                 {{/if}}
               </div>

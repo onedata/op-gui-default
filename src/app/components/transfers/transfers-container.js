@@ -5,6 +5,8 @@ const {
   Component,
   computed,
   get,
+  A,
+  set,
 } = Ember;
 
 import SpaceTransfersUpdater from 'op-worker-gui/utils/space-transfers-updater';
@@ -30,58 +32,72 @@ export default Component.extend({
   /**
    * Collection of Transfer model for current transfers
    */
-  currentTransfers: computed.reads('space.currentTransferList.list'),
-  completedTransfers: computed.reads('space.completedTransferList.list'),
+  // FIXME: debug code - changed current with completed
+  currentTransfers: computed.reads('space.currentTransferList.list.content'),
+  completedTransfers: computed.reads('space.completedTransferList.list.content'),
   // FIXME: transfers loading (private)
   // FIXME: transfers error (private)
 
   /**
    * @type {Ember.ComputedProperty<Array<TransferCurrentStat>>}
    */
-  _currentStats: computed.mapBy('currentTransfers', 'currentStat'),
+  // FIXME: inverted current-completed
+  // FIXME: it shows true when transfers list is not loaded yet
+  // _currentStats: computed.mapBy('completedTransfers', 'currentStat'),
+  tableDataIsLoaded: computed(
+    'currentTransfers.isLoaded',
+    'currentTransfers.@each.tableDataIsLoaded',
+    'space.providerList.queryList.isSettled',
+    'space.completedTransferList.list.isLoaded',
+    function () {
+      return this.get('space.completedTransferList.list.isLoaded') &&
+        this.get('space.providerList.queryList.isSettled'),
+        this.get('currentTransfers').every(t => get(t, 'tableDataIsLoaded') === true);
+    }
+  ),
   
   _completedStats: computed.mapBy('completedTransfers', 'currentStat'),
+  
   
   providers: computed.reads('space.providerList.queryList.content'),
   // FIXME: providers loading (important: yielded)
   // FIXME: providers error (important: yielded)
+    
+  // FIXME: cache for providerTransfers
   
-  // FIXME: backend not implemented, using proxy.content
+  _providerTransfersCache: null,
+  
   /**
-   * @type {Ember.ComputedProperty<InputTransferSpeed>}
-   */
-  // FIXME: temporarily changed do completed states
-  transferSpeeds: computed(
-    'currentTransfers.[]',
-    '_currentStats.@each.isSettled',
-    function () {
-      const transfers = this.get('currentTransfers');
-      // FIXME: each transfer has currentStat loaded
-      if (transfers && _.every(this.get('_currentStats'), s => get(s, 'isSettled'))) {
-        var ts = transfers.map(t => ({
-          dest: get(t, 'destination'),
-          bytesPerSec: get(t, 'currentStat.bytesPerSec'),
-        })); 
-        console.debug('debug me');
-        return ts;
-      }
-    }
-  ),
-
-  /**
+   * (async -> currentTransfers.[], default: A([]))
    * See `util:transfers/provider-transfers` for type def. and generation
    * @type {Ember.ComputedProperty<Array<ProviderTransfer>|undefined>}
    */
-  providerTransfers: computed('transferSpeeds.[]', function () {
-    const transferSpeeds = this.get('transferSpeeds');
-    if (transferSpeeds) {
-      const pt = providerTransfers(this.get('transferSpeeds'));
-      console.debug('debug me');
-      return pt;
+  providerTransfers: computed('tableDataIsLoaded', 'currentTransfers.[]', function () {
+    if (this.get('tableDataIsLoaded')) {
+      let ptCache = this.get('_providerTransfersCache');
+      if (ptCache == null) {
+        ptCache = A([]);
+      }
+      
+      const currentTransfers = this.get('currentTransfers');
+      const ptList = providerTransfers(currentTransfers.toArray());
+      ptList.forEach(pt => {
+        const ptOldVer = _.find(ptCache, { src: get(pt, 'src'), dest: get(pt, 'dest') });
+        if (ptOldVer) {
+          set(ptOldVer, 'bytesPerSec', get(pt, 'bytesPerSec'));
+        } else {
+          ptCache.push(pt);
+        }
+      });
+      
+      this.set('_providerTransfersCache', ptCache);
     }
+    
+    return this.get('_providerTransfersCache');
   }),
 
   /**
+   * (async -> providerTransfers)
    * Collection of connection between two providers (for map display)
    * Order in connection is random; each pair can occur once.
    * See `util:transfers/provider-transfer-connections`
@@ -105,6 +121,8 @@ export default Component.extend({
       space,
       _transfersUpdaterEnabled,
     } = this.getProperties('space', '_transfersUpdaterEnabled');
+    
+    this.set('_providerTransfersCache', A());
     
     const transfersUpdater = SpaceTransfersUpdater.create({
       isEnabled: _transfersUpdaterEnabled,

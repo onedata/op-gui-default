@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import moment from 'moment';
 import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
+import mergeNewItems from 'ember-cli-onedata-common/utils/push-new-items';
 
 const {
   computed,
@@ -8,6 +9,8 @@ const {
     service,
   },
   get,
+  A,
+  Object: EmberObject,
 } = Ember;
 
 const START_TIME_FORMAT = 'D MMM YYYY H:mm:ss';
@@ -46,6 +49,8 @@ export default Ember.Component.extend({
     'sort-desc': 'oneicon oneicon-arrow-down',
   }),
   
+  _tableDataCache: null,
+  
   // FIXME: make objects with required async data
   // FIXME: handle loading of data (async - table shoul present loading state)
   // FIXME: this should be a static reference to array to prevent re-rendering
@@ -53,41 +58,20 @@ export default Ember.Component.extend({
    * Transfers converted to format used by table.
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  _tableData: computed('transfers.@each.isLoaded', function () {
-    const transfers = this.get('transfers') || [];
-    // FIXME: debug
-    const _tableData = transfers
-      .filter(t => get(t, 'isLoaded'))
-      .map(transfer => {
+  _tableData: computed('transfers.@each.tableDataIsLoaded', function () {
+    let _tableDataCache = this.get('_tableDataCache');
+    const transfers = this.get('transfers') || A([]);
         
-        // FIXME: test forcing stats to be fetched
-        window._mistat = get(transfer, 'minuteStat');
-        window._hstat = get(transfer, 'hourStat');
-        window._dstat = get(transfer, 'dayStat');
-        window._mostat = get(transfer, 'monthStat');
-        
-        const path = get(transfer, 'path');
-        const fileType = get(transfer, 'fileType');
-        const startTimestamp = get(transfer, 'startTime');
-        const startMoment = moment.unix(startTimestamp);
-        // FIXME: async properties - add loading states?
-        const transferredBytes = get(transfer, 'currentStat.transferredBytes');
-        const transferredFiles = get(transfer, 'currentStat.transferredFiles');
-        const userName = get(transfer, 'systemUser.name');
-        return {
-          // FIXME: user name is async, so it should be in loading state
-          path,
-          fileType,
-          userName,
-          startedAtComparable: startTimestamp,
-          startedAtReadable: startMoment.format(START_TIME_FORMAT),
-          totalBytes: transferredBytes,
-          totalBytesReadable: bytesToString(transferredBytes),
-          totalFiles: transferredFiles,
-          isLoadingCurrentStat: false, // FIXME: true if loading async currentStat
-        };
-      });
-    return _tableData;
+    const newTableData = transfers.map(transferTableData);
+    mergeNewItems(
+      _tableDataCache,
+      newTableData,
+      (a, b) => get(a, 'transferId') === get(b, 'transferId'),
+      false
+    );
+    
+    console.log('debug me');
+    return this.set('_tableDataCache', _tableDataCache);
   }),
 
   /**
@@ -137,6 +121,8 @@ export default Ember.Component.extend({
       _resizeEventHandler,
       _window,
     } = this.getProperties('_resizeEventHandler', '_window');
+    
+    this.set('_tableDataCache', A());
 
     _resizeEventHandler();
     _window.addEventListener('resize', _resizeEventHandler);
@@ -154,3 +140,34 @@ export default Ember.Component.extend({
     }
   },
 });
+
+// TODO: optimize using destructurize and getProperties
+function transferTableData(transfer) {
+  const transferId = get(transfer, 'id');
+  const path = get(transfer, 'path');
+  const fileType = get(transfer, 'fileType');
+  const startTimestamp = get(transfer, 'startTime');
+  const startMoment = moment.unix(startTimestamp);
+  // FIXME: async properties - add loading states?
+  const transferredBytes = get(transfer, 'currentStat.transferredBytes');
+  const transferredFiles = get(transfer, 'currentStat.transferredFiles');
+  const userName = get(transfer, 'userName');
+  const startedAtReadable = startMoment && startMoment.format(START_TIME_FORMAT);
+  const totalBytesReadable = bytesToString(transferredBytes);
+  const isLoading = get(transfer, 'tableDataIsLoaded') === false;
+  
+  return EmberObject.create({
+    // FIXME: user name is async, so it should be in loading state
+    transfer,
+    transferId,
+    path,
+    fileType,
+    userName,
+    startedAtComparable: startTimestamp,
+    startedAtReadable,
+    totalBytes: transferredBytes,
+    totalBytesReadable,
+    totalFiles: transferredFiles,
+    isLoading, // FIXME: true if loading async fields
+  });
+}

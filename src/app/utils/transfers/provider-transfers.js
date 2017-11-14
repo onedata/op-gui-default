@@ -35,16 +35,16 @@ const {
 export default function providerTransfers(transfers) {  
   const result = [];
   _.forEach(
-    _.groupBy(transfers, t => get(t, 'dest')), 
+    _.groupBy(transfers, t => get(t, 'destination')), 
     (dtrans, dest) => {
       const bySource = {};
       // dtrans - array of transfers for destination === dest
       dtrans.forEach(dt => {
-        for (let src in dt.bytesPerSec) {
+        for (let src in get(dt, 'bytesPerSec')) {
           if (!bySource[src]) {
             bySource[src] = 0;
           }
-          bySource[src] += dt.bytesPerSec[src];
+          bySource[src] += get(dt, `bytesPerSec.${src}`);
         }
       });
       _.forEach(bySource, (bytesPerSec, src) => {

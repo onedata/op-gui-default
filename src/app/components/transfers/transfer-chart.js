@@ -13,8 +13,6 @@ const {
   Component,
   computed,
   get,
-  observer,
-  on,
 } = Ember;
 
 const EXPECTED_STATS_NUMBER = 12;
@@ -32,12 +30,12 @@ export default Component.extend({
   transfer: undefined,
 
   /**
-   * Last update time
+   * Last update time (async -> _timeStatForUnit)
    * @type {Ember.ComputedProperty<Date>}
    */
-  _lastUpdateTime: computed('_statsContainerForTimeUnit.content.date', function () {
-    const _statsContainerForTimeUnit = this.get('_statsContainerForTimeUnit');
-    const date = get(_statsContainerForTimeUnit, 'content.date');
+  _lastUpdateTime: computed('_timeStatForUnit.timestamp', function () {
+    const _timeStatForUnit = this.get('_timeStatForUnit');
+    const date = get(_timeStatForUnit, 'timestamp');
     return date ? new Date(date) : new Date();
   }),
   
@@ -55,9 +53,15 @@ export default Component.extend({
   _chartValues: [],
 
   /**
+   * Initialized when stat record is available (after init)
+   * @type {TransferTimeStatUpdater}
+   */
+  updater: undefined,
+  
+  /**
    * @type {Ember.ComputedProperty<Object>}
    */
-  _statsForTimeUnit: {},
+  _stats: computed.reads('_timeStatForUnit.content.stats'),
 
   /**
    * A number of stats, that should be considered as a single chart value
@@ -84,29 +88,30 @@ export default Component.extend({
    * Object with stats for specified time unit.
    * @type {Ember.ComputedProperty.Object}
    */
-  _statsContainerForTimeUnit: computed('transfers', 'timeUnit', function () {
+  _timeStatForUnit: computed('transfer', 'timeUnit', function () {
     const {
       transfer,
       timeUnit,
     } = this.getProperties('transfer', 'timeUnit');
-    return get(transfer, timeUnit);
+    return get(transfer, `${timeUnit}Stat`);
   }),
   
   /**
-   * Stats values for time unit. Values from this array will be copied
-   * to the _chartValues.
+   * Stats values for time unit in order: from oldest to newest (inverts backend
+   * order). Values from this array will be copied to the _chartValues.
+   * (async -> _stats)
    * @type {Ember.ComputedProperty<Array<number>>}
    */
-  _statsValues: computed('_statsForTimeUnit', function () {
+  _statsValues: computed('_stats', '_statsUnitsPerChartValue', function () {
     const {
-      _statsForTimeUnit,
+      _stats,
       _statsUnitsPerChartValue,
-    } = this.getProperties('_statsForTimeUnit', '_statsUnitsPerChartValue');
+    } = this.getProperties('_stats', '_statsUnitsPerChartValue');
     const inputStatsValuesNumber = EXPECTED_STATS_NUMBER * _statsUnitsPerChartValue;
     const statsValues = _.range(inputStatsValuesNumber).map(() => 0);
 
-    Object.keys(_statsForTimeUnit).forEach(key => {
-      let values = _statsForTimeUnit[key];
+    Object.keys(_stats).forEach(key => {
+      let values = _stats[key];
       if (values.length < inputStatsValuesNumber) {
         values = _.range(inputStatsValuesNumber - values.length).map(() => 0)
           .concat(values);
@@ -121,7 +126,7 @@ export default Component.extend({
       }
       scaledStats.push(singleChartStat / _statsUnitsPerChartValue);
     }
-    return scaledStats;
+    return scaledStats.slice().reverse();
   }),
 
   /**
@@ -190,7 +195,7 @@ export default Component.extend({
   },
 
   /**
-   * Data for chartist
+   * Data for chartist (async -> _statsValues)
    * @type {computed.Object}
    */
   _chartData: computed('_statsValues', function () {
@@ -221,24 +226,30 @@ export default Component.extend({
     };
   }),
 
-  timeUnitObserver: on('init', observer('timeUnit', function () {
-    this.set(
-      '_statsForTimeUnit',
-      computed.oneWay(
-        `_statsContainerForTimeUnit.content.${this.get('timeUnit')}`
-      )
-    );
-  })),
-
+  _updaterEnabled: true,
+  
   init() {
     this._super(...arguments);
     this.set('_chartValues', []);
     
-    const updater = TransferTimeStatUpdater.create({
-      isEnabled: false,
-      
+    this.get('_timeStatForUnit').then(timeStat => {
+      const updater = TransferTimeStatUpdater.create({
+        isEnabled: this.get('_updaterEnabled'),
+        timeStat,
+      });
+      this.set('updater', updater);
     });
-    this.set('updater', updater);
+  },
+  
+  willDestroyElement() {
+    try {
+      const updater = this.get('updater');
+      if (updater) {
+        updater.destroy();
+      }
+    } finally {
+      this._super(...arguments);
+    }
   },
 
   getChartLabel(offset) {

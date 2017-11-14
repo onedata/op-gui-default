@@ -5,10 +5,13 @@
   <div class="row">
     <div class="col-xs-12 col-md-7 map-column">
       <h2>Providers map of dist.</h2>
-      {{transfers/providers-map
-        providers=tData.providers
-        providerTransferConnections=tData.providerTransferConnections
-      }}
+      {{!-- FIXME: loading container --}}
+      {{#if tData.tableDataIsLoaded}}
+        {{transfers/providers-map
+          providers=tData.providers
+          providerTransferConnections=tData.providerTransferConnections
+        }}
+      {{/if}}
     </div>
     
     <div class="col-xs-12 col-md-5">
@@ -18,14 +21,17 @@
           {{#bs-button value='out'}}out{{/bs-button}}
         {{/bs-button-group}}
       </h2>
-      {{#if tData.providerTransfers.length}}
-        {{transfers/throughput-distribution
-          providers=tData.providers
-          providerTransfers=tData.providerTransfers
-          transfersDirection=transfersPieChartDirection
-        }}
-      {{else}}
-        There are no active transfers
+      {{!-- FIXME: loading container --}}
+      {{#if tData.tableDataIsLoaded}}
+        {{#if tData.providerTransfers.length}}
+          {{transfers/throughput-distribution
+            providers=tData.providers
+            providerTransfers=tData.providerTransfers
+            transfersDirection=transfersPieChartDirection
+          }}
+        {{else}}
+          There are no active transfers
+        {{/if}}
       {{/if}}
     </div>
   </div>
@@ -33,18 +39,24 @@
   <div class="row">
     <div class="col-xs-12">
       <h2>Live transfers</h2>
-      {{transfers/live-stats-table
-        transfers=tData.currentTransfers
-      }}
+      {{!-- FIXME: loading container --}}
+      {{#if tData.tableDataIsLoaded}}
+        {{transfers/live-stats-table
+          transfers=tData.currentTransfers
+        }}
+      {{/if}}
     </div>
   </div>
   
   <div class="row">
     <div class="col-xs-12">
       <h2>Completed transfers</h2>
-      {{transfers/live-stats-table
-        transfers=tData.completedTransfers
-      }}
+      {{!-- FIXME: loading container --}}
+      {{#if tData.tableDataIsLoaded}}
+        {{transfers/live-stats-table
+          transfers=tData.completedTransfers
+        }}
+      {{/if}}
     </div>
   </div>
 

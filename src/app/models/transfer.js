@@ -55,6 +55,22 @@ export default Model.extend(TransferRuntimeMixin, {
       })
     });
   }),
+  
+  // Flattening some properties for view
+  tableDataIsLoaded: computed(
+    'isLoaded',
+    'currentStat.isLoaded',
+    'systemUser.isLoaded',
+    function () {
+      return this.get('isLoaded') &&
+        this.get('currentStat.isLoaded') &&
+        this.get('systemUser.isLoaded');
+    }
+  ),
+  
+  dest: computed.reads('destination'),
+  bytesPerSec: computed.reads('currentStat.bytesPerSec'),
+  userName: computed.reads('systemUser.name'),
 });
 
 // -- FIXME: mocks --

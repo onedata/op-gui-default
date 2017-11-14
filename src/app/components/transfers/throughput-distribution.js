@@ -6,6 +6,7 @@ import spaceTransfers from 'op-worker-gui/utils/transfers/space-transfers';
 const {
   computed,
   Component,
+  isArray,
 } = Ember;
 
 export default Component.extend({
@@ -22,6 +23,12 @@ export default Component.extend({
    * @type {Array<ProviderTransfer>}
    */
   providerTransfers: undefined,
+  
+  // FIXME: is loading state
+  
+  chartDataIsLoaded: computed('providers.[]', 'providerTransfers.[]', function () {
+    return isArray(this.get('providers')) && isArray(this.get('providerTransfers'));
+  }),
   
   transfersDirection: 'out',
 

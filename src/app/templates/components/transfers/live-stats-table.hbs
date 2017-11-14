@@ -1,8 +1,6 @@
 {{#if _mobileMode}}
-  {{#if (eq _processedData.length 0)}}
-    <div class="row content-row">
-      <p>{{_tableCustomMessages.noDataToShow}}</p>
-    </div>
+  {{#if (eq _tableData.length 0)}}
+    <p>{{_tableCustomMessages.noDataToShow}}</p>
   {{else}}
     {{#one-collapsible-list as |list|}}
       {{#each _tableData as |transfer|}}

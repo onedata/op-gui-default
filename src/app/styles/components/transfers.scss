@@ -3,13 +3,17 @@
     font-size: 100%;
     text-transform: uppercase;
     margin: 0;
-    padding-top: 18px;
-    padding-bottom: 16px;
+    padding: 17px 0px;
     font-weight: bold;
     .btn-group {
       position: relative;
       top: -9px;
     }
+  }
+
+  h1 {
+    border-bottom: 1px solid $color-toolbar-separator;
+    padding: 22px 15px;
   }
 
   .transfer-throughput-distribution {

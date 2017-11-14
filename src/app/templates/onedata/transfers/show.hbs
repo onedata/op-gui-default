@@ -13,10 +13,12 @@
     
     <div class="col-xs-12 col-md-5">
       <h2><span class="one-label">{{t "components.transfers.throughputDistribution"}}</span>
-        {{#bs-button-group value=transfersPieChartDirection type="radio" size="sm" class="pull-right"}}
-          {{#bs-button value="in"}}{{t "components.transfers.in"}}{{/bs-button}}
-          {{#bs-button value="out"}}{{t "components.transfers.out"}}{{/bs-button}}
-        {{/bs-button-group}}
+        {{#if tData.providerTransfers.length}}
+          {{#bs-button-group value=transfersPieChartDirection type="radio" size="sm" class="pull-right"}}
+            {{#bs-button value="in"}}{{t "components.transfers.in"}}{{/bs-button}}
+            {{#bs-button value="out"}}{{t "components.transfers.out"}}{{/bs-button}}
+          {{/bs-button-group}}
+        {{/if}}
       </h2>
       {{#if tData.providerTransfers.length}}
         {{transfers/throughput-distribution
@@ -25,7 +27,7 @@
           transfersDirection=transfersPieChartDirection
         }}
       {{else}}
-        {{t "components.transfers.noActiveTransfers"}}
+        <p>{{t "components.transfers.noActiveTransfers"}}</p>
       {{/if}}
     </div>
   </div>

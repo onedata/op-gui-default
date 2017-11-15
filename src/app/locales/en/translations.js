@@ -475,13 +475,28 @@ export default {
       liveTableStats: {
         path: 'File/directory',
         userName: 'Username',
+        destination: 'Destination',
         startedAt: 'Started at',
+        finishedAt: 'Finished at',
         totalBytes: 'Transferred',
         totalFiles: 'Total files',
+        status: 'Status',
+        destinationUnknown: 'Unknown',
         cellFileName: {
           deleted: 'deleted',
         },
+        cellStatus: {
+          completed: 'Completed',
+          skipped: 'Skipped',
+          cancelled: 'Cancelled',
+          failed: 'Failed',
+        },
         noTransfersToShow: 'No transfers to show',
+      },
+      transferChart: {
+        minute: 'Minute',
+        hour: 'Hour',
+        day: 'Day',
       },
     },
   },

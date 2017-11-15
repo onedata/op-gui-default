@@ -2,10 +2,11 @@
 
 @font-face {
   font-family: 'oneicons';
-  src:
-    url('#{$icomoon-font-path}/oneicons.ttf?nj650f') format('truetype'),
-    url('#{$icomoon-font-path}/oneicons.woff?nj650f') format('woff'),
-    url('#{$icomoon-font-path}/oneicons.svg?nj650f#oneicons') format('svg');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?mtaqci');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?mtaqci#iefix') format('embedded-opentype'),
+    url('#{$icomoon-font-path}/oneicons.ttf?mtaqci') format('truetype'),
+    url('#{$icomoon-font-path}/oneicons.woff?mtaqci') format('woff'),
+    url('#{$icomoon-font-path}/oneicons.svg?mtaqci#oneicons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -25,14 +26,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.oneicon-add-filled {
-  &:before {
-    content: $oneicon-add-filled;
-  }
-}
 .oneicon-add {
   &:before {
     content: $oneicon-add;
+  }
+}
+.oneicon-add-filled {
+  &:before {
+    content: $oneicon-add-filled;
   }
 }
 .oneicon-arrow-down {
@@ -50,14 +51,19 @@
     content: $oneicon-arrow-up;
   }
 }
+.oneicon-ban-left {
+  &:before {
+    content: $oneicon-ban-left;
+  }
+}
 .oneicon-ban-left-thin {
   &:before {
     content: $oneicon-ban-left-thin;
   }
 }
-.oneicon-ban-left {
+.oneicon-checkbox {
   &:before {
-    content: $oneicon-ban-left;
+    content: $oneicon-checkbox;
   }
 }
 .oneicon-checkbox-check {
@@ -75,6 +81,11 @@
     content: $oneicon-checkbox-filled;
   }
 }
+.oneicon-checkbox-filled-x {
+  &:before {
+    content: $oneicon-checkbox-filled-x;
+  }
+}
 .oneicon-checkbox-option {
   &:before {
     content: $oneicon-checkbox-option;
@@ -83,11 +94,6 @@
 .oneicon-checkbox-x {
   &:before {
     content: $oneicon-checkbox-x;
-  }
-}
-.oneicon-checkbox {
-  &:before {
-    content: $oneicon-checkbox;
   }
 }
 .oneicon-clipboard-copy {
@@ -120,6 +126,11 @@
     content: $oneicon-file;
   }
 }
+.oneicon-folder {
+  &:before {
+    content: $oneicon-folder;
+  }
+}
 .oneicon-folder-new {
   &:before {
     content: $oneicon-folder-new;
@@ -135,9 +146,9 @@
     content: $oneicon-folder-share;
   }
 }
-.oneicon-folder {
+.oneicon-group {
   &:before {
-    content: $oneicon-folder;
+    content: $oneicon-group;
   }
 }
 .oneicon-group-add {
@@ -155,24 +166,19 @@
     content: $oneicon-group-leave-group;
   }
 }
-.oneicon-group {
-  &:before {
-    content: $oneicon-group;
-  }
-}
 .oneicon-groups {
   &:before {
     content: $oneicon-groups;
   }
 }
-.oneicon-home-outline {
-  &:before {
-    content: $oneicon-home-outline;
-  }
-}
 .oneicon-home {
   &:before {
     content: $oneicon-home;
+  }
+}
+.oneicon-home-outline {
+  &:before {
+    content: $oneicon-home-outline;
   }
 }
 .oneicon-inbox {
@@ -280,6 +286,11 @@
     content: $oneicon-password-change;
   }
 }
+.oneicon-provider {
+  &:before {
+    content: $oneicon-provider;
+  }
+}
 .oneicon-provider-add {
   &:before {
     content: $oneicon-provider-add;
@@ -293,11 +304,6 @@
 .oneicon-provider-home {
   &:before {
     content: $oneicon-provider-home;
-  }
-}
-.oneicon-provider {
-  &:before {
-    content: $oneicon-provider;
   }
 }
 .oneicon-providers-outline {
@@ -325,14 +331,14 @@
     content: $oneicon-settings;
   }
 }
-.oneicon-share-collection {
-  &:before {
-    content: $oneicon-share-collection;
-  }
-}
 .oneicon-share {
   &:before {
     content: $oneicon-share;
+  }
+}
+.oneicon-share-collection {
+  &:before {
+    content: $oneicon-share-collection;
   }
 }
 .oneicon-sign-error {
@@ -395,6 +401,11 @@
     content: $oneicon-social-rhea;
   }
 }
+.oneicon-space {
+  &:before {
+    content: $oneicon-space;
+  }
+}
 .oneicon-space-add {
   &:before {
     content: $oneicon-space-add;
@@ -420,14 +431,14 @@
     content: $oneicon-space-home;
   }
 }
-.oneicon-space-import-provider {
-  &:before {
-    content: $oneicon-space-import-provider;
-  }
-}
 .oneicon-space-import {
   &:before {
     content: $oneicon-space-import;
+  }
+}
+.oneicon-space-import-provider {
+  &:before {
+    content: $oneicon-space-import-provider;
   }
 }
 .oneicon-space-join {
@@ -440,19 +451,14 @@
     content: $oneicon-space-reload;
   }
 }
-.oneicon-space {
+.oneicon-star {
   &:before {
-    content: $oneicon-space;
+    content: $oneicon-star;
   }
 }
 .oneicon-star-empty {
   &:before {
     content: $oneicon-star-empty;
-  }
-}
-.oneicon-star {
-  &:before {
-    content: $oneicon-star;
   }
 }
 .oneicon-support {
@@ -465,6 +471,11 @@
     content: $oneicon-tokens;
   }
 }
+.oneicon-transfer {
+  &:before {
+    content: $oneicon-transfer;
+  }
+}
 .oneicon-update {
   &:before {
     content: $oneicon-update;
@@ -475,6 +486,11 @@
     content: $oneicon-upload;
   }
 }
+.oneicon-user {
+  &:before {
+    content: $oneicon-user;
+  }
+}
 .oneicon-user-add {
   &:before {
     content: $oneicon-user-add;
@@ -483,11 +499,6 @@
 .oneicon-user-profile {
   &:before {
     content: $oneicon-user-profile;
-  }
-}
-.oneicon-user {
-  &:before {
-    content: $oneicon-user;
   }
 }
 .oneicon-view-grid {

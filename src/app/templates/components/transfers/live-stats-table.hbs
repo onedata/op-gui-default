@@ -6,11 +6,7 @@
       {{#each _tableData as |tableRowData|}}
         {{#list.item as |listItem|}}
           {{#listItem.header}}
-            <span class="item-icon-container">
-              {{!-- TODO: better icon --}}
-              {{one-icon icon="menu-transfers"}}
-            </span>
-            <span class="one-label">bla</span>
+            {{transfers/live-stats-table/cell-file-name record=tableRowData}}
           {{/listItem.header}}
           {{#listItem.content}}
             <div class="item-table">
@@ -19,7 +15,11 @@
                   <div class="row content-row">
                     {{!-- using data processing similar to the one used by ember-models-table --}}
                     <strong>{{column.title}}:</strong>
-                    <span class="one-label">{{get tableRowData column.propertyName}}</span>
+                    {{#if column.component}}
+                      {{component column.component data=_tableData record=tableRowData column=column}}
+                    {{else}}
+                      <span class="one-label">{{get tableRowData column.propertyName}}</span>
+                    {{/if}}
                   </div>
                 {{/each}}
                 {{#if listItem.isActive}}

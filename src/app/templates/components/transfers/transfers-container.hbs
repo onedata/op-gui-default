@@ -1,10 +1,20 @@
 <h1>Transfers for {{space.name}}</h1>
 
-{{yield (hash
-  providers=providers
-  currentTransfers=currentTransfers
-  completedTransfers=completedTransfers
-  providerTransfers=providerTransfers
-  providerTransferConnections=providerTransferConnections
-  tableDataIsLoaded=tableDataIsLoaded
-)}}
+{{!-- FIXME: first load data about supporting providers - loading container! --}}
+{{#if (eq isSupportedByCurrentProvider true)}}
+  {{yield (hash
+    providers=providers
+    currentTransfers=currentTransfers
+    completedTransfers=completedTransfers
+    providerTransfers=providerTransfers
+    providerTransferConnections=providerTransferConnections
+    tableDataIsLoaded=tableDataIsLoaded
+  )}}
+{{else if (eq isSupportedByCurrentProvider false)}}
+  {{#route-error icon="provider"}}
+    {{t "components.transfers.notSupported"}}
+  {{/route-error}}
+{{else}}  
+  {{!-- FIXME: loading state --}}
+  Loading...
+{{/if}}

@@ -468,8 +468,10 @@ export default {
       activeTransfers: 'Active transfers',
       completedTransfers: 'Completed transfers',
       noActiveTransfers: 'There are no active transfers',
-      in: "In",
-      out: "Out",
+      notSupported: 'The selected space is not supported by this provider' +
+        ' so we cannot list its transfers',
+      in: 'Input',
+      out: 'Output',
       liveTableStats: {
         path: 'File/directory',
         userName: 'Username',

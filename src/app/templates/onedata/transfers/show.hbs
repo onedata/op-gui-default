@@ -46,6 +46,7 @@
         {{transfers/live-stats-table
           transfers=tData.currentTransfers
           transferType="active"
+          providers=tData.providers
         }}
       {{/if}}
     </div>
@@ -59,6 +60,7 @@
         {{transfers/live-stats-table
           transfers=tData.completedTransfers
           transferType="completed"
+          providers=tData.providers
         }}
       {{/if}}
     </div>

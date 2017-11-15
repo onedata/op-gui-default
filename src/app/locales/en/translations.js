@@ -473,11 +473,13 @@ export default {
       liveTableStats: {
         path: 'File/directory',
         userName: 'Username',
+        destination: 'Destination',
         startedAt: 'Started at',
         finishedAt: 'Finished at',
         totalBytes: 'Transferred',
         totalFiles: 'Total files',
         status: 'Status',
+        destinationUnknown: 'Unknown',
         cellFileName: {
           deleted: 'deleted',
         },

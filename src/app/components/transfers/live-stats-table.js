@@ -2,6 +2,7 @@ import Ember from 'ember';
 import moment from 'moment';
 import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
 import mergeNewItems from 'ember-cli-onedata-common/utils/push-new-items';
+import _ from 'lodash';
 
 const {
   computed,
@@ -33,6 +34,13 @@ export default Ember.Component.extend({
    * @type {string}
    */
   transferType: 'active',
+
+  /**
+   * Providers
+   * @virtual
+   * @type {Array<Provider>}
+   */
+  providers: undefined,
 
   /**
    * If true, component is rendered in mobile mode.
@@ -84,10 +92,13 @@ export default Ember.Component.extend({
    * Transfers converted to format used by table.
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  _tableData: computed('transfers.@each.tableDataIsLoaded', function () {
+  _tableData: computed('transfers.@each.tableDataIsLoaded', 'providers', function () {
     let _tableDataCache = this.get('_tableDataCache');
     const transfers = this.get('transfers') || A([]);
-    const newTableData = transfers.map(transferTableData);
+    const providers = this.get('providers') || A([]);
+    const i18n = this.get('i18n');
+    const newTableData = transfers
+      .map((transfer) => transferTableData(transfer, providers, i18n));
     mergeNewItems(
       _tableDataCache,
       newTableData,
@@ -122,6 +133,12 @@ export default Ember.Component.extend({
       id: 'userName',
       propertyName: 'userName',
       title: i18n.t(I18N_PREFIX + 'userName'),
+      component: _mobileMode ?
+        undefined : 'transfers/live-stats-table/cell-truncated',
+    }, {
+      id: 'destination',
+      propertyName: 'destination',
+      title: i18n.t(I18N_PREFIX + 'destination'),
       component: _mobileMode ?
         undefined : 'transfers/live-stats-table/cell-truncated',
     }, {
@@ -166,7 +183,7 @@ export default Ember.Component.extend({
    */
   _resizeEventHandler: computed(function () {
     return () => {
-      this.set('_mobileMode', this.get('_window.innerWidth') < 1051);
+      this.set('_mobileMode', this.get('_window.innerWidth') < 1200);
     };
   }),
 
@@ -198,7 +215,16 @@ export default Ember.Component.extend({
 });
 
 // TODO: optimize using destructurize and getProperties
-function transferTableData(transfer) {
+function transferTableData(transfer, providers, i18n) {
+  // searching for destination
+  let destination = i18n.t(I18N_PREFIX + 'destinationUnknown');
+  const destProvider = _.find(providers, (provider) => 
+    get(provider, 'id') === get(transfer, 'destination')
+  );
+  if (destProvider) {
+    destination = get(destProvider, 'name');
+  }
+
   const transferId = get(transfer, 'id');
   const path = get(transfer, 'path');
   const fileType = get(transfer, 'fileType');
@@ -222,6 +248,7 @@ function transferTableData(transfer) {
     transferId,
     path,
     fileType,
+    destination,
     userName,
     startedAtComparable: startTimestamp,
     startedAtReadable,

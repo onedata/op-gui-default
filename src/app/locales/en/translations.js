@@ -474,10 +474,18 @@ export default {
         path: 'File/directory',
         userName: 'Username',
         startedAt: 'Started at',
+        finishedAt: 'Finished at',
         totalBytes: 'Transferred',
         totalFiles: 'Total files',
+        status: 'Status',
         cellFileName: {
           deleted: 'deleted',
+        },
+        cellStatus: {
+          completed: 'Completed',
+          skipped: 'Skipped',
+          cancelled: 'Cancelled',
+          failed: 'Failed',
         },
         noTransfersToShow: 'No transfers to show',
       },

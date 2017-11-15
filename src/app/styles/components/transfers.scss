@@ -61,7 +61,7 @@
 
   .one-collapsible-list-item-header.row {
     padding-left: $padding-large-horizontal;
-    padding-right: $padding-large-horizontal;
+    padding-right: 45px;;
   }
 
   .one-collapsible-list {
@@ -99,10 +99,10 @@
     float: left;
   }
   
-  .transfer-file-name {
-    padding-left: 12px;
-    float: left;
-  }
+  // .transfer-file-name {
+  //   padding-left: 12px;
+  //   float: left;
+  // }
 
   .transfers-table {
     th, td {
@@ -118,6 +118,7 @@
     }
     
     table {
+      table-layout: fixed;
       thead {
         th {
           border-bottom-width: 1px;
@@ -126,6 +127,20 @@
           }
         }
       }
+    }
+  }
+  .cell-file-name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .cell-status {
+    font-size: 1.5em;
+    line-height: 0;
+    &.success {
+      color: $color-one-mint;
+    } &.failure {
+      color: $color-one-red;
     }
   }
 }

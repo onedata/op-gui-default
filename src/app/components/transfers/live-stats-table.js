@@ -13,7 +13,7 @@ const {
   Object: EmberObject,
 } = Ember;
 
-const START_TIME_FORMAT = 'D MMM YYYY H:mm:ss';
+const START_END_TIME_FORMAT = 'D MMM YYYY H:mm:ss';
 const I18N_PREFIX = 'components.transfers.liveTableStats.';
 
 export default Ember.Component.extend({
@@ -27,6 +27,12 @@ export default Ember.Component.extend({
    * @type {Array<Transfer>}
    */
   transfers: undefined,
+
+  /**
+   * Type of transfers. May be `active` or `completed`
+   * @type {string}
+   */
+  transferType: 'active',
 
   /**
    * If true, component is rendered in mobile mode.
@@ -81,7 +87,6 @@ export default Ember.Component.extend({
   _tableData: computed('transfers.@each.tableDataIsLoaded', function () {
     let _tableDataCache = this.get('_tableDataCache');
     const transfers = this.get('transfers') || A([]);
-        
     const newTableData = transfers.map(transferTableData);
     mergeNewItems(
       _tableDataCache,
@@ -90,7 +95,6 @@ export default Ember.Component.extend({
       false
     );
     
-    console.log('debug me');
     return this.set('_tableDataCache', _tableDataCache);
   }),
 
@@ -98,30 +102,59 @@ export default Ember.Component.extend({
    * Table columns definition.
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  _tableColumns: computed(function () {
-    const i18n = this.get('i18n');
-    return [{
+  _tableColumns: computed('transferType', function () {
+    const {
+      i18n,
+      transferType,
+    } = this.getProperties('i18n', 'transferType');
+    const onlyCompletedColumns = ['finishedAt', 'status'];
+
+    // field `id` is custom and is used only to check which column should be 
+    // filtered out for active/completed table version
+    const allColumns = [{
+      id: 'path',
       propertyName: 'path',
       title: i18n.t(I18N_PREFIX + 'path'),
       component: 'transfers/live-stats-table/cell-file-name',
-    },
-    {
+    }, {
+      id: 'userName',
       propertyName: 'userName',
       title: i18n.t(I18N_PREFIX + 'userName'),
+      component: 'transfers/live-stats-table/cell-truncated',
     }, {
+      id: 'startedAt',
       propertyName: 'startedAtReadable',
       sortedBy: 'startedAtComparable',
       sortPrecedence: 1,
       sortDirection: 'desc',
       title: i18n.t(I18N_PREFIX + 'startedAt'),
     }, {
+      id: 'finishedAt',
+      propertyName: 'finishedAtReadable',
+      sortedBy: 'finishedAtComparable',
+      title: i18n.t(I18N_PREFIX + 'finishedAt'),
+    }, {
+      id: 'totalBytes',
       propertyName: 'totalBytesReadable',
       sortedBy: 'totalBytes',
       title: i18n.t(I18N_PREFIX + 'totalBytes'),
     }, {
+      id: 'totalFiles',
       propertyName: 'totalFiles',
       title: i18n.t(I18N_PREFIX + 'totalFiles'),
+    }, {
+      id: 'status',
+      propertyName: 'status',
+      title: i18n.t(I18N_PREFIX + 'status'),
+      component: 'transfers/live-stats-table/cell-status',
     }];
+    if (transferType === 'active') {
+      return allColumns.filter((column) => 
+        onlyCompletedColumns.indexOf(column.id) === -1
+      );
+    } else {
+      return allColumns;
+    }
   }),
 
   /**
@@ -130,7 +163,7 @@ export default Ember.Component.extend({
    */
   _resizeEventHandler: computed(function () {
     return () => {
-      this.set('_mobileMode', this.get('_window.innerWidth') < 761);
+      this.set('_mobileMode', this.get('_window.innerWidth') < 1051);
     };
   }),
 
@@ -168,12 +201,16 @@ function transferTableData(transfer) {
   const fileType = get(transfer, 'fileType');
   const startTimestamp = get(transfer, 'startTime');
   const startMoment = moment.unix(startTimestamp);
+  const finishTimestamp = get(transfer, 'finishTime');
+  const finishMoment = moment.unix(finishTimestamp);
   // FIXME: async properties - add loading states?
   const transferredBytes = get(transfer, 'currentStat.transferredBytes');
   const transferredFiles = get(transfer, 'currentStat.transferredFiles');
   const userName = get(transfer, 'userName');
-  const startedAtReadable = startMoment && startMoment.format(START_TIME_FORMAT);
+  const startedAtReadable = startMoment && startMoment.format(START_END_TIME_FORMAT);
+  const finishedAtReadable = finishMoment && finishMoment.format(START_END_TIME_FORMAT);
   const totalBytesReadable = bytesToString(transferredBytes);
+  const status = get(transfer, 'status');
   const isLoading = get(transfer, 'tableDataIsLoaded') === false;
   
   return EmberObject.create({
@@ -185,9 +222,12 @@ function transferTableData(transfer) {
     userName,
     startedAtComparable: startTimestamp,
     startedAtReadable,
+    finishedAtComparable: finishTimestamp,
+    finishedAtReadable,
     totalBytes: transferredBytes,
     totalBytesReadable,
     totalFiles: transferredFiles,
+    status,
     isLoading, // FIXME: true if loading async fields
   });
 }

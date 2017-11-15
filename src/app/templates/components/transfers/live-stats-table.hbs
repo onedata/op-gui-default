@@ -6,11 +6,7 @@
       {{#each _tableData as |tableRowData|}}
         {{#list.item as |listItem|}}
           {{#listItem.header}}
-            <span class="item-icon-container">
-              {{!-- TODO: better icon --}}
-              {{one-icon icon="menu-transfers"}}
-            </span>
-            <span class="one-label">bla</span>
+            {{transfers/live-stats-table/cell-file-name record=tableRowData}}
           {{/listItem.header}}
           {{#listItem.content}}
             <div class="item-table">

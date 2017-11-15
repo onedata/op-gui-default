@@ -45,6 +45,7 @@
       {{#if tData.tableDataIsLoaded}}
         {{transfers/live-stats-table
           transfers=tData.currentTransfers
+          transferType="active"
         }}
       {{/if}}
     </div>
@@ -57,6 +58,7 @@
       {{#if tData.tableDataIsLoaded}}
         {{transfers/live-stats-table
           transfers=tData.completedTransfers
+          transferType="completed"
         }}
       {{/if}}
     </div>

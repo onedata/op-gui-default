@@ -491,6 +491,11 @@ export default {
         },
         noTransfersToShow: 'No transfers to show',
       },
+      transferChart: {
+        minute: 'Minute',
+        hour: 'Hour',
+        day: 'Day',
+      },
     },
   },
   notFound: {

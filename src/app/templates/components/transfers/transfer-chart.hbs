@@ -2,8 +2,8 @@
 {{#if _stats}}
   {{chartist-chart data=_chartData options=_chartOptions type="line" class="hide-middle-x-labels"}}
   {{#bs-button-group value=timeUnit type="radio" size="sm" class="pull-right"}}
-    {{#bs-button value='minute'}}Minut{{/bs-button}}
-    {{#bs-button value='hour'}}Hour{{/bs-button}}
-    {{#bs-button value='day'}}Day{{/bs-button}}
+    {{#bs-button value='minute'}}{{t 'components.transfers.transferChart.minute'}}{{/bs-button}}
+    {{#bs-button value='hour'}}{{t 'components.transfers.transferChart.hour'}}{{/bs-button}}
+    {{#bs-button value='day'}}{{t 'components.transfers.transferChart.day'}}{{/bs-button}}
   {{/bs-button-group}}
 {{/if}}

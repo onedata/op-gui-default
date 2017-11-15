@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import moment from 'moment';
 import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
-import mergeNewItems from 'ember-cli-onedata-common/utils/push-new-items';
+import mutateArray from 'ember-cli-onedata-common/utils/mutate-array';
 import _ from 'lodash';
 
 const {
@@ -92,22 +92,33 @@ export default Ember.Component.extend({
    * Transfers converted to format used by table.
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  _tableData: computed('transfers.@each.tableDataIsLoaded', 'providers', function () {
-    let _tableDataCache = this.get('_tableDataCache');
-    const transfers = this.get('transfers') || A([]);
-    const providers = this.get('providers') || A([]);
-    const i18n = this.get('i18n');
-    const newTableData = transfers
-      .map((transfer) => transferTableData(transfer, providers, i18n));
-    mergeNewItems(
-      _tableDataCache,
-      newTableData,
-      (a, b) => get(a, 'transferId') === get(b, 'transferId'),
-      false
-    );
-    
-    return this.set('_tableDataCache', _tableDataCache);
-  }),
+  _tableData: computed(
+    'transfers.@each.tableDataIsLoaded',
+    '_tableDataCache',
+    'transfers',
+    'providers',
+    function () {
+      let _tableDataCache = this.get('_tableDataCache');
+      const transfers = this.get('transfers');
+      const providers = this.get('providers');
+      const i18n = this.get('i18n');
+      
+      if (transfers && providers && transfers.every(t => get(t, 'tableDataIsLoaded'))) {
+        const newTableData = transfers
+          .map((transfer) => transferTableData(transfer, providers, i18n));
+        mutateArray(
+          _tableDataCache,
+          newTableData,
+          (a, b) => get(a, 'transferId') === get(b, 'transferId'),
+          false
+        );
+      }
+      
+      // FIXME: remove old items
+
+      return this.set('_tableDataCache', _tableDataCache);
+    }
+  ),
 
   /**
    * Table columns definition.

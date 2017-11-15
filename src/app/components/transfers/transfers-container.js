@@ -62,6 +62,11 @@ export default Component.extend({
   // FIXME: transfers loading (private)
   // FIXME: transfers error (private)
 
+  // // FIXME: debug code
+  // completedTransfersWatch: observer('completedTransfers', function () {
+  //   debugger;
+  // }),
+  
   sessionProviderId: computed.reads('session.sessionDetails.providerId'),
   isSupportedByCurrentProvider: computed('sessionProviderId', 'providers.[]', function () {
     const {
@@ -151,26 +156,30 @@ export default Component.extend({
     }
   }),
   
-  toggleTransfersUpdater: observer('_transfersUpdaterEnabled', function () {
-    this.set('transfersUpdater.isEnabled', this.get('_transfersUpdaterEnabled'));
-  }),
+  configureTransfersUpdater: observer(
+    '_transfersUpdaterEnabled',
+    'space',
+    function () {
+      const {
+        _transfersUpdaterEnabled,
+        space,
+      } = this.getProperties(
+        '_transfersUpdaterEnabled',
+        'space'
+      );
+      this.get('transfersUpdater').setProperties({
+        isEnabled: _transfersUpdaterEnabled,
+        space: space,
+      });
+    }
+  ),
   
   init() {
-    this._super(...arguments);
-    
-    const {
-      space,
-      _transfersUpdaterEnabled,
-    } = this.getProperties('space', '_transfersUpdaterEnabled');
-    
-    this.set('_providerTransfersCache', A());
-    
-    const transfersUpdater = SpaceTransfersUpdater.create({
-      isEnabled: _transfersUpdaterEnabled,
-      space,
-    });
-    
+    this._super(...arguments);    
+    this.set('_providerTransfersCache', A());    
+    const transfersUpdater = SpaceTransfersUpdater.create();    
     this.set('transfersUpdater', transfersUpdater);
+    this.configureTransfersUpdater();
   },
   
   willDestroyElement() {

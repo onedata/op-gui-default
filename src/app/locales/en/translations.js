@@ -463,6 +463,13 @@ export default {
       publish: 'Publish',
     },
     transfers: {
+      providersMapOfDist: 'Providers map of dist.',
+      throughputDistribution: 'Throughput distribution',
+      activeTransfers: 'Active transfers',
+      completedTransfers: 'Completed transfers',
+      noActiveTransfers: 'There are no active transfers',
+      in: "In",
+      out: "Out",
       liveTableStats: {
         path: 'File/directory',
         userName: 'Username',
@@ -471,7 +478,8 @@ export default {
         totalFiles: 'Total files',
         cellFileName: {
           deleted: 'deleted',
-        }
+        },
+        noTransfersToShow: 'No transfers to show',
       },
     },
   },

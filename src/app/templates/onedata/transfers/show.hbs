@@ -4,7 +4,7 @@
 {{#transfers/transfers-container space=model as |tData|}}
   <div class="row">
     <div class="col-xs-12 col-md-7 map-column">
-      <h2>Providers map of dist.</h2>
+      <h2>{{t "components.transfers.providersMapOfDist"}}</h2>
       {{!-- FIXME: loading container --}}
       {{#if tData.tableDataIsLoaded}}
         {{transfers/providers-map
@@ -15,11 +15,13 @@
     </div>
     
     <div class="col-xs-12 col-md-5">
-      <h2><span class="one-label">Throughput distribution</span>
-        {{#bs-button-group value=transfersPieChartDirection type="radio" size="sm" class="pull-right"}}
-          {{#bs-button value='in'}}in{{/bs-button}}
-          {{#bs-button value='out'}}out{{/bs-button}}
-        {{/bs-button-group}}
+      <h2><span class="one-label">{{t "components.transfers.throughputDistribution"}}</span>
+        {{#if tData.providerTransfers.length}}
+          {{#bs-button-group value=transfersPieChartDirection type="radio" size="sm" class="pull-right"}}
+            {{#bs-button value="in"}}{{t "components.transfers.in"}}{{/bs-button}}
+            {{#bs-button value="out"}}{{t "components.transfers.out"}}{{/bs-button}}
+          {{/bs-button-group}}
+        {{/if}}
       </h2>
       {{!-- FIXME: loading container --}}
       {{#if tData.tableDataIsLoaded}}
@@ -30,7 +32,7 @@
             transfersDirection=transfersPieChartDirection
           }}
         {{else}}
-          There are no active transfers
+          <p>{{t "components.transfers.noActiveTransfers"}}</p>
         {{/if}}
       {{/if}}
     </div>
@@ -38,7 +40,7 @@
 
   <div class="row">
     <div class="col-xs-12">
-      <h2>Live transfers</h2>
+      <h2>{{t "components.transfers.activeTransfers"}}</h2>
       {{!-- FIXME: loading container --}}
       {{#if tData.tableDataIsLoaded}}
         {{transfers/live-stats-table
@@ -50,7 +52,7 @@
   
   <div class="row">
     <div class="col-xs-12">
-      <h2>Completed transfers</h2>
+      <h2>{{t "components.transfers.completedTransfers"}}</h2>
       {{!-- FIXME: loading container --}}
       {{#if tData.tableDataIsLoaded}}
         {{transfers/live-stats-table

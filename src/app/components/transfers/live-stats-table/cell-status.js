@@ -11,6 +11,7 @@ const {
 } = Ember;
 
 export default Component.extend({
+  tagName: 'span',
   classNames: 'cell-status',
   classNameBindings: ['_isStatusSuccess:success:failure'],
   i18n: service(),

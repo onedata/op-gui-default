@@ -137,6 +137,7 @@
   .cell-status {
     font-size: 1.5em;
     line-height: 0;
+    vertical-align: middle;
     &.success {
       color: $color-one-mint;
     } &.failure {

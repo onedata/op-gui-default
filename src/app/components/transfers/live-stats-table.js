@@ -102,11 +102,12 @@ export default Ember.Component.extend({
    * Table columns definition.
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  _tableColumns: computed('transferType', function () {
+  _tableColumns: computed('transferType', '_mobileMode', function () {
     const {
       i18n,
       transferType,
-    } = this.getProperties('i18n', 'transferType');
+      _mobileMode,
+    } = this.getProperties('i18n', 'transferType', '_mobileMode');
     const onlyCompletedColumns = ['finishedAt', 'status'];
 
     // field `id` is custom and is used only to check which column should be 
@@ -115,12 +116,14 @@ export default Ember.Component.extend({
       id: 'path',
       propertyName: 'path',
       title: i18n.t(I18N_PREFIX + 'path'),
-      component: 'transfers/live-stats-table/cell-file-name',
+      component: _mobileMode ?
+        undefined : 'transfers/live-stats-table/cell-file-name',
     }, {
       id: 'userName',
       propertyName: 'userName',
       title: i18n.t(I18N_PREFIX + 'userName'),
-      component: 'transfers/live-stats-table/cell-truncated',
+      component: _mobileMode ?
+        undefined : 'transfers/live-stats-table/cell-truncated',
     }, {
       id: 'startedAt',
       propertyName: 'startedAtReadable',

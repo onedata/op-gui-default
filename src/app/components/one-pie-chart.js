@@ -251,6 +251,22 @@ export default Ember.Component.extend({
   },
 
   /**
+   * Options for centered text chartist plugin.
+   * @type {Object}
+   */
+  centeredTextOptions: {
+    text: '',
+  },
+
+  /**
+   * Options for legend colors chartist plugin.
+   * @type {Object}
+   */
+  legendColorsOptions: {
+    colors: [],
+  },
+
+  /**
    * Creates chartist options object.
    * @returns {Object} Chartist options.
    */
@@ -259,16 +275,24 @@ export default Ember.Component.extend({
       _mobileMode,
       _valuesSum,
       _sortedData,
-    } = this.getProperties('_mobileMode', '_valuesSum', '_sortedData');
+      centeredTextOptions,
+      legendColorsOptions,
+    } = this.getProperties(
+      '_mobileMode',
+      '_valuesSum',
+      '_sortedData',
+      'centeredTextOptions',
+      'legendColorsOptions'
+    );
+    centeredTextOptions.text = this.formatValue(_valuesSum);
+    legendColorsOptions.colors = _.map(_sortedData, 'color');
     let optionsBase = {
       donut: true,
       donutWidth: '45%',
       showLabel: false,
       chartPadding: 20,
       plugins: [
-        centeredText({
-          text: this.formatValue(_valuesSum),
-        }),
+        centeredText(centeredTextOptions),
         tooltip({
           chartType: 'pie',
         }),
@@ -281,9 +305,7 @@ export default Ember.Component.extend({
           className: 'not-clickable',
           clickable: false,
         }),
-        legendColors({
-          colors: _.map(_sortedData, 'color'),
-        }),
+        legendColors(legendColorsOptions),
       ]
     };
     if (_mobileMode) {

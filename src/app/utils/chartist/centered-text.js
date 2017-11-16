@@ -16,6 +16,7 @@
  */
 
 /* global Chartist */
+import _ from 'lodash';
 
 const DEFAULT_FONT_SIZE = '10%';
 const DEFAULT_MAX_WIDTH = '40%';
@@ -27,7 +28,7 @@ export default function (options) {
     maxWidth: DEFAULT_MAX_WIDTH,
     class: '',
   };
-  options = Chartist.extend({}, defaultOptions, options);
+  _.defaults(options, defaultOptions);
   return (chart) => {
     chart.on('created', () => {
       let svg = chart.svg;

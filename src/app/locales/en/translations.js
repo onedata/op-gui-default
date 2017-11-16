@@ -488,6 +488,8 @@ export default {
           skipped: 'Skipped',
           cancelled: 'Cancelled',
           failed: 'Failed',
+          active: 'Active',
+          scheduled: 'Scheduled',
         },
         noTransfersToShow: 'No transfers to show',
       },

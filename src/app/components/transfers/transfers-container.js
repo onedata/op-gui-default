@@ -128,7 +128,7 @@ export default Component.extend({
         if (ptOldVer) {
           set(ptOldVer, 'bytesPerSec', get(pt, 'bytesPerSec'));
         } else {
-          ptCache.push(pt);
+          ptCache.pushObject(pt);
         }
       });
       

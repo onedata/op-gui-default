@@ -20,6 +20,7 @@ export default Component.extend({
   classNames: ['transfers-container'],
   
   session: service(),
+  store: service(),
   
   /**
    * @virtual
@@ -175,11 +176,23 @@ export default Component.extend({
   ),
   
   init() {
-    this._super(...arguments);    
+    this._super(...arguments);
+    const {
+      _transfersUpdaterEnabled,
+      space,
+      store,
+    } = this.getProperties(
+      '_transfersUpdaterEnabled',
+      'space',
+      'store'
+    );
     this.set('_providerTransfersCache', A());    
-    const transfersUpdater = SpaceTransfersUpdater.create();    
+    const transfersUpdater = SpaceTransfersUpdater.create({
+      store,
+      isEnabled: _transfersUpdaterEnabled,
+      space: space,
+    });    
     this.set('transfersUpdater', transfersUpdater);
-    this.configureTransfersUpdater();
   },
   
   willDestroyElement() {

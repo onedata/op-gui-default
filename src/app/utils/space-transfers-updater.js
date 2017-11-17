@@ -15,13 +15,13 @@ const {
   set,
   observer,
   computed,
-  run,
   RSVP: { Promise },
 } = Ember;
 
 // FIXME: 
 
-const UPDATE_INTERVAL = 2 * 1000;
+const UPDATE_CURRENT_INTERVAL = 2 * 1000;
+const UPDATE_COMPLETED_INTERVAL = 10 * 1000;
 
 import Looper from 'ember-cli-onedata-common/utils/looper';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
@@ -29,6 +29,13 @@ import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 // FIXME: update providers if there is provider referenced that is not on list
 
 export default EmberObject.extend({
+  /**
+   * @virtual
+   * Store service
+   * @type {Ember.Service}
+   */
+  store: undefined,
+  
   /**
    * @virtual
    * The model of space, will be used to perform fetching
@@ -85,17 +92,6 @@ export default EmberObject.extend({
   completedError: null,
   
   /**
-   * @type {number}
-   */
-  _sharedInterval: computed('isEnabled', function () {
-    if (this.get('isEnabled')) {
-      return UPDATE_INTERVAL;
-    } else {
-      return null;
-    }
-  }),
-
-  /**
    * Interval [ms] used by `_currentWatcher`
    * @type {number}
    */
@@ -107,15 +103,19 @@ export default EmberObject.extend({
     this._super(...arguments);
 
     this.setProperties({
-      currentIsUpdating: true,
-      completedIsUpdating: true,
+      currentIsUpdating: false,
+      completedIsUpdating: false,
     });
 
     this._createWatchers();
-    this._reconfigureWatchers();
-
+    this._toggleWatchers();
+    
     // get properties to enable observers
-    this.getProperties('_currentInterval', '_completedInterval');
+    this.get('_currentInterval');
+    
+    // FIXME: fill this when fist version of completed ids will be avail
+    this.set('_completedIdsCache', []);
+    this.set('_currentIdsCache', []);
   },
 
   destroy() {
@@ -124,28 +124,12 @@ export default EmberObject.extend({
         _currentInterval: undefined,
         _completedInterval: undefined,
       });
-      _.each(
-        _.values(this.getProperties('_currentWatcher', '_completedWatcher')),
-        watcher => watcher.destroy()
-      );
+      const watcher = this.get('_currentWatcher');
+      watcher.destroy();
     } finally {
       this._super(...arguments);
     }
   },
-
-  _reconfigureWatchers: observer(
-    '_currentInterval',
-    '_completedInterval',
-    function () {
-      // debouncing does not let _setWatchersIntervals to be executed multiple
-      // times, which can occur for observer
-      run.debounce(this, '_setWatchersIntervals', 1);
-    }
-  ),
-
-  // TODO: there should be no watcher for reports at all - it should be updated:
-  // - after enabling
-  // - on change status.inProgress true -> false
 
   /**
    * Create watchers for fetching information
@@ -162,61 +146,98 @@ export default EmberObject.extend({
     const _completedWatcher = Looper.create({
       immediate: true,
     });
-    // FIXME: too often
     _completedWatcher
       .on('tick', () =>
         safeExec(this, 'fetchCompleted')
       );
-         
+      
     this.setProperties({
       _currentWatcher,
       _completedWatcher,
     });
   },
 
-  _setWatchersIntervals() {
+  _toggleWatchers: observer('isEnabled', function () {
     // this method is invoked from debounce, so it's "this" can be destroyed
     if (this.isDestroyed === false) {
       const {
-        _currentInterval,
-        _completedInterval,
+        isEnabled,
         _currentWatcher,
         _completedWatcher,
       } = this.getProperties(
-        '_currentInterval',
-        '_completedInterval',
+        'isEnabled',
         '_currentWatcher',
         '_completedWatcher'
       );
-      set(_currentWatcher, 'interval', _currentInterval);
-      set(_completedWatcher, 'interval', _completedInterval);
+      
+      set(_currentWatcher, 'interval', isEnabled ? UPDATE_CURRENT_INTERVAL : null);
+      set(_completedWatcher, 'interval', isEnabled ? UPDATE_COMPLETED_INTERVAL : null);
     }
-  },
+  }),
 
   fetchCurrent() {
-    return this.fetchList('current');
-  },
-  
-  // FIXME: currentStat for completed transfers should be fetched/refreshed only once
-  fetchCompleted() {
-    return this.fetchList('completed');
-  },
-  
-  fetchList(type) {
-    const {
-      space,
-    } = this.getProperties('space');
-    this.set(`${type}IsUpdating`, true);
+    console.debug('util:space-transfers-updater: fetchCurrent');
     
-    return space.belongsTo(`${type}TransferList`).reload()
-      // .then(ctl => {
-      //   console.debug('reloaded: ' + ctl);
-      // })
-      .then(transferList => transferList.get('list'))
+    const space = this.get('space');
+    this.set('currentIsUpdating', true);
+    const _currentIdsCache = this.get('_currentIdsCache');
+    
+    return space.belongsTo(`currentTransferList`).reload()
+      .then(transferList => {        
+        const currentIdsNew = transferList.hasMany('list').ids();
+        const removedIds = _.difference(
+          _currentIdsCache,
+          currentIdsNew
+        );
+        this.set('_currentIdsCache', currentIdsNew);
+        if (!_.isEmpty(removedIds)) {
+          this.fetchCompleted();
+        }
+        return transferList.get('list');
+      })
+      // does not need to update transfer record as for active transfers it
+      // changes only status from scheduled to active (we do not present it)
       .then(list => Promise.all(list.map(t => t.belongsTo('currentStat').reload())))
-      // .then(transfers => tranfer.belongsTo('currentStat').reload())
-      .catch(error => this.set(`${type}Error`, error))
-      .finally(() => this.set(`${type}IsUpdating`, false));
+      .catch(error => this.set('currentError', error))
+      .finally(() => this.set('currentIsUpdating', false));
+  },
+  
+  /**
+   * Should be invoked when:
+   * - array of current transfers changes
+   */
+  fetchCompleted() {
+    console.debug('util:space-transfers-updater: fetchCompleted invoked');
+    
+    if (this.get('completedIsUpdating') !== true) {
+      console.debug('util:space-transfers-updater: fetchCompleted started');
+      const store = this.get('store');
+      const space = this.get('space');
+              
+      this.set(`completedIsUpdating`, true);
+      
+      const _completedIdsCache = this.get('_completedIdsCache');
+    
+      return space.belongsTo(`completedTransferList`).reload()
+        .then(transferList => {
+          const completedIdsNew = transferList.hasMany('list').ids();
+          const newIds = _.difference(
+            completedIdsNew,
+            _completedIdsCache
+          );
+          this.set('_completedIdsCache', completedIdsNew);
+          return Promise.all(
+            newIds.map(id => store.findRecord('transfer', id, { reload: true }))
+          );
+        })
+        .then(transfers => Promise.all(
+          transfers.map(t => t.belongsTo('currentStat').reload())
+        ))
+        .catch(error => this.set(`completedError`, error))
+        .finally(() => this.set(`completedIsUpdating`, false));
+    } else {
+      console.debug('util:space-transfers-updater: fetchCompleted skipped');
+    }
   },
 
 });

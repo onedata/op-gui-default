@@ -62,11 +62,6 @@ export default Component.extend({
   completedTransfers: computed.reads('space.completedTransferList.list.content'),
   // FIXME: transfers loading (private)
   // FIXME: transfers error (private)
-
-  // // FIXME: debug code
-  // completedTransfersWatch: observer('completedTransfers', function () {
-  //   debugger;
-  // }),
   
   sessionProviderId: computed.reads('session.sessionDetails.providerId'),
   isSupportedByCurrentProvider: computed('sessionProviderId', 'providers.[]', function () {
@@ -98,10 +93,7 @@ export default Component.extend({
         this.get('currentTransfers').every(t => get(t, 'tableDataIsLoaded') === true);
     }
   ),
-  
-  _completedStats: computed.mapBy('completedTransfers', 'currentStat'),
-  
-  
+    
   providers: computed.reads('space.providerList.queryList.content'),
   // FIXME: providers loading (important: yielded)
   // FIXME: providers error (important: yielded)

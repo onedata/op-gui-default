@@ -91,6 +91,8 @@ export default Model.extend(TransferRuntimeMixin, {
   dest: computed.reads('destination'),
   bytesPerSec: computed.reads('currentStat.bytesPerSec'),
   userName: computed.reads('systemUser.name'),
+  transferredBytes: computed.reads('currentStat.transferredBytes'),
+  transferredFiles: computed.reads('currentStat.transferredFiles'),
   
   isOngoing: computed('status', function () {
     return _.includes(['active', 'scheduled'], this.get('status'));

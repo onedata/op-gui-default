@@ -7,7 +7,9 @@ import sinon from 'sinon';
 import _ from 'lodash';
 
 const {
+  get,
   A,
+  Object: EmberObject,
 } = Ember;
 
 function createArray(type, content) {
@@ -58,5 +60,27 @@ describe('Unit | Utility | mutate array', function () {
     mutateArray(orig, ['test'], (x, y) => x === y);
 
     expect(pushObject).to.be.calledOnce;
+  });
+  
+  it('mutates ember objects in array', function () {
+    const origObj = EmberObject.create({
+      a: 1,
+      b: 2,
+    });
+    const updateObj = EmberObject.create({
+      a: 1,
+      b: 3,
+    });    
+    const orig = createArray('plain', [
+      origObj,
+    ]);
+    const updated = createArray('plain', [
+      updateObj,
+    ]);
+    mutateArray(orig, updated, (x, y) => get(x, 'a') === get(y, 'a'), false);
+    
+    expect(orig).to.have.lengthOf(1);
+    expect(orig[0]).to.equal(origObj);
+    expect(get(orig[0], 'b')).to.equal(3);
   });
 });

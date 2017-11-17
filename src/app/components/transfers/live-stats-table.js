@@ -22,7 +22,6 @@ export default Ember.Component.extend({
 
   i18n: service(),
 
-  // FIXME: provider transfer data
   /**
    * @virtual 
    * @type {Array<Transfer>}
@@ -30,17 +29,17 @@ export default Ember.Component.extend({
   transfers: undefined,
 
   /**
-   * Type of transfers. May be `active` or `completed`
-   * @type {string}
-   */
-  transferType: 'active',
-
-  /**
    * Providers
    * @virtual
    * @type {Array<Provider>}
    */
   providers: undefined,
+  
+  /**
+   * Type of transfers. May be `active` or `completed`
+   * @type {string}
+   */
+  transferType: 'active',
 
   /**
    * If true, component is rendered in mobile mode.
@@ -83,19 +82,21 @@ export default Ember.Component.extend({
     });
   }),
   
+  /**
+   * @type {Array<Object>}
+   */
   _tableDataCache: null,
   
-  // FIXME: make objects with required async data
-  // FIXME: handle loading of data (async - table shoul present loading state)
-  // FIXME: this should be a static reference to array to prevent re-rendering
+  // TODO: this causes n*n invoking this computed property, but transferTableData
+  // function is invoked only few times, maybe to refactor, but it's a hard piece of code...
+  // FIXME: handle loading of data (async - table should present loading state)
   /**
    * Transfers converted to format used by table.
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   _tableData: computed(
-    'transfers.@each.tableDataIsLoaded',
+    'transfers.@each.{tableDataIsLoaded,status,finishTime,fileType,transferredBytes,transferredFiles}',
     '_tableDataCache',
-    'transfers',
     'providers',
     function () {
       let _tableDataCache = this.get('_tableDataCache');
@@ -113,8 +114,6 @@ export default Ember.Component.extend({
           false
         );
       }
-      
-      // FIXME: remove old items
 
       return this.set('_tableDataCache', _tableDataCache);
     }

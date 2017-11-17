@@ -468,10 +468,12 @@ export default {
       providersMapOfDist: 'Providers map of dist.',
       throughputDistribution: 'Throughput distribution',
       activeTransfers: 'Active transfers',
-      completedTransfers: 'Completed transfers',
-      noActiveTransfers: 'There are no active transfers',
-      in: "In",
-      out: "Out",
+      completedTransfers: 'History of transfers',
+      noActiveTransfers: 'No data is transferred currently',
+      notSupported: 'The selected space is not supported by this provider' +
+        ' so we cannot list its transfers',
+      in: 'Input',
+      out: 'Output',
       liveTableStats: {
         path: 'File/directory',
         userName: 'Username',

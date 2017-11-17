@@ -7,6 +7,9 @@ const {
   get,
   A,
   set,
+  inject: { service },
+  isArray,
+  observer,
 } = Ember;
 
 import SpaceTransfersUpdater from 'op-worker-gui/utils/space-transfers-updater';
@@ -15,7 +18,9 @@ import providerTransferConnections from 'op-worker-gui/utils/transfers/provider-
 
 export default Component.extend({
   classNames: ['transfers-container'],
-
+  
+  session: service(),
+  
   /**
    * @virtual
    * @type {Space}
@@ -27,7 +32,26 @@ export default Component.extend({
    */
   transfersUpdater: undefined,
   
-  _transfersUpdaterEnabled: true,
+  /**
+   * Manually enable/disable updater (eg. for testing)
+   * @type {boolean}
+   */
+  transfersUpdaterEnabled: true,
+  
+  _transfersUpdaterEnabled: computed(
+    'transfersUpdaterEnabled',
+    'isSupportedByCurrentProvider',
+    function () {
+      const {
+        transfersUpdaterEnabled,
+        isSupportedByCurrentProvider,
+      } = this.getProperties(
+        'transfersUpdaterEnabled',
+        'isSupportedByCurrentProvider'
+      );
+      return transfersUpdaterEnabled && isSupportedByCurrentProvider;
+    }
+  ),
   
   /**
    * Collection of Transfer model for current transfers
@@ -38,6 +62,24 @@ export default Component.extend({
   // FIXME: transfers loading (private)
   // FIXME: transfers error (private)
 
+  // // FIXME: debug code
+  // completedTransfersWatch: observer('completedTransfers', function () {
+  //   debugger;
+  // }),
+  
+  sessionProviderId: computed.reads('session.sessionDetails.providerId'),
+  isSupportedByCurrentProvider: computed('sessionProviderId', 'providers.[]', function () {
+    const {
+      providers,
+      sessionProviderId,
+    } = this.getProperties('sessionProviderId', 'providers');
+    if (isArray(providers) && sessionProviderId != null) {
+      return _.includes(providers.map(p => get(p, 'id')), sessionProviderId);
+    } else {
+      return null;
+    }
+  }),
+  
   /**
    * @type {Ember.ComputedProperty<Array<TransferCurrentStat>>}
    */
@@ -86,7 +128,7 @@ export default Component.extend({
         if (ptOldVer) {
           set(ptOldVer, 'bytesPerSec', get(pt, 'bytesPerSec'));
         } else {
-          ptCache.push(pt);
+          ptCache.pushObject(pt);
         }
       });
       
@@ -114,22 +156,30 @@ export default Component.extend({
     }
   }),
   
+  configureTransfersUpdater: observer(
+    '_transfersUpdaterEnabled',
+    'space',
+    function () {
+      const {
+        _transfersUpdaterEnabled,
+        space,
+      } = this.getProperties(
+        '_transfersUpdaterEnabled',
+        'space'
+      );
+      this.get('transfersUpdater').setProperties({
+        isEnabled: _transfersUpdaterEnabled,
+        space: space,
+      });
+    }
+  ),
+  
   init() {
-    this._super(...arguments);
-    
-    const {
-      space,
-      _transfersUpdaterEnabled,
-    } = this.getProperties('space', '_transfersUpdaterEnabled');
-    
-    this.set('_providerTransfersCache', A());
-    
-    const transfersUpdater = SpaceTransfersUpdater.create({
-      isEnabled: _transfersUpdaterEnabled,
-      space,
-    });
-    
+    this._super(...arguments);    
+    this.set('_providerTransfersCache', A());    
+    const transfersUpdater = SpaceTransfersUpdater.create();    
     this.set('transfersUpdater', transfersUpdater);
+    this.configureTransfersUpdater();
   },
   
   willDestroyElement() {

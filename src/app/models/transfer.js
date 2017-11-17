@@ -1,5 +1,6 @@
 import DS from 'ember-data';
 import Ember from 'ember';
+import _ from 'lodash';
 
 import TransferRuntimeMixin from 'op-worker-gui/mixins/models/transfer-runtime';
 import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
@@ -15,9 +16,25 @@ const {
 } = Ember;
 
 export default Model.extend(TransferRuntimeMixin, {
+  /**
+   * One of:
+   * - scheduled
+   * - active
+   * - skipped
+   * - completed
+   * - cancelled
+   * - failed
+   */
   status: attr('string'),
+  
+  /**
+   * Id of Provider that is destination of this transfer
+   */
   destination: attr('string'),
-  // FIXME: computed property with file name?
+  
+  /**
+   * Absolute file or directory path that is transferred
+   */
   path: attr('string'),
   
   /**
@@ -26,9 +43,12 @@ export default Model.extend(TransferRuntimeMixin, {
   fileType: attr('string'),
   
   startTime: attr('number'),
+  
+  /**
+   * Non-empty only if transfer is not ongoing (`isOngoing`)
+   */
   finishTime: attr('number'),
   
-  // TODO: this should be changed to systemUserId
   systemUserId: attr('string'),
   
   currentStat: belongsTo('transfer-current-stat'),
@@ -71,6 +91,10 @@ export default Model.extend(TransferRuntimeMixin, {
   dest: computed.reads('destination'),
   bytesPerSec: computed.reads('currentStat.bytesPerSec'),
   userName: computed.reads('systemUser.name'),
+  
+  isOngoing: computed('status', function () {
+    return _.includes(['active', 'scheduled'], this.get('status'));
+  }),
 });
 
 // -- FIXME: mocks --

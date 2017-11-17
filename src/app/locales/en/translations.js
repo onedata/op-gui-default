@@ -466,8 +466,8 @@ export default {
       providersMapOfDist: 'Providers map of dist.',
       throughputDistribution: 'Throughput distribution',
       activeTransfers: 'Active transfers',
-      completedTransfers: 'Completed transfers',
-      noActiveTransfers: 'There are no active transfers',
+      completedTransfers: 'History of transfers',
+      noActiveTransfers: 'No data is transferred currently',
       notSupported: 'The selected space is not supported by this provider' +
         ' so we cannot list its transfers',
       in: 'Input',

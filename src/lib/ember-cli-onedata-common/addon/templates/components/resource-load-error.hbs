@@ -1,0 +1,13 @@
+{{!-- TODO i18n --}}
+{{#if onClose}}
+  <button class="btn icon-btn error-close" {{action 'close'}}>{{one-icon icon="close"}}</button>
+{{/if}}
+<strong>{{message}}</strong>
+{{#if reason}}
+  <a role="button" class="promise-error-show-details"{{action "toggleShowDetails"}}>
+    {{if showDetails "Hide" "Show"}}&nbsp;details...
+  </a>
+  <div class="error-details lg-row {{if showDetails "active"}}">
+    {{_reasonDetails}}
+  </div>
+{{/if}}

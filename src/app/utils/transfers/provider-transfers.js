@@ -48,11 +48,11 @@ export default function providerTransfers(transfers) {
         }
       });
       _.forEach(bySource, (bytesPerSec, src) => {
-        result.push({
+        result.push(Ember.Object.create({
           dest,
           src,
           bytesPerSec,
-        });
+        }));
       });
   });
   return result;

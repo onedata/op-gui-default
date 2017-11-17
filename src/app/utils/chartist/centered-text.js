@@ -15,7 +15,6 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-/* global Chartist */
 import _ from 'lodash';
 
 const DEFAULT_FONT_SIZE = '10%';

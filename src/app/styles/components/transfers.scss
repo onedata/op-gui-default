@@ -105,6 +105,18 @@
   // }
 
   .transfers-table {
+    tr.data-row {
+      &:hover {
+        background-color: $onedata-light-gray;
+        cursor: pointer;
+      }
+      &.expanded-row {
+        background-color: darken($onedata-light-gray, 5%);
+        &:hover {
+          background-color: darken($onedata-light-gray, 9%);
+        }
+      }
+    }
     th, td {
       padding: 16px 8px;
       text-align: center;

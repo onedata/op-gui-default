@@ -114,6 +114,10 @@ export default Ember.Component.extend({
         );
       }
       
+      _tableDataCache.sort((a, b) => 
+        get(b, 'startedAtComparable') - get(a, 'startedAtComparable')
+      );
+
       // FIXME: remove old items
 
       return this.set('_tableDataCache', _tableDataCache);

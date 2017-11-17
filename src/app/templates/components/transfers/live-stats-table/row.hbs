@@ -1,4 +1,4 @@
-<tr class="{{if (exists-in _selectedItems record) "selected-row"}}" {{action (if (exists-in _expandedRowIndexes index) "collapseRow" "expandRow") index bubbles=false}}>
+<tr class="data-row {{if (exists-in _selectedItems record) "selected-row"}} {{if (exists-in _expandedRowIndexes index) "expanded-row"}}" {{action (if (exists-in _expandedRowIndexes index) "collapseRow" "expandRow") index bubbles=false}}>
   {{#each processedColumns as |column|}}
     {{#if column.isVisible}}
       <td class={{column.className}}>

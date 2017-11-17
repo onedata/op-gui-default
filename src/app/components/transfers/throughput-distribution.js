@@ -42,7 +42,7 @@ export default Component.extend({
    * only one for destination!
    * @type {Array<SpaceInputTransfer|SpaceOutputTransfer>}
    */
-  spaceTransfers: computed('transfersDirection', 'providerTransfers.[]', function () {
+  spaceTransfers: computed('transfersDirection', 'providerTransfers.@each.bytesPerSec', function () {
     const {
       transfersDirection,
       providerTransfers,

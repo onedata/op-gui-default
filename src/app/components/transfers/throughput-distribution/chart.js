@@ -24,14 +24,14 @@ export default OnePieChart.extend({
   /**
    * @virtual
    * Space transfers throughput data
-   * @type {Array<SpaceTransfer>}
+   * @type {Ember.Array<SpaceTransfer>}
    */
   throughputData: [],
 
   /**
    * @override
    */
-  data: computed('providers.[]', 'throughputData.[]', function () {
+  data: computed('providers.[]', 'throughputData.@each.bytesPerSec', function () {
     const {
       providers,
       throughputData,

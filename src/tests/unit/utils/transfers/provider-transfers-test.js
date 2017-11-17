@@ -2,33 +2,47 @@ import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import providerTransfers from 'op-worker-gui/utils/transfers/provider-transfers';
 import _ from 'lodash';
+import Ember from 'ember';
 
-const ONE_MB = Math.pow(1024, 2);
+const {
+  get,
+} = Ember;
+
+function findEmberObject(array, properties) {
+  return _.find(array, e => {
+    for (let key in properties) {
+      if (get(e, key) !== properties[key]) {
+        return false;
+      }
+    }
+    return true;
+  });
+}
 
 const INPUT_TRANSFER_SPEED = [{
-    dest: 'p0',
+    destination: 'p0',
     bytesPerSec: {
-      p1: 1 * ONE_MB,
-      p2: 3 * ONE_MB,
+      p1: 1,
+      p2: 3,
     },
   },
   {
-    dest: 'p0',
+    destination: 'p0',
     bytesPerSec: {
-      p1: 5 * ONE_MB,
+      p1: 5,
     },
   },
   {
-    dest: 'p1',
+    destination: 'p1',
     bytesPerSec: {
-      p0: 7 * ONE_MB,
-      p2: 11 * ONE_MB,
+      p0: 7,
+      p2: 11,
     },
   },
   {
-    dest: 'p1',
+    destination: 'p1',
     bytesPerSec: {
-      p2: 13 * ONE_MB,
+      p2: 13,
     },
   },
 ];
@@ -38,29 +52,29 @@ describe('Unit | Utility | transfers/provider transfers', function () {
     function () {
       let result = providerTransfers(INPUT_TRANSFER_SPEED);
       expect(result).to.have.lengthOf(4);
-      expect(_.find(result, { src: 'p1', dest: 'p0' }), 'p1->p0')
-        .to.deep.equal({
+      expect(findEmberObject(result, { src: 'p1', dest: 'p0' }), 'p1->p0')
+        .to.deep.include({
           src: 'p1',
           dest: 'p0',
-          bytesPerSec: 6 * ONE_MB,
+          bytesPerSec: 6,
         });
-      expect(_.find(result, { src: 'p2', dest: 'p0' }), 'p2->p0')
-        .to.deep.equal({
+      expect(findEmberObject(result, { src: 'p2', dest: 'p0' }), 'p2->p0')
+        .to.deep.include({
           src: 'p2',
           dest: 'p0',
-          bytesPerSec: 3 * ONE_MB,
+          bytesPerSec: 3,
         });
-      expect(_.find(result, { src: 'p0', dest: 'p1' }), 'p0->p1')
-        .to.deep.equal({
+      expect(findEmberObject(result, { src: 'p0', dest: 'p1' }), 'p0->p1')
+        .to.deep.include({
           src: 'p0',
           dest: 'p1',
-          bytesPerSec: 7 * ONE_MB,
+          bytesPerSec: 7,
         });
-      expect(_.find(result, { src: 'p2', dest: 'p1' }), 'p2->p1')
-        .to.deep.equal({
+      expect(findEmberObject(result, { src: 'p2', dest: 'p1' }), 'p2->p1')
+        .to.deep.include({
           src: 'p2',
           dest: 'p1',
-          bytesPerSec: (11 + 13) * ONE_MB,
+          bytesPerSec: 11 + 13,
         });
     });
 });

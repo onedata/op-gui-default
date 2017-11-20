@@ -33,10 +33,17 @@ export default Component.extend({
    * Last update time (async -> _timeStatForUnit)
    * @type {Ember.ComputedProperty<Date>}
    */
-  _lastUpdateTime: computed('_timeStatForUnit.timestamp', function () {
-    const _timeStatForUnit = this.get('_timeStatForUnit');
-    const date = get(_timeStatForUnit, 'timestamp');
-    return date ? new Date(date) : new Date();
+  _lastUpdateTime: computed('_timeStatForUnit.timestamp', 'transfer.isOngoing', function () {
+    const {
+      _timeStatForUnit,
+      transfer,
+    } = this.getProperties('_timeStatForUnit', 'transfer');
+    if (transfer.get('isOngoing')) {
+      const date = get(_timeStatForUnit, 'timestamp');
+      return date ? new Date(date) : new Date();
+    } else {
+      return new Date(transfer.get('finishTime'));
+    }
   }),
   
   /**
@@ -62,6 +69,23 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<Object>}
    */
   _stats: computed.reads('_timeStatForUnit.content.stats'),
+
+  /**
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _statsTimestamp: computed('_timeStatForUnit.content.timestamp', 'transfer.isOngoing', function () {
+    const transfer = this.get('transfer');
+    if (transfer.get('isOngoing')) {
+      return this.get('_timeStatForUnit.content.timestamp');
+    } else {
+      return transfer.get('finishTime');
+    }
+  }),
+
+  /**
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _transferStartTime: computed.reads('transfer.startTime'),
 
   /**
    * A number of stats, that should be considered as a single chart value
@@ -124,7 +148,7 @@ export default Component.extend({
       for (let j = 0; j < _statsUnitsPerChartValue; j++) {
         singleChartStat += statsValues[i + j];
       }
-      scaledStats.push(singleChartStat / _statsUnitsPerChartValue);
+      scaledStats.push(this._scaleStatValue(singleChartStat, scaledStats.length));
     }
     return scaledStats.slice().reverse();
   }),
@@ -265,4 +289,23 @@ export default Component.extend({
       .subtract(offset * _timePeriod[0], _timePeriod[1])
       .format(_timeFormat);
   },
+
+  _scaleStatValue(statValue, statTimeIndex) {
+    const {
+      _timePeriod,
+      _statsTimestamp,
+      _transferStartTime,
+    } = this.getProperties(
+      '_timePeriod',
+      '_statsTimestamp',
+      '_transferStartTime'
+    );
+
+    const transferTime = _statsTimestamp - _transferStartTime;
+    const timePeriodInSec =
+      moment.duration(_timePeriod[0], _timePeriod[1]).asSeconds();
+    const timeSinceLastStat = transferTime - timePeriodInSec * statTimeIndex;
+    const timeDivider = Math.min(Math.max(1, timeSinceLastStat), timePeriodInSec);
+    return statValue / timeDivider;
+  }
 });

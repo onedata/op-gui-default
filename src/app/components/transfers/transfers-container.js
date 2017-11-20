@@ -127,7 +127,7 @@ export default Component.extend({
         if (!_.find(ptList, { src: get(pt, 'src'), dest: get(pt, 'dest') })) {
           ptCache.removeObject(pt);
         }
-      })
+      });
       ptList.forEach(pt => {
         const ptOldVer = _.find(ptCache, { src: get(pt, 'src'), dest: get(pt, 'dest') });
         if (ptOldVer) {

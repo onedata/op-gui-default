@@ -16,6 +16,7 @@ const {
 import SpaceTransfersUpdater from 'op-worker-gui/utils/space-transfers-updater';
 import providerTransfers from 'op-worker-gui/utils/transfers/provider-transfers';
 import providerTransferConnections from 'op-worker-gui/utils/transfers/provider-transfer-connections';
+import mutateArray from 'ember-cli-onedata-common/utils/mutate-array';
 
 export default Component.extend({
   classNames: ['transfers-container'],
@@ -137,6 +138,8 @@ export default Component.extend({
     return this.get('_providerTransfersCache');
   }),
 
+  _ptcCache: undefined,
+  
   /**
    * (async -> providerTransfers)
    * Collection of connection between two providers (for map display)
@@ -148,8 +151,16 @@ export default Component.extend({
   providerTransferConnections: computed('providerTransfers', function () {
     // FIXME: debugging
     const providerTransfers = this.get('providerTransfers');
+    const _ptcCache = this.get('_ptcCache');
     if (providerTransfers) {
-      return providerTransferConnections(providerTransfers);
+      return this.set(
+        '_ptcCache',
+        mutateArray(
+          _ptcCache,
+          providerTransferConnections(providerTransfers),
+          (x, y) => x[0] === y[0] && x[1] === y[1]
+        )
+      );
     }
   }),
   
@@ -215,6 +226,7 @@ export default Component.extend({
       space: space,
     });    
     this.set('transfersUpdater', transfersUpdater);
+    this.set('_ptcCache', A());
   },
   
   willDestroyElement() {

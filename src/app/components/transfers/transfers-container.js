@@ -10,6 +10,7 @@ const {
   inject: { service },
   isArray,
   observer,
+  isEmpty,
 } = Ember;
 
 import SpaceTransfersUpdater from 'op-worker-gui/utils/space-transfers-updater';
@@ -148,11 +149,35 @@ export default Component.extend({
     // FIXME: debugging
     const providerTransfers = this.get('providerTransfers');
     if (providerTransfers) {
-      var x = providerTransferConnections(providerTransfers);
-      console.debug('debug me');
-      return x; 
+      return providerTransferConnections(providerTransfers);
     }
   }),
+  
+  destinationProviderIds: computed(
+    'currentTransfers.@each.destination',
+    function destinationProviderIds() {
+      const transfers = this.get('currentTransfers');
+      if (!isEmpty(transfers)) {
+        return _.uniq(transfers.map(t => get(t, 'destination'))); 
+      }
+    }
+  ),
+  
+  sourceProviderIds: computed(
+    'currentTransfers.@each.bytesPerSec',
+    function sourceProviderIds() {
+      const transfers = this.get('currentTransfers');
+      if (!isEmpty(transfers)) {
+        return _.uniq(_.flatten(transfers.map(t => {
+          if (t && get(t, 'bytesPerSec')) {
+            return Object.keys(get(t, 'bytesPerSec'));
+          } else {
+            return [];
+          }
+        }))); 
+      }
+    }
+  ),
   
   configureTransfersUpdater: observer(
     '_transfersUpdaterEnabled',

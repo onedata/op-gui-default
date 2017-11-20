@@ -22,7 +22,12 @@
   {{#each providers as |provider|}}
     {{#atlas.position latitude=provider.latitude longitude=provider.longitude as |position|}}
       {{#position.point}}
-        {{provider-place provider=provider atlasWidth=atlas.width circleSizeScale=1.5}}
+        {{#provider-place provider=provider atlasWidth=atlas.width circleSizeScale=1.5}}
+          {{provider-place/super-circle
+            isSource=(contains provider.id sourceProviderIds)
+            isDestination=(contains provider.id destinationProviderIds)
+          }}
+        {{/provider-place}}
       {{/position.point}}
     {{/atlas.position}}
   {{/each}}

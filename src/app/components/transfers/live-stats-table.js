@@ -114,6 +114,10 @@ export default Ember.Component.extend({
           false
         );
       }
+      
+      _tableDataCache.sort((a, b) => 
+        get(b, 'startedAtComparable') - get(a, 'startedAtComparable')
+      );
 
       return this.set('_tableDataCache', _tableDataCache);
     }

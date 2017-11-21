@@ -18,12 +18,11 @@ describe('Integration | Component | transfers/transfers container', function () 
 
   beforeEach(function () {
     const bps1 = {
-      p2: [],
-      p3: [],
+      p2: 1,
+      p3: 3,
     };
     const bps2 = {
-      p2: [],
-      p3: [],
+      p3: 7,
     };
     const transfers = A([
       EmberObject.create({
@@ -99,6 +98,37 @@ describe('Integration | Component | transfers/transfers container', function () 
       expect(yieldedValue).to.have.lengthOf(2);
       expect(yieldedValue).to.include('p2');
       expect(yieldedValue).to.include('p3');
+      done();
+    });
+  });
+  
+  it('yields computed providerTransfers', function (done) {    
+    let providerTransfers;
+    const checkYield = function () {
+      providerTransfers = this.get('providerTransfers');
+    };
+    this.set('checkYield', checkYield);
+
+    this.render(hbs `
+      {{#transfers/transfers-container
+        tableDataIsLoaded=true
+        isSupportedByCurrentProvider=true
+        transfersUpdaterEnabled=false
+        space=space
+        as |tData|
+      }}
+        {{test-callback
+          callback=checkYield
+          providerTransfers=tData.providerTransfers
+        }}
+      {{/transfers/transfers-container}}
+    `);
+    
+    wait().then(() => {
+      // p2->p1, p3->p1, p3->p2
+      expect(providerTransfers).to.have.lengthOf(3);
+      // more tests for providerTransfers computation can be found
+      // in tests for util:providerTransfers
       done();
     });
   });

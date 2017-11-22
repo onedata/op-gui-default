@@ -8,7 +8,6 @@ import centerLineChart from 'op-worker-gui/utils/chartist/center-line-chart';
 import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
 import axisLabels from 'op-worker-gui/utils/chartist/axis-labels';
 import TransferTimeStatUpdater from 'op-worker-gui/utils/transfer-time-stat-updater';
-import generateColors from 'op-worker-gui/utils/generate-colors';
 import customCss from 'op-worker-gui/utils/chartist/custom-css';
 import Color from 'npm:color';
 
@@ -147,13 +146,10 @@ export default Component.extend({
 
   /**
    * Colors used to color each providers' series
+   * @virtual
    * @type {Ember.ComputedProperty<Object>}
    */
-  _providersColors: computed('_sortedProvidersIds', function () {
-    const _sortedProvidersIds = this.get('_sortedProvidersIds');
-    const colors = generateColors(_sortedProvidersIds.length);
-    return _.zipObject(_sortedProvidersIds, colors);
-  }),
+  providersColors: {},
   
   /**
    * Stats values for time unit in order: from oldest to newest (inverts backend
@@ -274,13 +270,13 @@ export default Component.extend({
       _statsValues,
       _chartValues,
       _sortedProvidersIds,
-      _providersColors,
+      providersColors,
       providers,
     } = this.getProperties(
       '_statsValues',
       '_chartValues',
       '_sortedProvidersIds',
-      '_providersColors',
+      'providersColors',
       'providers'
     );
     // clearing out old chart values
@@ -310,13 +306,13 @@ export default Component.extend({
               providerName.substring(0, 8) + '...' : providerName,
           value: bytesToString(_chartValues[providerIndex][index]) + '/s',
           className: 'ct-tooltip-entry',
-          cssString: 'border-color: ' + _providersColors[providerId],
+          cssString: 'border-color: ' + providersColors[providerId],
         };
       });
     });
     // setting colors
     const customCss = _sortedProvidersIds.map((providerId) => {
-      const color = _providersColors[providerId];
+      const color = providersColors[providerId];
       const colorMixedWithBackgr =
         new Color(color).mix(new Color(CHART_BACKGROUND_COLOR), 0.4).hex();
       return _.times(EXPECTED_STATS_NUMBER, _.constant({

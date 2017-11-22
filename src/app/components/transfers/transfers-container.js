@@ -15,6 +15,7 @@ const {
 import SpaceTransfersUpdater from 'op-worker-gui/utils/space-transfers-updater';
 import providerTransfers from 'op-worker-gui/utils/transfers/provider-transfers';
 import providerTransferConnections from 'op-worker-gui/utils/transfers/provider-transfer-connections';
+import generateColors from 'op-worker-gui/utils/generate-colors';
 
 export default Component.extend({
   classNames: ['transfers-container'],
@@ -102,6 +103,13 @@ export default Component.extend({
   
   
   providers: computed.reads('space.providerList.queryList.content'),
+
+  providersColors: computed('providers', function () {
+    const providers = this.get('providers');
+    const providerIds = providers.mapBy('id');
+    const colors = generateColors(providerIds.length);
+    return _.zipObject(providerIds, colors);
+  }),
   // FIXME: providers loading (important: yielded)
   // FIXME: providers error (important: yielded)
     

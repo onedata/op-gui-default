@@ -4,6 +4,7 @@
 {{#if (eq isSupportedByCurrentProvider true)}}
   {{yield (hash
     providers=providers
+    providersColors=providersColors
     currentTransfers=currentTransfers
     completedTransfers=completedTransfers
     providerTransfers=providerTransfers

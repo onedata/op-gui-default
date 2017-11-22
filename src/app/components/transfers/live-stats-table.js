@@ -97,15 +97,19 @@ export default Ember.Component.extend({
     '_tableDataCache',
     'transfers',
     'providers',
+    'providersColors',
     function () {
       let _tableDataCache = this.get('_tableDataCache');
-      const transfers = this.get('transfers');
-      const providers = this.get('providers');
-      const i18n = this.get('i18n');
+      const {
+        transfers,
+        providers,
+        providersColors,
+        i18n,
+      } = this.getProperties('transfers', 'providers', 'providersColors', 'i18n');
       
       if (transfers && providers && transfers.every(t => get(t, 'tableDataIsLoaded'))) {
         const newTableData = transfers
-          .map((transfer) => transferTableData(transfer, providers, i18n));
+          .map((transfer) => transferTableData(transfer, providers, providersColors, i18n));
         mutateArray(
           _tableDataCache,
           newTableData,
@@ -230,7 +234,7 @@ export default Ember.Component.extend({
 });
 
 // TODO: optimize using destructurize and getProperties
-function transferTableData(transfer, providers, i18n) {
+function transferTableData(transfer, providers, providersColors, i18n) {
   // searching for destination
   let destination = i18n.t(I18N_PREFIX + 'destinationUnknown');
   const destProvider = _.find(providers, (provider) => 
@@ -262,6 +266,7 @@ function transferTableData(transfer, providers, i18n) {
     transfer,
     transferId,
     providers,
+    providersColors,
     path,
     fileType,
     destination,

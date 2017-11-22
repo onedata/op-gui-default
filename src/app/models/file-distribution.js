@@ -2,7 +2,8 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 const {
-  computed
+  computed,
+  isEmpty,
 } = Ember;
 
 /**
@@ -37,8 +38,38 @@ export default DS.Model.extend({
     - the file (which has a id = fileId) should have size >= last number (in this example >= 100b)
   */
   blocks: DS.attr({defaultValue: []}),
-
-  fileId: DS.attr('string'),
   
+  file: DS.belongsTo('file', { async: true, inverse: null }),
+    
   neverSynchronized: DS.attr('boolean', { defaultValue: false }),
+
+  fileSize: computed.reads('file.size'),
+  
+  isEmpty: computed('fileSize', 'blocks.[]', function () {
+    if (this.get('fileSize') !== undefined) {
+      const blocks = this.get('blocks');
+      return isEmpty(blocks);
+    }
+  }),
+  
+  isComplete: computed('isEmpty', 'fileSize', 'blocks.[]', function () {
+    const isEmpty = this.get('isEmpty');
+    if (isEmpty === false) {
+      const sblocks = this.get('blocks').map(i => parseInt(i)).sort((a, b) => a - b);
+      return sblocks[0] === 0 &&
+        sblocks[sblocks.length - 1] === this.get('fileSize') &&
+        compareNeighbors(sblocks.slice(1, sblocks.length - 1));
+    } else {
+      return isEmpty;
+    }
+  }),
 });
+
+function compareNeighbors(sblocks) {
+  for (let i = 0; i < sblocks.length; i += 2) {
+    if (sblocks[i] !== sblocks[i+1]) {
+      return false;
+    }
+  }
+  return true;
+}

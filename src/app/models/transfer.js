@@ -32,6 +32,19 @@ export default Model.extend(TransferRuntimeMixin, {
    */
   destination: attr('string'),
   
+  file: belongsTo('file', { async: true, inverse: null }),
+  
+  /**
+   * If true, the transfer is a migration, so the file will be invalidated
+   * on `migrationSource` provider after migration completion
+   */
+  migration: attr('boolean'),
+  
+  /**
+   * Id of provider that will invalidate the file after transfer
+   */
+  migrationSource: attr('string'),
+  
   /**
    * Absolute file or directory path that is transferred
    */

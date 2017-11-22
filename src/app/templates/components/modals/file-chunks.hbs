@@ -31,6 +31,9 @@
                   {{t "components.dataFilesListToolbar.fileChunksModal.providerName"}}
                 </th>
                 <th>
+                  {{!-- FIXME: empty table header? --}}
+                </th>
+                <th>
                   {{t "components.dataFilesListToolbar.fileChunksModal.dataDitribution"}}
                 </th>
               </thead>
@@ -41,6 +44,27 @@
                     {{#truncated-string}}
                       {{fb.getProvider.name}}
                     {{/truncated-string}}
+                  </td>
+                  <td class="replica-btns">
+                    {{!-- FIXME: is: replication in progress / invalidation in progress / file already replicated --}}
+                    <div class="btn-group">
+                      {{!-- FIXME:  --}}
+                      {{!-- FIXME: loading state --}}
+                      {{#if (eq fb.isComplete false)}}
+                        {{#bs-button
+                          action=(action "startInvalidation" fb.file fb.provider)
+                        }}
+                          Invalidate
+                        {{/bs-button}}
+                      {{/if}}
+                      {{#if (eq fb.isEmpty true)}}
+                        {{#bs-button
+                          action=(action "startReplication" fb.file fb.provider)
+                        }}
+                          Replicate
+                        {{/bs-button}}
+                      {{/if}}
+                    </div>
                   </td>
                   <td class="chunks">
                     {{#if fb.neverSynchronized}}

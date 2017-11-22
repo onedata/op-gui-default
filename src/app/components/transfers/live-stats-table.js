@@ -261,6 +261,7 @@ function transferTableData(transfer, providers, i18n) {
     // FIXME: user name is async, so it should be in loading state
     transfer,
     transferId,
+    providers,
     path,
     fileType,
     destination,

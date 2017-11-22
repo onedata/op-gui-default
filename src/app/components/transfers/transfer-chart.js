@@ -8,26 +8,42 @@ import centerLineChart from 'op-worker-gui/utils/chartist/center-line-chart';
 import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
 import axisLabels from 'op-worker-gui/utils/chartist/axis-labels';
 import TransferTimeStatUpdater from 'op-worker-gui/utils/transfer-time-stat-updater';
+import generateColors from 'op-worker-gui/utils/generate-colors';
+import customCss from 'op-worker-gui/utils/chartist/custom-css';
+import Color from 'npm:color';
 
 const {
   Component,
   computed,
   get,
+  inject: {
+    service,
+  },
 } = Ember;
 
 const EXPECTED_STATS_NUMBER = 12;
 const MINUTE_STATS_NUMBER = 12;
 const HOUR_STATS_NUMBER = 60;
 const DAY_STATS_NUMBER = 24;
+const CHART_BACKGROUND_COLOR = '#e3e3e3';
+const I18N_PREFIX = 'components.transfers.transferChart.';
 
 export default Component.extend({
   classNames: ['transfer-chart'],
+
+  i18n: service(),
   
   /**
    * @virtual
    * @type {Transfer}
    */
   transfer: undefined,
+
+  /**
+   * @virtual
+   * @type {Array<Provider>}
+   */
+  providers: undefined,
 
   /**
    * Last update time (async -> _timeStatForUnit)
@@ -55,7 +71,7 @@ export default Component.extend({
 
   /**
    * Array of actual chart values.
-   * @type {Array<number>}
+   * @type {Array<Array<number>>}
    */
   _chartValues: [],
 
@@ -71,6 +87,7 @@ export default Component.extend({
   _stats: computed.reads('_timeStatForUnit.content.stats'),
 
   /**
+   * Last stat timestamp
    * @type {Ember.ComputedProperty<number>}
    */
   _statsTimestamp: computed('_timeStatForUnit.content.timestamp', 'transfer.isOngoing', function () {
@@ -119,6 +136,24 @@ export default Component.extend({
     } = this.getProperties('transfer', 'timeUnit');
     return get(transfer, `${timeUnit}Stat`);
   }),
+
+  /**
+   * Sorted provider ids.
+   * @type {Ember.ComputedProperty<Array<string>>}
+   */
+  _sortedProvidersIds: computed('_stats', function () {
+    return Object.keys(this.get('_stats')).sort();
+  }),
+
+  /**
+   * Colors used to color each providers' series
+   * @type {Ember.ComputedProperty<Object>}
+   */
+  _providersColors: computed('_sortedProvidersIds', function () {
+    const _sortedProvidersIds = this.get('_sortedProvidersIds');
+    const colors = generateColors(_sortedProvidersIds.length);
+    return _.zipObject(_sortedProvidersIds, colors);
+  }),
   
   /**
    * Stats values for time unit in order: from oldest to newest (inverts backend
@@ -126,31 +161,36 @@ export default Component.extend({
    * (async -> _stats)
    * @type {Ember.ComputedProperty<Array<number>>}
    */
-  _statsValues: computed('_stats', '_statsUnitsPerChartValue', function () {
+  _statsValues: computed('_sortedProvidersIds', '_statsUnitsPerChartValue', function () {
     const {
       _stats,
       _statsUnitsPerChartValue,
-    } = this.getProperties('_stats', '_statsUnitsPerChartValue');
+      _sortedProvidersIds,
+    } = this.getProperties(
+      '_stats',
+      '_statsUnitsPerChartValue',
+      '_sortedProvidersIds'
+    );
     const inputStatsValuesNumber = EXPECTED_STATS_NUMBER * _statsUnitsPerChartValue;
-    const statsValues = _.range(inputStatsValuesNumber).map(() => 0);
+    const statsValues = [];
 
-    Object.keys(_stats).forEach(key => {
+    _sortedProvidersIds.forEach(key => {
       let values = _stats[key];
       if (values.length < inputStatsValuesNumber) {
         values = _.range(inputStatsValuesNumber - values.length).map(() => 0)
           .concat(values);
       }
-      values.forEach((value, index) => statsValues[index] += value);
-    });
-    const scaledStats = [];
-    for (let i = 0; i < statsValues.length; i += _statsUnitsPerChartValue) {
-      let singleChartStat = 0;
-      for (let j = 0; j < _statsUnitsPerChartValue; j++) {
-        singleChartStat += statsValues[i + j];
+      const scaledValues = [];
+      for (let i = 0; i < values.length; i += _statsUnitsPerChartValue) {
+        let singleChartStat = 0;
+        for (let j = 0; j < _statsUnitsPerChartValue; j++) {
+          singleChartStat += values[i + j];
+        }
+        scaledValues.push(this._scaleStatValue(singleChartStat, scaledValues.length));
       }
-      scaledStats.push(this._scaleStatValue(singleChartStat, scaledStats.length));
-    }
-    return scaledStats.slice().reverse();
+      statsValues.push(scaledValues.reverse());
+    });
+    return statsValues;
   }),
 
   /**
@@ -189,64 +229,118 @@ export default Component.extend({
    * Chartist settings
    * @type {Object}
    */
-  _chartOptions: {
-    axisY: {
-      labelInterpolationFnc: (value) => {
-        return bytesToString(value) + '/s';
-      }
-    },
-    low: 0,
-    chartPadding: {
-      top: 30,
-      bottom: 30,
-      left: 50,
-      right: 50,
-    },
-    plugins: [
-      additionalXLabel(),
-      shortHorizontalGrid(),
-      centerLineChart(),
-      axisLabels({
-        xLabel: 'Time',
-        yLabel: 'Throughput',
-      }),
-      tooltip({
-        chartType: 'line',
-        rangeInTitle: true,
-        topOffset: -17,
-      }),
-    ],
-  },
+  _chartOptions: computed(function() {
+    const i18n = this.get('i18n');
+    return {
+      axisY: {
+        labelInterpolationFnc: (value) => {
+          return bytesToString(value) + '/s';
+        }
+      },
+      low: 0,
+      showArea: true,
+      chartPadding: {
+        top: 30,
+        bottom: 30,
+        left: 50,
+        right: 50,
+      },
+      plugins: [
+        additionalXLabel(),
+        shortHorizontalGrid(),
+        centerLineChart(),
+        axisLabels({
+          xLabel: i18n.t(I18N_PREFIX + 'time'),
+          yLabel: i18n.t(I18N_PREFIX + 'throughput'),
+        }),
+        tooltip({
+          chartType: 'line',
+          rangeInTitle: true,
+          topOffset: -17,
+        }),
+        customCss({
+          filterBySeriesIndex: true,
+        }),
+      ],
+    };
+  }),
 
   /**
    * Data for chartist (async -> _statsValues)
    * @type {computed.Object}
    */
-  _chartData: computed('_statsValues', function () {
+  _chartData: computed('_statsValues', 'providers.@each.name', function () {
     let {
       _statsValues,
       _chartValues,
+      _sortedProvidersIds,
+      _providersColors,
+      providers,
     } = this.getProperties(
       '_statsValues',
-      '_chartValues'
+      '_chartValues',
+      '_sortedProvidersIds',
+      '_providersColors',
+      'providers'
     );
-    while (_chartValues.length) {
-      _chartValues.shift();
+    // clearing out old chart values
+    _chartValues.forEach(providerValues => {
+      while (providerValues.length) {
+        providerValues.shift();
+      }
+    });
+    // extending chart values to hold all needed providers
+    while (_chartValues.length < _statsValues.length) {
+      _chartValues.push([]);
     }
-    _statsValues.forEach(value => _chartValues.push(value));
+    // calculating new chart values
+    const valuesSumArray = _.times(EXPECTED_STATS_NUMBER, _.constant(0));
+    _statsValues.slice(0).reverse().forEach((providerValues, index) => {
+      providerValues.forEach((value, index2) => valuesSumArray[index2] += value);
+      _chartValues[_chartValues.length - index - 1].push(...(valuesSumArray));
+    });
+    // creating tooltips
+    const tooltipElements = _chartValues[0].map((value, index) => {
+      return _sortedProvidersIds.map((providerId, providerIndex) => {
+        const provider =
+          _.find(providers, (provider) => provider.get('id') === providerId) || {};
+        const providerName = get(provider, 'name') || providerId;
+        return {
+          name: providerName.length > 10 ?
+              providerName.substring(0, 8) + '...' : providerName,
+          value: bytesToString(_chartValues[providerIndex][index]) + '/s',
+          className: 'ct-tooltip-entry',
+          cssString: 'border-color: ' + _providersColors[providerId],
+        };
+      });
+    });
+    // setting colors
+    const customCss = _sortedProvidersIds.map((providerId) => {
+      const color = _providersColors[providerId];
+      const colorMixedWithBackgr =
+        new Color(color).mix(new Color(CHART_BACKGROUND_COLOR), 0.4).hex();
+      return _.times(EXPECTED_STATS_NUMBER, _.constant({
+        line: {
+          stroke: color,
+        },
+        point: {
+          stroke: color,
+        },
+        area: {
+          fill: colorMixedWithBackgr,
+        }
+      }));
+    });
+    // creating chart data object
     return {
-      labels: _.range(1, _chartValues.length + 1).reverse()
-        .map(n => this.getChartLabel(n)),
-      series: [{
-        data: _chartValues,
-        tooltipElements: _statsValues.map((value) => [{
-          name: 'Throughput',
-          value: bytesToString(value) + '/s',
-          className: 'ct-series-a-tooltip',
-        }]),
-        className: 'ct-series-a',
-      }],
-      lastLabel: this.getChartLabel(0),
+      labels: _.range(1, _chartValues[0].length + 1).reverse()
+        .map(n => this._getChartLabel(n)),
+      series: _chartValues.map((providerValues) => ({
+        data: providerValues,
+        tooltipElements,
+      })),
+      lastLabel: this._getChartLabel(0),
+      customCss,
     };
   }),
 
@@ -276,7 +370,12 @@ export default Component.extend({
     }
   },
 
-  getChartLabel(offset) {
+  /**
+   * Returns chart label for specified time offset (time step number)
+   * @param {number} offset
+   * @returns {string}
+   */
+  _getChartLabel(offset) {
     let {
       _lastUpdateTime,
       _timeFormat,
@@ -290,6 +389,12 @@ export default Component.extend({
       .format(_timeFormat);
   },
 
+  /**
+   * Calculates throughput value for given bytes number and time step index
+   * @param {number} statValue transfered bytes
+   * @param {number} statTimeIndex time step index
+   * @returns {number} average throughput in bytes per second
+   */
   _scaleStatValue(statValue, statTimeIndex) {
     const {
       _timePeriod,

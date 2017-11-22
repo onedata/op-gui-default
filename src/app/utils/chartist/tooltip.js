@@ -83,7 +83,8 @@ export default function (options) {
         if (options.roundValues && typeof value === 'number') {
           value = dynamicRound(value);
         }
-        ul.append(`<li class="${d.className}">${d.name}: ${value + suffix}</li>`);
+        const styleAttr = d.cssString ? `style="${d.cssString}"`: '';
+        ul.append(`<li class="${d.className}" ${styleAttr}>${d.name}: ${value + suffix}</li>`);
       });
     };
 

@@ -45,14 +45,20 @@
       padding-top: 40px;
       margin-bottom: 0;
     }
-    .ct-series-a-tooltip::before {
-      background-color: $color-one-mint;
-      border-color: $color-one-mint;
+    .ct-area {
+      fill-opacity: 1;
     }
-    .ct-series-a {
-      line, path {
-        stroke: $color-one-mint;
-      }
+    .ct-line {
+      stroke-width: 2px;
+    }
+    .ct-point {
+      stroke-width: 7px;
+    }
+    .ct-tooltip-entry::before {
+      height: 0;
+      width: 0;
+      border-color: inherit;
+      border-width: 5px;
     }
     .ct-label.ct-vertical.ct-start {
       white-space: nowrap;

@@ -501,6 +501,8 @@ export default {
         minute: 'Minute',
         hour: 'Hour',
         day: 'Day',
+        time: 'Time',
+        throughput: 'Throughput',
       },
     },
   },

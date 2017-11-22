@@ -3,7 +3,6 @@ import { describe, it, beforeEach } from 'mocha';
 import { setupComponentTest } from 'ember-mocha';
 import hbs from 'htmlbars-inline-precompile';
 import Ember from 'ember';
-// import mockHasMany from 'ember-cli-onedata-common/utils/mock-has-many';
 import wait from 'ember-test-helpers/wait';
 
 const {
@@ -11,8 +10,8 @@ const {
   A,
 } = Ember;
 
-describe('Integration | Component | transfers/transfers container', function () {
-  setupComponentTest('transfers/transfers-container', {
+describe('Integration | Component | transfers/data container', function () {
+  setupComponentTest('transfers/data-container', {
     integration: true
   });
 
@@ -28,12 +27,15 @@ describe('Integration | Component | transfers/transfers container', function () 
       EmberObject.create({
         destination: 'p1',
         bytesPerSec: bps1,
+        tableDataIsLoaded: true,
       }),
       EmberObject.create({
         destination: 'p2',
         bytesPerSec: bps2,
+        tableDataIsLoaded: true,
       }),
     ]);
+    transfers.isLoaded = true;
     const space = EmberObject.create({
       currentTransferList: {
         list: {
@@ -52,7 +54,7 @@ describe('Integration | Component | transfers/transfers container', function () 
     this.set('checkYield', checkYield);
 
     this.render(hbs `
-      {{#transfers/transfers-container
+      {{#transfers/data-container
         isSupportedByCurrentProvider=true
         transfersUpdaterEnabled=false
         space=space
@@ -62,7 +64,7 @@ describe('Integration | Component | transfers/transfers container', function () 
           callback=checkYield
           ids=tData.destinationProviderIds
         }}
-      {{/transfers/transfers-container}}
+      {{/transfers/data-container}}
     `);
 
     wait().then(() => {
@@ -81,7 +83,7 @@ describe('Integration | Component | transfers/transfers container', function () 
     this.set('checkYield', checkYield);
 
     this.render(hbs `
-      {{#transfers/transfers-container
+      {{#transfers/data-container
         isSupportedByCurrentProvider=true
         transfersUpdaterEnabled=false
         space=space
@@ -91,7 +93,7 @@ describe('Integration | Component | transfers/transfers container', function () 
           callback=checkYield
           ids=tData.sourceProviderIds
         }}
-      {{/transfers/transfers-container}}
+      {{/transfers/data-container}}
     `);
 
     wait().then(() => {
@@ -110,8 +112,7 @@ describe('Integration | Component | transfers/transfers container', function () 
     this.set('checkYield', checkYield);
 
     this.render(hbs `
-      {{#transfers/transfers-container
-        tableDataIsLoaded=true
+      {{#transfers/data-container
         isSupportedByCurrentProvider=true
         transfersUpdaterEnabled=false
         space=space
@@ -121,7 +122,7 @@ describe('Integration | Component | transfers/transfers container', function () 
           callback=checkYield
           providerTransfers=tData.providerTransfers
         }}
-      {{/transfers/transfers-container}}
+      {{/transfers/data-container}}
     `);
     
     wait().then(() => {

@@ -11,7 +11,7 @@
  * `
  * 
  * 
- * @module components/transfers/transfers-container
+ * @module components/transfers/data-container
  * @author Jakub Liput
  * @copyright (C) 2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
@@ -27,7 +27,6 @@ const {
   A,
   set,
   inject: { service },
-  isArray,
   observer,
   isEmpty,
 } = Ember;
@@ -38,7 +37,7 @@ import providerTransferConnections from 'op-worker-gui/utils/transfers/provider-
 import mutateArray from 'ember-cli-onedata-common/utils/mutate-array';
 
 export default Component.extend({
-  classNames: ['transfers-container'],
+  classNames: ['transfers-data-container'],
   
   session: service(),
   store: service(),
@@ -63,25 +62,7 @@ export default Component.extend({
    */
   transfersUpdater: undefined,
   
-  /**
-   * Private enabled/disabled state for updater - can disable updater even if
-   * `transfersUpdaterEnabled` is enabled because it should not work.
-   * @type {Ember.ComputedProperty<boolean>}
-   */
-  _transfersUpdaterEnabled: computed(
-    'transfersUpdaterEnabled',
-    'isSupportedByCurrentProvider',
-    function () {
-      const {
-        transfersUpdaterEnabled,
-        isSupportedByCurrentProvider,
-      } = this.getProperties(
-        'transfersUpdaterEnabled',
-        'isSupportedByCurrentProvider'
-      );
-      return transfersUpdaterEnabled && isSupportedByCurrentProvider;
-    }
-  ),
+  _transfersUpdaterEnabled: computed.readOnly('transfersUpdater'),
   
   // FIXME: partial loader
   /**
@@ -96,12 +77,6 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<Ember.Array<Transfer>>}
    */
   completedTransfers: computed.reads('space.completedTransferList.list.content'),
-  
-  /**
-   * Alias for Id of this provider - used for checking if transfers can be fetched
-   * @type {Ember.ComputedProperty<string>}
-   */
-  sessionProviderId: computed.reads('session.sessionDetails.providerId'),
 
   // FIXME: partial loader
   /**
@@ -110,23 +85,7 @@ export default Component.extend({
    */
   providers: computed.reads('space.providerList.queryList.content'),
   
-  /**
-   * True if transfers can be listed because space is supported by current
-   * provider.
-   * @type {Ember.ComputedProperty<boolean>}
-   */
-  isSupportedByCurrentProvider: computed('sessionProviderId', 'providers.[]', function () {
-    const {
-      providers,
-      sessionProviderId,
-    } = this.getProperties('sessionProviderId', 'providers');
-    if (isArray(providers) && sessionProviderId != null) {
-      return _.includes(providers.map(p => get(p, 'id')), sessionProviderId);
-    } else {
-      return null;
-    }
-  }),
-  
+  // FIXME: to remove
   /**
    * Currently a global loader
    * FIXME: make partial loaders that does not force
@@ -134,10 +93,10 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<Array<TransferCurrentStat>>}
    */
   tableDataIsLoaded: computed(
-    'currentTransfers.isLoaded',
-    'currentTransfers.@each.tableDataIsLoaded',
-    'space.providerList.queryList.isSettled',
-    'space.completedTransferList.list.isLoaded',
+    'currentTransfers.isLoaded', // OK
+    'currentTransfers.@each.tableDataIsLoaded', // OK
+    'space.providerList.queryList.isSettled', // OK
+    'space.completedTransferList.list.isLoaded', // not ok
     function () {
       return this.get('space.completedTransferList.list.isLoaded') &&
         this.get('space.providerList.queryList.isSettled'),
@@ -145,6 +104,28 @@ export default Component.extend({
     }
   ),
   
+  //#region Loading and error states of yielded values
+  
+  providersLoaded: computed.reads('space.providerList.queryList.isSettled'),
+  providersError: computed.reads('space.providerList.queryList.reason'),
+  
+  currentTransfersLoaded: computed(
+    'currentTransfers.isLoaded',
+    'currentTransfers.@each.tableDataIsLoaded',
+    function getCurrentTransfersLoaded() {
+      return this.get('currentTransfers.isLoaded') === true &&
+        this.get('currentTransfers').every(t => get(t, 'tableDataIsLoaded'));
+    }
+  ),
+  
+  completedTransfersLoaded: computed(
+    'completedTransfers.isLoaded',
+    function getCompletedTransfersLoaded() {
+      return this.get('completedTransfers.isLoaded') === true;
+    }
+  ),
+  
+  //#endregion
   
   /**
    * Holds current state of provider transfers array.
@@ -164,10 +145,10 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<Array<ProviderTransfer>|undefined>}
    */
   providerTransfers: computed(
-    'tableDataIsLoaded',
+    'currentTransfersLoaded',
     'currentTransfers.@each.bytesPerSec',
     function getProviderTransfers() {
-      if (this.get('tableDataIsLoaded')) {
+      if (this.get('currentTransfersLoaded')) {
         const {
           _providerTransfersCache,
           currentTransfers,
@@ -189,13 +170,13 @@ export default Component.extend({
    * @param {Ember.Array<Transfer>} currentTransfers 
    */
   _updateProviderTransfersCache(ptCache, currentTransfers) {
-    const ptList = providerTransfers(currentTransfers.toArray());
+    const ptNewList = providerTransfers(currentTransfers.toArray());
     ptCache.forEach(pt => {
-      if (!_.find(ptList, { src: get(pt, 'src'), dest: get(pt, 'dest') })) {
+      if (!_.find(ptNewList, { src: get(pt, 'src'), dest: get(pt, 'dest') })) {
         ptCache.removeObject(pt);
       }
     });
-    ptList.forEach(pt => {
+    ptNewList.forEach(pt => {
       const ptOldVer = _.find(ptCache, { src: get(pt, 'src'), dest: get(pt, 'dest') });
       if (ptOldVer) {
         set(ptOldVer, 'bytesPerSec', get(pt, 'bytesPerSec'));
@@ -203,8 +184,6 @@ export default Component.extend({
         ptCache.pushObject(pt);
       }
     });
-    
-    this.set('_providerTransfersCache', ptCache);
   },
 
   /**

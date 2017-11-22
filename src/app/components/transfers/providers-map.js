@@ -9,6 +9,8 @@ const {
 } = Ember;
 
 export default Component.extend({
+  classNames: ['transfers-providers-map'],
+  
   /**
    * @virtual
    * Cannot be null or undefined!

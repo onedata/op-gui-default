@@ -21,7 +21,7 @@ const HOUR_STATS_NUMBER = 60;
 const DAY_STATS_NUMBER = 24;
 
 export default Component.extend({
-  classNames: ['transfer-chart'],
+  classNames: ['transfers-transfer-chart'],
   
   /**
    * @virtual

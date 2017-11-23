@@ -17,6 +17,13 @@ export default Component.extend({
    * @type {Array<Provider>}
    */
   providers: undefined,
+
+  /**
+   * Predefined providers colors
+   * @virtual
+   * @type {Object}
+   */
+  providersColors: {},
   
   /**
    * @virtual 

@@ -1,7 +1,6 @@
 import Ember from 'ember';
 import OnePieChart from 'op-worker-gui/components/one-pie-chart';
 import _ from 'lodash';
-import generateColors from 'op-worker-gui/utils/generate-colors';
 import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
 import layout from 'op-worker-gui/templates/components/one-pie-chart';
 
@@ -22,6 +21,13 @@ export default OnePieChart.extend({
   providers: [],
 
   /**
+   * Predefined providers colors
+   * @virtual
+   * @type {Object}
+   */
+  providersColors: {},
+
+  /**
    * @virtual
    * Space transfers throughput data
    * @type {Ember.Array<SpaceTransfer>}
@@ -31,22 +37,27 @@ export default OnePieChart.extend({
   /**
    * @override
    */
-  data: computed('providers.[]', 'throughputData.@each.bytesPerSec', function () {
-    const {
-      providers,
-      throughputData,
-    } = this.getProperties('providers', 'throughputData');
-    const colors = generateColors(throughputData.length);
-    return throughputData.map((transfer, index) => (Ember.Object.create({
-      id: String(index),
-      label: get(_.find(
+  data: computed(
+    'providers.[]',
+    'throughputData.@each.bytesPerSec',
+    'providersColors',
+    function () {
+      const {
         providers,
-        (p) => get(p, 'id') === transfer.providerId
-      ), 'name'),
-      value: transfer.bytesPerSec,
-      color: colors[index],
-    })));
-  }),
+        throughputData,
+        providersColors,
+      } = this.getProperties('providers', 'throughputData', 'providersColors');
+      return throughputData.map((transfer, index) => Ember.Object.create({
+        id: String(index),
+        label: get(_.find(
+          providers,
+          (p) => get(p, 'id') === get(transfer, 'providerId')
+        ), 'name'),
+        value: transfer.bytesPerSec,
+        color: providersColors[get(transfer, 'providerId')],
+      }));
+    }
+  ),
 
   /**
    * @override

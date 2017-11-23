@@ -295,7 +295,7 @@ export default Component.extend({
       _chartValues[_chartValues.length - index - 1].push(...(valuesSumArray));
     });
     // creating tooltips
-    const tooltipElements = _chartValues[0].map((value, index) => {
+    const tooltipElements = _.range(EXPECTED_STATS_NUMBER).map((index) => {
       return _sortedProvidersIds.map((providerId, providerIndex) => {
         const provider =
           _.find(providers, (provider) => provider.get('id') === providerId) || {};
@@ -326,7 +326,7 @@ export default Component.extend({
     });
     // creating chart data object
     return {
-      labels: _.range(1, _chartValues[0].length + 1).reverse()
+      labels: _.range(1, EXPECTED_STATS_NUMBER + 1).reverse()
         .map(n => this._getChartLabel(n)),
       series: _chartValues.map((providerValues) => ({
         data: providerValues,

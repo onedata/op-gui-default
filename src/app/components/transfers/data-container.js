@@ -62,7 +62,7 @@ export default Component.extend({
    */
   transfersUpdater: undefined,
   
-  _transfersUpdaterEnabled: computed.readOnly('transfersUpdater'),
+  _transfersUpdaterEnabled: computed.readOnly('transfersUpdaterEnabled'),
   
   // FIXME: partial loader
   /**

@@ -108,7 +108,7 @@ export default Ember.Component.extend({
         i18n,
       } = this.getProperties('transfers', 'providers', 'providersColors', 'i18n');
       
-      if (transfers && providers && transfers.every(t => get(t, 'tableDataIsLoaded'))) {
+      if (transfers && providers) {
         const newTableData = transfers
           .map((transfer) => transferTableData(transfer, providers, providersColors, i18n));
         mutateArray(

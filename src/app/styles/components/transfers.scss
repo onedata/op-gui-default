@@ -35,7 +35,13 @@
   }
 
   .transfers-transfer-chart {
+    $-ct-chart-padding-top: 40px;
+    
     position: relative;
+    .loadable-row {
+      // height of chart + top-padding (TODO: parametrize height of chart?)
+      min-height: 160px + $-ct-chart-padding-top;
+    }
     .btn-group {
       position: absolute;
       top: $padding-small-vertical;
@@ -115,6 +121,8 @@
 
   .transfers-table {
     tr.data-row {
+      // to hold a absolute-positioned spinner
+      position: relative;
       &:hover {
         background-color: $onedata-light-gray;
         cursor: pointer;
@@ -124,6 +132,9 @@
         &:hover {
           background-color: darken($onedata-light-gray, 9%);
         }
+      }
+      .loadable-row {
+        min-height: 24px;
       }
     }
     th, td {

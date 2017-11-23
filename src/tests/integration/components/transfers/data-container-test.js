@@ -48,8 +48,8 @@ describe('Integration | Component | transfers/data container', function () {
 
   it('yields destinationProviderIds', function (done) {
     let yieldedValue;
-    const checkYield = function () {
-      yieldedValue = this.get('ids');
+    const checkYield = function (testCallbackComponent) {
+      yieldedValue = testCallbackComponent.get('ids');
     };
     this.set('checkYield', checkYield);
 
@@ -77,8 +77,8 @@ describe('Integration | Component | transfers/data container', function () {
 
   it('yields sourceProviderIds', function (done) {
     let yieldedValue;
-    const checkYield = function () {
-      yieldedValue = this.get('ids');
+    const checkYield = function (testCallbackComponent) {
+      yieldedValue = testCallbackComponent.get('ids');
     };
     this.set('checkYield', checkYield);
 
@@ -106,13 +106,14 @@ describe('Integration | Component | transfers/data container', function () {
   
   it('yields computed providerTransfers', function (done) {    
     let providerTransfers;
-    const checkYield = function () {
-      providerTransfers = this.get('providerTransfers');
+    const checkYield = function (tc) {
+      providerTransfers = tc.get('providerTransfers');
     };
     this.set('checkYield', checkYield);
 
     this.render(hbs `
       {{#transfers/data-container
+        currentTransfersLoaded=true
         isSupportedByCurrentProvider=true
         transfersUpdaterEnabled=false
         space=space

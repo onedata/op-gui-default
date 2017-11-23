@@ -65,64 +65,44 @@ export default Component.extend({
   
   _transfersUpdaterEnabled: computed.readOnly('transfersUpdaterEnabled'),
   
-  // FIXME: partial loader
   /**
    * Collection of Transfer model for current (active or scheduled) transfers
    * @type {Ember.ComputedProperty<Ember.Array<Transfer>>}
    */
   currentTransfers: computed.reads('space.currentTransferList.list.content'),
   
-  // FIXME: partial loader
   /**
    * Collection of Transfer model for completed transfers
    * @type {Ember.ComputedProperty<Ember.Array<Transfer>>}
    */
   completedTransfers: computed.reads('space.completedTransferList.list.content'),
 
-  // FIXME: partial loader
   /**
    * List of providers that support this space
    * @type {Ember.ComputedProperty<Ember.Array<Provider>>}
    */
   providers: computed.reads('space.providerList.queryList.content'),
-  
-  // FIXME: to remove
-  /**
-   * Currently a global loader
-   * FIXME: make partial loaders that does not force
-   * other components to disappear and re-render
-   * @type {Ember.ComputedProperty<Array<TransferCurrentStat>>}
-   */
-  tableDataIsLoaded: computed(
-    'currentTransfers.isLoaded', // OK
-    'currentTransfers.@each.tableDataIsLoaded', // OK
-    'space.providerList.queryList.isSettled', // OK
-    'space.completedTransferList.list.isLoaded', // not ok
-    function () {
-      return this.get('space.completedTransferList.list.isLoaded') &&
-        this.get('space.providerList.queryList.isSettled'),
-        this.get('currentTransfers').every(t => get(t, 'tableDataIsLoaded') === true);
-    }
-  ),
-  
+    
   //#region Loading and error states of yielded values
   
   providersLoaded: computed.reads('space.providerList.queryList.isSettled'),
   providersError: computed.reads('space.providerList.queryList.reason'),
-  
+
   currentTransfersLoaded: computed(
+    'space.currentTransferList.isLoaded',
     'currentTransfers.isLoaded',
-    'currentTransfers.@each.tableDataIsLoaded',
     function getCurrentTransfersLoaded() {
-      return this.get('currentTransfers.isLoaded') === true &&
-        this.get('currentTransfers').every(t => get(t, 'tableDataIsLoaded'));
+      return this.get('space.currentTransferList.isLoaded') === true &&
+        this.get('currentTransfers.isLoaded') === true;
     }
   ),
   
   completedTransfersLoaded: computed(
+    'space.completedTransferList.isLoaded',
     'completedTransfers.isLoaded',
     function getCompletedTransfersLoaded() {
-      return this.get('completedTransfers.isLoaded') === true;
+      return this.get('space.completedTransferList.isLoaded') === true &&
+        this.get('completedTransfers.isLoaded') === true;
     }
   ),
   

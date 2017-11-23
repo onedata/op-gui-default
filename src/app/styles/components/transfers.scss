@@ -46,13 +46,16 @@
       margin-bottom: 0;
     }
     .ct-area {
-      fill-opacity: 1;
+      fill-opacity: 0.5;
     }
     .ct-line {
       stroke-width: 2px;
     }
     .ct-point {
       stroke-width: 7px;
+    }
+    .ct-grid.ct-vertical {
+      stroke: darken($onedata-light-gray, 9%);
     }
     .ct-tooltip-entry::before {
       height: 0;

@@ -7,9 +7,9 @@ import tooltip from 'op-worker-gui/utils/chartist/tooltip';
 import centerLineChart from 'op-worker-gui/utils/chartist/center-line-chart';
 import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
 import axisLabels from 'op-worker-gui/utils/chartist/axis-labels';
+import stackedLineMask from 'op-worker-gui/utils/chartist/stacked-line-mask';
 import TransferTimeStatUpdater from 'op-worker-gui/utils/transfer-time-stat-updater';
 import customCss from 'op-worker-gui/utils/chartist/custom-css';
-import Color from 'npm:color';
 
 const {
   Component,
@@ -24,7 +24,6 @@ const EXPECTED_STATS_NUMBER = 12;
 const MINUTE_STATS_NUMBER = 12;
 const HOUR_STATS_NUMBER = 60;
 const DAY_STATS_NUMBER = 24;
-const CHART_BACKGROUND_COLOR = '#e3e3e3';
 const I18N_PREFIX = 'components.transfers.transferChart.';
 
 export default Component.extend({
@@ -254,6 +253,7 @@ export default Component.extend({
           rangeInTitle: true,
           topOffset: -17,
         }),
+        stackedLineMask(),
         customCss({
           filterBySeriesIndex: true,
         }),
@@ -313,8 +313,6 @@ export default Component.extend({
     // setting colors
     const customCss = _sortedProvidersIds.map((providerId) => {
       const color = providersColors[providerId];
-      const colorMixedWithBackgr =
-        new Color(color).mix(new Color(CHART_BACKGROUND_COLOR), 0.4).hex();
       return _.times(EXPECTED_STATS_NUMBER, _.constant({
         line: {
           stroke: color,
@@ -323,7 +321,7 @@ export default Component.extend({
           stroke: color,
         },
         area: {
-          fill: colorMixedWithBackgr,
+          fill: color,
         }
       }));
     });

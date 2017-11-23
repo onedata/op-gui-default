@@ -1,6 +1,9 @@
 <div class="row chart-row">
   {{!-- FIXME: a loading container --}}
   {{#if chartDataIsLoaded}}
-    {{transfers/throughput-distribution/chart providers=providers throughputData=spaceTransfers}}
+    {{transfers/throughput-distribution/chart
+      providers=providers
+      throughputData=spaceTransfers
+      providersColors=providersColors}}
   {{/if}}
 </div>

@@ -12,11 +12,13 @@ import Ember from 'ember';
 const {
   computed,
   observer,
+  String: {
+    htmlSafe,
+  },
 } = Ember;
 
 export default Ember.Component.extend({
   classNames: ['provider-place'],
-  classNameBindings: ['status'],
 
   /**
    * A provider model that will be represented on map
@@ -38,10 +40,15 @@ export default Ember.Component.extend({
   circleSizeScale: 1,
 
   /**
-   * Provider status
-   * @type {computed.string}
+   * Circle color
+   * @type {string}
    */
-  status: computed.readOnly('provider.status'),
+  circleColor: undefined,
+
+  circleStyles: computed('circleColor', function () {
+    const circleColor = this.get('circleColor');
+    return htmlSafe(`color: ${circleColor};`);
+  }),
 
   atlasWidthObserver: observer('atlasWidth', function () {
     this._recalculateSize();

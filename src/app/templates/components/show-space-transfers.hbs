@@ -27,6 +27,7 @@
                     providerTransferConnections=tData.providerTransferConnections
                     destinationProviderIds=tData.destinationProviderIds
                     sourceProviderIds=tData.sourceProviderIds
+                    providersColors=tData.providersColors
                   }}
                 {{/loading-container}}
               </div>
@@ -54,6 +55,7 @@
                   {{#if tData.providerTransfers.length}}
                     {{transfers/throughput-distribution
                       providers=tData.providers
+                      providersColors=tData.providersColors
                       providerTransfers=tData.providerTransfers
                       transfersDirection=transfersPieChartDirection
                     }}

@@ -10,7 +10,7 @@ const {
 } = Ember;
 
 export default Component.extend({
-  classNames: ['transfer-throughput-distribution'],
+  classNames: ['transfers-throughput-distribution'],
 
   /**
    * @virtual

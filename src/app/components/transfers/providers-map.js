@@ -5,9 +5,12 @@ import _ from 'lodash';
 const {
   Component,
   computed,
+  A,
 } = Ember;
 
 export default Component.extend({
+  classNames: ['transfers-providers-map'],
+  
   /**
    * @virtual
    * Cannot be null or undefined!
@@ -17,12 +20,30 @@ export default Component.extend({
   
   /**
    * @virtual
+   * Ids of providers that are destination of transfers
+   * @type {Array<string>}
+   */
+  destinationProviderIds: A(['p1', 'p3']),
+  
+  /**
+   * @virtual
+   * Ids of providers that are sources of transfers
+   * @type {Array<string>}
+   */
+  // FIXME:
+  sourceProviderIds: A(['p2', 'p3']),
+  
+  /**
+   * @virtual
    * Collection of [src, dest] provider IDs to create lines on map.
    * Only one for pair!
    * @type {Array<Array[string,string]>}
    */
-  providerTransferConnections: undefined,
-    
+  // providerTransferConnections: undefined,
+  providerTransferConnections: A([
+    ['p1', 'p2'],
+  ]),
+  
   /**
    * Maps provider id => Provider model
    * @type {Ember.ComputedProperty<object>}
@@ -36,4 +57,11 @@ export default Component.extend({
       return null;
     }
   }),
+  
+  init() {
+    this._super(...arguments);
+    this.setProperties({
+      _providersInfoCache: A(),
+    });
+  },
 });

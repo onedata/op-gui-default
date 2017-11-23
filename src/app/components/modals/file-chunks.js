@@ -44,7 +44,7 @@ export default Component.extend(PromiseLoadingMixin, {
       let fileId = this.get('fileForChunks.id');
       // TODO: if fileId null...
   
-      this.get('store').query('file-distribution', { fileId }).then(
+      this.get('store').query('file-distribution', { file: fileId }).then(
         (fbs) => {
           this.set('fileBlocks', fbs);
         },
@@ -61,6 +61,22 @@ export default Component.extend(PromiseLoadingMixin, {
         chunksModalError: null
       });
       this.get('chunksModalClosed')();
+    },
+    
+    startMigration(file, providerId) {
+      this.get('store').createRecord('transfer', {
+        file,
+        migration: true,
+        migrationSource: providerId,
+      });
+    },
+    
+    startReplication(file, providerId) {
+      this.get('store').createRecord('transfer', {
+        file,
+        migration: false,
+        destination: providerId,
+      });
     },
   },
   

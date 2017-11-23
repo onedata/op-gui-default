@@ -4,10 +4,11 @@ import _ from 'lodash';
 
 const {
   get,
+  Object: EmberObject,
 } = Ember;
 
 /**
- * @typedef {Object} ProviderTransfer
+ * @typedef {EmberObject} ProviderTransfer
  * @property {string} src ID of transfer source provider
  * @property {string} dest ID of transfer desitnation provider
  * @property {number} bytesPerSec recent tranfer speed: B/s
@@ -15,7 +16,7 @@ const {
 
 /**
  * @typedef {Object} InputTransferSpeed
- * @property {string} dest
+ * @property {string} destination
  * @property {Object} bytesPerSec
  */
 
@@ -48,7 +49,7 @@ export default function providerTransfers(transfers) {
         }
       });
       _.forEach(bySource, (bytesPerSec, src) => {
-        result.push(Ember.Object.create({
+        result.push(EmberObject.create({
           dest,
           src,
           bytesPerSec,

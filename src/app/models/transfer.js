@@ -32,6 +32,19 @@ export default Model.extend(TransferRuntimeMixin, {
    */
   destination: attr('string'),
   
+  file: belongsTo('file', { async: true, inverse: null }),
+  
+  /**
+   * If true, the transfer is a migration, so the file will be invalidated
+   * on `migrationSource` provider after migration completion
+   */
+  migration: attr('boolean'),
+  
+  /**
+   * Id of provider that will invalidate the file after transfer
+   */
+  migrationSource: attr('string'),
+  
   /**
    * Absolute file or directory path that is transferred
    */
@@ -91,6 +104,8 @@ export default Model.extend(TransferRuntimeMixin, {
   dest: computed.reads('destination'),
   bytesPerSec: computed.reads('currentStat.bytesPerSec'),
   userName: computed.reads('systemUser.name'),
+  transferredBytes: computed.reads('currentStat.transferredBytes'),
+  transferredFiles: computed.reads('currentStat.transferredFiles'),
   
   isOngoing: computed('status', function () {
     return _.includes(['active', 'scheduled'], this.get('status'));

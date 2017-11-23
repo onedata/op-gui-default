@@ -470,6 +470,7 @@ export default {
       activeTransfers: 'Active transfers',
       completedTransfers: 'History of transfers',
       noActiveTransfers: 'No data is transferred currently',
+      initializingTransfers: 'Initializing transfers...',
       notSupported: 'The selected space is not supported by this provider' +
         ' so we cannot list its transfers',
       in: 'Input',

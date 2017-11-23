@@ -27,8 +27,7 @@ const DAY_STATS_NUMBER = 24;
 const I18N_PREFIX = 'components.transfers.transferChart.';
 
 export default Component.extend({
-  classNames: ['transfer-chart'],
-
+  classNames: ['transfers-transfer-chart'],
   i18n: service(),
   
   /**

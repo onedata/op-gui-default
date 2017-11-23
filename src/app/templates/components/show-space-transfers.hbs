@@ -1,0 +1,119 @@
+<h1>Transfers for {{space.name}}</h1>
+
+<div class="row">
+  {{#if (eq isSupportedByCurrentProvider false)}}
+    <div class="row loadable-row row-space-not-supported">
+      {{#route-error icon="provider" class="error-space-not-supported"}}
+        {{t "components.transfers.notSupported"}}
+      {{/route-error}}
+    </div>
+  {{else}}
+    {{!-- TODO: error if testing current provider fails --}}
+     <div class="row loadable-row row-transfers-data-container">
+      {{#loading-container
+        isLoading=(not (eq isSupportedByCurrentProvider true))
+      }}
+        {{#transfers/data-container space=space as |tData|}}
+          <div class="row row-active-transfers">
+            <div class="col-xs-12 col-md-7 col-providers-map map-column">
+              <h2>{{t "components.transfers.providersMapOfDist"}}</h2>
+              <div class="row loadable-row">
+                {{#loading-container isLoading=(or
+                  (not tData.providersLoaded)
+                  (not tData.currentTransfersLoaded)
+                )}}
+                  {{transfers/providers-map
+                    providers=tData.providers
+                    providerTransferConnections=tData.providerTransferConnections
+                    destinationProviderIds=tData.destinationProviderIds
+                    sourceProviderIds=tData.sourceProviderIds
+                  }}
+                {{/loading-container}}
+              </div>
+            </div>
+            
+            <div class="col-xs-12 col-md-5 col-throughput-pie-chart">
+              <h2><span class="one-label">{{t "components.transfers.throughputDistribution"}}</span>
+                {{#if tData.providerTransfers.length}}
+                  {{#bs-button-group
+                    value=transfersPieChartDirection
+                    type="radio"
+                    size="sm"
+                    class="space-transfers-throughput-direction pull-right"
+                  }}
+                    {{#bs-button value="in"}}{{t "components.transfers.in"}}{{/bs-button}}
+                    {{#bs-button value="out"}}{{t "components.transfers.out"}}{{/bs-button}}
+                  {{/bs-button-group}}
+                {{/if}}
+              </h2>
+              <div class="row loadable-row">
+                {{#loading-container isLoading=(or
+                  (not tData.providersLoaded)
+                  (not tData.currentTransfersLoaded)
+                )}}
+                  {{#if tData.providerTransfers.length}}
+                    {{transfers/throughput-distribution
+                      providers=tData.providers
+                      providerTransfers=tData.providerTransfers
+                      transfersDirection=transfersPieChartDirection
+                    }}
+                  {{else if tData.destinationProviderIds.length}}
+                    {{!-- FIXME: to test --}}
+                    <p>{{t "components.transfers.initializingTransfers"}}</p>
+                  {{else}}
+                    <p>{{t "components.transfers.noActiveTransfers"}}</p>
+                  {{/if}}
+                {{/loading-container}}
+              </div>
+            </div>
+          
+          </div>
+
+          <div class="row row-active-transfers-table">
+            <div class="col-xs-12 col-active-transfers">
+              <h2>{{t "components.transfers.activeTransfers"}}</h2>
+              <div class="row loadable-row">
+                {{#loading-container isLoading=(or
+                    (not tData.providersLoaded)
+                    (not tData.currentTransfersLoaded)
+                  )
+                  class="loading-active-table"
+                }}
+                  {{transfers/live-stats-table
+                    transfers=tData.currentTransfers
+                    transferType="active"
+                    providers=tData.providers
+                    providersColors=tData.providersColors
+                  }}
+                {{/loading-container}}
+              </div>
+            </div>
+          </div>
+          
+          <div class="row row-completed-transfers">
+            <div class="col-xs-12 col-completed-transfers">
+              <h2>{{t "components.transfers.completedTransfers"}}</h2>
+              <div class="row loadable-row">
+                {{#loading-container isLoading=(or
+                    (not tData.providersLoaded)
+                    (not tData.currentTransfersLoaded)
+                  )
+                  class="loading-completed-table"
+                }}
+                  {{transfers/live-stats-table
+                    transfers=tData.completedTransfers
+                    transferType="completed"
+                    providers=tData.providers
+                    providersColors=tData.providersColors
+                  }}
+                {{/loading-container}}
+              </div>
+            </div>
+          </div>        
+        {{/transfers/data-container}}
+      {{/loading-container}}
+    </div>
+    
+    {{yield}}
+  {{/if}}
+</div>

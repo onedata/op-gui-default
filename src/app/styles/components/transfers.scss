@@ -1,4 +1,4 @@
-.transfers-container {
+.transfers-data-container {
   h1, h2 {
     font-size: 100%;
     text-transform: uppercase;
@@ -16,11 +16,11 @@
     padding: 22px 15px;
   }
 
-  .transfer-throughput-distribution {
+  .transfers-throughput-distribution {
     .chart-row {
       max-width: 600px;
       margin: 0 auto;
-    }
+    } 
   }
 
   .map-column {
@@ -34,7 +34,7 @@
     }
   }
 
-  .transfer-chart {
+  .transfers-transfer-chart {
     position: relative;
     .btn-group {
       position: absolute;

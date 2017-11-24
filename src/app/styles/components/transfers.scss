@@ -1,4 +1,5 @@
 .transfers-data-container {
+  // TODO: this seems to be generic for new style in content views
   h1, h2 {
     font-size: 100%;
     text-transform: uppercase;
@@ -9,11 +10,6 @@
       position: relative;
       top: -9px;
     }
-  }
-
-  h1 {
-    border-bottom: 1px solid $color-toolbar-separator;
-    padding: 22px 15px;
   }
 
   .transfers-throughput-distribution {

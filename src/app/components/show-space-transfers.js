@@ -30,6 +30,14 @@ export default Component.extend({
   space: undefined,
   
   /**
+   * What speed (input, output) should be presented per provider
+   * on throughput chart.
+   * One of: out, in
+   * @type {string}
+   */
+  transfersPieChartDirection: 'out',
+  
+  /**
    * Alias for Id of this provider - used for checking if transfers can be fetched
    * @type {Ember.ComputedProperty<string>}
    */

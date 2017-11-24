@@ -853,3 +853,13 @@ html, body {
     }
   }
 }
+
+h1.content-header {
+  border-bottom: 1px solid $color-toolbar-separator;
+  padding: 22px 15px;
+  text-transform: uppercase;
+  margin: 0;
+  padding: 17px 0px;
+  font-size: 100%;
+  font-weight: bold;
+}

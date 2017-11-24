@@ -14,19 +14,4 @@
     // top and left properties are calculated by JS
     transform: translateX(-50%) translateY(-50%);
   }
-
-  // FIXME: use generic style that fills?
-  .atlas-draw-layer {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  path.transfer {
-    stroke: $onedata-gold;
-    fill: none;
-    stroke-width: 3px;
-  }
 }

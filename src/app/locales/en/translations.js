@@ -465,8 +465,9 @@ export default {
       publish: 'Publish',
     },
     transfers: {
-      providersMapOfDist: 'Providers map of dist.',
-      throughputDistribution: 'Throughput distribution',
+      transfersFor: 'Transfer for',
+      providersMapOfDist: 'Active transfers map',
+      throughputDistribution: 'Providers throughput',
       activeTransfers: 'Active transfers',
       completedTransfers: 'History of transfers',
       noActiveTransfers: 'No data is transferred currently',

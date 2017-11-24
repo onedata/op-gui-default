@@ -37,6 +37,11 @@ export default Component.extend({
     return isArray(this.get('providers')) && isArray(this.get('providerTransfers'));
   }),
   
+  /**
+   * What speed (input, output) should be presented per provider
+   * One of: out, in
+   * @type {string}
+   */
   transfersDirection: 'out',
 
   providersMap: computed('providers.[]', function () {

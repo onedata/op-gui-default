@@ -3,6 +3,8 @@
  * should be specified with latitude and longitude properties.
  * Example of use can be found in one-atlas component.
  * 
+ * Module imported from onedata-gui-common.
+ * 
  * @module components/one-atlas/point
  * @author Jakub Liput, Michal Borzecki
  * @copyright (C) 2017 ACK CYFRONET AGH

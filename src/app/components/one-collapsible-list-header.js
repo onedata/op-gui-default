@@ -3,6 +3,8 @@
  * components/one-collapsible-list.js.
  *  
  * Yields in place, where action buttons can be rendered
+ * 
+ * Module imported from onedata-gui-common.
  *
  * @module components/one-collapsible-list-header.js
  * @author Michał Borzęcki

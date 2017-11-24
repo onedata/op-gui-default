@@ -4,6 +4,8 @@ import Ember from 'ember';
  * Item content class of the collapsible list. For example of use case see 
  * components/one-collapsible-list.js.
  * 
+ * Module imported from onedata-gui-common.
+ * 
  * @module components/one-collapsible-list-item-content.js
  * @author Michał Borzęcki
  * @copyright (C) 2017 ACK CYFRONET AGH

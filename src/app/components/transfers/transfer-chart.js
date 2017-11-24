@@ -1,3 +1,12 @@
+/**
+ * A stacked line chart component for visualizing transfer throughput history.
+ * 
+ * @module components/transfers/transfer-chart
+ * @author Michal Borzecki
+ * @copyright (C) 2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 import _ from 'lodash';
 import moment from 'moment';
@@ -77,6 +86,8 @@ export default Component.extend({
    * @type {TransferTimeStatUpdater}
    */
   updater: undefined,
+
+  _updaterEnabled: true,
   
   /**
    * @type {Ember.ComputedProperty<Object>}
@@ -336,8 +347,6 @@ export default Component.extend({
       customCss,
     };
   }),
-
-  _updaterEnabled: true,
   
   init() {
     this._super(...arguments);

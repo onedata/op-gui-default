@@ -3,7 +3,9 @@
  *
  * Options:
  * - height - height of the horizontal grid
- * 
+ *
+ * Module imported from onedata-gui-common.
+ *  
  * @module utils/chartist/short-horizontal-grid
  * @author Michal Borzecki
  * @copyright (C) 2017 ACK CYFRONET AGH

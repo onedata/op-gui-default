@@ -1,5 +1,10 @@
 /**
- * FIXME: jsdoc
+ * A cell component with transfer representation used by live-stats-table component.
+ * 
+ * @module components/provider-place
+ * @author Michal Borzecki
+ * @copyright (C) 2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
 import Ember from 'ember';
@@ -16,10 +21,23 @@ export default Component.extend({
   classNameBindings: ['_statusClass'],
   i18n: service(),
   
+  /**
+   * ember-models-table record
+   * @virtual
+   * @type {Object}
+   */
   record: undefined,
   
+  /**
+   * Transfer status.
+   * @type {Ember.ComputedProperty<string>}
+   */
   _status: computed.reads('record.status'),
 
+  /**
+   * Cell class (sets sicon color).
+   * @type {Ember.ComputedProperty<string>}
+   */
   _statusClass: computed('_status', function () {
     switch (this.get('_status')) {
       case 'completed':
@@ -35,6 +53,10 @@ export default Component.extend({
     }
   }),
 
+  /**
+   * Status icon.
+   * @type {Ember.ComputedProperty<string>}
+   */
   _icon: computed('_status', function () {
     switch (this.get('_status')) {
       case 'completed':
@@ -50,6 +72,10 @@ export default Component.extend({
     }
   }),
   
+  /**
+   * Status tooltip content.
+   * @type {Ember.ComputedProperty<string>}
+   */
   _hint: computed('_status', function () {
     const {
       i18n,

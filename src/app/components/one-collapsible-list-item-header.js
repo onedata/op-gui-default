@@ -8,6 +8,8 @@
  * 
  * Yields:
  * - toggleAction - action, that toggles list item visibility
+ * 
+ * Module imported from onedata-gui-common.
  *
  * @module components/one-collapsible-list-item-header.js
  * @author Michał Borzęcki

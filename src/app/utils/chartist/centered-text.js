@@ -9,6 +9,8 @@
  *   If text width is greater than maxWidth, then font size is scaled down
  * * class - class for text svg element
  *
+ * Module imported from onedata-gui-common.
+ * 
  * @module utils/chartist/centered-text
  * @author Michal Borzecki
  * @copyright (C) 2017 ACK CYFRONET AGH

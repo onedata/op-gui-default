@@ -3,6 +3,8 @@
  * for calculation. If `baseColors` argument is not provided, default application
  * color scheme is used.
  * 
+ * Module imported from onedata-gui-common.
+ * 
  * @module utils/generate-colors
  * @author Michal Borzecki
  * @copyright (C) 2017 ACK CYFRONET AGH

@@ -16,6 +16,8 @@ const {
  * 
  * If isCollapsible == false then item cannot be toggled.
  * Item closes its content if eventsBus triggers closeEventName event
+ * 
+ * Module imported from onedata-gui-common.
  *
  * @module components/one-collapsible-list-item.js
  * @author Michał Borzęcki

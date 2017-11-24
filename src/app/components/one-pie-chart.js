@@ -2,6 +2,8 @@
  * A component that renders a pie chart using series definition from `data` 
  * property. Hovered series can be set from the outside by specifying 
  * activeSeriesId property.
+ * 
+ * Module imported from onedata-gui-common.
  *
  * @module components/one-pie-chart
  * @author Michal Borzecki

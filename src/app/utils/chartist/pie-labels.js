@@ -16,6 +16,8 @@
  * * ct-pie-label-text-top - for top text
  * * ct-pie-label-text-bottom - for bottom text
  *
+ * Module imported from onedata-gui-common.
+ * 
  * @module utils/chartist/pie-labels
  * @author Michal Borzecki
  * @copyright (C) 2017 ACK CYFRONET AGH

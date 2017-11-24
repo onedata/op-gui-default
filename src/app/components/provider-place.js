@@ -1,6 +1,8 @@
 /**
  * A circle representing a provider on world map.
  * 
+ * Module imported from onedata-gui-common.
+ * 
  * @module components/provider-place
  * @author Jakub Liput, Michal Borzecki
  * @copyright (C) 2017 ACK CYFRONET AGH

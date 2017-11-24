@@ -5,6 +5,8 @@
  * - xLabel, yLabel - labels
  * - xLabelXOffset, xLabelYOffset, yLabelXOffset, yLabelYOffset - position 
  * adjustments for x and y labels
+ * 
+ * Module imported from onedata-gui-common.
  *
  * @module utils/chartist/axis-labels
  * @author Michal Borzecki

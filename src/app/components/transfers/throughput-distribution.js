@@ -1,3 +1,13 @@
+/**
+ * A container component for pie chart of transfers input/output throuthput
+ * sum per provider.
+ * 
+ * @module components/transfers/throughput-distribution
+ * @author Michal Borzecki
+ * @copyright (C) 2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 import _ from 'lodash';
 
@@ -37,12 +47,12 @@ export default Component.extend({
     return isArray(this.get('providers')) && isArray(this.get('providerTransfers'));
   }),
   
+  /**
+   * Transfer direction. Valid values: in, out
+   * @virtual
+   * @type {string}
+   */
   transfersDirection: 'out',
-
-  providersMap: computed('providers.[]', function () {
-    const providers = this.get('providers');
-    return _.zipObject(_.map(providers, 'id'), providers);
-  }),
   
   /**
    * FIXME: provide this collection - multiple for single source

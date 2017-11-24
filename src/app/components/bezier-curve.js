@@ -2,6 +2,8 @@
  * A component that creates symmetric Bezier curve using to 
  * two points and curveFactor.
  * 
+ * Module imported from onedata-gui-common.
+ * 
  * @module components/bezier-curve
  * @author Michal Borzecki, Jakub Liput
  * @copyright (C) 2017 ACK CYFRONET AGH

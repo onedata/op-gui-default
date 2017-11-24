@@ -5,6 +5,8 @@
  * - xOffsetMultiply - label will be moved right by xOffsetMultiply 
  * (default width of a label)
  * - insertBefore - label will be inserted before last label node
+ * 
+ * Module imported from onedata-gui-common.
  *
  * @module utils/chartist/additional-x-label
  * @author Michal Borzecki

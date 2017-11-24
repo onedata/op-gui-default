@@ -5,6 +5,8 @@
  * * colors - array of colors for series
  * * styles - object of css styles for a legend item colored square
  *
+ * Module imported from onedata-gui-common.
+ * 
  * @module utils/chartist/legend-colors
  * @author Michal Borzecki
  * @copyright (C) 2017 ACK CYFRONET AGH

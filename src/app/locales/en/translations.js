@@ -497,7 +497,8 @@ export default {
           active: 'Active',
           scheduled: 'Scheduled',
         },
-        noTransfersToShow: 'No transfers to show',
+        noActiveTransfers: 'No transfers currently in progress',
+        noCompletedTransfers: 'No finished transfers to show yet'
       },
       transferChart: {
         minute: 'Minute',

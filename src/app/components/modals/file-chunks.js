@@ -12,6 +12,7 @@ import PromiseLoadingMixin from 'ember-cli-onedata-common/mixins/promise-loading
 const {
   Component,
   computed,
+  get,
 } = Ember;
 
 export default Component.extend(PromiseLoadingMixin, {
@@ -23,22 +24,67 @@ export default Component.extend(PromiseLoadingMixin, {
   open: false,
 
   /**
-   * To inject.
+   * @virtual
    */
   chunksModalClosed: () => {},
   
   /** 
-   * To inject.
+   * @virtual
    */
   fileForChunks: null,
+    
+  /**
+   * @virtual
+   */
+  space: undefined,
+  
+  /**
+   * @virtual
+   * @type {boolean}
+   */
+  currentProviderSupport: undefined,
 
   chunksModalError: null,
   isFileChunksModal: false,
   fileBlocks: null,
   
+  /**
+   * @type {Provider}
+   */
+  migrationSource: undefined,
+  
+  // TODO: something is wrong because it is not sorted correctly
   fileBlocksSorting: ['provider.name'],
   fileBlocksSorted: computed.sort('fileBlocks', 'fileBlocksSorting'),
-
+  
+  providersSorted: computed.mapBy('fileBlocksSorted', 'getProvider'),
+  
+  /**
+   * Convenience name for `fileForChunks`
+   */
+  file: computed.alias('fileForChunks'),
+  
+  currentTransferList: computed.reads('space.currentTransferList'),
+  
+  currentTransfers: computed.reads('currentTransferList.list.content'),
+  
+  currentTransfersDataLoaded: computed(
+    'currentTransferList.isLoaded',
+    'currentTransfers.@each.isLoaded',
+    function getCurrentTransfersDataLoaded() {
+      return this.get('currentTransferList.isLoaded') === true &&
+        this.get('currentTransfers').every(t => get(t, 'isLoaded') === true);
+    }
+  ),
+  
+  fileTransfers: computed('currentTransfersDataLoaded', 'currentTransfers.[]', function () {
+    const currentTransfers = this.get('currentTransfers');
+    const fileId = this.get('fileForChunks.id');
+    if (currentTransfers) {
+      return currentTransfers.filter(t => t.belongsTo('file').id() === fileId);
+    }
+  }),
+    
   actions: {
     open() {
       let fileId = this.get('fileForChunks.id');
@@ -62,21 +108,55 @@ export default Component.extend(PromiseLoadingMixin, {
       });
       this.get('chunksModalClosed')();
     },
+  
+    /**
+     * Opens a menu with list of migration destination providers
+     *
+     * @param {Provider} sourceProvider a Provider that will source of migration
+     */
+    openMigrationOptions(sourceProvider) {
+      this.set('migrationSource', sourceProvider);
+    },
     
-    startMigration(file, providerId) {
-      this.get('store').createRecord('transfer', {
+    /**
+     * Closes a menu with list of migration destination providers
+     */
+    closeMigrationOptions() {
+      this.set('migrationSource', null);
+    },
+    
+    /**
+     * Starts file migration from source provider to destination provider using backend
+     * @param {File} file 
+     * @param {string} source 
+     * @param {string} destination 
+     * @returns {Promise<Transfer|any>} resolves with saved transfer record
+     *  migration start success
+     */
+    startMigration(file, source, destination) {
+      this.set('migrationSource', null);
+      return this.get('store').createRecord('transfer', {
         file,
         migration: true,
-        migrationSource: providerId,
+        migrationSource: source,
+        destination: destination,
       });
     },
     
-    startReplication(file, providerId) {
-      this.get('store').createRecord('transfer', {
-        file,
-        migration: false,
-        destination: providerId,
-      });
+    /**
+     * Starts replication - a transfer that has a target of placing file on
+     * the destination provider; source providers are used automatically
+     * @param {string} destination providerId
+     */
+    startReplication(destination) {
+      const file = this.get('file');
+      this.get('store')
+        .createRecord('transfer', {
+          file,
+          migration: false,
+          destination,
+        })
+        .save();
     },
   },
   

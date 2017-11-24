@@ -125,8 +125,10 @@ export default EmberObject.extend({
         _currentInterval: undefined,
         _completedInterval: undefined,
       });
-      const watcher = this.get('_currentWatcher');
-      watcher.destroy();
+      _.each(
+        _.values(this.getProperties('_currentWatcher', '_completedWatcher')),
+        watcher => watcher && watcher.destroy()
+      );
     } finally {
       this._super(...arguments);
     }

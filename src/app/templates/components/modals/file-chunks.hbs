@@ -30,8 +30,8 @@
                 <th>
                   {{t "components.dataFilesListToolbar.fileChunksModal.providerName"}}
                 </th>
-                <th>
-                  {{!-- FIXME: empty table header? --}}
+                <th class="replica-options">
+                  {{!-- FIXME: empty table header for actions? --}}
                 </th>
                 <th>
                   {{t "components.dataFilesListToolbar.fileChunksModal.dataDitribution"}}
@@ -39,59 +39,44 @@
               </thead>
               <tbody>
                 {{#each fileBlocksSorted as |fb|}}
-                <tr>
-                  <td class="provider-name">
-                    {{#truncated-string}}
-                      {{fb.getProvider.name}}
-                    {{/truncated-string}}
-                  </td>
-                  <td class="replica-btns">
-                    {{!-- FIXME: is: replication in progress / invalidation in progress / file already replicated --}}
-                    <div class="btn-group">
-                      {{!-- FIXME:  --}}
-                      {{!-- FIXME: loading state --}}
-                      {{#if (eq fb.isComplete false)}}
-                        {{#bs-button
-                          action=(action "startInvalidation" fb.file fb.provider)
-                        }}
-                          Invalidate
-                        {{/bs-button}}
-                      {{/if}}
-                      {{#if (eq fb.isEmpty true)}}
-                        {{#bs-button
-                          action=(action "startReplication" fb.file fb.provider)
-                        }}
-                          Replicate
-                        {{/bs-button}}
-                      {{/if}}
-                    </div>
-                  </td>
-                  <td class="chunks">
-                    {{#if fb.neverSynchronized}}
-                      <div class="file-chunks never-synchronized">
-                        <span>
-                          {{t "components.dataFilesListToolbar.fileChunksModal.neverSynchronized"}}
-                        </span>
-                      </div>
-                      {{bs-tooltip
-                        placement="bottom"
-                        title=(t "components.dataFilesListToolbar.fileChunksModal.neverSynchronizedHint")
-                      }}
-                    {{else}}
-                      {{file-chunks-bar file=fileForChunks fileBlocks=fb}}
-                    {{/if}}
-                  </td>
-                </tr>
+                  {{modals/file-chunks/provider-row
+                    class=(concat "provider-row-" fb.provider)
+                    fileDistribution=fb
+                    currentProviderSupport=currentProviderSupport
+                    file=fileForChunks
+                    openMigrationOptions=(action "openMigrationOptions")
+                    startReplication=(action "startReplication")
+                    fileTransfers=fileTransfers
+                  }}
+                  
+                  
+                  
                 {{/each}}
               </tbody>
             </table>
+            
+            {{#if migrationSource}}
+              {{modals/file-chunks/migrate-popover
+                startMigration=(action "startMigration" fileForChunks)
+                sourceProvider=migrationSource
+                providers=providersSorted
+              }}
+            {{/if}}
+            
+            {{#if (not currentProviderSupport)}}
+              <div class="alert alert-warning">
+                {{!-- TODO: i18n, text --}}
+                This file is on a space that is not supported by current provider,
+                thus you cannot start data replication or migration.
+              </div>
+            {{/if}}
           {{else}}
             <div class="one-row">
               <div class="loading-throbber"></div>
               <div class="loading-label">
                 {{t "components.dataFilesListToolbar.fileChunksModal.loading"}}
               </div>
-            </div>
+            </div>            
           {{/if}}
           
         {{/if}}

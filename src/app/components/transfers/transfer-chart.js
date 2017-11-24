@@ -236,7 +236,7 @@ export default Component.extend({
       chartPadding: {
         top: 30,
         bottom: 30,
-        left: 50,
+        left: 60,
         right: 50,
       },
       plugins: [

@@ -161,8 +161,15 @@
     vertical-align: middle;
     &.success {
       color: $color-one-mint;
-    } &.failure {
+    }
+    &.failure {
       color: $color-one-red;
+    }
+    &.active {
+      color: $color-one-yellow;
+    }
+    &.inactive {
+      color: $onedata-graphite;
     }
   }
 }

@@ -1,5 +1,10 @@
 /**
- * FIXME: jsdoc
+ * A cell component with transfer representation used by live-stats-table component.
+ * 
+ * @module components/provider-place
+ * @author Michal Borzecki
+ * @copyright (C) 2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
 import Ember from 'ember';
@@ -13,19 +18,67 @@ const {
 export default Component.extend({
   tagName: 'span',
   classNames: 'cell-status',
-  classNameBindings: ['_isStatusSuccess:success:failure'],
+  classNameBindings: ['_statusClass'],
   i18n: service(),
   
+  /**
+   * ember-models-table record
+   * @virtual
+   * @type {Object}
+   */
   record: undefined,
   
+  /**
+   * Transfer status.
+   * @type {Ember.ComputedProperty<string>}
+   */
   _status: computed.reads('record.status'),
 
-  _isStatusSuccess: computed.equal('_status', 'completed'),
+  /**
+   * Cell class (sets sicon color).
+   * @type {Ember.ComputedProperty<string>}
+   */
+  _statusClass: computed('_status', function () {
+    switch (this.get('_status')) {
+      case 'completed':
+        return 'success';
+      case 'skipped':
+        return 'skipped';
+      case 'cancelled':
+      case 'failed':
+        return 'failure';
+      case 'active':
+        return 'active';
+      case 'scheduled':
+        return 'inactive';
+    }
+  }),
 
-  _icon: computed('_isStatusSuccess', function () {
-    return this.get('_isStatusSuccess') ? 'checkbox-filled' : 'checkbox-filled-x';
+  /**
+   * Status icon.
+   * @type {Ember.ComputedProperty<string>}
+   */
+  _icon: computed('_status', function () {
+    switch (this.get('_status')) {
+      case 'completed':
+        return 'checkbox-filled';
+      case 'skipped':
+        return 'skipped';
+      case 'cancelled':
+        return 'cancelled';
+      case 'failed':
+        return 'checkbox-filled-x';
+      case 'active':
+        return 'update';
+      case 'scheduled':
+        return 'time';
+    }
   }),
   
+  /**
+   * Status tooltip content.
+   * @type {Ember.ComputedProperty<string>}
+   */
   _hint: computed('_status', function () {
     const {
       i18n,

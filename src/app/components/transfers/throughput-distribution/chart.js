@@ -1,3 +1,13 @@
+/**
+ * A component that creates pie chart of transfers input/output throuthput
+ * sum per provider.
+ * 
+ * @module components/transfers/throughput-distribution/chart
+ * @author Michal Borzecki
+ * @copyright (C) 2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 import OnePieChart from 'op-worker-gui/components/one-pie-chart';
 import _ from 'lodash';

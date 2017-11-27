@@ -22,6 +22,8 @@
  * - valueSuffix - [bar/line chart only] suffix for tooltip entries (e.g. for units)
  * - roundValues - if true, values in tooltip will be rounded
  * 
+ * Module imported from onedata-gui-common.
+ * 
  * @module utils/chartist/tooltip
  * @author Michal Borzecki
  * @copyright (C) 2017 ACK CYFRONET AGH

@@ -4,6 +4,8 @@
  * Handles:
  * - onepanel server response errors
  * - plain object with `message` property
+ * 
+ * Module imported from onedata-gui-common.
  *
  * @module utils/get-error-description
  * @author Jakub Liput

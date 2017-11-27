@@ -1,6 +1,8 @@
 /**
  * Plugin for Chartist which centers charts (moves chart by a half of width of a column), 
  * that have one more column than there is available data.
+ * 
+ * Module imported from onedata-gui-common.
  *
  * @module utils/chartist/center-line-chart
  * @author Michal Borzecki

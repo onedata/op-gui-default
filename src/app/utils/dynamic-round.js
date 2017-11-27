@@ -4,6 +4,8 @@
  * For example if precision is 3, max 3 digits after point are generated:
  * - 0.0003 => "< 0.001"
  * - 1.23 => "1.23"
+ * 
+ * Module imported from onedata-gui-common.
  *
  * @module utils/dynamic-round
  * @author Jakub Liput

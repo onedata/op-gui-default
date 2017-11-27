@@ -2,11 +2,11 @@
 
 @font-face {
   font-family: 'oneicons';
-  src:  url('#{$icomoon-font-path}/oneicons.eot?mtaqci');
-  src:  url('#{$icomoon-font-path}/oneicons.eot?mtaqci#iefix') format('embedded-opentype'),
-    url('#{$icomoon-font-path}/oneicons.ttf?mtaqci') format('truetype'),
-    url('#{$icomoon-font-path}/oneicons.woff?mtaqci') format('woff'),
-    url('#{$icomoon-font-path}/oneicons.svg?mtaqci#oneicons') format('svg');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?3rnz42');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?3rnz42#iefix') format('embedded-opentype'),
+    url('#{$icomoon-font-path}/oneicons.ttf?3rnz42') format('truetype'),
+    url('#{$icomoon-font-path}/oneicons.woff?3rnz42') format('woff'),
+    url('#{$icomoon-font-path}/oneicons.svg?3rnz42#oneicons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -46,6 +46,11 @@
     content: $oneicon-arrow-right;
   }
 }
+.oneicon-arrow-right-filled {
+  &:before {
+    content: $oneicon-arrow-right-filled;
+  }
+}
 .oneicon-arrow-up {
   &:before {
     content: $oneicon-arrow-up;
@@ -59,6 +64,11 @@
 .oneicon-ban-left-thin {
   &:before {
     content: $oneicon-ban-left-thin;
+  }
+}
+.oneicon-cancelled {
+  &:before {
+    content: $oneicon-cancelled;
   }
 }
 .oneicon-checkbox {
@@ -266,6 +276,11 @@
     content: $oneicon-metadata;
   }
 }
+.oneicon-migrate {
+  &:before {
+    content: $oneicon-migrate;
+  }
+}
 .oneicon-move-down {
   &:before {
     content: $oneicon-move-down;
@@ -306,9 +321,19 @@
     content: $oneicon-provider-home;
   }
 }
+.oneicon-provider-remove {
+  &:before {
+    content: $oneicon-provider-remove;
+  }
+}
 .oneicon-providers-outline {
   &:before {
     content: $oneicon-providers-outline;
+  }
+}
+.oneicon-provider-sync {
+  &:before {
+    content: $oneicon-provider-sync;
   }
 }
 .oneicon-remove {
@@ -319,6 +344,11 @@
 .oneicon-rename {
   &:before {
     content: $oneicon-rename;
+  }
+}
+.oneicon-replicate {
+  &:before {
+    content: $oneicon-replicate;
   }
 }
 .oneicon-search {
@@ -359,6 +389,11 @@
 .oneicon-sign-warning {
   &:before {
     content: $oneicon-sign-warning;
+  }
+}
+.oneicon-skipped {
+  &:before {
+    content: $oneicon-skipped;
   }
 }
 .oneicon-social-dropbox {
@@ -464,6 +499,11 @@
 .oneicon-support {
   &:before {
     content: $oneicon-support;
+  }
+}
+.oneicon-time {
+  &:before {
+    content: $oneicon-time;
   }
 }
 .oneicon-tokens {

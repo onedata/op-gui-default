@@ -10,6 +10,8 @@
  * {{/one-atlas}}
  * ```
  * 
+ * Module imported from onedata-gui-common.
+ * 
  * @module components/one-atlas
  * @author Jakub Liput, Michal Borzecki
  * @copyright (C) 2017 ACK CYFRONET AGH

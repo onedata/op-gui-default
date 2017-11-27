@@ -140,7 +140,7 @@ export default Component.extend({
       transferType,
       _mobileMode,
     } = this.getProperties('i18n', 'transferType', '_mobileMode');
-    const onlyCompletedColumns = ['finishedAt', 'status'];
+    const onlyCompletedColumns = ['finishedAt'];
 
     // field `id` is custom and is used only to check which column should be 
     // filtered out for active/completed table version

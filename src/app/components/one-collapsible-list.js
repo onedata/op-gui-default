@@ -25,6 +25,8 @@
  *   {{!-- other items... --}}
  * {{/one-collapsible-list}}
  * ```
+ * 
+ * Module imported from onedata-gui-common.
  *
  * @module components/one-collapsible-list.js
  * @author Michał Borzęcki

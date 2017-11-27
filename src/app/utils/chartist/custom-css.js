@@ -27,6 +27,8 @@
  * run-loop, all properties from transitionProperties. In result we will see
  * stroke-opacity animation 0.5 to 1.
  *
+ * Module imported from onedata-gui-common.
+ * 
  * @module utils/chartist/custom-css
  * @author Michal Borzecki
  * @copyright (C) 2017 ACK CYFRONET AGH

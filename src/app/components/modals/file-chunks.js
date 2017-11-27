@@ -26,11 +26,13 @@ export default Component.extend(PromiseLoadingMixin, {
 
   /**
    * @virtual
+   * @type {File}
    */
   chunksModalClosed: () => {},
   
   /** 
    * @virtual
+   * @type {Space}
    */
   fileForChunks: null,
     
@@ -79,9 +81,10 @@ export default Component.extend(PromiseLoadingMixin, {
   ),
   
   fileTransfers: computed('currentTransfersDataLoaded', 'currentTransfers.[]', function () {
+    const currentTransfersDataLoaded = this.get('curentTransfersDataLoaded');
     const currentTransfers = this.get('currentTransfers');
     const fileId = this.get('fileForChunks.id');
-    if (currentTransfers) {
+    if (currentTransfersDataLoaded && currentTransfers) {
       return currentTransfers.filter(t => t.belongsTo('file').id() === fileId);
     }
   }),

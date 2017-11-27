@@ -46,8 +46,8 @@ export default Component.extend({
    */
   pendingActionAnimation: 'in-progress animated infinite semi-hinge pulse-mint',
 
-  //TODO make these properties computed
-  replicationInProgress: true,
+  // TODO: make these properties computed
+  replicationInProgress: computed.equal('replicationType', 'replication'),
   replicationEnabled: computed(
     'neverSynchronized',
     'isComplete',
@@ -69,7 +69,8 @@ export default Component.extend({
         !migrationInProgress;
     }
   ),
-  migrationInProgress: false,
+  
+  migrationInProgress: computed.equal('replicationType', 'migration'),
   migrationEnabled: computed(
     'isEmpty',
     'migrationInProgress',

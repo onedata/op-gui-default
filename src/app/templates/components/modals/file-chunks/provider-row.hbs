@@ -10,15 +10,14 @@
     {{!-- FIXME: loading state --}}
     {{!-- FIXME: get all transfers, check if fileForChunks is present in them and check type of transfer (migration?) --}}
     <a class={{concat migrateButtonClasses " btn-migrate"}}
-      click={{if migrationEnabled (action "openMigrationOptions" file providerId) null}}
-      disabled={{not currentProviderSupport}}>
+      {{!-- FIXME: disable action when disabled --}}
+      {{action "openMigrationOptions" file providerId}}>
       {{#one-icon icon="migrate"}}
         {{bs-tooltip placement="top" title=migrateButtonTooltip}}
       {{/one-icon}}
     </a>
     <a class={{concat replicateButtonClasses " btn-replicate"}}
-      click={{if replicationEnabled (action "startReplication" file providerId) null}}
-      disabled={{not currentProviderSupport}}>
+      {{action "startReplication" file providerId}}>
       {{#one-icon icon="replicate"}}
         {{bs-tooltip placement="top" title=replicateButtonTooltip}}
       {{/one-icon}}

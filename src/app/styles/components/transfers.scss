@@ -162,6 +162,9 @@
     &.success {
       color: $color-one-mint;
     }
+    &.skipped {
+      color: $onedata-azure;
+    }
     &.failure {
       color: $color-one-red;
     }

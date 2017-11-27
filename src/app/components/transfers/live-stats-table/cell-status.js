@@ -43,6 +43,7 @@ export default Component.extend({
       case 'completed':
         return 'success';
       case 'skipped':
+        return 'skipped';
       case 'cancelled':
       case 'failed':
         return 'failure';
@@ -62,7 +63,9 @@ export default Component.extend({
       case 'completed':
         return 'checkbox-filled';
       case 'skipped':
+        return 'skipped';
       case 'cancelled':
+        return 'cancelled';
       case 'failed':
         return 'checkbox-filled-x';
       case 'active':

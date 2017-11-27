@@ -61,6 +61,23 @@ html, body {
   }
 }
 
+.toolbar-icon {
+  color: $color-toolbar-icon;
+  // we do not want hover
+  background-color: transparent !important;
+  cursor: pointer; cursor: hand;
+
+  &:hover {
+    color: $onedata-red !important;
+  }
+
+  &.disabled {
+    color: $color-toolbar-icon-disabled;
+    pointer-events: none;
+    cursor: default;
+  }
+}
+
 #app {
   $brand-top-padding: 15px;
 
@@ -94,23 +111,6 @@ html, body {
       .top-bar-item {
         // important because we want all items height to fit bar height
         min-height: $top-bar-height !important;
-      }
-
-      .toolbar-icon {
-        color: $color-toolbar-icon;
-        // we do not want hover
-        background-color: transparent !important;
-        cursor: pointer; cursor: hand;
-
-        &:hover {
-          color: $onedata-red !important;
-        }
-
-        &.disabled {
-          color: $color-toolbar-icon-disabled;
-          pointer-events: none;
-          cursor: default;
-        }
       }
 
       .navbar-header {
@@ -665,6 +665,12 @@ html, body {
   position: relative;
   display: inline-block;
 }
+
+@include animation-fg-color-change(
+  pulse-mint,
+  inherit,
+  $color-one-mint
+);
 
 /* Safari and Chrome */
 @-webkit-keyframes rotating {

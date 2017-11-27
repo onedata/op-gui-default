@@ -2,11 +2,11 @@
 
 @font-face {
   font-family: 'oneicons';
-  src:  url('#{$icomoon-font-path}/oneicons.eot?oicuur');
-  src:  url('#{$icomoon-font-path}/oneicons.eot?oicuur#iefix') format('embedded-opentype'),
-    url('#{$icomoon-font-path}/oneicons.ttf?oicuur') format('truetype'),
-    url('#{$icomoon-font-path}/oneicons.woff?oicuur') format('woff'),
-    url('#{$icomoon-font-path}/oneicons.svg?oicuur#oneicons') format('svg');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?3rnz42');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?3rnz42#iefix') format('embedded-opentype'),
+    url('#{$icomoon-font-path}/oneicons.ttf?3rnz42') format('truetype'),
+    url('#{$icomoon-font-path}/oneicons.woff?3rnz42') format('woff'),
+    url('#{$icomoon-font-path}/oneicons.svg?3rnz42#oneicons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -276,6 +276,11 @@
     content: $oneicon-metadata;
   }
 }
+.oneicon-migrate {
+  &:before {
+    content: $oneicon-migrate;
+  }
+}
 .oneicon-move-down {
   &:before {
     content: $oneicon-move-down;
@@ -339,6 +344,11 @@
 .oneicon-rename {
   &:before {
     content: $oneicon-rename;
+  }
+}
+.oneicon-replicate {
+  &:before {
+    content: $oneicon-replicate;
   }
 }
 .oneicon-search {

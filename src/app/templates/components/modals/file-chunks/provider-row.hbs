@@ -9,24 +9,16 @@
     {{!-- FIXME: maybe refactor - make separate component --}}
     {{!-- FIXME: loading state --}}
     {{!-- FIXME: get all transfers, check if fileForChunks is present in them and check type of transfer (migration?) --}}
-    {{#if (eq isEmpty false)}}
-      {{#bs-button
-        action=(action "openMigrationOptions" file providerId)
-        disabled=(not currentProviderSupport)
-        type="warning"
-      }}
-        Migrate
-      {{/bs-button}}
-    {{/if}}
-    {{#if (or neverSynchronized (eq isComplete false))}}
-      {{#bs-button
-        action=(action "startReplication" file providerId)
-        disabled=(not currentProviderSupport)
-        type="success"
-      }}
-        Replicate
-      {{/bs-button}}
-    {{/if}}
+    <a class={{migrateButtonClasses}} click={{if migrationEnabled (action "openMigrationOptions" file providerId) null}}>
+      {{#one-icon icon="migrate"}}
+        {{bs-tooltip placement="top" title=migrateButtonTooltip}}
+      {{/one-icon}}
+    </a>
+    <a class={{replicateButtonClasses}} click={{if replicationEnabled (action "startReplication" file providerId) null}}>
+      {{#one-icon icon="replicate"}}
+        {{bs-tooltip placement="top" title=replicateButtonTooltip}}
+      {{/one-icon}}
+    </a>
   </div>
 </td>
 <td class="chunks">

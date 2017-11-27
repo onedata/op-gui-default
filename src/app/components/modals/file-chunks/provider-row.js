@@ -39,7 +39,141 @@ export default Component.extend({
    * @type {Function}
    */
   startReplication: () => {},
-    
+
+  /**
+   * Css classes for pending action
+   * @type {string}
+   */
+  pendingActionAnimation: 'in-progress animated infinite semi-hinge pulse-mint',
+
+  //TODO make these properties computed
+  replicationInProgress: true,
+  replicationEnabled: computed(
+    'neverSynchronized',
+    'isComplete',
+    'migrationInProgress',
+    'currentProviderSupport',
+    function () {
+      const {
+        neverSynchronized,
+        isComplete,
+        migrationInProgress,
+        currentProviderSupport
+      } = this.getProperties(
+        'neverSynchronized',
+        'isComplete',
+        'migrationInProgress',
+        'currentProviderSupport'
+      );
+      return currentProviderSupport && (neverSynchronized || !isComplete) &&
+        !migrationInProgress;
+    }
+  ),
+  migrationInProgress: false,
+  migrationEnabled: computed(
+    'isEmpty',
+    'migrationInProgress',
+    'currentProviderSupport',
+    function () {
+      const {
+        isEmpty,
+        migrationInProgress,
+        currentProviderSupport
+      } = this.getProperties(
+        'isEmpty',
+        'migrationInProgress',
+        'currentProviderSupport'
+      );
+      return currentProviderSupport && !isEmpty && !migrationInProgress;
+    }
+  ),
+
+  /**
+   * Css classes for 'migrate' button
+   * @type {Ember.ComputedProperty<string>}
+   */
+  migrateButtonClasses: computed(
+    'pendingActionAnimation',
+    'migrationInProgress',
+    'migrationEnabled',
+    function () {
+      let classes = 'action-icon toolbar-icon ';
+      const {
+        pendingActionAnimation,
+        migrationInProgress,
+        migrationEnabled,
+      } = this.getProperties(
+        'pendingActionAnimation',
+        'migrationInProgress',
+        'migrationEnabled'
+      );
+      if (migrationInProgress) {
+        classes += 'disabled ' + pendingActionAnimation;
+      } else if (!migrationEnabled) {
+        classes += 'disabled';
+      }
+      return classes;
+    }
+  ),
+
+  /**
+   * Css classes for 'replicate' button
+   * @type {Ember.ComputedProperty<string>}
+   */
+  replicateButtonClasses: computed(
+    'pendingActionAnimation',
+    'replicationInProgress',
+    'replicationEnabled',
+    function () {
+      let classes = 'action-icon toolbar-icon ';
+      const {
+        pendingActionAnimation,
+        replicationInProgress,
+        replicationEnabled,
+      } = this.getProperties(
+        'pendingActionAnimation',
+        'replicationInProgress',
+        'replicationEnabled'
+      );
+      if (replicationInProgress) {
+        classes += 'disabled ' + pendingActionAnimation;
+      } else if (!replicationEnabled) {
+        classes += 'disabled';
+      }
+      return classes;
+    }
+  ),
+
+  /**
+   * Tooltip text for 'migrate' button
+   * @type {Ember.ComputedProperty<string>}
+   */
+  migrateButtonTooltip: computed('migrationInProgress', 'migrationEnabled', function () {
+    // const {
+    //   migrationInProgress,
+    //   migrationEnabled,
+    // } = this.getProperties(
+    //   'migrationInProgress',
+    //   'migrationEnabled'
+    // );
+    return 'todo - describe me';
+  }),
+
+  /**
+   * Tooltip text for 'replicate' button
+   * @type {Ember.ComputedProperty<string>}
+   */
+  replicateButtonTooltip: computed('replicationInProgress', 'replicationEnabled', function () {
+    // const {
+    //   replicationInProgress,
+    //   replicationEnabled,
+    // } = this.getProperties(
+    //   'replicationInProgress',
+    //   'replicationEnabled'
+    // );
+    return 'todo - describe me';
+  }),
+
   /**
    * @type {File}
    */

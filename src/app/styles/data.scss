@@ -334,6 +334,19 @@
   .chunks {
     width: 340px;
   }
+  .replica-btns {
+    .btn-group {
+      margin-top: -0.1em;
+      white-space: nowrap;
+      font-size: 170%;
+      a {
+        text-decoration: none;
+        &.toolbar-icon.disabled {
+          pointer-events: initial;
+        }
+      }
+    }
+  }
 }
 
 .null-dir-info {

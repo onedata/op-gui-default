@@ -12,6 +12,7 @@ import _ from 'lodash';
 
 const {
   Object: EmberObject,
+  get,
   set,
   observer,
   computed,
@@ -124,8 +125,10 @@ export default EmberObject.extend({
         _currentInterval: undefined,
         _completedInterval: undefined,
       });
-      const watcher = this.get('_currentWatcher');
-      watcher.destroy();
+      _.each(
+        _.values(this.getProperties('_currentWatcher', '_completedWatcher')),
+        watcher => watcher && watcher.destroy()
+      );
     } finally {
       this._super(...arguments);
     }
@@ -230,9 +233,12 @@ export default EmberObject.extend({
             newIds.map(id => store.findRecord('transfer', id, { reload: true }))
           );
         })
-        .then(transfers => Promise.all(
-          transfers.map(t => t.belongsTo('currentStat').reload())
-        ))
+        .then(transfers => {
+          console.warn('space-transfers-updater: will update currentStat for: ' + transfers.map(t => get(t, 'id')));
+          return Promise.all(
+            transfers.map(t => t.belongsTo('currentStat').reload())
+          );
+        })
         .catch(error => this.set(`completedError`, error))
         .finally(() => this.set(`completedIsUpdating`, false));
     } else {

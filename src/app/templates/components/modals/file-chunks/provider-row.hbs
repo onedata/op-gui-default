@@ -1,0 +1,46 @@
+<td class="provider-name">
+  {{#truncated-string}}
+    {{providerName}}
+  {{/truncated-string}}
+</td>
+<td class="replica-btns">
+  {{!-- FIXME: is: replication in progress / invalidation in progress / file already replicated --}}
+  <div class="btn-group">
+    {{!-- FIXME: maybe refactor - make separate component --}}
+    {{!-- FIXME: loading state --}}
+    {{!-- FIXME: get all transfers, check if fileForChunks is present in them and check type of transfer (migration?) --}}
+    {{#if (eq isEmpty false)}}
+      {{#bs-button
+        action=(action "openMigrationOptions" file providerId)
+        disabled=(not currentProviderSupport)
+        type="warning"
+      }}
+        Migrate
+      {{/bs-button}}
+    {{/if}}
+    {{#if (or neverSynchronized (eq isComplete false))}}
+      {{#bs-button
+        action=(action "startReplication" file providerId)
+        disabled=(not currentProviderSupport)
+        type="success"
+      }}
+        Replicate
+      {{/bs-button}}
+    {{/if}}
+  </div>
+</td>
+<td class="chunks">
+  {{#if neverSynchronized}}
+    <div class="file-chunks never-synchronized">
+      <span>
+        {{t "components.dataFilesListToolbar.fileChunksModal.neverSynchronized"}}
+      </span>
+    </div>
+    {{bs-tooltip
+      placement="bottom"
+      title=(t "components.dataFilesListToolbar.fileChunksModal.neverSynchronizedHint")
+    }}
+  {{else}}
+    {{file-chunks-bar file=file fileBlocks=fileDistribution}}
+  {{/if}}
+</td>

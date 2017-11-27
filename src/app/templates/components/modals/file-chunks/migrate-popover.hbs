@@ -1,0 +1,11 @@
+{{#each visibleProviders as |p|}}
+{{!-- TODO: disabled/hidden instead of visibleProviders changing (prevent re-render) --}}
+  <li {{action "startMigration" p.id}} class="clickable">
+    <span class="item-icon">
+      {{one-icon icon="provider"}}
+    </span>
+    <span class="item-label">
+      {{p.name}}
+    </span>
+  </li>
+{{/each}}

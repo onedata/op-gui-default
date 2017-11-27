@@ -259,6 +259,10 @@
     padding-right: 20px;
   }
 
+  th.replica-options {
+    width: 30px;
+  }
+  
   // NOTE: should be synchronized with utils/file-chunks-bar.js
   $file-chunks-width: 320px;
   $file-chunks-height: 20px;

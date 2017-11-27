@@ -48,8 +48,8 @@ export default Component.extend({
   }),
   
   /**
-   * Transfer direction. Valid values: in, out
-   * @virtual
+   * What speed (input, output) should be presented per provider
+   * One of: out, in
    * @type {string}
    */
   transfersDirection: 'out',

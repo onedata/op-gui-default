@@ -17,10 +17,6 @@ const {
   run,
 } = Ember;
 
-// FIXME: 
-
-const UPDATE_INTERVAL = 2 * 1000;
-
 import Looper from 'ember-cli-onedata-common/utils/looper';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 
@@ -42,6 +38,12 @@ export default EmberObject.extend({
   isEnabled: false,
 
   /**
+   * Will be one of: minute, hour, day
+   * @type {Ember.ComputedProperty<string>}
+   */
+  timespan: computed.reads('timeStat.type'),
+  
+  /**
    * Initialized with `_createWatchers`.
    * @type {Looper}
    */
@@ -61,20 +63,25 @@ export default EmberObject.extend({
   fetchError: null,
   
   /**
-   * @type {number}
+   * Interval of time stats polling
+   * @type {number|null}
    */
-  _sharedInterval: computed('isEnabled', function () {
+  _interval: computed('isEnabled', 'timespan', function () {
     if (this.get('isEnabled')) {
-      return UPDATE_INTERVAL;
+      switch (this.get('timespan')) {
+        case 'minute':
+          return 5*1000;
+        case 'hour':
+          return 60*1000;
+        case 'day':
+          return 60*60*1000;
+        default:
+          return null;
+      }
     } else {
       return null;
     }
   }),
-
-  /**
-   * @type {number}
-   */
-  _interval: computed.reads('_sharedInterval'),
 
   // FIXME: code for this watcher is cloned from multi-watchers, so reduce it
   
@@ -95,7 +102,10 @@ export default EmberObject.extend({
   destroy() {
     try {
       this.set('_interval', undefined);
-      this.get('_watcher').destroy();
+      const _watcher = this.get('_watcher');
+      if (_watcher) {
+        this.get('_watcher').destroy();
+      }
     } finally {
       this._super(...arguments);
     }
@@ -140,14 +150,13 @@ export default EmberObject.extend({
     }
   },
 
-  // TODO: if refactoring - this can be custom, injected function
   fetch() {
     const timeStat = this.get('timeStat');
     this.set('isUpdating', true);
     
     return timeStat.reload()
-      .catch(error => this.set('fetchError', error))
-      .finally(() => this.set('isUpdating', false));
+      .catch(error => !this.get('isDestroyed') && this.set('fetchError', error))
+      .finally(() => !this.get('isDestroyed') && this.set('isUpdating', false));
   },
 
 });

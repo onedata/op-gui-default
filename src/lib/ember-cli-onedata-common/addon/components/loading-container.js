@@ -41,6 +41,8 @@ export default Component.extend({
    */
   absoluteCentered: true,
 
+  sizeClass: 'md',
+  
   isLoaded: computed('isLoading', 'isError', function () {
     return !this.get('isLoading') && !this.get('isError');
   }),

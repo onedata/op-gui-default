@@ -11,8 +11,8 @@ describe('Integration | Component | test callback', function() {
 
   it('immediately invokes callback', function() {
     const spy = sinon.spy();
-    const callback = function () {
-      spy(this.get('x'), this.get('y'));
+    const callback = function (testCallbackComponent) {
+      spy(testCallbackComponent.get('x'), testCallbackComponent.get('y'));
     };
     this.set('callback', callback);
     this.render(hbs`

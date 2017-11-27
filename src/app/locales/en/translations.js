@@ -465,8 +465,9 @@ export default {
       publish: 'Publish',
     },
     transfers: {
-      providersMapOfDist: 'Providers map of dist.',
-      throughputDistribution: 'Throughput distribution',
+      transfersFor: 'Transfer for',
+      providersMapOfDist: 'Active transfers map',
+      throughputDistribution: 'Providers throughput',
       activeTransfers: 'Active transfers',
       completedTransfers: 'History of transfers',
       noActiveTransfers: 'No data is transferred currently',
@@ -496,7 +497,8 @@ export default {
           active: 'Active',
           scheduled: 'Scheduled',
         },
-        noTransfersToShow: 'No transfers to show',
+        noActiveTransfers: 'No transfers currently in progress',
+        noCompletedTransfers: 'No finished transfers to show yet'
       },
       transferChart: {
         minute: 'Minute',

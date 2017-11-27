@@ -1,9 +1,10 @@
-{{!-- FIXME: loading state if _stats are not loaded --}}
-{{#if _stats}}
+<div class="row loadable-row">
+{{#loading-container isLoading=(not _statsLoaded)}}
   {{chartist-chart data=_chartData options=_chartOptions type="line" class="hide-middle-x-labels"}}
-  {{#bs-button-group value=timeUnit type="radio" size="sm" class="pull-right"}}
-    {{#bs-button value='minute'}}{{t 'components.transfers.transferChart.minute'}}{{/bs-button}}
-    {{#bs-button value='hour'}}{{t 'components.transfers.transferChart.hour'}}{{/bs-button}}
-    {{#bs-button value='day'}}{{t 'components.transfers.transferChart.day'}}{{/bs-button}}
-  {{/bs-button-group}}
-{{/if}}
+{{/loading-container}}
+</div>
+{{#bs-button-group value=timeUnit type="radio" size="sm" class="pull-right"}}
+  {{#bs-button value='minute'}}{{t 'components.transfers.transferChart.minute'}}{{/bs-button}}
+  {{#bs-button value='hour'}}{{t 'components.transfers.transferChart.hour'}}{{/bs-button}}
+  {{#bs-button value='day'}}{{t 'components.transfers.transferChart.day'}}{{/bs-button}}
+{{/bs-button-group}}

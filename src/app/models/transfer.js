@@ -72,21 +72,27 @@ export default Model.extend(TransferRuntimeMixin, {
   monthStat: belongsTo('transfer-time-stat'),
   
   /**
+   * Id of space that this transfer belongs to
+   */
+  space: belongsTo('space', { async: true, inverse: null }),
+  
+  /**
    * @type {Ember.ComputedProperty<PromiseObject<SystemProvider>>}
    */
-  systemUser: computed('id', 'systemUserId', function () {
-    const {
-      id,
-      systemUserId,
-    } = this.getProperties('id', 'systemUserId');
-    return PromiseObject.create({
-      promise: this.store.queryRecord('system-user', {
-        id: systemUserId,
-        context: {
-          od_space: id,
-        },
-      })
-    });
+  systemUser: computed('space', 'systemUserId', function () {
+    const systemUserId = this.get('systemUserId');
+    // the relation id should exist always if record exists
+    const spaceId = this.belongsTo('space').id();
+    if (spaceId != null) {
+      return PromiseObject.create({
+        promise: this.store.queryRecord('system-user', {
+          id: systemUserId,
+          context: {
+            od_space: spaceId,
+          },
+        })
+      }); 
+    }
   }),
   
   // Flattening some properties for view
@@ -111,43 +117,3 @@ export default Model.extend(TransferRuntimeMixin, {
     return _.includes(['active', 'scheduled'], this.get('status'));
   }),
 });
-
-// -- FIXME: mocks --
-
-const ONE_GB = Math.pow(1024, 3);
-
-import mockBelongsTo from 'op-worker-gui/utils/mock-belongs-to';
-
-import {
-  mockRecord as mockCurrentStat,
-} from 'op-worker-gui/models/transfer-current-stat';
-
-import {
-  mockRecord as mockTimeStat,
-} from 'op-worker-gui/models/transfer-time-stat';
-
-// FIXME: outdated API
-export const mock1 = {
-  destination: 'p2',
-  fileName: 'file1',
-  userName: 'John Smith',
-  totalBytes: 1.5 * ONE_GB,
-  startedAt: new Date().toISOString(),
-  currentStat: mockBelongsTo(mockCurrentStat(true, 3*ONE_GB, 0.2*ONE_GB)),
-  minuteStat: mockBelongsTo(mockTimeStat('minute')),
-  hourStat: mockBelongsTo(mockTimeStat('hour')),
-  dayStat: mockBelongsTo(mockTimeStat('day')),
-};
-
-// FIXME: outdated API
-export const mock2 = {
-  destination: 'p3',
-  fileName: 'file2',
-  userName: 'David Grohlton',
-  totalBytes: 3 * ONE_GB,
-  startedAt: new Date().toISOString(),
-  currentStat: mockBelongsTo(mockCurrentStat(true, 2 * ONE_GB, 0.3 * ONE_GB)),
-  minuteStat: mockBelongsTo(mockTimeStat('minute')),
-  hourStat: mockBelongsTo(mockTimeStat('hour')),
-  dayStat: mockBelongsTo(mockTimeStat('day')),
-};

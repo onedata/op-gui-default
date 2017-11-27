@@ -108,6 +108,14 @@ export default Component.extend({
   }),
 
   /**
+   * True if data for chart is loaded
+   * @type {boolean}
+   */
+  _statsLoaded: computed('_timeStatForUnit.content.stats', function() {
+    return this.get('_timeStatForUnit.isLoaded');
+  }),
+  
+  /**
    * @type {Ember.ComputedProperty<number>}
    */
   _transferStartTime: computed.reads('transfer.startTime'),
@@ -135,7 +143,7 @@ export default Component.extend({
   // FIXME: this should be auto updated
   /**
    * Object with stats for specified time unit.
-   * @type {Ember.ComputedProperty.Object}
+   * @type {Ember.ComputedProperty<TransferTimeStat>}
    */
   _timeStatForUnit: computed('transfer', 'timeUnit', function () {
     const {
@@ -349,16 +357,21 @@ export default Component.extend({
   }),
   
   init() {
-    this._super(...arguments);
+  this._super(...arguments);
     this.set('_chartValues', []);
+    const isOngoing = this.get('transfer.isOngoing');
+    const gettingStats = this.get('_timeStatForUnit');
     
-    this.get('_timeStatForUnit').then(timeStat => {
-      const updater = TransferTimeStatUpdater.create({
-        isEnabled: this.get('_updaterEnabled'),
-        timeStat,
-      });
-      this.set('updater', updater);
-    });
+    if (isOngoing) {
+      console.log('transfer-chart: creating updater');
+      gettingStats.then(timeStat => {
+        const updater = TransferTimeStatUpdater.create({
+          isEnabled: this.get('_updaterEnabled'),
+          timeStat,
+        });
+        this.set('updater', updater);
+      }); 
+    }
   },
   
   willDestroyElement() {

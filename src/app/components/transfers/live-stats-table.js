@@ -5,6 +5,7 @@ import mutateArray from 'ember-cli-onedata-common/utils/mutate-array';
 import _ from 'lodash';
 
 const {
+  Component,
   computed,
   inject: {
     service,
@@ -17,7 +18,7 @@ const {
 const START_END_TIME_FORMAT = 'D MMM YYYY H:mm:ss';
 const I18N_PREFIX = 'components.transfers.liveTableStats.';
 
-export default Ember.Component.extend({
+export default Component.extend({
   classNames: ['transfers-live-stats-table', 'transfers-table'],
 
   i18n: service(),
@@ -57,7 +58,7 @@ export default Ember.Component.extend({
    * Custom icons for ember-models-table addon.
    * @type {Ember.Object}
    */
-  _tableCustomIcons: Ember.Object.create({
+  _tableCustomIcons: EmberObject.create({
     'sort-asc': 'oneicon oneicon-arrow-up',
     'sort-desc': 'oneicon oneicon-arrow-down',
   }),
@@ -67,7 +68,7 @@ export default Ember.Component.extend({
    * @type {Ember.Object}
    */
   _tableCustomClasses: computed(function () {
-    return Ember.Object.create({
+    return EmberObject.create({
       table: 'table',
     });
   }),
@@ -76,9 +77,11 @@ export default Ember.Component.extend({
    * Custom messages for ember-models-table addon.
    * @type {Ember.Object}
    */
-  _tableCustomMessages: computed('noDataToShowMessage', function () {
-    return Ember.Object.create({
-      noDataToShow: this.get('i18n').t(I18N_PREFIX + 'noTransfersToShow'),
+  _tableCustomMessages: computed('transferType', function () {
+    const messageId = (this.get('transferType') === 'active') ?
+      'noActiveTransfers' : 'noCompletedTransfers';
+    return EmberObject.create({
+      noDataToShow: this.get('i18n').t(I18N_PREFIX + messageId),
     });
   }),
   
@@ -108,7 +111,7 @@ export default Ember.Component.extend({
         i18n,
       } = this.getProperties('transfers', 'providers', 'providersColors', 'i18n');
       
-      if (transfers && providers && transfers.every(t => get(t, 'tableDataIsLoaded'))) {
+      if (transfers && providers) {
         const newTableData = transfers
           .map((transfer) => transferTableData(transfer, providers, providersColors, i18n));
         mutateArray(

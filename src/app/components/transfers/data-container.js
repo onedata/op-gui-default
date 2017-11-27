@@ -65,64 +65,52 @@ export default Component.extend({
   
   _transfersUpdaterEnabled: computed.readOnly('transfersUpdaterEnabled'),
   
-  // FIXME: partial loader
+  //#region Space properties aliases
+  
+  currentTransferList: computed.reads('space.currentTransferList'),
+  completedTransferList: computed.reads('space.completedTransferList'),
+  providerList: computed.reads('space.providerList'),
+  
+  //#endregion
+  
   /**
    * Collection of Transfer model for current (active or scheduled) transfers
    * @type {Ember.ComputedProperty<Ember.Array<Transfer>>}
    */
-  currentTransfers: computed.reads('space.currentTransferList.list.content'),
+  currentTransfers: computed.reads('currentTransferList.list.content'),
   
-  // FIXME: partial loader
   /**
    * Collection of Transfer model for completed transfers
    * @type {Ember.ComputedProperty<Ember.Array<Transfer>>}
    */
-  completedTransfers: computed.reads('space.completedTransferList.list.content'),
+  completedTransfers: computed.reads('completedTransferList.list.content'),
 
-  // FIXME: partial loader
   /**
    * List of providers that support this space
    * @type {Ember.ComputedProperty<Ember.Array<Provider>>}
    */
-  providers: computed.reads('space.providerList.queryList.content'),
-  
-  // FIXME: to remove
-  /**
-   * Currently a global loader
-   * FIXME: make partial loaders that does not force
-   * other components to disappear and re-render
-   * @type {Ember.ComputedProperty<Array<TransferCurrentStat>>}
-   */
-  tableDataIsLoaded: computed(
-    'currentTransfers.isLoaded', // OK
-    'currentTransfers.@each.tableDataIsLoaded', // OK
-    'space.providerList.queryList.isSettled', // OK
-    'space.completedTransferList.list.isLoaded', // not ok
-    function () {
-      return this.get('space.completedTransferList.list.isLoaded') &&
-        this.get('space.providerList.queryList.isSettled'),
-        this.get('currentTransfers').every(t => get(t, 'tableDataIsLoaded') === true);
-    }
-  ),
+  providers: computed.reads('providerList.queryList.content'),
   
   //#region Loading and error states of yielded values
   
-  providersLoaded: computed.reads('space.providerList.queryList.isSettled'),
-  providersError: computed.reads('space.providerList.queryList.reason'),
-  
+  providersLoaded: computed.reads('providerList.queryList.isSettled'),
+  providersError: computed.reads('providerList.queryList.reason'),
+
   currentTransfersLoaded: computed(
+    'currentTransferList.isLoaded',
     'currentTransfers.isLoaded',
-    'currentTransfers.@each.tableDataIsLoaded',
     function getCurrentTransfersLoaded() {
-      return this.get('currentTransfers.isLoaded') === true &&
-        this.get('currentTransfers').every(t => get(t, 'tableDataIsLoaded'));
+      return this.get('currentTransferList.isLoaded') === true &&
+        this.get('currentTransfers.isLoaded') === true;
     }
   ),
   
   completedTransfersLoaded: computed(
+    'completedTransferList.isLoaded',
     'completedTransfers.isLoaded',
     function getCompletedTransfersLoaded() {
-      return this.get('completedTransfers.isLoaded') === true;
+      return this.get('completedTransferList.isLoaded') === true &&
+        this.get('completedTransfers.isLoaded') === true;
     }
   ),
   
@@ -153,7 +141,7 @@ export default Component.extend({
         const {
           _providerTransfersCache,
           currentTransfers,
-      } = this.getProperties('_providerTransfersCache', 'currentTransfers');
+        } = this.getProperties('_providerTransfersCache', 'currentTransfers');
 
         this._updateProviderTransfersCache(
           _providerTransfersCache,
@@ -172,11 +160,9 @@ export default Component.extend({
    */
   _updateProviderTransfersCache(ptCache, currentTransfers) {
     const ptNewList = providerTransfers(currentTransfers.toArray());
-    ptCache.forEach(pt => {
-      if (!_.find(ptNewList, { src: get(pt, 'src'), dest: get(pt, 'dest') })) {
-        ptCache.removeObject(pt);
-      }
-    });
+    _.remove(ptCache, pt =>
+      !_.find(ptNewList, { src: get(pt, 'src'), dest: get(pt, 'dest') })
+    );
     ptNewList.forEach(pt => {
       const ptOldVer = _.find(ptCache, { src: get(pt, 'src'), dest: get(pt, 'dest') });
       if (ptOldVer) {
@@ -243,17 +229,14 @@ export default Component.extend({
     function getSourceProviderIds() {
       const transfers = this.get('currentTransfers');
       if (!isEmpty(transfers)) {
-        return _(transfers)
+        return _.uniq(_.flatten(transfers
           .map(t => {
             if (t && get(t, 'bytesPerSec')) {
               return Object.keys(get(t, 'bytesPerSec'));
             } else {
               return [];
             }
-          })
-          .flatten()
-          .uniq()
-          .value();
+          })));
       }
     }
   ),

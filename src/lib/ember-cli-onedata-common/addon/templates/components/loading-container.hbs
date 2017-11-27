@@ -2,7 +2,7 @@
   {{yield}}
 {{else}}
   {{#if isLoading}}
-    {{spin-spinner-block sizeClass="md" class=_spinnerBlockClass}}
+    {{spin-spinner-block sizeClass=sizeClass class=_spinnerBlockClass}}
   {{else if isError}}
     {{resource-load-error message=customErrorMessage reason=errorReason}}
   {{/if}}

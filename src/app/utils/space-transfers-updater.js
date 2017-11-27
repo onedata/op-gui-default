@@ -12,7 +12,6 @@ import _ from 'lodash';
 
 const {
   Object: EmberObject,
-  get,
   set,
   observer,
   computed,
@@ -234,7 +233,6 @@ export default EmberObject.extend({
           );
         })
         .then(transfers => {
-          console.warn('space-transfers-updater: will update currentStat for: ' + transfers.map(t => get(t, 'id')));
           return Promise.all(
             transfers.map(t => t.belongsTo('currentStat').reload())
           );

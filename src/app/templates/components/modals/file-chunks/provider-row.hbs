@@ -11,6 +11,7 @@
     {{!-- FIXME: get all transfers, check if fileForChunks is present in them and check type of transfer (migration?) --}}
     {{#if (eq isEmpty false)}}
       {{#bs-button
+        class="btn-migrate relative"
         action=(action "openMigrationOptions" file providerId)
         disabled=(not currentProviderSupport)
         type="warning"
@@ -20,6 +21,7 @@
     {{/if}}
     {{#if (or neverSynchronized (eq isComplete false))}}
       {{#bs-button
+        class="btn-replicate"
         action=(action "startReplication" file providerId)
         disabled=(not currentProviderSupport)
         type="success"

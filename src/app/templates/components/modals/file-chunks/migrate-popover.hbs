@@ -1,5 +1,5 @@
+<li class="menu-group-name">Migrate file data into:</li>
 {{#each visibleProviders as |p|}}
-{{!-- TODO: disabled/hidden instead of visibleProviders changing (prevent re-render) --}}
   <li {{action "startMigration" p.id}} class="clickable">
     <span class="item-icon">
       {{one-icon icon="provider"}}

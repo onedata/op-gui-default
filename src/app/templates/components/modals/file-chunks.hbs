@@ -48,19 +48,19 @@
                     startReplication=(action "startReplication")
                     fileTransfers=fileTransfers
                   }}
-                  
-                  
-                  
                 {{/each}}
               </tbody>
             </table>
             
             {{#if migrationSource}}
-              {{modals/file-chunks/migrate-popover
-                startMigration=(action "startMigration" fileForChunks)
-                sourceProvider=migrationSource
-                providers=providersSorted
-              }}
+              <div class="open">
+                {{modals/file-chunks/migrate-popover
+                  startMigration=(action "startMigration" file)
+                  sourceProvider=migrationSource
+                  providers=providersSorted
+                  close=(action (mut migrationSource null))
+                }}
+              </div>
             {{/if}}
             
             {{#if (not currentProviderSupport)}}

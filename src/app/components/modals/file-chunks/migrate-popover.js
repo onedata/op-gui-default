@@ -7,19 +7,22 @@
  */
 
 import Ember from 'ember';
+import ClickOutside from 'ember-click-outside/mixins/click-outside';
 import bindFloater from 'ember-cli-onedata-common/utils/bind-floater';
 
 const {
   Component,
   computed,
   get,
+  run,
 } = Ember;
 
-export default Component.extend({
+export default Component.extend(ClickOutside, {
   tagName: 'ul',
   attributeBindings: ['style'],
   classNames: [
     'dropdown-menu',
+    'open',
     'dropdown-menu-right',
     'dropdown-menu-list', 
     'space-dropdown-menu', 
@@ -45,8 +48,14 @@ export default Component.extend({
    */
   startMigration: () => {},
   
+  /**
+   * @virtual
+   * @type {Function}
+   */
+  close: () => {},
+  
   bindSelector: computed('sourceProvider.id', function () {
-    return `.provider-row-${this.get('sourceProvider.id')}`;
+    return `.provider-row-${this.get('sourceProvider.id')} .btn-migrate`;
   }),
 
   /**
@@ -65,14 +74,25 @@ export default Component.extend({
       return providers.filter(p => get(p, 'id') !== source);
     }
   }),
-
+  
   didInsertElement() {
     const bindSelector = this.get('bindSelector');
     if (bindSelector) {
-      bindFloater(this.$(), $(bindSelector));
+      bindFloater(this.$(), $(bindSelector), {
+        stackingContext: this.$().parents('.modal-dialog').get(0)
+      });
     }
+    run.next(this, this.addClickOutsideListener);
   },
-
+  
+  willDestroyElement() {
+    this.removeClickOutsideListener();
+  },
+  
+  clickOutside() {
+    this.close();
+  },
+  
   actions: {
     startMigration(destination) {
       this.startMigration(this.get('sourceProvider.id'), destination);

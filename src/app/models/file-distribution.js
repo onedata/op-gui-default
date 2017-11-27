@@ -48,7 +48,7 @@ export default DS.Model.extend({
   isEmpty: computed('fileSize', 'blocks.[]', function () {
     if (this.get('fileSize') !== undefined) {
       const blocks = this.get('blocks');
-      return isEmpty(blocks);
+      return isEmpty(blocks) || compareNeighbors(blocks);
     }
   }),
   
@@ -56,11 +56,15 @@ export default DS.Model.extend({
     const isEmpty = this.get('isEmpty');
     if (isEmpty === false) {
       const sblocks = this.get('blocks').map(i => parseInt(i)).sort((a, b) => a - b);
-      return sblocks[0] === 0 &&
+      return (
+        sblocks[0] === 0 &&
         sblocks[sblocks.length - 1] === this.get('fileSize') &&
-        compareNeighbors(sblocks.slice(1, sblocks.length - 1));
+        compareNeighbors(sblocks.slice(1, sblocks.length - 1))
+      );
+    } else if (isEmpty === true) {
+      return false;
     } else {
-      return isEmpty;
+      return undefined;
     }
   }),
 });

@@ -13,6 +13,7 @@ const {
   Component,
   computed,
   get,
+  run,
 } = Ember;
 
 export default Component.extend(PromiseLoadingMixin, {
@@ -103,8 +104,10 @@ export default Component.extend(PromiseLoadingMixin, {
     
     closed() {
       this.setProperties({
+        file: null,
         fileBlocks: null,
-        chunksModalError: null
+        chunksModalError: null,
+        migrationSource: null,
       });
       this.get('chunksModalClosed')();
     },
@@ -115,7 +118,9 @@ export default Component.extend(PromiseLoadingMixin, {
      * @param {Provider} sourceProvider a Provider that will source of migration
      */
     openMigrationOptions(sourceProvider) {
-      this.set('migrationSource', sourceProvider);
+      run.next(() => {
+        this.set('migrationSource', sourceProvider);
+      });
     },
     
     /**
@@ -135,12 +140,14 @@ export default Component.extend(PromiseLoadingMixin, {
      */
     startMigration(file, source, destination) {
       this.set('migrationSource', null);
-      return this.get('store').createRecord('transfer', {
-        file,
-        migration: true,
-        migrationSource: source,
-        destination: destination,
-      });
+      return this.get('store')
+        .createRecord('transfer', {
+          file,
+          migration: true,
+          migrationSource: source,
+          destination: destination,
+        })
+        .save();
     },
     
     /**

@@ -415,6 +415,7 @@ export default {
       fileChunksModal: {
         title: 'File distribution',
         text: 'Distribution of file blocks among providers for file',
+        fileIsEmpty: 'This file has no content.',
         neverSynchronized: 'Never synchronized',
         neverSynchronizedHint: 'This file was never read or modified on this ' +
           'provider. File blocks will be synchronized when needed.',

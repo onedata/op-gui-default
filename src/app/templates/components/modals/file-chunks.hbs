@@ -9,79 +9,85 @@
     closeButton=false
   }}
   {{#bs-modal-body}}
-    <div class="container-fluid">
-      <div class="modal-row large-space">
-        {{t "components.dataFilesListToolbar.fileChunksModal.text"}}
-        <strong>{{fileForChunks.name}}</strong>
+    {{#if isFileEmpty}}
+      <div class="empty-file-info">
+        <p class="empty-file-info-msg">{{t "components.dataFilesListToolbar.fileChunksModal.fileIsEmpty"}}</p>
       </div>
-      <div class="modal-row large-space">
-        {{#if chunksModalError}}
+    {{else}}
+      <div class="container-fluid">
+        <div class="modal-row large-space">
+          {{t "components.dataFilesListToolbar.fileChunksModal.text"}}
+          <strong>{{fileForChunks.name}}</strong>
+        </div>
+        <div class="modal-row large-space">
+          {{#if chunksModalError}}
 
-          <div class="one-row">
-            {{t "components.dataFilesListToolbar.fileChunksModal.error"}}: {{chunksModalError}}
-          </div>
-
-        {{else}}
-
-          {{#if fileBlocksSorted}}
-            {{!-- NOTE: there is an assumption that every fb has other provider --}}
-            <table class="table file-blocks-table">
-              <thead>
-                <th>
-                  {{t "components.dataFilesListToolbar.fileChunksModal.providerName"}}
-                </th>
-                <th class="replica-options">
-                  {{!-- FIXME: empty table header for actions? --}}
-                </th>
-                <th>
-                  {{t "components.dataFilesListToolbar.fileChunksModal.dataDitribution"}}
-                </th>
-              </thead>
-              <tbody>
-                {{#each fileBlocksSorted as |fb|}}
-                  {{modals/file-chunks/provider-row
-                    class=(concat "provider-row-" fb.provider)
-                    fileDistribution=fb
-                    currentProviderSupport=currentProviderSupport
-                    file=fileForChunks
-                    openMigrationOptions=(action "openMigrationOptions")
-                    startReplication=(action "startReplication")
-                    fileTransfers=fileTransfers
-                  }}
-                {{/each}}
-              </tbody>
-            </table>
-            
-            {{#if migrationSource}}
-              <div class="open">
-                {{modals/file-chunks/migrate-popover
-                  startMigration=(action "startMigration" file)
-                  sourceProvider=migrationSource
-                  providers=providersSorted
-                  close=(action (mut migrationSource null))
-                }}
-              </div>
-            {{/if}}
-            
-            {{#if (not currentProviderSupport)}}
-              <div class="alert alert-warning">
-                {{!-- TODO: i18n, text --}}
-                This file is on a space that is not supported by current provider,
-                thus you cannot start data replication or migration.
-              </div>
-            {{/if}}
-          {{else}}
             <div class="one-row">
-              <div class="loading-throbber"></div>
-              <div class="loading-label">
-                {{t "components.dataFilesListToolbar.fileChunksModal.loading"}}
-              </div>
-            </div>            
+              {{t "components.dataFilesListToolbar.fileChunksModal.error"}}: {{chunksModalError}}
+            </div>
+
+          {{else}}
+
+            {{#if fileBlocksSorted}}
+              {{!-- NOTE: there is an assumption that every fb has other provider --}}
+              <table class="table file-blocks-table">
+                <thead>
+                  <th>
+                    {{t "components.dataFilesListToolbar.fileChunksModal.providerName"}}
+                  </th>
+                  <th class="replica-options">
+                    {{!-- FIXME: empty table header for actions? --}}
+                  </th>
+                  <th>
+                    {{t "components.dataFilesListToolbar.fileChunksModal.dataDitribution"}}
+                  </th>
+                </thead>
+                <tbody>
+                  {{#each fileBlocksSorted as |fb|}}
+                    {{modals/file-chunks/provider-row
+                      class=(concat "provider-row-" fb.provider)
+                      fileDistribution=fb
+                      currentProviderSupport=currentProviderSupport
+                      file=fileForChunks
+                      openMigrationOptions=(action "openMigrationOptions")
+                      startReplication=(action "startReplication")
+                      fileTransfers=fileTransfers
+                    }}
+                  {{/each}}
+                </tbody>
+              </table>
+              
+              {{#if migrationSource}}
+                <div class="open">
+                  {{modals/file-chunks/migrate-popover
+                    startMigration=(action "startMigration" file)
+                    sourceProvider=migrationSource
+                    providers=providersSorted
+                    close=(action (mut migrationSource null))
+                  }}
+                </div>
+              {{/if}}
+              
+              {{#if (not currentProviderSupport)}}
+                <div class="alert alert-warning">
+                  {{!-- TODO: i18n, text --}}
+                  This file is on a space that is not supported by current provider,
+                  thus you cannot start data replication or migration.
+                </div>
+              {{/if}}
+            {{else}}
+              <div class="one-row">
+                <div class="loading-throbber"></div>
+                <div class="loading-label">
+                  {{t "components.dataFilesListToolbar.fileChunksModal.loading"}}
+                </div>
+              </div>            
+            {{/if}}
+            
           {{/if}}
-          
-        {{/if}}
+        </div>
       </div>
-    </div>
+    {{/if}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#bs-button action=(action "close" target=footer) type="primary"}}

@@ -1,11 +1,13 @@
-<li class="menu-group-name">Migrate file data into:</li>
+<li class="menu-group-name">
+  {{t "components.dataFilesListToolbar.fileChunksModal.migrateFileDataInto"}}:
+</li>
 {{#each visibleProviders as |p|}}
-  <li {{action "startMigration" p.id}} class="clickable">
+  {{#truncated-string tagName="li" class="clickable"}}
     <span class="item-icon">
       {{one-icon icon="provider"}}
     </span>
     <span class="item-label">
       {{p.name}}
     </span>
-  </li>
+  {{/truncated-string}}
 {{/each}}

@@ -421,6 +421,7 @@ export default {
           'provider. File blocks will be synchronized when needed.',
         providerName: 'Provider',
         dataDitribution: 'File blocks',
+        migrateFileDataInto: 'Migrate file data into',
         loading: 'Loading file chunks table...',
         error: 'File chunks table cannot be loaded due to an error'
       },

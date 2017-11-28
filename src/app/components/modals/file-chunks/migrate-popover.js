@@ -77,8 +77,10 @@ export default Component.extend(ClickOutside, {
   
   didInsertElement() {
     const bindSelector = this.get('bindSelector');
+    const bindElement = $(bindSelector);
     if (bindSelector) {
-      bindFloater(this.$(), $(bindSelector), {
+      bindFloater(this.$(), bindElement, {
+        offsetY: -bindElement.height() / 2 + 3,
         stackingContext: this.$().parents('.modal-dialog').get(0)
       });
     }

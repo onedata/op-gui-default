@@ -10,7 +10,6 @@
     {{!-- FIXME: loading state --}}
     {{!-- FIXME: get all transfers, check if fileForChunks is present in them and check type of transfer (migration?) --}}
     <a class={{concat migrateButtonClasses " btn-migrate"}}
-      {{!-- FIXME: disable action when disabled --}}
       {{action "openMigrationOptions" file providerId}}>
       {{#one-icon icon="migrate"}}
         {{bs-tooltip placement="top" title=migrateButtonTooltip}}

@@ -276,6 +276,22 @@
       margin: 0;
     }
   }
+  .migrate-popover {
+    .menu-group-name {
+      margin-bottom: 10px;
+      padding-left: 12px;
+    }
+    .item-icon {
+      font-size: 28px !important;
+      vertical-align: middle;
+      .one-icon {
+        top: 2px;
+      }
+    }
+    .item-label {
+      text-transform: initial;
+    }
+  }
 }
 
 .file-blocks-table {

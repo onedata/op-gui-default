@@ -235,11 +235,23 @@ export default Component.extend({
      * Opens migration popover that allows to choose to what provider migrate
      */
     openMigrationOptions() {
-      this.openMigrationOptions(this.get('provider'));
+      const {
+        migrationEnabled,
+        provider,
+      } = this.getProperties('migrationEnabled', 'provider');
+      if (migrationEnabled) {
+        this.openMigrationOptions(provider);
+      }
     },
     // TODO: this cannot be used until provider property is loaded
     startReplication() {
-      this.startReplication(this.get('providerId'));
+      const {
+        replicationEnabled,
+        providerId,
+      } = this.getProperties('replicationEnabled', 'providerId');
+      if (replicationEnabled) {
+        this.startReplication(providerId);
+      }
     },
   },
 });

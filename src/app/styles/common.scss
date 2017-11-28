@@ -67,7 +67,7 @@ html, body {
   background-color: transparent !important;
   cursor: pointer; cursor: hand;
 
-  &:hover {
+  &:not(.disabled):hover {
     color: $onedata-red !important;
   }
 

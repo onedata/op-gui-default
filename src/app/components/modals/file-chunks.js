@@ -78,6 +78,12 @@ export default Component.extend(PromiseLoadingMixin, {
    * Convenience name for `fileForChunks`
    */
   file: computed.alias('fileForChunks'),
+
+  /**
+   * True if file is empty
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  isFileEmpty: computed.equal('file.size', 0),
   
   currentTransferList: computed.reads('space.currentTransferList'),
   

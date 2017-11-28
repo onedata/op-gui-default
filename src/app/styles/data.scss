@@ -254,6 +254,46 @@
 
 // file chunks
 
+#file-chunks-modal {
+  @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+    .modal-dialog {
+      width: initial;
+      margin: 0px 10px;
+    }
+  }
+  .empty-file-info {
+    position: relative;
+    height: 190px;
+    background-image: url(/assets/images/empty-file.svg);
+    background-position: center top;
+    background-size: 150px auto;
+    background-repeat: no-repeat;
+    .empty-file-info-msg {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+    }
+  }
+  .migrate-popover {
+    .menu-group-name {
+      margin-bottom: 10px;
+      padding-left: 12px;
+    }
+    .item-icon {
+      font-size: 28px !important;
+      vertical-align: middle;
+      .one-icon {
+        top: 2px;
+      }
+    }
+    .item-label {
+      text-transform: initial;
+    }
+  }
+}
+
 .file-blocks-table {
   th:first-of-type {
     padding-right: 20px;

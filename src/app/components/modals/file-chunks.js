@@ -14,30 +14,39 @@ const {
   computed,
   get,
   run,
+  inject: { service },
 } = Ember;
 
 export default Component.extend(PromiseLoadingMixin, {
-  store: Ember.inject.service(),
+  store: service(),
 
-  /** @abstract */
+  /**
+   * @virtual
+   * @type {string}
+   */
   modalId: null,
-
-  open: false,
 
   /**
    * @virtual
    * @type {File}
    */
-  chunksModalClosed: () => {},
+  closedAction: () => {},
+  
+  /**
+   * @virtual
+   * @type {boolean}
+   */
+  open: false,
   
   /** 
    * @virtual
-   * @type {Space}
+   * @type {File}
    */
   fileForChunks: null,
-    
+  
   /**
    * @virtual
+   * @type {Space}
    */
   space: undefined,
   
@@ -48,7 +57,10 @@ export default Component.extend(PromiseLoadingMixin, {
   currentProviderSupport: undefined,
 
   chunksModalError: null,
-  isFileChunksModal: false,
+  
+  /**
+   * @type {Array<FileDistribution>}
+   */
   fileBlocks: null,
   
   /**
@@ -57,7 +69,7 @@ export default Component.extend(PromiseLoadingMixin, {
   migrationSource: undefined,
   
   // TODO: something is wrong because it is not sorted correctly
-  fileBlocksSorting: ['provider.name'],
+  fileBlocksSorting: ['getProvider.name'],
   fileBlocksSorted: computed.sort('fileBlocks', 'fileBlocksSorting'),
   
   providersSorted: computed.mapBy('fileBlocksSorted', 'getProvider'),
@@ -91,9 +103,10 @@ export default Component.extend(PromiseLoadingMixin, {
     
   actions: {
     open() {
+      console.log('querying');
       let fileId = this.get('fileForChunks.id');
       // TODO: if fileId null...
-  
+      
       this.get('store').query('file-distribution', { file: fileId }).then(
         (fbs) => {
           this.set('fileBlocks', fbs);
@@ -112,7 +125,7 @@ export default Component.extend(PromiseLoadingMixin, {
         chunksModalError: null,
         migrationSource: null,
       });
-      this.get('chunksModalClosed')();
+      this.closedAction();
     },
   
     /**

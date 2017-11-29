@@ -3,7 +3,8 @@ import FileChunksBar from 'op-worker-gui/utils/file-chunks-bar';
 
 const {
   run,
-  observer
+  observer,
+  get,
 } = Ember;
 
 /**
@@ -37,8 +38,8 @@ export default Ember.Component.extend({
       $canvas
     } = this.getProperties('$canvas', 'file', 'fileBlocks', 'canvas');
 
-    let size = file.get('size');
-    let blocks = fileBlocks.get('blocks');
+    let size = get(file, 'size');
+    let blocks = get(fileBlocks, 'blocks');
 
     if (size && blocks) {
       try {

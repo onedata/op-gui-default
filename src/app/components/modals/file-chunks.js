@@ -91,12 +91,12 @@ export default Component.extend(PromiseLoadingMixin, {
    * @type {boolean}
    */
   transfersLoading: undefined,
-
+  
   /**
-   * How many times the transfer updater has been asked to start
-   * @type {number}
+   * Flag set to true if migration has been started by used but request is not completed yet
+   * @type {boolean}
    */
-  _requestedUpdaters: 0,
+  migrationInvoked: false,
   
   fileBlocksSorting: ['getProvider.name'],
   
@@ -199,8 +199,6 @@ export default Component.extend(PromiseLoadingMixin, {
    * @returns {Promise<Array<FileDistribution>>}
    */
   fetchDistribution() {
-    console.warn('file-chunks: fetchDistribution');
-    
     const fileId = this.get('file.id');
     this.get('store').query('file-distribution', { file: fileId }).then(
       (fbs) => {
@@ -334,6 +332,7 @@ export default Component.extend(PromiseLoadingMixin, {
      */
     startMigration(file, source, destination) {
       this.set('migrationSource', null);
+      this.set('migrationInvoked', true);
       return this.get('store')
         .createRecord('transfer', {
           file,
@@ -349,7 +348,8 @@ export default Component.extend(PromiseLoadingMixin, {
         .catch(error => {
           this.set('chunksModalError', 'Failed to start file migration: ' + error.message);
           this._stopTransfersUpdater();
-        });
+        })
+        .finally(() => this.set('migrationInvoked', false));
     },
 
     /**

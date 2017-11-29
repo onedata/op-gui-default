@@ -5,10 +5,16 @@ const {
   computed,
   get,
   isEmpty,
+  inject: { service },
 } = Ember;
 
+const I18N_PREFIX = 'components.dataFilesListToolbar.fileChunksModal.providerRow.';
+
 export default Component.extend({
+  i18n: service(),
+  
   tagName: 'tr',
+  classNames: ['provider-row'],
   
   //#region External properties
   
@@ -26,7 +32,7 @@ export default Component.extend({
   
   /**
    * @virtual
-   * @type {Ember.Array<Transfer>|undefined}
+   * @type {Array<Transfer>|undefined}
    */
   fileTransfers: undefined,
   
@@ -54,6 +60,13 @@ export default Component.extend({
    */
   stopTransfersUpdater: () => {},
 
+  /**
+   * True if migration has been started by used but request is not completed yet
+   * @virtual
+   * @type {boolean}
+   */
+  migrationInvoked: false,
+  
   //#endregion
   
   /**
@@ -62,9 +75,18 @@ export default Component.extend({
    */
   pendingActionAnimation: 'in-progress animated infinite semi-hinge pulse-mint',
 
+  /**
+   * True if replication has been started by used but request is not completed yet
+   * @type {boolean}
+   */
+  replicationInvoked: false,
+  
   transferLocked: computed.or('migrationInProgress', 'replicationInProgress'),
   
-  replicationInProgress: computed.equal('transferType', 'replication-destination'),
+  replicationInProgress: computed('transferType', 'replicationInvoked', function () {
+    return this.get('transferType') === 'replication-destination' ||
+      this.get('replicationInvoked');
+  }),
   replicationEnabled: computed(
     'neverSynchronized',
     'isComplete',
@@ -87,22 +109,29 @@ export default Component.extend({
     }
   ),
   
-  migrationInProgress: computed.equal('transferType', 'migration-source'),
+  migrationInProgress: computed('transferType', 'migrationInvoked', function () {
+    return this.get('transferType') === 'migration-source' ||
+      this.get('migrationInvoked');
+  }),
+  
   migrationEnabled: computed(
+    'neverSynchronized',
     'isEmpty',
     'currentProviderSupport',
     'transferLocked',
     function () {
       const {
+        neverSynchronized,
         isEmpty,
         currentProviderSupport,
         transferLocked,
       } = this.getProperties(
+        'neverSynchronized',
         'isEmpty',
         'currentProviderSupport',
         'transferLocked'
       );
-      return currentProviderSupport && !isEmpty && !transferLocked;
+      return currentProviderSupport && !neverSynchronized && !isEmpty && !transferLocked;
     }
   ),
 
@@ -167,14 +196,23 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<string>}
    */
   migrateButtonTooltip: computed('migrationInProgress', 'migrationEnabled', function () {
-    // const {
-    //   migrationInProgress,
-    //   migrationEnabled,
-    // } = this.getProperties(
-    //   'migrationInProgress',
-    //   'migrationEnabled'
-    // );
-    return 'todo - describe me';
+    const {
+      i18n,
+      migrationInProgress,
+      migrationEnabled,
+    } = this.getProperties(
+      'i18n',
+      'migrationInProgress',
+      'migrationEnabled'
+    );
+    
+    if (migrationInProgress) {
+      return i18n.t(`${I18N_PREFIX}migrationInProgress`);
+    } else if (migrationEnabled) {
+      return i18n.t(`${I18N_PREFIX}migrationStart`);
+    } else {
+      return i18n.t(`${I18N_PREFIX}migrationDisabled`);
+    }
   }),
 
   /**
@@ -182,14 +220,23 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<string>}
    */
   replicateButtonTooltip: computed('replicationInProgress', 'replicationEnabled', function () {
-    // const {
-    //   replicationInProgress,
-    //   replicationEnabled,
-    // } = this.getProperties(
-    //   'replicationInProgress',
-    //   'replicationEnabled'
-    // );
-    return 'todo - describe me';
+    const {
+      i18n,
+      replicationInProgress,
+      replicationEnabled,
+    } = this.getProperties(
+      'i18n',
+      'replicationInProgress',
+      'replicationEnabled'
+    );
+    
+    if (replicationInProgress) {
+      return i18n.t(`${I18N_PREFIX}replicationInProgress`);
+    } else if (replicationEnabled) {
+      return i18n.t(`${I18N_PREFIX}replicationStart`);
+    } else {
+      return i18n.t(`${I18N_PREFIX}replicationDisabled`);
+    }
   }),
 
   /**
@@ -275,7 +322,9 @@ export default Component.extend({
         providerId,
       } = this.getProperties('replicationEnabled', 'providerId');
       if (replicationEnabled) {
-        return this.startReplication(providerId);
+        this.set('replicationInvoked', true);
+        return this.startReplication(providerId)
+          .finally(() => this.set('replicationInvoked', false));
       }
     },
   },

@@ -428,8 +428,12 @@ export default {
           'supported by current provider thus you cannot start data replication ' +
           'or migration.',
         providerRow: {
-          migrate: 'Migrate file to other provider',
-          
+          migrationStart: 'Migrate this file to other provider...',
+          migrationInProgress: 'The file is currently migrated from selected provider',
+          migrationDisabled: 'File cannot be migrated from selected provider now',
+          replicationStart: 'Replicate this file to selected provider',
+          replicationInProgress: 'The file is currently replicated to this provider',
+          replicationDisabled: 'File cannot be replicated into selected provider now',
         },
       },
       notify: {

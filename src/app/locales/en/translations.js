@@ -423,7 +423,14 @@ export default {
         dataDitribution: 'File blocks',
         migrateFileDataInto: 'Migrate file data into',
         loading: 'Loading file chunks table...',
-        error: 'File chunks table cannot be loaded due to an error'
+        error: 'File chunks table cannot be loaded due to an error',
+        noCurrentProviderSupport: 'This file is on a space that is not ' +
+          'supported by current provider thus you cannot start data replication ' +
+          'or migration.',
+        providerRow: {
+          migrate: 'Migrate file to other provider',
+          
+        },
       },
       notify: {
         createFileFailed: 'File or directory "{{fileName}}" creation failed'

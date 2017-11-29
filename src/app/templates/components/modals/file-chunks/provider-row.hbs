@@ -8,7 +8,7 @@
   <div class="btn-group">
     {{!-- FIXME: maybe refactor - make separate component --}}
     {{!-- FIXME: loading state --}}
-    {{!-- FIXME: get all transfers, check if fileForChunks is present in them and check type of transfer (migration?) --}}
+    {{!-- FIXME: get all transfers, check if file is present in them and check type of transfer (migration?) --}}
     <a class={{concat migrateButtonClasses " btn-migrate"}}
       {{action "openMigrationOptions" file providerId}}>
       {{#one-icon icon="migrate"}}

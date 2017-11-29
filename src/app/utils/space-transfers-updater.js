@@ -51,6 +51,24 @@ export default EmberObject.extend({
   isEnabled: false,
 
   /**
+   * @type {boolean}
+   */
+  currentEnabled: true,
+
+  /**
+   * @type {boolean}
+   */
+  completedEnabled: true,
+
+  _currentEnabled: computed('currentEnabled', 'isEnabled', function () {
+    return this.get('isEnabled') && this.get('currentEnabled');
+  }),
+
+  _completedEnabled: computed('completedEnabled', 'isEnabled', function () {
+    return this.get('isEnabled') && this.get('completedEnabled');
+  }),
+
+  /**
    * Initialized with `_createWatchers`.
    * Updates info about current transfers:
    * - space.currentTransferList
@@ -60,7 +78,7 @@ export default EmberObject.extend({
   _currentWatcher: undefined,
 
   /**
-   * FIXME: watcher for completed transfers
+   * @type {Looper}
    */
   _completedWatcher: undefined,
   
@@ -110,9 +128,9 @@ export default EmberObject.extend({
     this._createWatchers();
     this._toggleWatchers();
     
-    // get properties to enable observers
-    this.get('_currentInterval');
-    
+    // enable observers for properties
+    this.getProperties('_currentEnabled', '_completedEnabled');
+
     // FIXME: fill this when fist version of completed ids will be avail
     this.set('_completedIdsCache', []);
     this.set('_currentIdsCache', []);
@@ -120,10 +138,6 @@ export default EmberObject.extend({
 
   destroy() {
     try {
-      this.setProperties({
-        _currentInterval: undefined,
-        _completedInterval: undefined,
-      });
       _.each(
         _.values(this.getProperties('_currentWatcher', '_completedWatcher')),
         watcher => watcher && watcher.destroy()
@@ -159,21 +173,23 @@ export default EmberObject.extend({
     });
   },
 
-  _toggleWatchers: observer('isEnabled', function () {
+  _toggleWatchers: observer('_currentEnabled', '_completedEnabled', function () {
     // this method is invoked from debounce, so it's "this" can be destroyed
     if (this.isDestroyed === false) {
       const {
-        isEnabled,
+        _currentEnabled,
+        _completedEnabled,
         _currentWatcher,
         _completedWatcher,
       } = this.getProperties(
-        'isEnabled',
+        '_currentEnabled',
+        '_completedEnabled',
         '_currentWatcher',
         '_completedWatcher'
       );
       
-      set(_currentWatcher, 'interval', isEnabled ? UPDATE_CURRENT_INTERVAL : null);
-      set(_completedWatcher, 'interval', isEnabled ? UPDATE_COMPLETED_INTERVAL : null);
+      set(_currentWatcher, 'interval', _currentEnabled ? UPDATE_CURRENT_INTERVAL : null);
+      set(_completedWatcher, 'interval', _completedEnabled ? UPDATE_COMPLETED_INTERVAL : null);
     }
   }),
 

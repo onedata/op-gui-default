@@ -17,7 +17,7 @@
       <div class="container-fluid">
         <div class="modal-row large-space">
           {{t "components.dataFilesListToolbar.fileChunksModal.text"}}
-          <strong>{{fileForChunks.name}}</strong>
+          <strong>{{file.name}}</strong>
         </div>
         <div class="modal-row large-space">
           {{#if chunksModalError}}
@@ -28,7 +28,7 @@
 
           {{else}}
 
-            {{#if fileBlocksSorted}}
+            {{#if (and fileBlocksSorted (not transfersLoading))}}
               {{!-- NOTE: there is an assumption that every fb has other provider --}}
               <table class="table file-blocks-table">
                 <thead>
@@ -48,7 +48,7 @@
                       class=(concat "provider-row-" fb.provider)
                       fileDistribution=fb
                       currentProviderSupport=currentProviderSupport
-                      file=fileForChunks
+                      file=file
                       openMigrationOptions=(action "openMigrationOptions")
                       startReplication=(action "startReplication")
                       fileTransfers=fileTransfers
@@ -70,9 +70,7 @@
               
               {{#if (not currentProviderSupport)}}
                 <div class="alert alert-warning">
-                  {{!-- TODO: i18n, text --}}
-                  This file is on a space that is not supported by current provider,
-                  thus you cannot start data replication or migration.
+                  {{t "components.dataFilesListToolbar.fileChunksModal.noCurrentProviderSupport"}}
                 </div>
               {{/if}}
             {{else}}

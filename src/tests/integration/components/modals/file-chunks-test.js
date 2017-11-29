@@ -59,7 +59,7 @@ describe('Integration | Component | modals/file chunks', function() {
       open=true
       modalId="file-chunks"
       closedAction=(action "closedSpy")
-      fileForChunks=file
+      file=file
       currentProviderSupport=false
       space=space
     }}`);

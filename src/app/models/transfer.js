@@ -100,10 +100,12 @@ export default Model.extend(TransferRuntimeMixin, {
     'isLoaded',
     'currentStat.isLoaded',
     'systemUser.isLoaded',
+    '_completedReloading',
     function () {
       return this.get('isLoaded') &&
         this.get('currentStat.isLoaded') &&
-        this.get('systemUser.isLoaded');
+        this.get('systemUser.isLoaded') &&
+        !this.get('_completedReloading');
     }
   ),
   

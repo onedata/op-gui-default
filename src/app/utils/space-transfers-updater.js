@@ -235,15 +235,22 @@ export default EmberObject.extend({
       this.set(`completedIsUpdating`, true);
       
       const _completedIdsCache = this.get('_completedIdsCache');
+      let newIds = [];
     
       return space.belongsTo(`completedTransferList`).reload()
         .then(transferList => {
           const completedIdsNew = transferList.hasMany('list').ids();
-          const newIds = _.difference(
+          newIds = _.difference(
             completedIdsNew,
             _completedIdsCache
           );
           this.set('_completedIdsCache', completedIdsNew);
+          newIds.forEach(id => {
+            const transfer = store.peekRecord('transfer', id);
+            if (transfer && transfer.get('isOngoing')) {
+              transfer.set('_completedReloading', true);
+            }
+          });
           return Promise.all(
             newIds.map(id => store.findRecord('transfer', id, { reload: true }))
           );
@@ -252,6 +259,14 @@ export default EmberObject.extend({
           return Promise.all(
             transfers.map(t => t.belongsTo('currentStat').reload())
           );
+        })
+        .then(() => {
+          newIds.forEach(id => {
+            const transfer = store.peekRecord('transfer', id);
+            if (transfer) {
+              transfer.set('_completedReloading', undefined);
+            }
+          });
         })
         .catch(error => this.set(`completedError`, error))
         .finally(() => this.set(`completedIsUpdating`, false));

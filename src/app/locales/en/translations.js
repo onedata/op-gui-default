@@ -422,8 +422,19 @@ export default {
         providerName: 'Provider',
         dataDitribution: 'File blocks',
         migrateFileDataInto: 'Migrate file data into',
-        loading: 'Loading file chunks table...',
-        error: 'File chunks table cannot be loaded due to an error'
+        loading: 'Loading file distribution data...',
+        error: 'File distribution table cannot be loaded due to an error',
+        noCurrentProviderSupport: 'This file is on a space that is not ' +
+          'supported by current provider thus you cannot start data replication ' +
+          'or migration.',
+        providerRow: {
+          migrationStart: 'Migrate this file to other provider...',
+          migrationInProgress: 'The file is currently migrated from selected provider',
+          migrationDisabled: 'File cannot be migrated from selected provider now',
+          replicationStart: 'Replicate this file to selected provider',
+          replicationInProgress: 'The file is currently replicated to this provider',
+          replicationDisabled: 'File cannot be replicated into selected provider now',
+        },
       },
       notify: {
         createFileFailed: 'File or directory "{{fileName}}" creation failed'
@@ -474,8 +485,8 @@ export default {
       completedTransfers: 'History of transfers',
       noActiveTransfers: 'No data is transferred currently',
       initializingTransfers: 'Initializing transfers...',
-      notSupported: 'The selected space is not supported by this provider' +
-        ' so we cannot list its transfers',
+      notSupported: 'Cannot list transfers of selected space becaus it is not ' +
+        'supported by current provider',
       in: 'Input',
       out: 'Output',
       liveTableStats: {

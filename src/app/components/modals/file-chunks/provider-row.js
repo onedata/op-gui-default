@@ -5,10 +5,18 @@ const {
   computed,
   get,
   isEmpty,
+  inject: { service },
 } = Ember;
 
+const I18N_PREFIX = 'components.dataFilesListToolbar.fileChunksModal.providerRow.';
+
 export default Component.extend({
+  i18n: service(),
+  
   tagName: 'tr',
+  classNames: ['provider-row'],
+  
+  //#region External properties
   
   /**
    * @virtual
@@ -24,7 +32,7 @@ export default Component.extend({
   
   /**
    * @virtual
-   * @type {Ember.Array<Transfer>|undefined}
+   * @type {Array<Transfer>|undefined}
    */
   fileTransfers: undefined,
   
@@ -37,55 +45,94 @@ export default Component.extend({
   /**
    * @virtual
    * @type {Function}
+   * @returns {Promise<Transfer>}
    */
   startReplication: () => {},
 
+  /**
+   * @virtual
+   * @type {Function}
+   */
+  startTransfersUpdater: () => {},
+
+  /**
+   * @virtual
+   * @type {Function}
+   */
+  stopTransfersUpdater: () => {},
+
+  /**
+   * True if migration has been started by used but request is not completed yet
+   * @virtual
+   * @type {boolean}
+   */
+  migrationInvoked: false,
+  
+  //#endregion
+  
   /**
    * Css classes for pending action
    * @type {string}
    */
   pendingActionAnimation: 'in-progress animated infinite semi-hinge pulse-mint',
 
-  // TODO: make these properties computed
-  replicationInProgress: computed.equal('replicationType', 'replication'),
+  /**
+   * True if replication has been started by used but request is not completed yet
+   * @type {boolean}
+   */
+  replicationInvoked: false,
+  
+  transferLocked: computed.or('migrationInProgress', 'replicationInProgress'),
+  
+  replicationInProgress: computed('transferType', 'replicationInvoked', function () {
+    return this.get('transferType') === 'replication-destination' ||
+      this.get('replicationInvoked');
+  }),
   replicationEnabled: computed(
     'neverSynchronized',
     'isComplete',
-    'migrationInProgress',
     'currentProviderSupport',
+    'transferLocked',
     function () {
       const {
         neverSynchronized,
         isComplete,
-        migrationInProgress,
-        currentProviderSupport
+        currentProviderSupport,
+        transferLocked,
       } = this.getProperties(
         'neverSynchronized',
         'isComplete',
-        'migrationInProgress',
-        'currentProviderSupport'
+        'currentProviderSupport',
+        'transferLocked'
       );
       return currentProviderSupport && (neverSynchronized || !isComplete) &&
-        !migrationInProgress;
+        !transferLocked;
     }
   ),
   
-  migrationInProgress: computed.equal('replicationType', 'migration'),
+  migrationInProgress: computed('transferType', 'migrationInvoked', function () {
+    return this.get('transferType') === 'migration-source' ||
+      this.get('migrationInvoked');
+  }),
+  
   migrationEnabled: computed(
+    'neverSynchronized',
     'isEmpty',
-    'migrationInProgress',
     'currentProviderSupport',
+    'transferLocked',
     function () {
       const {
+        neverSynchronized,
         isEmpty,
-        migrationInProgress,
-        currentProviderSupport
+        currentProviderSupport,
+        transferLocked,
       } = this.getProperties(
+        'neverSynchronized',
         'isEmpty',
-        'migrationInProgress',
-        'currentProviderSupport'
+        'currentProviderSupport',
+        'transferLocked'
       );
-      return currentProviderSupport && !isEmpty && !migrationInProgress;
+      return currentProviderSupport && !neverSynchronized && !isEmpty && !transferLocked;
     }
   ),
 
@@ -150,14 +197,23 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<string>}
    */
   migrateButtonTooltip: computed('migrationInProgress', 'migrationEnabled', function () {
-    // const {
-    //   migrationInProgress,
-    //   migrationEnabled,
-    // } = this.getProperties(
-    //   'migrationInProgress',
-    //   'migrationEnabled'
-    // );
-    return 'todo - describe me';
+    const {
+      i18n,
+      migrationInProgress,
+      migrationEnabled,
+    } = this.getProperties(
+      'i18n',
+      'migrationInProgress',
+      'migrationEnabled'
+    );
+    
+    if (migrationInProgress) {
+      return i18n.t(`${I18N_PREFIX}migrationInProgress`);
+    } else if (migrationEnabled) {
+      return i18n.t(`${I18N_PREFIX}migrationStart`);
+    } else {
+      return i18n.t(`${I18N_PREFIX}migrationDisabled`);
+    }
   }),
 
   /**
@@ -165,32 +221,41 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<string>}
    */
   replicateButtonTooltip: computed('replicationInProgress', 'replicationEnabled', function () {
-    // const {
-    //   replicationInProgress,
-    //   replicationEnabled,
-    // } = this.getProperties(
-    //   'replicationInProgress',
-    //   'replicationEnabled'
-    // );
-    return 'todo - describe me';
+    const {
+      i18n,
+      replicationInProgress,
+      replicationEnabled,
+    } = this.getProperties(
+      'i18n',
+      'replicationInProgress',
+      'replicationEnabled'
+    );
+    
+    if (replicationInProgress) {
+      return i18n.t(`${I18N_PREFIX}replicationInProgress`);
+    } else if (replicationEnabled) {
+      return i18n.t(`${I18N_PREFIX}replicationStart`);
+    } else {
+      return i18n.t(`${I18N_PREFIX}replicationDisabled`);
+    }
   }),
 
   /**
    * @type {File}
    */
   file: computed.reads('fileDistribution.file'),
-  
-  /**
-   * @type {string}
-   */
-  providerId: computed.reads('fileDistribution.provider'),
-  
-  // TODO: wait for provider property to load
+    
+  // TODO: wait for provider property to load - isLoading computed property
   /**
    * (args)
    */
   provider: computed.reads('fileDistribution.getProvider'),
   providerName: computed.reads('provider.name'),
+  
+  /**
+   * @type {string}
+   */
+  providerId: computed.reads('fileDistribution.provider'),
   
   isEmpty: computed.reads('fileDistribution.isEmpty'),
   isComplete: computed.reads('fileDistribution.isComplete'),
@@ -200,36 +265,44 @@ export default Component.extend({
    * Collection of transfers for current file and provider
    * @type {Ember.Array<Transfer>}
    */
-  fileProviderTransfers: computed('fileTransfers.[]', function () {
+  fileProviderTransfers: computed('fileTransfers.@each.{destination,migrationSource}', function () {
     const fileTransfers = this.get('fileTransfers');
     const providerId = this.get('providerId');
     if (fileTransfers) {
-      return fileTransfers.filter(t => get(t, 'provider') === providerId);
+      return fileTransfers.filter(t =>
+        get(t, 'destination') === providerId || get(t, 'migrationSource') === providerId
+      );
     }
   }),
   
+  transfersCount: computed.reads('fileProviderTransfers.length'),
+
   /**
-   * - If replication is in progress for this file: 'replication'
-   * - If migration is in progress for this file: 'migration'
-   * - If none of the above: null
-   * - If transfers data is not loaded yet: undefined
-   * @type {string|null|undefined}
+   * - If it's migration source: 'migration'
+   * - If it's only a replication destination: 'replication'
+   * - If it's none of the above: 'unknown' (should not occur)
+   * - If there is no transfers: null
+   * @type {string|null}
    */
-  replicationType: computed('fileProviderTransfers.[]', function () {
-    const fileProviderTransfers = this.get('fileProviderTransfers');
-    if (fileProviderTransfers) {
-      if (!isEmpty(fileProviderTransfers)) {
-        if (fileProviderTransfers.some(t => get(t, 'isCurrent'))) {
-          return 'migration';
+  transferType: computed(
+    'fileProviderTransfers.@each.{migrationSource,destination}',
+    'providerId',
+    function getTransferType() {
+      const fileProviderTransfers = this.get('fileProviderTransfers');
+      const providerId = this.get('providerId');
+      if (fileProviderTransfers && !isEmpty(fileProviderTransfers)) {
+        if (fileProviderTransfers.some(t => get(t, 'migrationSource') === providerId)) {
+          return 'migration-source';
+        } else if (fileProviderTransfers.some(t => get(t, 'destination') === providerId)) {
+          return 'replication-destination';
         } else {
-          return 'replication';
+          return 'unknown';
         }
       } else {
         return null;
       }
-    }
-  }),
-  
+    }),
+
   actions: {
     /**
      * Opens migration popover that allows to choose to what provider migrate
@@ -250,7 +323,9 @@ export default Component.extend({
         providerId,
       } = this.getProperties('replicationEnabled', 'providerId');
       if (replicationEnabled) {
-        this.startReplication(providerId);
+        this.set('replicationInvoked', true);
+        return this.startReplication(providerId)
+          .finally(() => this.set('replicationInvoked', false));
       }
     },
   },

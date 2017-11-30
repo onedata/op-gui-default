@@ -498,6 +498,7 @@ export default {
           failed: 'Failed',
           active: 'Active',
           scheduled: 'Scheduled',
+          invalidating: 'Invalidating',
         },
         noActiveTransfers: 'No transfers currently in progress',
         noCompletedTransfers: 'No finished transfers to show yet'

@@ -20,6 +20,7 @@ export default Model.extend(TransferRuntimeMixin, {
    * One of:
    * - scheduled
    * - active
+   * - invalidating
    * - skipped
    * - completed
    * - cancelled
@@ -58,7 +59,7 @@ export default Model.extend(TransferRuntimeMixin, {
   startTime: attr('number'),
   
   /**
-   * Non-empty only if transfer is not ongoing (`isOngoing`)
+   * Non-empty only if transfer is not current (`isCurrent`)
    */
   finishTime: attr('number'),
   
@@ -115,7 +116,7 @@ export default Model.extend(TransferRuntimeMixin, {
   transferredBytes: computed.reads('currentStat.transferredBytes'),
   transferredFiles: computed.reads('currentStat.transferredFiles'),
   
-  isOngoing: computed('status', function () {
-    return _.includes(['active', 'scheduled'], this.get('status'));
+  isCurrent: computed('status', function () {
+    return _.includes(['invalidating', 'active', 'scheduled'], this.get('status'));
   }),
 });

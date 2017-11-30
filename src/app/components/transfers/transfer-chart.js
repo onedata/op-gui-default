@@ -52,12 +52,12 @@ export default Component.extend({
    * Last update time (async -> _timeStatForUnit)
    * @type {Ember.ComputedProperty<Date>}
    */
-  _lastUpdateTime: computed('_timeStatForUnit.timestamp', 'transfer.isOngoing', function () {
+  _lastUpdateTime: computed('_timeStatForUnit.timestamp', 'transfer.isCurrent', function () {
     const {
       _timeStatForUnit,
       transfer,
     } = this.getProperties('_timeStatForUnit', 'transfer');
-    if (transfer.get('isOngoing')) {
+    if (transfer.get('isCurrent')) {
       const date = get(_timeStatForUnit, 'timestamp');
       return date ? date : moment(new Date()).unix();
     } else {
@@ -95,9 +95,9 @@ export default Component.extend({
    * Last stat timestamp
    * @type {Ember.ComputedProperty<number>}
    */
-  _statsTimestamp: computed('_timeStatForUnit.content.timestamp', 'transfer.isOngoing', function () {
+  _statsTimestamp: computed('_timeStatForUnit.content.timestamp', 'transfer.isCurrent', function () {
     const transfer = this.get('transfer');
-    if (transfer.get('isOngoing')) {
+    if (transfer.get('isCurrent')) {
       return this.get('_timeStatForUnit.content.timestamp');
     } else {
       return transfer.get('finishTime');
@@ -390,10 +390,10 @@ export default Component.extend({
   init() {
   this._super(...arguments);
     this.set('_chartValues', []);
-    const isOngoing = this.get('transfer.isOngoing');
+    const isCurrent = this.get('transfer.isCurrent');
     const gettingStats = this.get('_timeStatForUnit');
     
-    if (isOngoing) {
+    if (isCurrent) {
       console.log('transfer-chart: creating updater');
       gettingStats.then(timeStat => {
         const updater = TransferTimeStatUpdater.create({
@@ -452,7 +452,7 @@ export default Component.extend({
       '_transferStartTime'
     );
 
-    const transferTime = _statsTimestamp - _transferStartTime;
+    const transferTime = _statsTimestamp - _transferStartTime + 1;
     const timePeriodInSec =
       moment.duration(_timePeriod[0], _timePeriod[1]).asSeconds();
     const timeSinceLastStat = transferTime - timePeriodInSec * statTimeIndex;

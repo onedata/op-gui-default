@@ -219,7 +219,7 @@ export default Component.extend({
     const fileProviderTransfers = this.get('fileProviderTransfers');
     if (fileProviderTransfers) {
       if (!isEmpty(fileProviderTransfers)) {
-        if (fileProviderTransfers.some(t => get(t, 'isOngoing'))) {
+        if (fileProviderTransfers.some(t => get(t, 'isCurrent'))) {
           return 'migration';
         } else {
           return 'replication';

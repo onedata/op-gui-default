@@ -46,6 +46,7 @@ export default Component.extend({
         return 'skipped';
       case 'cancelled':
       case 'failed':
+      case 'invalidating':
         return 'failure';
       case 'active':
         return 'active';
@@ -69,6 +70,7 @@ export default Component.extend({
       case 'failed':
         return 'checkbox-filled-x';
       case 'active':
+      case 'invalidating':
         return 'update';
       case 'scheduled':
         return 'time';

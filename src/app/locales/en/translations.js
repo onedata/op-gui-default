@@ -506,6 +506,7 @@ export default {
         minute: 'Minute',
         hour: 'Hour',
         day: 'Day',
+        month: 'Month',
         time: 'Time',
         throughput: 'Throughput',
       },

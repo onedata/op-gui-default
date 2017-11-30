@@ -29,11 +29,8 @@ const {
   },
 } = Ember;
 
-const EXPECTED_STATS_NUMBER = 12;
-const MINUTE_STATS_NUMBER = 12;
-const HOUR_STATS_NUMBER = 60;
-const DAY_STATS_NUMBER = 24;
 const I18N_PREFIX = 'components.transfers.transferChart.';
+// const UNITS = ['minute', 'hour', 'day', 'month'];
 
 export default Component.extend({
   classNames: ['transfers-transfer-chart'],
@@ -62,14 +59,14 @@ export default Component.extend({
     } = this.getProperties('_timeStatForUnit', 'transfer');
     if (transfer.get('isOngoing')) {
       const date = get(_timeStatForUnit, 'timestamp');
-      return date ? new Date(date) : new Date();
+      return date ? date : moment(new Date()).unix();
     } else {
-      return new Date(transfer.get('finishTime'));
+      return transfer.get('finishTime');
     }
   }),
   
   /**
-   * One of `minute`, `hour`, `day`.
+   * One of `minute`, `hour`, `day`, `month`.
    * @type {string}
    * @virtual
    */
@@ -121,23 +118,38 @@ export default Component.extend({
   _transferStartTime: computed.reads('transfer.startTime'),
 
   /**
+   * Expected stats number (number of chart points).
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _expectedStatsNumber: computed('timeUnit', function () {
+    return this._getExpectedStatsNumberForUnit(this.get('timeUnit'));
+  }),
+
+  /**
    * A number of stats, that should be considered as a single chart value
    * @type {Ember.ComputedProperty<number>}
    */
-  _statsUnitsPerChartValue: computed('timeUnit', function () {
+  _statsUnitsPerChartValue: computed('_expectedStatsNumber', function () {
+    const {
+      _expectedStatsNumber,
+      timeUnit,
+    } = this.getProperties('_expectedStatsNumber', 'timeUnit');
     let statsPerUnit;
-    switch (this.get('timeUnit')) {
+    switch (timeUnit) {
+      case 'month':
+        statsPerUnit = 30;
+        break;
       case 'day':
-        statsPerUnit = DAY_STATS_NUMBER;
+        statsPerUnit = 24;
         break;
       case 'hour':
-        statsPerUnit = HOUR_STATS_NUMBER;
+        statsPerUnit = 60;
         break;
       default:
       case 'minute':
-        statsPerUnit = MINUTE_STATS_NUMBER;
+        statsPerUnit = 12;
     }
-    return statsPerUnit / EXPECTED_STATS_NUMBER;
+    return statsPerUnit / _expectedStatsNumber;
   }),
 
   // FIXME: this should be auto updated
@@ -167,6 +179,29 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<Object>}
    */
   providersColors: {},
+
+  /**
+   * Object that sets for each time unit if it should be visible to user
+   * @type {Ember.ComputedProperty<Ember.Object>}
+   */
+  _unitVisibility: computed('_transferStartTime', '_lastUpdateTime', function () {
+    const {
+      _transferStartTime,
+      _lastUpdateTime,
+    } = this.getProperties('_transferStartTime', '_lastUpdateTime');
+    const transferTime = _lastUpdateTime - _transferStartTime;
+    const result = Ember.Object.create({
+      minute: true,
+      hour: true,
+    });
+    const compareUnit = ['hour', 'day'];
+    ['day', 'month'].forEach((unit, index) => {
+      const period = this._getTimePeriodForUnit(compareUnit[index]);
+      const periodInSeconds = moment.duration(period[0], period[1]).asSeconds();
+      result.set(unit, transferTime > periodInSeconds);
+    });
+    return result;
+  }),
   
   /**
    * Stats values for time unit in order: from oldest to newest (inverts backend
@@ -179,12 +214,14 @@ export default Component.extend({
       _stats,
       _statsUnitsPerChartValue,
       _sortedProvidersIds,
+      _expectedStatsNumber,
     } = this.getProperties(
       '_stats',
       '_statsUnitsPerChartValue',
-      '_sortedProvidersIds'
+      '_sortedProvidersIds',
+      '_expectedStatsNumber'
     );
-    const inputStatsValuesNumber = EXPECTED_STATS_NUMBER * _statsUnitsPerChartValue;
+    const inputStatsValuesNumber = _expectedStatsNumber * _statsUnitsPerChartValue;
     const statsValues = [];
 
     _sortedProvidersIds.forEach(key => {
@@ -210,17 +247,8 @@ export default Component.extend({
    * Chart time period
    * @type {Ember.ComputedProperty<Array<any>>}
    */
-  _timePeriod: computed('timeUnit', function () {
-    const timeUnit = this.get('timeUnit');
-    switch (timeUnit) {
-      case 'minute':
-        return [60 / EXPECTED_STATS_NUMBER, 'seconds'];
-      case 'hour':
-        return [60 / EXPECTED_STATS_NUMBER, 'minutes'];      
-      default:
-      case 'day':
-        return [24 / EXPECTED_STATS_NUMBER, 'hours'];
-    }
+  _timePeriod: computed('_expectedStatsNumber', function () {
+    return this._getTimePeriodForUnit(this.get('timeUnit'));
   }),
   
   /**
@@ -233,6 +261,8 @@ export default Component.extend({
         return 'HH:mm';
       case 'day':
         return 'DD/MM HH:mm';
+      case 'month':
+        return 'DD/MM';
       default:
         return 'HH:mm:ss';
     }
@@ -290,12 +320,14 @@ export default Component.extend({
       _sortedProvidersIds,
       providersColors,
       providers,
+      _expectedStatsNumber,
     } = this.getProperties(
       '_statsValues',
       '_chartValues',
       '_sortedProvidersIds',
       'providersColors',
-      'providers'
+      'providers',
+      '_expectedStatsNumber'
     );
     // clearing out old chart values
     _chartValues.forEach(providerValues => {
@@ -308,13 +340,13 @@ export default Component.extend({
       _chartValues.push([]);
     }
     // calculating new chart values
-    const valuesSumArray = _.times(EXPECTED_STATS_NUMBER, _.constant(0));
+    const valuesSumArray = _.times(_expectedStatsNumber, _.constant(0));
     _statsValues.slice(0).reverse().forEach((providerValues, index) => {
       providerValues.forEach((value, index2) => valuesSumArray[index2] += value);
       _chartValues[_chartValues.length - index - 1].push(...(valuesSumArray));
     });
     // creating tooltips
-    const tooltipElements = _.range(EXPECTED_STATS_NUMBER).map((index) => {
+    const tooltipElements = _.range(_expectedStatsNumber).map((index) => {
       return _sortedProvidersIds.map((providerId, providerIndex) => {
         const provider =
           _.find(providers, (provider) => provider.get('id') === providerId) || {};
@@ -331,7 +363,7 @@ export default Component.extend({
     // setting colors
     const customCss = _sortedProvidersIds.map((providerId) => {
       const color = providersColors[providerId];
-      return _.times(EXPECTED_STATS_NUMBER, _.constant({
+      return _.times(_expectedStatsNumber, _.constant({
         line: {
           stroke: color,
         },
@@ -345,7 +377,7 @@ export default Component.extend({
     });
     // creating chart data object
     return {
-      labels: _.range(1, EXPECTED_STATS_NUMBER + 1).reverse()
+      labels: _.range(1, _expectedStatsNumber + 1).reverse()
         .map(n => this._getChartLabel(n)),
       series: _chartValues.map((providerValues) => ({
         data: providerValues,
@@ -399,7 +431,7 @@ export default Component.extend({
       '_lastUpdateTime',
       '_timeFormat',
       '_timePeriod');
-    return moment(_lastUpdateTime)
+    return moment.unix(_lastUpdateTime)
       .subtract(offset * _timePeriod[0], _timePeriod[1])
       .format(_timeFormat);
   },
@@ -427,5 +459,59 @@ export default Component.extend({
     const timeSinceLastStat = transferTime - timePeriodInSec * statTimeIndex;
     const timeDivider = Math.min(Math.max(1, timeSinceLastStat), timePeriodInSec);
     return statValue / timeDivider;
-  }
+  },
+
+  /**
+   * Chart time period
+   * @returns {Array<any>}
+   */
+  _getTimePeriodForUnit(unit) {
+    const _expectedStatsNumber = this._getExpectedStatsNumberForUnit(unit);
+    switch (unit) {
+      case 'month':
+        return [30 / _expectedStatsNumber, 'days'];
+      case 'day':
+        return [24 / _expectedStatsNumber, 'hours'];
+      case 'hour':
+        return [60 / _expectedStatsNumber, 'minutes'];  
+      default:
+        return [60 / _expectedStatsNumber, 'seconds'];      
+    }
+  },
+
+  /**
+   * Expected stats number (number of chart points).
+   * @returns {Ember.ComputedProperty<number>}
+   */
+  _getExpectedStatsNumberForUnit(unit) {
+    switch (unit) {
+      case 'month':
+        return 15;
+      default:
+        return 12;
+    }
+  },
+
+  /**
+   * Return preffered time unit for displaying transfer
+   * @returns {string}
+   */
+  // _getPrefferedUnit() {
+  //   const {
+  //     _transferStartTime,
+  //     _lastUpdateTime,
+  //   } = this.getProperties('_transferStartTime', '_lastUpdateTime');
+  //   const transferTime = _lastUpdateTime - _transferStartTime;
+  //   let prefferedUnit;
+  //   UNITS.slice(0).forEach(unit => {
+  //     if (!prefferedUnit) {
+  //       const period = this._getTimePeriodForUnit(unit);
+  //       const periodInSeconds = moment.duration(_period[0], _period[1]).asSeconds();
+  //       if (transferTime > periodInSeconds) {
+  //         prefferedUnit = unit;
+  //       }
+  //     }
+  //   });
+  //   return prefferedUnit || 'minute';
+  // }
 });

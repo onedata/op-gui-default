@@ -232,11 +232,10 @@ export default Component.extend({
       }
       const scaledValues = [];
       for (let i = 0; i < values.length; i += _statsUnitsPerChartValue) {
-        let singleChartStat = 0;
-        for (let j = 0; j < _statsUnitsPerChartValue; j++) {
-          singleChartStat += values[i + j];
-        }
-        scaledValues.push(this._scaleStatValue(singleChartStat, scaledValues.length));
+        scaledValues.push(this._scaleStatValue(
+          values.slice(i, i + _statsUnitsPerChartValue),
+          scaledValues.length
+        ));
       }
       statsValues.push(scaledValues.reverse());
     });
@@ -438,11 +437,11 @@ export default Component.extend({
 
   /**
    * Calculates throughput value for given bytes number and time step index
-   * @param {number} statValue transfered bytes
+   * @param {Array<number>} statValue transfered bytes/s for chart value
    * @param {number} statTimeIndex time step index
    * @returns {number} average throughput in bytes per second
    */
-  _scaleStatValue(statValue, statTimeIndex) {
+  _scaleStatValue(statValues, statTimeIndex) {
     const {
       _timePeriod,
       _statsTimestamp,
@@ -457,8 +456,18 @@ export default Component.extend({
     const timePeriodInSec =
       moment.duration(_timePeriod[0], _timePeriod[1]).asSeconds();
     const timeSinceLastStat = transferTime - timePeriodInSec * statTimeIndex;
-    const timeDivider = Math.min(Math.max(1, timeSinceLastStat), timePeriodInSec);
-    return statValue / timeDivider;
+    const chartValueTime = Math.min(Math.max(1, timeSinceLastStat), timePeriodInSec);
+    const oneStatTime = timePeriodInSec / statValues.length;
+    let bytes = 0;
+    const completeStatsNumber = Math.floor(chartValueTime / oneStatTime);
+    for (let i = 0; i < completeStatsNumber; i++) {
+      bytes += statValues[i] * oneStatTime;
+    }
+    const timeRemainder = chartValueTime % oneStatTime;
+    if (timeRemainder) {
+      bytes += statValues[completeStatsNumber] * timeRemainder;
+    }
+    return bytes / chartValueTime;
   },
 
   /**

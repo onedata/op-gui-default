@@ -32,7 +32,7 @@ export default Component.extend(ClickOutside, {
   
   /**
    * @virtual
-   * @type {Array<Provider>}
+   * @type {Array<PromiseObject<Provider>>}
    */
   providers: undefined,
   
@@ -41,7 +41,7 @@ export default Component.extend(ClickOutside, {
    * @type {Provider}
    */
   sourceProvider: undefined,
-  
+    
   /**
    * @virtual
    * @type {Function}
@@ -54,6 +54,9 @@ export default Component.extend(ClickOutside, {
    */
   close: () => {},
   
+  providersSorting: ['name'],
+  providersSorted: computed.sort('providers', 'providersSorting'),
+  
   bindSelector: computed('sourceProvider.id', function () {
     return `.provider-row-${this.get('sourceProvider.id')} .btn-migrate`;
   }),
@@ -61,17 +64,17 @@ export default Component.extend(ClickOutside, {
   /**
    * @type {Array<Provider>|undefined}
    */
-  visibleProviders: computed('providers.[]', 'sourceProvider', function () {
+  visibleProviders: computed('providersSorted.[]', 'sourceProvider', function () {
     const {
-      providers,
+      providersSorted,
       sourceProvider,
     } = this.getProperties(
-       'providers',
+       'providersSorted',
        'sourceProvider'
     );
-    if (providers || sourceProvider) {
+    if (providersSorted && sourceProvider) {
       const source = get(sourceProvider, 'id');
-      return providers.filter(p => get(p, 'id') !== source);
+      return providersSorted.filter(p => get(p, 'id') !== source);
     }
   }),
   

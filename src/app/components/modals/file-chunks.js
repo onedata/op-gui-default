@@ -15,6 +15,7 @@ import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 import _ from 'lodash';
 
 const {
+  A,
   Component,
   computed,
   observer,
@@ -96,10 +97,10 @@ export default Component.extend(PromiseLoadingMixin, {
   transfersLoading: undefined,
   
   /**
-   * Flag set to true if migration has been started by used but request is not completed yet
-   * @type {boolean}
+   * List of provider ids for which migration was invoked, but not yet started
+   * @type {Ember.Array<string>}
    */
-  migrationInvoked: false,
+  providerMigrationsInvoked: undefined,
   
   fileBlocksSorting: ['getProvider.name'],
   
@@ -303,6 +304,8 @@ export default Component.extend(PromiseLoadingMixin, {
      * On open, `file` property can change.
      */
     open() {
+      this.set('providerMigrationsInvoked', A([]));
+      
       const transfersUpdater = this._initTransfersUpdater();
       this.set('transfersLoading', true);
       transfersUpdater.fetchCurrent()
@@ -333,6 +336,7 @@ export default Component.extend(PromiseLoadingMixin, {
         fileBlocks: null,
         chunksModalError: null,
         migrationSource: null,
+        providerMigrationsInvoked: undefined,
       });
       this.closedAction();
     },
@@ -365,24 +369,33 @@ export default Component.extend(PromiseLoadingMixin, {
      */
     startMigration(file, source, destination) {
       this.set('migrationSource', null);
-      this.set('migrationInvoked', true);
-      return this.get('store')
+      const transfersUpdater = this.get('transfersUpdater');
+      const providerMigrationsInvoked = this.get('providerMigrationsInvoked');
+      providerMigrationsInvoked.pushObject(source);
+      const transfer = this.get('store')
         .createRecord('transfer', {
           file,
           migration: true,
           migrationSource: source,
           destination: destination,
-        })
-        .save()
-        .then(( /* transfer */ ) => {
-          this._startTransfersUpdater();
-        })
+        });
+      transfer.save()
         // TODO: test it and make better fail messages
         .catch(error => {
+          transfer.deleteRecord();
           this.set('chunksModalError', 'Failed to start file migration: ' + error.message);
-          this._stopTransfersUpdater();
+          this.observeTransfersCount();
+          throw error;
         })
-        .finally(() => this.set('migrationInvoked', false));
+        .then(( /* transfer */ ) => {
+          return transfersUpdater.fetchCurrent();
+        })
+        .then(() => {
+          return this._startTransfersUpdater();
+        })
+        .finally(() => {
+          providerMigrationsInvoked.removeObject(source);
+        });
     },
 
     /**
@@ -392,20 +405,25 @@ export default Component.extend(PromiseLoadingMixin, {
      */
     startReplication(destination) {
       const file = this.get('file');
-      this._startTransfersUpdater();
-      this.get('store')
+      const transfersUpdater = this.get('transfersUpdater');
+      const transfer = this.get('store')
         .createRecord('transfer', {
           file,
           migration: false,
           destination,
-        })
-        .save()
-        .then(( /* transfer */ ) => {
-          this._startTransfersUpdater();
-        })
+        });
+      transfer.save()
         .catch(error => {
+          transfer.deleteRecord();
           this.set('chunksModalError', 'Failed to start file replication: ' + error.message);
-          this._stopTransfersUpdater();
+          this.observeTransfersCount();
+          throw error;
+        })
+        .then(( /* transfer */ ) => {
+          return transfersUpdater.fetchCurrent();
+        })
+        .then(() => {
+          return this._startTransfersUpdater();
         });
     },
   },

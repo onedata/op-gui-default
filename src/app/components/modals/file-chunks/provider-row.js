@@ -45,6 +45,7 @@ export default Component.extend({
   /**
    * @virtual
    * @type {Function}
+   * @returns {Promise<Transfer>}
    */
   startReplication: () => {},
 

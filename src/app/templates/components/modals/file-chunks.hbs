@@ -52,7 +52,7 @@
                       openMigrationOptions=(action "openMigrationOptions")
                       startReplication=(action "startReplication")
                       fileTransfers=fileTransfers
-                      migrationInvoked=migrationInvoked
+                      migrationInvoked=(contains fb.provider providerMigrationsInvoked)
                     }}
                   {{/each}}
                 </tbody>
@@ -63,7 +63,7 @@
                   {{modals/file-chunks/migrate-popover
                     startMigration=(action "startMigration" file)
                     sourceProvider=migrationSource
-                    providers=providersSorted
+                    providers=providers
                     close=(action (mut migrationSource null))
                   }}
                 </div>

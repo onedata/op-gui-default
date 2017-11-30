@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object'; 
 
 const {
   computed,
@@ -21,11 +22,12 @@ export default DS.Model.extend({
     // TODO: context dependency
     
     function() {
-      let store = this.get('store');
-      return store.queryRecord('system-provider', {
+      const store = this.get('store');
+      const promise = store.queryRecord('system-provider', {
         id: this.get('provider'),
         context: {}
       });
+      return PromiseObject.create({ promise });
     }
   ),
 

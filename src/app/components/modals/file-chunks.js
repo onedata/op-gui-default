@@ -12,6 +12,8 @@ import SpaceTransfersUpdater from 'op-worker-gui/utils/space-transfers-updater';
 import Looper from 'ember-cli-onedata-common/utils/looper';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 
+import _ from 'lodash';
+
 const {
   Component,
   computed,
@@ -87,7 +89,8 @@ export default Component.extend(PromiseLoadingMixin, {
   transfersUpdater: undefined,
 
   /**
-   * If true, first time loading data of transfers after modal open
+   * If true, first time loading data of transfers after modal open.
+   * Changed in open action.
    * @type {boolean}
    */
   transfersLoading: undefined,
@@ -101,11 +104,41 @@ export default Component.extend(PromiseLoadingMixin, {
   fileBlocksSorting: ['getProvider.name'],
   
   //#endregion
+  
+  fileBlocksSorted: computed('fileBlocks', 'providers.@each.name',
+    function () {
+      const providers = this.get('providers');
+      if (providers && providers.every(p => get(p, 'name') != null)) {
+        return _.sortBy(this.get('fileBlocks').toArray(), fb => get(fb, 'getProvider.name'));
+      }
+    }
+  ),
 
-  fileBlocksSorted: computed.sort('fileBlocks', 'fileBlocksSorting'),
-
-  providersSorted: computed.mapBy('fileBlocksSorted', 'getProvider'),
-
+  /**
+   * @type {Array<PromiseObject<Provider>>}
+   */
+  providers: computed.mapBy('fileBlocks', 'getProvider'),
+  
+  /**
+   * True if all data for displaying table are loaded
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  tableDataLoaded: computed(
+    'fileBlocks.@each.isLoading',
+    'providers.@each.isLoaded',
+    'transfersLoading',
+    function () {
+      const fileBlocks = this.get('fileBlocks');
+      if (fileBlocks && fileBlocks.every(fb => !get(fb, 'isLoading'))) {
+        const providers = this.get('providers');
+        if (providers && providers.every(p => get(p, 'isLoaded'))) {
+          return this.get('transfersLoading') === false;
+        }
+      }
+      return false;
+    }
+  ),
+  
   /**
    * True if file is empty
    * @type {Ember.ComputedProperty<boolean>}

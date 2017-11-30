@@ -28,7 +28,7 @@
 
           {{else}}
 
-            {{#if (and fileBlocksSorted (not transfersLoading))}}
+            {{#if tableDataLoaded}}
               {{!-- NOTE: there is an assumption that every fb has other provider --}}
               <table class="table file-blocks-table">
                 <thead>

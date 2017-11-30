@@ -227,8 +227,7 @@ export default Component.extend({
     _sortedProvidersIds.forEach(key => {
       let values = _stats[key];
       if (values.length < inputStatsValuesNumber) {
-        values = _.range(inputStatsValuesNumber - values.length).map(() => 0)
-          .concat(values);
+        values = values.concat(_.range(inputStatsValuesNumber - values.length).map(() => 0));
       }
       const scaledValues = [];
       for (let i = 0; i < values.length; i += _statsUnitsPerChartValue) {

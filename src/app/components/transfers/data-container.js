@@ -75,7 +75,7 @@ export default Component.extend({
   
   /**
    * Collection of Transfer model for current
-   * (active, invalidating or scheduled) transfers
+   * (active, finalizing or scheduled) transfers
    * @type {Ember.ComputedProperty<Ember.Array<Transfer>>}
    */
   currentTransfers: computed.reads('currentTransferList.list.content'),

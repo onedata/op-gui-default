@@ -20,7 +20,7 @@ export default Model.extend(TransferRuntimeMixin, {
    * One of:
    * - scheduled
    * - active
-   * - invalidating
+   * - finalizing
    * - skipped
    * - completed
    * - cancelled
@@ -117,6 +117,6 @@ export default Model.extend(TransferRuntimeMixin, {
   transferredFiles: computed.reads('currentStat.transferredFiles'),
   
   isCurrent: computed('status', function () {
-    return _.includes(['invalidating', 'active', 'scheduled'], this.get('status'));
+    return _.includes(['finalizing', 'active', 'scheduled'], this.get('status'));
   }),
 });

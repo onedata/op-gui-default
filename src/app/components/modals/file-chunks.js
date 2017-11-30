@@ -116,6 +116,13 @@ export default Component.extend(PromiseLoadingMixin, {
   ),
 
   /**
+   * @type {Ember.ComputedProperty<string>}
+   */
+  modalSize: computed('file.isDir', function () {
+    return this.get('file.isDir') ? 'md' : 'lg';
+  }),
+
+  /**
    * @type {Array<PromiseObject<Provider>>}
    */
   providers: computed.mapBy('fileBlocks', 'getProvider'),
@@ -412,7 +419,7 @@ export default Component.extend(PromiseLoadingMixin, {
           migration: false,
           destination,
         });
-      transfer.save()
+      return transfer.save()
         .catch(error => {
           transfer.deleteRecord();
           this.set('chunksModalError', 'Failed to start file replication: ' + error.message);

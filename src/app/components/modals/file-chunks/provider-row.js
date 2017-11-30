@@ -93,20 +93,24 @@ export default Component.extend({
     'isComplete',
     'currentProviderSupport',
     'transferLocked',
+    'file.isDir',
     function () {
       const {
         neverSynchronized,
         isComplete,
         currentProviderSupport,
         transferLocked,
+        file,
       } = this.getProperties(
         'neverSynchronized',
         'isComplete',
         'currentProviderSupport',
-        'transferLocked'
+        'transferLocked',
+        'file'
       );
-      return currentProviderSupport && (neverSynchronized || !isComplete) &&
-        !transferLocked;
+      const fileConditions = file.get('isDir') ?
+        true : neverSynchronized || !isComplete;
+      return currentProviderSupport && fileConditions && !transferLocked;
     }
   ),
   
@@ -120,19 +124,24 @@ export default Component.extend({
     'isEmpty',
     'currentProviderSupport',
     'transferLocked',
+    'file.isDir',
     function () {
       const {
         neverSynchronized,
         isEmpty,
         currentProviderSupport,
         transferLocked,
+        file,
       } = this.getProperties(
         'neverSynchronized',
         'isEmpty',
         'currentProviderSupport',
-        'transferLocked'
+        'transferLocked',
+        'file'
       );
-      return currentProviderSupport && !neverSynchronized && !isEmpty && !transferLocked;
+      const fileConditions = file.get('isDir') ?
+        true : !neverSynchronized && !isEmpty;
+      return currentProviderSupport && fileConditions && !transferLocked;
     }
   ),
 

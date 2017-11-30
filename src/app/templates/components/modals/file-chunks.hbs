@@ -1,4 +1,4 @@
-{{#bs-modal open=open body=false footer=false size="lg"
+{{#bs-modal open=open body=false footer=false size=modalSize
     id=modalId
     title=(t "components.dataFilesListToolbar.fileChunksModal.title")
     openAction=(action "open")
@@ -38,9 +38,11 @@
                   <th class="replica-options">
                     {{!-- FIXME: empty table header for actions? --}}
                   </th>
-                  <th>
-                    {{t "components.dataFilesListToolbar.fileChunksModal.dataDitribution"}}
-                  </th>
+                  {{#if (not file.isDir)}}
+                    <th>
+                      {{t "components.dataFilesListToolbar.fileChunksModal.dataDitribution"}}
+                    </th>
+                  {{/if}}
                 </thead>
                 <tbody>
                   {{#each fileBlocksSorted as |fb|}}

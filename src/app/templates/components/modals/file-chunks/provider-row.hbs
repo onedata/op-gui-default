@@ -23,18 +23,20 @@
     </a>
   </div>
 </td>
-<td class="chunks">
-  {{#if neverSynchronized}}
-    <div class="file-chunks never-synchronized">
-      <span>
-        {{t "components.dataFilesListToolbar.fileChunksModal.neverSynchronized"}}
-      </span>
-    </div>
-    {{bs-tooltip
-      placement="bottom"
-      title=(t "components.dataFilesListToolbar.fileChunksModal.neverSynchronizedHint")
-    }}
-  {{else}}
-    {{file-chunks-bar file=file fileBlocks=fileDistribution}}
-  {{/if}}
-</td>
+{{#if (not file.isDir)}}
+  <td class="chunks">
+    {{#if neverSynchronized}}
+      <div class="file-chunks never-synchronized">
+        <span>
+          {{t "components.dataFilesListToolbar.fileChunksModal.neverSynchronized"}}
+        </span>
+      </div>
+      {{bs-tooltip
+        placement="bottom"
+        title=(t "components.dataFilesListToolbar.fileChunksModal.neverSynchronizedHint")
+      }}
+    {{else}}
+      {{file-chunks-bar file=file fileBlocks=fileDistribution}}
+    {{/if}}
+  </td>
+{{/if}}

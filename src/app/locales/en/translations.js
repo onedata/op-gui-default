@@ -380,7 +380,7 @@ export default {
         copy: 'Copy element',
         cut: 'Cut element',
         remove: 'Remove element',
-        chunks: 'Show file distribution',
+        chunks: 'Show data distribution',
         metadata: 'Edit metadata',
       },
       renameFileModal: {
@@ -413,7 +413,7 @@ export default {
         text: 'Enter new file permissions code:'
       },
       fileChunksModal: {
-        title: 'File distribution',
+        title: 'Data distribution',
         text: 'Distribution of file blocks among providers for file',
         fileIsEmpty: 'This file has no content.',
         neverSynchronized: 'Never synchronized',

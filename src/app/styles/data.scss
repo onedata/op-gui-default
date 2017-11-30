@@ -256,7 +256,7 @@
 
 #file-chunks-modal {
   @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
-    .modal-dialog {
+    .modal-dialog.modal-lg {
       width: initial;
       margin: 0px 10px;
     }
@@ -295,6 +295,7 @@
 }
 
 .file-blocks-table {
+  margin-bottom: 0;
   th:first-of-type {
     padding-right: 20px;
   }
@@ -376,9 +377,9 @@
   }
   .replica-btns {
     .btn-group {
-      margin-top: -0.1em;
       white-space: nowrap;
       font-size: 170%;
+      line-height: 0;
       a {
         text-decoration: none;
         &.toolbar-icon.disabled {

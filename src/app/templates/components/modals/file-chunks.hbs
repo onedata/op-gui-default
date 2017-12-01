@@ -30,33 +30,44 @@
 
             {{#if tableDataLoaded}}
               {{!-- NOTE: there is an assumption that every fb has other provider --}}
-              <table class="table file-blocks-table">
-                <thead>
-                  <th>
-                    {{t "components.dataFilesListToolbar.fileChunksModal.providerName"}}
-                  </th>
-                  <th class="replica-options">
-                    {{!-- FIXME: empty table header for actions? --}}
-                  </th>
-                  <th>
-                    {{t "components.dataFilesListToolbar.fileChunksModal.dataDitribution"}}
-                  </th>
-                </thead>
-                <tbody>
-                  {{#each fileBlocksSorted as |fb|}}
-                    {{modals/file-chunks/provider-row
-                      class=(concat "provider-row-" fb.provider)
-                      fileDistribution=fb
-                      currentProviderSupport=currentProviderSupport
-                      file=file
-                      openMigrationOptions=(action "openMigrationOptions")
-                      startReplication=(action "startReplication")
-                      fileTransfers=fileTransfers
-                      migrationInvoked=(contains fb.provider providerMigrationsInvoked)
-                    }}
-                  {{/each}}
-                </tbody>
-              </table>
+              <div>
+                <table class="table file-blocks-table">
+                  <thead>
+                    <th>
+                      {{t "components.dataFilesListToolbar.fileChunksModal.providerName"}}
+                    </th>
+                    <th class="replica-options">
+                      {{!-- FIXME: empty table header for actions? --}}
+                    </th>
+                    <th>
+                      {{t "components.dataFilesListToolbar.fileChunksModal.dataDitribution"}}
+                    </th>
+                  </thead>
+                  <tbody>
+                    {{#each fileBlocksSorted as |fb|}}
+                      {{modals/file-chunks/provider-row
+                        class=(concat "provider-row-" fb.provider)
+                        fileDistribution=fb
+                        currentProviderSupport=currentProviderSupport
+                        file=file
+                        openMigrationOptions=(action "openMigrationOptions")
+                        startReplication=(action "startReplication")
+                        fileTransfers=fileTransfers
+                        migrationInvoked=(contains fb.provider providerMigrationsInvoked)
+                      }}
+                    {{/each}}
+                  </tbody>
+                </table>
+              </div>
+              {{#if (and fileTransfers fileTransfers.length)}}
+                <div class="row">
+                  <div class="alert alert-info">
+                    {{t "components.dataFilesListToolbar.fileChunksModal.currentlyTransferredText"}}
+                    &ndash;
+                    {{#link-to 'onedata.transfers'}}{{t "components.dataFilesListToolbar.fileChunksModal.currentlyTransferredLink"}}{{/link-to}}.
+                  </div>
+                </div>
+              {{/if}}
               
               {{#if migrationSource}}
                 <div class="open">

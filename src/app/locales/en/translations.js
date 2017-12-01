@@ -417,8 +417,9 @@ export default {
         text: 'Distribution of file blocks among providers for file',
         fileIsEmpty: 'This file has no content.',
         neverSynchronized: 'Never synchronized',
-        neverSynchronizedHint: 'This file was never read or modified on this ' +
-          'provider. File blocks will be synchronized when needed.',
+        neverSynchronizedHint: 'This file was never read or modified on selected ' +
+          'provider. File blocks will be synchronized when needed.  ' +
+          'You can also manually replicate the file to selected provider',
         providerName: 'Provider',
         dataDitribution: 'File blocks',
         migrateFileDataInto: 'Migrate file data into',
@@ -427,6 +428,9 @@ export default {
         noCurrentProviderSupport: 'This file is on a space that is not ' +
           'supported by current provider thus you cannot start data replication ' +
           'or migration.',
+        currentlyTransferredText: 'This file is currently transferred between ' +
+          'providers',
+        currentlyTransferredLink: 'see ongoing transfers on transfers tab',
         providerRow: {
           migrationStart: 'Migrate this file to other provider...',
           migrationInProgress: 'The file is currently migrated from selected provider',
@@ -485,7 +489,7 @@ export default {
       completedTransfers: 'History of transfers',
       noActiveTransfers: 'No data is transferred currently',
       initializingTransfers: 'Initializing transfers...',
-      notSupported: 'Cannot list transfers of selected space becaus it is not ' +
+      notSupported: 'Cannot list transfers of selected space because it is not ' +
         'supported by current provider',
       in: 'Input',
       out: 'Output',

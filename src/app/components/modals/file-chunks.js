@@ -25,7 +25,8 @@ const {
   assert,
 } = Ember;
 
-const DISTRIBUTION_POLLING_TIME = 1000;
+const SLOW_POLLING_TIME = 10 * 1000;
+const FAST_POLLING_TIME = 2 * 1000;
 
 export default Component.extend(PromiseLoadingMixin, {
   store: service(),
@@ -179,11 +180,11 @@ export default Component.extend(PromiseLoadingMixin, {
     const fileTransfers = this.get('fileTransfers');
     if (fileTransfers) {
       if (get(fileTransfers, 'length') === 0) {
-        this._stopTransfersUpdater();
-        this._stopDistributionUpdater();
+        this._slowTransfersUpdater();
+        this._slowDistributionUpdater();
       } else {
-        this._startTransfersUpdater();
-        this._startDistributionUpdater();
+        this._fastTransfersUpdater();
+        this._fastDistributionUpdater();
       }
     }
   }),
@@ -198,21 +199,22 @@ export default Component.extend(PromiseLoadingMixin, {
     return this.set('transfersUpdater', SpaceTransfersUpdater.create({
       store,
       space,
-      isEnabled: false,
+      isEnabled: true,
       currentEnabled: true,
       completedEnabled: false,
+      pollingTimeCurrent: SLOW_POLLING_TIME,
     }));
   },
 
-  _startTransfersUpdater() {
-    if (this.get('transfersUpdater.isEnabled') !== true) {
-      this.set('transfersUpdater.isEnabled', true);
+  _fastTransfersUpdater() {
+    if (this.get('transfersUpdater.pollingTimeCurrent') !== FAST_POLLING_TIME) {
+      this.set('transfersUpdater.pollingTimeCurrent', FAST_POLLING_TIME);
     }
   },
 
-  _stopTransfersUpdater() {
-    if (this.get('transfersUpdater.isEnabled') === true) {
-      this.set('transfersUpdater.isEnabled', false);
+  _slowTransfersUpdater() {
+    if (this.get('transfersUpdater.pollingTimeCurrent') !== SLOW_POLLING_TIME) {
+      this.set('transfersUpdater.pollingTimeCurrent', SLOW_POLLING_TIME);
     }
   },
   
@@ -233,6 +235,7 @@ export default Component.extend(PromiseLoadingMixin, {
    * @returns {Promise<Array<FileDistribution>>}
    */
   fetchDistribution() {
+    console.log('component:modals/file-chunks: fetchDistribution');
     const fileId = this.get('file.id');
     this.get('store').query('file-distribution', { file: fileId }).then(
       (fbs) => {
@@ -257,6 +260,7 @@ export default Component.extend(PromiseLoadingMixin, {
     );
     distributionUpdater = Looper.create({
       immediate: true,
+      interval: SLOW_POLLING_TIME,
     });
     distributionUpdater
       .on('tick', () =>
@@ -265,15 +269,15 @@ export default Component.extend(PromiseLoadingMixin, {
     return this.set('distributionUpdater', distributionUpdater);
   },
 
-  _startDistributionUpdater() {
-    if (this.get('distributionUpdater.interval') == null) {
-      this.set('distributionUpdater.interval', DISTRIBUTION_POLLING_TIME);
+  _fastDistributionUpdater() {
+    if (this.get('distributionUpdater.interval') !== FAST_POLLING_TIME) {
+      this.set('distributionUpdater.interval', FAST_POLLING_TIME);
     }
   },
 
-  _stopDistributionUpdater() {
-    if (this.get('distributionUpdater.interval') != null) {
-      this.set('distributionUpdater.interval', null);
+  _slowDistributionUpdater() {
+    if (this.get('distributionUpdater.interval') !== SLOW_POLLING_TIME) {
+      this.set('distributionUpdater.interval', SLOW_POLLING_TIME);
     }
   },
   
@@ -379,7 +383,7 @@ export default Component.extend(PromiseLoadingMixin, {
           migrationSource: source,
           destination: destination,
         });
-      transfer.save()
+      return transfer.save()
         // TODO: test it and make better fail messages
         .catch(error => {
           transfer.deleteRecord();
@@ -391,7 +395,7 @@ export default Component.extend(PromiseLoadingMixin, {
           return transfersUpdater.fetchCurrent();
         })
         .then(() => {
-          return this._startTransfersUpdater();
+          return this._fastTransfersUpdater();
         })
         .finally(() => {
           providerMigrationsInvoked.removeObject(source);
@@ -412,7 +416,7 @@ export default Component.extend(PromiseLoadingMixin, {
           migration: false,
           destination,
         });
-      transfer.save()
+      return transfer.save()
         .catch(error => {
           transfer.deleteRecord();
           this.set('chunksModalError', 'Failed to start file replication: ' + error.message);
@@ -423,7 +427,7 @@ export default Component.extend(PromiseLoadingMixin, {
           return transfersUpdater.fetchCurrent();
         })
         .then(() => {
-          return this._startTransfersUpdater();
+          return this._fastTransfersUpdater();
         });
     },
   },

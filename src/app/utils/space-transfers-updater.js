@@ -20,8 +20,8 @@ const {
 
 // FIXME: 
 
-const UPDATE_CURRENT_INTERVAL = 2 * 1000;
-const UPDATE_COMPLETED_INTERVAL = 10 * 1000;
+const DEFAULT_CURRENT_TIME = 2 * 1000;
+const DEFAULT_COMPLETED_TIME = 10 * 1000;
 
 import Looper from 'ember-cli-onedata-common/utils/looper';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
@@ -50,6 +50,18 @@ export default EmberObject.extend({
    */
   isEnabled: false,
 
+  /**
+   * Polling interval (ms) used for fetching current transfers
+   * @type {number}
+   */
+  pollingTimeCurrent: DEFAULT_CURRENT_TIME,
+  
+  /**
+   * Polling interval (ms) used for fetching completed transfers
+   * @type {number}
+   */
+  pollingTimeCompleted: DEFAULT_COMPLETED_TIME,
+  
   /**
    * @type {boolean}
    */
@@ -173,26 +185,40 @@ export default EmberObject.extend({
     });
   },
 
-  _toggleWatchers: observer('_currentEnabled', '_completedEnabled', function () {
-    // this method is invoked from debounce, so it's "this" can be destroyed
-    if (this.isDestroyed === false) {
-      const {
+  _toggleWatchers: observer(
+    '_currentEnabled',
+    '_completedEnabled',
+    'pollingTimeCurrent',
+    'pollingTimeCompleted',
+    function () {
+      // this method is invoked from debounce, so it's "this" can be destroyed
+      if (this.isDestroyed === false) {
+        const {
         _currentEnabled,
-        _completedEnabled,
-        _currentWatcher,
-        _completedWatcher,
+          _completedEnabled,
+          _currentWatcher,
+          _completedWatcher,
+          pollingTimeCurrent,
+          pollingTimeCompleted,
       } = this.getProperties(
-        '_currentEnabled',
-        '_completedEnabled',
-        '_currentWatcher',
-        '_completedWatcher'
-      );
-      
-      set(_currentWatcher, 'interval', _currentEnabled ? UPDATE_CURRENT_INTERVAL : null);
-      set(_completedWatcher, 'interval', _completedEnabled ? UPDATE_COMPLETED_INTERVAL : null);
-    }
-  }),
+            '_currentEnabled',
+            '_completedEnabled',
+            '_currentWatcher',
+            '_completedWatcher',
+            'pollingTimeCurrent',
+            'pollingTimeCompleted'
+          );
 
+        set(_currentWatcher, 'interval', _currentEnabled ? pollingTimeCurrent : null);
+        set(_completedWatcher, 'interval', _completedEnabled ? pollingTimeCompleted : null);
+      }
+    }),
+
+  /**
+   * Function invoked when current transfers should be updated by polling timer
+   * @return {Promise<Array<TransferCurrentStat>>} resolves with current stats
+   *    of updated current transfers
+   */
   fetchCurrent() {
     console.debug('util:space-transfers-updater: fetchCurrent');
     

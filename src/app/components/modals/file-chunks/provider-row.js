@@ -68,6 +68,13 @@ export default Component.extend({
    */
   migrationInvoked: false,
   
+  /**
+   * If true, transfer icons (migration, replication) for actions and status
+   * are rendered
+   * @type {boolean}
+   */
+  renderTransferIcons: true,
+  
   //#endregion
   
   /**

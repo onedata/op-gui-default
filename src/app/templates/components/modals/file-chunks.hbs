@@ -28,7 +28,20 @@
 
           {{else}}
 
+            {{#if (eq currentProviderSupport false)}}
+              <div class="alert alert-info">
+                {{t "components.dataFilesListToolbar.fileChunksModal.noCurrentProviderSupport"}}
+              </div>
+            {{else}}
+              {{#if (eq onlySingleProviderSupport true)}}
+                <div class="alert alert-info">
+                  {{t "components.dataFilesListToolbar.fileChunksModal.onlySingleProviderSupport"}}
+                </div>
+              {{/if}}
+            {{/if}}
+
             {{#if tableDataLoaded}}
+            
               {{!-- NOTE: there is an assumption that every fb has other provider --}}
               <div>
                 <table class="table file-blocks-table">
@@ -36,9 +49,11 @@
                     <th>
                       {{t "components.dataFilesListToolbar.fileChunksModal.providerName"}}
                     </th>
-                    <th class="replica-options">
-                      {{!-- FIXME: empty table header for actions? --}}
-                    </th>
+                    {{#if (eq onlySingleProviderSupport false)}}
+                      <th class="replica-options">
+                        {{!-- FIXME: empty table header for actions? --}}
+                      </th>
+                    {{/if}}
                     <th>
                       {{t "components.dataFilesListToolbar.fileChunksModal.dataDitribution"}}
                     </th>
@@ -48,6 +63,7 @@
                       {{modals/file-chunks/provider-row
                         class=(concat "provider-row-" fb.provider)
                         fileDistribution=fb
+                        renderTransferIcons=(eq onlySingleProviderSupport false)
                         currentProviderSupport=currentProviderSupport
                         file=file
                         openMigrationOptions=(action "openMigrationOptions")
@@ -79,12 +95,7 @@
                   }}
                 </div>
               {{/if}}
-              
-              {{#if (not currentProviderSupport)}}
-                <div class="alert alert-warning">
-                  {{t "components.dataFilesListToolbar.fileChunksModal.noCurrentProviderSupport"}}
-                </div>
-              {{/if}}
+
             {{else}}
               <div class="one-row">
                 <div class="loading-throbber"></div>

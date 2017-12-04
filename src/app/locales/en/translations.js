@@ -425,9 +425,11 @@ export default {
         migrateFileDataInto: 'Migrate file data into',
         loading: 'Loading file distribution data...',
         error: 'File distribution table cannot be loaded due to an error',
-        noCurrentProviderSupport: 'This file is on a space that is not ' +
-          'supported by current provider thus you cannot start data replication ' +
-          'or migration.',
+        noCurrentProviderSupport: 'Current space is not supported by this ' + 
+          'provider, thus advanced data replication or migration features are ' + 
+          'not available here. To access them, visit one of the supporting providers.',
+        onlySingleProviderSupport: 'Current space is supported by only one provider, ' +
+          'thus advanced data replication or migration features are not available.',
         currentlyTransferredText: 'This file is currently transferred between ' +
           'providers',
         currentlyTransferredLink: 'see ongoing transfers on transfers tab',

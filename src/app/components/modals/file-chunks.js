@@ -107,6 +107,22 @@ export default Component.extend(PromiseLoadingMixin, {
   
   //#endregion
   
+  /**
+   * @type {Ember.ComputedProperty<boolean|undefined>} true if only one provider
+   *  supports this space; undefined if cannot resolve number of providers yet
+   *  (eg. loading)
+   */
+  onlySingleProviderSupport: computed(
+    'space.providerList.content.list.length',
+    function getSingleProviderSupport() {
+      /** @type {number|undefined} */
+      const length = this.get('space.providerList.content.list.length');
+      if (length != null) {
+        return length === 1;
+      }
+    }
+  ),
+  
   fileBlocksSorted: computed('fileBlocks', 'providers.@each.name',
     function () {
       const providers = this.get('providers');

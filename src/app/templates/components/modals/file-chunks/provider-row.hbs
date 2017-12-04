@@ -3,26 +3,26 @@
     {{providerName}}
   {{/truncated-string}}
 </td>
-<td class="replica-btns">
-  {{!-- FIXME: is: replication in progress / invalidation in progress / file already replicated --}}
-  <div class="btn-group">
-    {{!-- FIXME: maybe refactor - make separate component --}}
-    {{!-- FIXME: loading state --}}
-    {{!-- FIXME: get all transfers, check if file is present in them and check type of transfer (migration?) --}}
-    <a class={{concat migrateButtonClasses " btn-migrate"}}
-      {{action "openMigrationOptions" file providerId}}>
-      {{#one-icon icon="migrate"}}
-        {{bs-tooltip placement="top" title=migrateButtonTooltip}}
-      {{/one-icon}}
-    </a>
-    <a class={{concat replicateButtonClasses " btn-replicate"}}
-      {{action "startReplication" file providerId}}>
-      {{#one-icon icon="replicate"}}
-        {{bs-tooltip placement="top" title=replicateButtonTooltip}}
-      {{/one-icon}}
-    </a>
-  </div>
-</td>
+{{#if (eq renderTransferIcons true)}}
+  <td class="transfer-btns">
+    <div class="btn-group">
+      {{!-- FIXME: loading state --}}
+      {{!-- FIXME: get all transfers, check if file is present in them and check type of transfer (migration?) --}}
+      <a class={{concat migrateButtonClasses " btn-migrate"}}
+        {{action "openMigrationOptions" file providerId}}>
+        {{#one-icon icon="migrate"}}
+          {{bs-tooltip placement="top" title=migrateButtonTooltip}}
+        {{/one-icon}}
+      </a>
+      <a class={{concat replicateButtonClasses " btn-replicate"}}
+        {{action "startReplication" file providerId}}>
+        {{#one-icon icon="replicate"}}
+          {{bs-tooltip placement="top" title=replicateButtonTooltip}}
+        {{/one-icon}}
+      </a>
+    </div>
+  </td>
+{{/if}}
 <td class="chunks">
   {{#if neverSynchronized}}
     <div class="file-chunks never-synchronized">

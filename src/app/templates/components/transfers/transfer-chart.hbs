@@ -1,6 +1,6 @@
 <div class="row loadable-row">
 {{#loading-container isLoading=(not _statsLoaded)}}
-  {{chartist-chart data=_chartData options=_chartOptions type="line" class="hide-middle-x-labels"}}
+  {{chartist-chart data=_chartData options=_chartOptions type="line"}}
 {{/loading-container}}
 </div>
 {{#bs-button-group value=timeUnit type="radio" size="sm" class="pull-right"}}

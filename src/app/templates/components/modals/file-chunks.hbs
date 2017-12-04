@@ -1,4 +1,4 @@
-{{#bs-modal open=open body=false footer=false size="lg"
+{{#bs-modal open=open body=false footer=false size=modalSize
     id=modalId
     title=(t "components.dataFilesListToolbar.fileChunksModal.title")
     openAction=(action "open")
@@ -43,27 +43,26 @@
             {{#if tableDataLoaded}}
             
               {{!-- NOTE: there is an assumption that every fb has other provider --}}
-              <div>
+              <div class="row">
                 <table class="table file-blocks-table">
                   <thead>
                     <th>
                       {{t "components.dataFilesListToolbar.fileChunksModal.providerName"}}
                     </th>
                     {{#if (eq onlySingleProviderSupport false)}}
-                      <th class="replica-options">
-                        {{!-- FIXME: empty table header for actions? --}}
+                      <th class="replica-options"></th>
+                    {{/if}}
+                    {{#if (not file.isDir)}}
+                      <th>
+                        {{t "components.dataFilesListToolbar.fileChunksModal.dataDitribution"}}
                       </th>
                     {{/if}}
-                    <th>
-                      {{t "components.dataFilesListToolbar.fileChunksModal.dataDitribution"}}
-                    </th>
                   </thead>
                   <tbody>
                     {{#each fileBlocksSorted as |fb|}}
                       {{modals/file-chunks/provider-row
                         class=(concat "provider-row-" fb.provider)
                         fileDistribution=fb
-                        renderTransferIcons=(eq onlySingleProviderSupport false)
                         currentProviderSupport=currentProviderSupport
                         file=file
                         openMigrationOptions=(action "openMigrationOptions")

@@ -10,10 +10,7 @@
 import Ember from 'ember';
 import _ from 'lodash';
 import moment from 'moment';
-import additionalXLabel from 'op-worker-gui/utils/chartist/additional-x-label';
-import shortHorizontalGrid from 'op-worker-gui/utils/chartist/short-horizontal-grid';
 import tooltip from 'op-worker-gui/utils/chartist/tooltip';
-import centerLineChart from 'op-worker-gui/utils/chartist/center-line-chart';
 import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
 import axisLabels from 'op-worker-gui/utils/chartist/axis-labels';
 import stackedLineMask from 'op-worker-gui/utils/chartist/stacked-line-mask';
@@ -29,11 +26,8 @@ const {
   },
 } = Ember;
 
-const EXPECTED_STATS_NUMBER = 12;
-const MINUTE_STATS_NUMBER = 12;
-const HOUR_STATS_NUMBER = 60;
-const DAY_STATS_NUMBER = 24;
 const I18N_PREFIX = 'components.transfers.transferChart.';
+// const UNITS = ['minute', 'hour', 'day', 'month'];
 
 export default Component.extend({
   classNames: ['transfers-transfer-chart'],
@@ -52,29 +46,19 @@ export default Component.extend({
   providers: undefined,
 
   /**
-   * Last update time (async -> _timeStatForUnit)
-   * @type {Ember.ComputedProperty<Date>}
-   */
-  _lastUpdateTime: computed('_timeStatForUnit.timestamp', 'transfer.isOngoing', function () {
-    const {
-      _timeStatForUnit,
-      transfer,
-    } = this.getProperties('_timeStatForUnit', 'transfer');
-    if (transfer.get('isOngoing')) {
-      const date = get(_timeStatForUnit, 'timestamp');
-      return date ? new Date(date) : new Date();
-    } else {
-      return new Date(transfer.get('finishTime'));
-    }
-  }),
-  
-  /**
-   * One of `minute`, `hour`, `day`.
+   * One of `minute`, `hour`, `day`, `month`.
    * @type {string}
    * @virtual
    */
   timeUnit: 'minute',
 
+  /**
+   * Colors used to color each providers' series
+   * @virtual
+   * @type {Ember.ComputedProperty<Object>}
+   */
+  providersColors: {},
+  
   /**
    * Array of actual chart values.
    * @type {Array<Array<number>>}
@@ -86,58 +70,15 @@ export default Component.extend({
    * @type {TransferTimeStatUpdater}
    */
   updater: undefined,
-
-  _updaterEnabled: true,
   
-  /**
-   * @type {Ember.ComputedProperty<Object>}
-   */
-  _stats: computed.reads('_timeStatForUnit.content.stats'),
-
-  /**
-   * Last stat timestamp
-   * @type {Ember.ComputedProperty<number>}
-   */
-  _statsTimestamp: computed('_timeStatForUnit.content.timestamp', 'transfer.isOngoing', function () {
-    const transfer = this.get('transfer');
-    if (transfer.get('isOngoing')) {
-      return this.get('_timeStatForUnit.content.timestamp');
-    } else {
-      return transfer.get('finishTime');
-    }
-  }),
+  _updaterEnabled: true,
 
   /**
    * True if data for chart is loaded
    * @type {boolean}
    */
-  _statsLoaded: computed('_timeStatForUnit.content.stats', function() {
+  _statsLoaded: computed('_timeStatForUnit.stats', function() {
     return this.get('_timeStatForUnit.isLoaded');
-  }),
-  
-  /**
-   * @type {Ember.ComputedProperty<number>}
-   */
-  _transferStartTime: computed.reads('transfer.startTime'),
-
-  /**
-   * A number of stats, that should be considered as a single chart value
-   * @type {Ember.ComputedProperty<number>}
-   */
-  _statsUnitsPerChartValue: computed('timeUnit', function () {
-    let statsPerUnit;
-    switch (this.get('timeUnit')) {
-      case 'day':
-        statsPerUnit = DAY_STATS_NUMBER;
-        break;
-      case 'hour':
-        statsPerUnit = HOUR_STATS_NUMBER;
-        break;
-      default:
-      case 'minute':
-        statsPerUnit = MINUTE_STATS_NUMBER;
-    }
-    return statsPerUnit / EXPECTED_STATS_NUMBER;
   }),
 
   // FIXME: this should be auto updated
@@ -152,6 +93,30 @@ export default Component.extend({
     } = this.getProperties('transfer', 'timeUnit');
     return get(transfer, `${timeUnit}Stat`);
   }),
+  
+  /**
+   * @type {Ember.ComputedProperty<Object>}
+   */
+  _stats: computed.reads('_timeStatForUnit.stats'),
+
+  /**
+   * Last update time (async -> _timeStatForUnit)
+   * @type {Ember.ComputedProperty<Date>}
+   */
+  _transferLastUpdateTime: computed.reads('_timeStatForUnit.timestamp'),
+  
+  /**
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _transferStartTime: computed.reads('transfer.startTime'),
+
+  /**
+   * Expected stats number (number of chart points).
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _expectedStatsNumber: computed('timeUnit', function () {
+    return this._getExpectedStatsNumberForUnit(this.get('timeUnit'));
+  }),
 
   /**
    * Sorted provider ids.
@@ -162,65 +127,11 @@ export default Component.extend({
   }),
 
   /**
-   * Colors used to color each providers' series
-   * @virtual
-   * @type {Ember.ComputedProperty<Object>}
-   */
-  providersColors: {},
-  
-  /**
-   * Stats values for time unit in order: from oldest to newest (inverts backend
-   * order). Values from this array will be copied to the _chartValues.
-   * (async -> _stats)
-   * @type {Ember.ComputedProperty<Array<number>>}
-   */
-  _statsValues: computed('_sortedProvidersIds', '_statsUnitsPerChartValue', function () {
-    const {
-      _stats,
-      _statsUnitsPerChartValue,
-      _sortedProvidersIds,
-    } = this.getProperties(
-      '_stats',
-      '_statsUnitsPerChartValue',
-      '_sortedProvidersIds'
-    );
-    const inputStatsValuesNumber = EXPECTED_STATS_NUMBER * _statsUnitsPerChartValue;
-    const statsValues = [];
-
-    _sortedProvidersIds.forEach(key => {
-      let values = _stats[key];
-      if (values.length < inputStatsValuesNumber) {
-        values = _.range(inputStatsValuesNumber - values.length).map(() => 0)
-          .concat(values);
-      }
-      const scaledValues = [];
-      for (let i = 0; i < values.length; i += _statsUnitsPerChartValue) {
-        let singleChartStat = 0;
-        for (let j = 0; j < _statsUnitsPerChartValue; j++) {
-          singleChartStat += values[i + j];
-        }
-        scaledValues.push(this._scaleStatValue(singleChartStat, scaledValues.length));
-      }
-      statsValues.push(scaledValues.reverse());
-    });
-    return statsValues;
-  }),
-
-  /**
    * Chart time period
-   * @type {Ember.ComputedProperty<Array<any>>}
+   * @type {Ember.ComputedProperty<number>}
    */
   _timePeriod: computed('timeUnit', function () {
-    const timeUnit = this.get('timeUnit');
-    switch (timeUnit) {
-      case 'minute':
-        return [60 / EXPECTED_STATS_NUMBER, 'seconds'];
-      case 'hour':
-        return [60 / EXPECTED_STATS_NUMBER, 'minutes'];      
-      default:
-      case 'day':
-        return [24 / EXPECTED_STATS_NUMBER, 'hours'];
-    }
+    return this._getTimePeriodForUnit(this.get('timeUnit'));
   }),
   
   /**
@@ -233,25 +144,115 @@ export default Component.extend({
         return 'HH:mm';
       case 'day':
         return 'DD/MM HH:mm';
+      case 'month':
+        return 'DD/MM';
       default:
         return 'HH:mm:ss';
     }
   }),
 
   /**
+   * Expected stats number (number of chart points).
+   * @returns {Ember.ComputedProperty<number>}
+   */
+  _statsNumberPerLabel: computed('timeUnit', function() {
+    switch (this.get('timeUnit')) {
+      case 'month':
+        return 2;
+      case 'day':
+        return 3;
+      case 'hour':
+        return 5;
+      default:
+        return 1;
+    }
+  }),
+
+  /**
+   * Object that sets for each time unit if it should be visible to user
+   * @type {Ember.ComputedProperty<Ember.Object>}
+   */
+  _unitVisibility: computed('_transferStartTime', '_transferLastUpdateTime', function () {
+    const {
+      _transferStartTime,
+      _transferLastUpdateTime,
+    } = this.getProperties('_transferStartTime', '_transferLastUpdateTime');
+    const transferTime = _transferLastUpdateTime - _transferStartTime;
+    const result = Ember.Object.create({
+      minute: true,
+      hour: true,
+    });
+    const compareUnit = ['hour', 'day'];
+    ['day', 'month'].forEach((unit, index) => {
+      const period = this._getTimePeriodForUnit(compareUnit[index]);
+      result.set(unit, transferTime > period);
+    });
+    return result;
+  }),
+  
+  /**
+   * Stats values for time unit in order: from oldest to newest (inverts backend
+   * order). Values from this array will be copied to the _chartValues.
+   * (async -> _stats)
+   * @type {Ember.ComputedProperty<Array<number>>}
+   */
+  _statsValues: computed('_stats', '_sortedProvidersIds', '_expectedStatsNumber', function () {
+    const {
+      _stats,
+      _sortedProvidersIds,
+      _expectedStatsNumber,
+    } = this.getProperties(
+      '_stats',
+      '_sortedProvidersIds',
+      '_expectedStatsNumber'
+    );
+    return _sortedProvidersIds.map(key => {
+      let values = _stats[key];
+      if (values.length < _expectedStatsNumber) {
+        values = values.concat(_.times(_expectedStatsNumber - values.length, _.constant(0)));
+      }
+      return this._scaleStatValue(values.slice(0).reverse());
+    });
+  }),
+
+  _chartXTicks: computed('_statsValues', '_statsNumberPerLabel', function () {
+    const {
+      _statsValues,
+      _statsNumberPerLabel,
+    } = this.getProperties('_statsValues', '_statsNumberPerLabel');
+    
+    if (!_statsValues.length) {
+      return [];
+    }
+    const ticks = _.map(_statsValues[0], 'x');
+    if (ticks[ticks.length - 2] - ticks[ticks.length - 1] < ticks[1] - ticks[0]) {
+      delete ticks[ticks.length - 1];
+    }
+    return ticks.filter((value, index) => (index + 1) % _statsNumberPerLabel === 0);
+  }),
+
+  /**
    * Chartist settings
    * @type {Object}
    */
-  _chartOptions: computed(function() {
-    const i18n = this.get('i18n');
+  _chartOptions: computed('_chartXTicks', function() {
+    const {
+      i18n,
+      _chartXTicks,
+    } = this.getProperties('i18n', '_chartXTicks');
     return {
+      axisX: {
+        type: Chartist.FixedScaleAxis,
+        ticks: _chartXTicks,
+        labelInterpolationFnc: value => this._formatStatTime(value),
+        showGrid: false,
+      },
       axisY: {
-        labelInterpolationFnc: (value) => {
-          return bytesToString(value) + '/s';
-        }
+        labelInterpolationFnc: value => bytesToString(value) + '/s',
       },
       low: 0,
       showArea: true,
+      fullWidth: true,
       chartPadding: {
         top: 30,
         bottom: 30,
@@ -259,16 +260,12 @@ export default Component.extend({
         right: 50,
       },
       plugins: [
-        additionalXLabel(),
-        shortHorizontalGrid(),
-        centerLineChart(),
         axisLabels({
           xLabel: i18n.t(I18N_PREFIX + 'time'),
           yLabel: i18n.t(I18N_PREFIX + 'throughput'),
         }),
         tooltip({
           chartType: 'line',
-          rangeInTitle: true,
           topOffset: -17,
         }),
         stackedLineMask(),
@@ -290,12 +287,14 @@ export default Component.extend({
       _sortedProvidersIds,
       providersColors,
       providers,
+      _expectedStatsNumber,
     } = this.getProperties(
       '_statsValues',
       '_chartValues',
       '_sortedProvidersIds',
       'providersColors',
-      'providers'
+      'providers',
+      '_expectedStatsNumber'
     );
     // clearing out old chart values
     _chartValues.forEach(providerValues => {
@@ -308,13 +307,16 @@ export default Component.extend({
       _chartValues.push([]);
     }
     // calculating new chart values
-    const valuesSumArray = _.times(EXPECTED_STATS_NUMBER, _.constant(0));
-    _statsValues.slice(0).reverse().forEach((providerValues, index) => {
-      providerValues.forEach((value, index2) => valuesSumArray[index2] += value);
-      _chartValues[_chartValues.length - index - 1].push(...(valuesSumArray));
+    const valuesSumArray = _.range(_expectedStatsNumber).map(() => ({x: 0, y: 0}));
+    _statsValues.forEach((providerValues, providerIndex) => {
+      providerValues.forEach((value, valueIndex) => {
+        valuesSumArray[valueIndex].y += value.y;
+        valuesSumArray[valueIndex].x = value.x
+      });
+      _chartValues[_chartValues.length - providerIndex - 1].push(..._.cloneDeep(valuesSumArray));
     });
     // creating tooltips
-    const tooltipElements = _.range(EXPECTED_STATS_NUMBER).map((index) => {
+    const tooltipElements = _.range(_expectedStatsNumber).map((index) => {
       return _sortedProvidersIds.map((providerId, providerIndex) => {
         const provider =
           _.find(providers, (provider) => provider.get('id') === providerId) || {};
@@ -322,7 +324,7 @@ export default Component.extend({
         return {
           name: providerName.length > 10 ?
               providerName.substring(0, 8) + '...' : providerName,
-          value: bytesToString(_chartValues[providerIndex][index]) + '/s',
+          value: bytesToString(_chartValues[providerIndex][index].y) + '/s',
           className: 'ct-tooltip-entry',
           cssString: 'border-color: ' + providersColors[providerId],
         };
@@ -331,7 +333,7 @@ export default Component.extend({
     // setting colors
     const customCss = _sortedProvidersIds.map((providerId) => {
       const color = providersColors[providerId];
-      return _.times(EXPECTED_STATS_NUMBER, _.constant({
+      return _.times(_expectedStatsNumber, _.constant({
         line: {
           stroke: color,
         },
@@ -345,13 +347,11 @@ export default Component.extend({
     });
     // creating chart data object
     return {
-      labels: _.range(1, EXPECTED_STATS_NUMBER + 1).reverse()
-        .map(n => this._getChartLabel(n)),
+      labels: this._getChartLabels(),
       series: _chartValues.map((providerValues) => ({
         data: providerValues,
         tooltipElements,
       })),
-      lastLabel: this._getChartLabel(0),
       customCss,
     };
   }),
@@ -359,10 +359,10 @@ export default Component.extend({
   init() {
   this._super(...arguments);
     this.set('_chartValues', []);
-    const isOngoing = this.get('transfer.isOngoing');
+    const isCurrent = this.get('transfer.isCurrent');
     const gettingStats = this.get('_timeStatForUnit');
     
-    if (isOngoing) {
+    if (isCurrent) {
       console.log('transfer-chart: creating updater');
       gettingStats.then(timeStat => {
         const updater = TransferTimeStatUpdater.create({
@@ -386,46 +386,99 @@ export default Component.extend({
   },
 
   /**
-   * Returns chart label for specified time offset (time step number)
-   * @param {number} offset
-   * @returns {string}
-   */
-  _getChartLabel(offset) {
-    let {
-      _lastUpdateTime,
-      _timeFormat,
-      _timePeriod,
-    } = this.getProperties(
-      '_lastUpdateTime',
-      '_timeFormat',
-      '_timePeriod');
-    return moment(_lastUpdateTime)
-      .subtract(offset * _timePeriod[0], _timePeriod[1])
-      .format(_timeFormat);
-  },
-
-  /**
    * Calculates throughput value for given bytes number and time step index
-   * @param {number} statValue transfered bytes
+   * @param {Array<number>} statValue transfered bytes/s for chart value
    * @param {number} statTimeIndex time step index
    * @returns {number} average throughput in bytes per second
    */
-  _scaleStatValue(statValue, statTimeIndex) {
+  _scaleStatValue(statValues) {
     const {
+      timeUnit,
       _timePeriod,
-      _statsTimestamp,
+      _transferLastUpdateTime,
       _transferStartTime,
     } = this.getProperties(
+      'timeUnit',
       '_timePeriod',
-      '_statsTimestamp',
+      '_transferLastUpdateTime',
       '_transferStartTime'
     );
 
-    const transferTime = _statsTimestamp - _transferStartTime;
-    const timePeriodInSec =
-      moment.duration(_timePeriod[0], _timePeriod[1]).asSeconds();
-    const timeSinceLastStat = transferTime - timePeriodInSec * statTimeIndex;
-    const timeDivider = Math.min(Math.max(1, timeSinceLastStat), timePeriodInSec);
-    return statValue / timeDivider;
-  }
+    const transferTime = _transferLastUpdateTime - _transferStartTime + 1;
+    const availableValuesNumber = Math.ceil(transferTime / _timePeriod)
+    const expectedStatsNumber = this._getExpectedStatsNumberForUnit(timeUnit)
+    const chartStartTime = _transferStartTime + (availableValuesNumber - expectedStatsNumber + 1) * _timePeriod;
+    const scaledStats = statValues.map((statValue, index) => ({
+      x: Math.min(chartStartTime + index * _timePeriod, _transferLastUpdateTime),
+      y: statValue,
+    }));
+    return scaledStats;
+  },
+
+  /**
+   * Chart time period
+   * @returns {Array<any>}
+   */
+  _getTimePeriodForUnit(unit) {
+    const _expectedStatsNumber = this._getExpectedStatsNumberForUnit(unit);
+    switch (unit) {
+      case 'month':
+        // 30 days
+        return 2592000 / _expectedStatsNumber;
+      case 'day':
+        return 86400 / _expectedStatsNumber;
+      case 'hour':
+        return 3600 / _expectedStatsNumber;  
+      default:
+        return 60 / _expectedStatsNumber;      
+    }
+  },
+
+  /**
+   * Expected stats number (number of chart points).
+   * @returns {Ember.ComputedProperty<number>}
+   */
+  _getExpectedStatsNumberForUnit(unit) {
+    switch (unit) {
+      case 'month':
+        return 15;
+      case 'day':
+        return 24;
+      case 'hour':
+        return 60;
+      default:
+        return 12;
+    }
+  },
+
+  _getChartLabels() {
+    const _statsValues = this.get('_statsValues');
+    return _statsValues.length ? _statsValues[0].map(({x}) => this._formatStatTime(x)) : [];
+  },
+
+  _formatStatTime(time) {
+    return moment.unix(time).format(this.get('_timeFormat'));
+  },
+
+  /**
+   * Return preffered time unit for displaying transfer
+   * @returns {string}
+   */
+  // _getPrefferedUnit() {
+  //   const {
+  //     _transferStartTime,
+  //     _transferLastUpdateTime,
+  //   } = this.getProperties('_transferStartTime', '_transferLastUpdateTime');
+  //   const transferTime = _transferLastUpdateTime - _transferStartTime;
+  //   let prefferedUnit;
+  //   UNITS.slice(0).forEach(unit => {
+  //     if (!prefferedUnit) {
+  //       const periodInSeconds = this._getTimePeriodForUnit(unit);
+  //       if (transferTime > periodInSeconds) {
+  //         prefferedUnit = unit;
+  //       }
+  //     }
+  //   });
+  //   return prefferedUnit || 'minute';
+  // }
 });

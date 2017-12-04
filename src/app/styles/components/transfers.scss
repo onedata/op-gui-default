@@ -54,7 +54,7 @@
       stroke-width: 2px;
     }
     .ct-point {
-      stroke-width: 7px;
+      stroke-width: 6px;
     }
     .ct-grid.ct-vertical {
       stroke: darken($onedata-light-gray, 9%);
@@ -65,8 +65,13 @@
       border-color: inherit;
       border-width: 5px;
     }
-    .ct-label.ct-vertical.ct-start {
+    .ct-label.ct-vertical.ct-start, .ct-label.ct-horizontal.ct-end {
       white-space: nowrap;
+    }
+    .ct-label.ct-horizontal.ct-end {
+      transform: translateX(-50%);
+      display: block;
+      text-align: center;
     }
   }
 
@@ -82,7 +87,7 @@
       margin-top: -100px;
     }
     svg {
-      min-width: 400px;
+      min-width: 600px;
     }
   }
 

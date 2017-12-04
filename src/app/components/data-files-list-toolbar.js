@@ -216,7 +216,7 @@ export default Ember.Component.extend({
           id: 'file-chunks-tool',
           icon: 'provider',
           action: 'showChunks',
-          disabled: !(isSingleFileSelected && isSingleSelectedFileAFile),
+          disabled: !isSingleFileSelected,
           tooltip: i18n.t('components.dataFilesListToolbar.tooltip.chunks')
         },
       ];

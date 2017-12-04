@@ -133,6 +133,13 @@ export default Component.extend(PromiseLoadingMixin, {
   ),
 
   /**
+   * @type {Ember.ComputedProperty<string>}
+   */
+  modalSize: computed('file.isDir', function () {
+    return this.get('file.isDir') ? 'md' : 'lg';
+  }),
+
+  /**
    * @type {Array<PromiseObject<Provider>>}
    */
   providers: computed.mapBy('fileBlocks', 'getProvider'),

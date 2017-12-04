@@ -273,7 +273,7 @@ export default EmberObject.extend({
           this.set('_completedIdsCache', completedIdsNew);
           newIds.forEach(id => {
             const transfer = store.peekRecord('transfer', id);
-            if (transfer && transfer.get('isOngoing')) {
+            if (transfer && transfer.get('isCurrent')) {
               transfer.set('_completedReloading', true);
             }
           });

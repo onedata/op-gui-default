@@ -74,7 +74,8 @@ export default Component.extend({
   //#endregion
   
   /**
-   * Collection of Transfer model for current (active or scheduled) transfers
+   * Collection of Transfer model for current
+   * (active, finalizing or scheduled) transfers
    * @type {Ember.ComputedProperty<Ember.Array<Transfer>>}
    */
   currentTransfers: computed.reads('currentTransferList.list.content'),

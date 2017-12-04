@@ -41,6 +41,7 @@ export default Component.extend({
   _statusClass: computed('_status', function () {
     switch (this.get('_status')) {
       case 'completed':
+      case 'finalizing':
         return 'success';
       case 'skipped':
         return 'skipped';
@@ -69,6 +70,7 @@ export default Component.extend({
       case 'failed':
         return 'checkbox-filled-x';
       case 'active':
+      case 'finalizing':
         return 'update';
       case 'scheduled':
         return 'time';

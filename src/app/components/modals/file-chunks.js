@@ -126,7 +126,8 @@ export default Component.extend(PromiseLoadingMixin, {
   fileBlocksSorted: computed('fileBlocks', 'providers.@each.name',
     function () {
       const providers = this.get('providers');
-      if (providers && providers.every(p => get(p, 'name') != null)) {
+      const fileBlocks = this.get('fileBlocks');
+      if (fileBlocks && providers && providers.every(p => get(p, 'name') != null)) {
         return _.sortBy(this.get('fileBlocks').toArray(), fb => get(fb, 'getProvider.name'));
       }
     }
@@ -142,19 +143,21 @@ export default Component.extend(PromiseLoadingMixin, {
   /**
    * @type {Array<PromiseObject<Provider>>}
    */
-  providers: computed.mapBy('fileBlocks', 'getProvider'),
+  providers: computed.reads('space.providerList.queryList.content'),
   
   /**
    * True if all data for displaying table are loaded
    * @type {Ember.ComputedProperty<boolean>}
    */
   tableDataLoaded: computed(
+    'file.isDir',
     'fileBlocks.@each.isLoading',
     'providers.@each.isLoaded',
     'transfersLoading',
     function () {
+      const isDir = this.get('file.isDir');
       const fileBlocks = this.get('fileBlocks');
-      if (fileBlocks && fileBlocks.every(fb => !get(fb, 'isLoading'))) {
+      if (isDir || (fileBlocks && fileBlocks.every(fb => !get(fb, 'isLoading')))) {
         const providers = this.get('providers');
         if (providers && providers.every(p => get(p, 'isLoaded'))) {
           return this.get('transfersLoading') === false;
@@ -284,34 +287,44 @@ export default Component.extend(PromiseLoadingMixin, {
   
   /**
    * This should be invoked only if distributionUpdater is empty
-   * @returns {Looper} an object for polling file-distributions for file
+   * @returns {Looper|undefined} an object for polling file-distributions for file
+   *  or nothing if distribution updater should not be created
    */
   _initDistributionUpdater() {
-    let distributionUpdater = this.get('distributionUpdater');
-    assert(
-      'distributionUpdater should be empty before init',
-      !distributionUpdater || get(distributionUpdater, 'isDestroyed')
-    );
-    distributionUpdater = Looper.create({
-      immediate: true,
-      interval: SLOW_POLLING_TIME,
-    });
-    distributionUpdater
-      .on('tick', () =>
-        safeExec(this, 'fetchDistribution')
+    const isDir = this.get('file.isDir');
+    if (!isDir) {
+      let distributionUpdater = this.get('distributionUpdater');
+      assert(
+        'distributionUpdater should be empty before init',
+        !distributionUpdater || get(distributionUpdater, 'isDestroyed')
       );
-    return this.set('distributionUpdater', distributionUpdater);
+      distributionUpdater = Looper.create({
+        immediate: true,
+        interval: SLOW_POLLING_TIME,
+      });
+      distributionUpdater
+        .on('tick', () =>
+          safeExec(this, 'fetchDistribution')
+        );
+      return this.set('distributionUpdater', distributionUpdater); 
+    }
   },
 
   _fastDistributionUpdater() {
-    if (this.get('distributionUpdater.interval') !== FAST_POLLING_TIME) {
-      this.set('distributionUpdater.interval', FAST_POLLING_TIME);
+    const isDir = this.get('file.isDir');
+    if (!isDir) {
+      if (this.get('distributionUpdater.interval') !== FAST_POLLING_TIME) {
+        this.set('distributionUpdater.interval', FAST_POLLING_TIME);
+      }
     }
   },
 
   _slowDistributionUpdater() {
-    if (this.get('distributionUpdater.interval') !== SLOW_POLLING_TIME) {
-      this.set('distributionUpdater.interval', SLOW_POLLING_TIME);
+    const isDir = this.get('file.isDir');
+    if (!isDir) {
+      if (this.get('distributionUpdater.interval') !== SLOW_POLLING_TIME) {
+        this.set('distributionUpdater.interval', SLOW_POLLING_TIME);
+      }
     }
   },
   

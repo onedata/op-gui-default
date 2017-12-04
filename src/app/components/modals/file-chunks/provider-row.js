@@ -115,7 +115,7 @@ export default Component.extend({
         'transferLocked',
         'file'
       );
-      const fileConditions = file.get('isDir') ?
+      const fileConditions = get(file, 'isDir') ?
         true : neverSynchronized || !isComplete;
       return currentProviderSupport && fileConditions && !transferLocked;
     }
@@ -146,7 +146,7 @@ export default Component.extend({
         'transferLocked',
         'file'
       );
-      const fileConditions = file.get('isDir') ?
+      const fileConditions = get(file, 'isDir') ?
         true : !neverSynchronized && !isEmpty;
       return currentProviderSupport && fileConditions && !transferLocked;
     }

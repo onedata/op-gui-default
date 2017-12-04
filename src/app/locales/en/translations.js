@@ -441,6 +441,11 @@ export default {
           replicationInProgress: 'The file is currently replicated to this provider',
           replicationDisabled: 'File cannot be replicated into selected provider now',
         },
+        migratePopover: {
+          migrateItem: {
+            busy: 'busy',
+          },
+        },
       },
       notify: {
         createFileFailed: 'File or directory "{{fileName}}" creation failed'
@@ -489,7 +494,8 @@ export default {
       throughputDistribution: 'Providers throughput',
       activeTransfers: 'Active transfers',
       completedTransfers: 'History of transfers',
-      noActiveTransfers: 'No data is transferred currently',
+      noActiveTransfers: 'There are no active transfers',
+      noCompletedTransfers: 'There are no past transfers',
       initializingTransfers: 'Initializing transfers...',
       notSupported: 'Cannot list transfers of selected space because it is not ' +
         'supported by current provider',
@@ -516,8 +522,6 @@ export default {
           active: 'Active',
           scheduled: 'Scheduled',
         },
-        noActiveTransfers: 'No transfers currently in progress',
-        noCompletedTransfers: 'No finished transfers to show yet'
       },
       transferChart: {
         minute: 'Minute',

@@ -2,16 +2,10 @@
   {{t "components.dataFilesListToolbar.fileChunksModal.migrateFileDataInto"}}:
 </li>
 {{#each visibleProviders as |p|}}
-  {{#truncated-string
-    tagName="li"
-    class="clickable"
-    click=(action "startMigration" p.id)
+  {{modals/file-chunks/migrate-popover/migrate-item
+    providerId=p.id
+    providerName=p.name
+    disabled=(contains p.id disabledProviderIds)
+    action=(action "startMigration")
   }}
-    <span class="item-icon">
-      {{one-icon icon="provider"}}
-    </span>
-    <span class="item-label">
-      {{p.name}}
-    </span>
-  {{/truncated-string}}
 {{/each}}

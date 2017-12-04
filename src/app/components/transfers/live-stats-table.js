@@ -16,7 +16,8 @@ const {
 } = Ember;
 
 const START_END_TIME_FORMAT = 'D MMM YYYY H:mm:ss';
-const I18N_PREFIX = 'components.transfers.liveTableStats.';
+const COMMON_I18N_PREFIX = 'components.transfers.';
+const I18N_PREFIX = COMMON_I18N_PREFIX + 'liveTableStats.';
 
 export default Component.extend({
   classNames: ['transfers-live-stats-table', 'transfers-table'],
@@ -81,7 +82,7 @@ export default Component.extend({
     const messageId = (this.get('transferType') === 'active') ?
       'noActiveTransfers' : 'noCompletedTransfers';
     return EmberObject.create({
-      noDataToShow: this.get('i18n').t(I18N_PREFIX + messageId),
+      noDataToShow: this.get('i18n').t(COMMON_I18N_PREFIX + messageId),
     });
   }),
   

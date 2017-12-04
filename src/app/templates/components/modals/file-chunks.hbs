@@ -90,6 +90,7 @@
                   {{modals/file-chunks/migrate-popover
                     startMigration=(action "startMigration" file)
                     sourceProvider=migrationSource
+                    disabledProviderIds=currentMigrationSourceIds
                     providers=providers
                     close=(action (mut migrationSource null))
                   }}

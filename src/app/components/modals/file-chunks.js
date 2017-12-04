@@ -187,7 +187,18 @@ export default Component.extend(PromiseLoadingMixin, {
       return currentTransfers.filter(t => t.belongsTo('file').id() === fileId);
     }
   }),
-
+  
+  /**
+   * @type {Ember.ComputedProperty<Array<string>>|null}
+   */
+  currentMigrationSourceIds: computed('fileTransfers.@each.migrationSource', function () {
+    /** @type {Ember.Array|undefined} */
+    const fileTransfers = this.get('fileTransfers');
+    if (fileTransfers) {
+      return fileTransfers.map(t => get(t, 'migrationSource')).filter(s => s);
+    }
+  }),
+  
   /**
    * Enable/disable updaters when transfers count for current file changes
    * @type {Ember.Observer}

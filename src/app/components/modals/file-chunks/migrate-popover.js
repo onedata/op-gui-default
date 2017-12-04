@@ -41,7 +41,7 @@ export default Component.extend(ClickOutside, {
    * @type {Provider}
    */
   sourceProvider: undefined,
-    
+  
   /**
    * @virtual
    * @type {Function}
@@ -53,6 +53,12 @@ export default Component.extend(ClickOutside, {
    * @type {Function}
    */
   close: () => {},
+  
+  /**
+   * @virtual 
+   * @type {Ember.Array}
+   */
+  disabledProviderIds: undefined,
   
   providersSorting: ['name'],
   providersSorted: computed.sort('providers', 'providersSorting'),

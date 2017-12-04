@@ -137,19 +137,24 @@ $dropdown-bg: #2B3037;
         color: rgba(255,255,255,0.75);
         pointer-events: none;
       }
+      
+      &.disabled {
+        color: rgba(255,255,255,0.75);
+        cursor: not-allowed;
+      }
     }
   }
 
   &.dropdown-menu-list {
     font-size: inherit;
     padding: 0;
-
+    
     .divider {
       // TODO: same as menu bottom line color
       background-color: rgba(255, 255, 255, 0.1);
     }
 
-    > li:not(.divider) {
+    > li:not(.divider):not(.disabled) {
       &:first-child {
         border-top-left-radius: $dropdown-radius;
         border-top-right-radius: $dropdown-radius;

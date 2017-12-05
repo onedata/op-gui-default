@@ -7,6 +7,8 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
+/* global Chartist */
+ 
 import Ember from 'ember';
 import _ from 'lodash';
 import moment from 'moment';
@@ -315,7 +317,7 @@ export default Component.extend({
     _statsValues.forEach((providerValues, providerIndex) => {
       providerValues.forEach((value, valueIndex) => {
         valuesSumArray[valueIndex].y += value.y;
-        valuesSumArray[valueIndex].x = value.x
+        valuesSumArray[valueIndex].x = value.x;
       });
       _chartValues[_chartValues.length - providerIndex - 1].push(..._.cloneDeep(valuesSumArray));
     });
@@ -410,7 +412,7 @@ export default Component.extend({
 
     const transferTime = _transferLastUpdateTime - _transferStartTime;
     const availableValuesNumber = Math.ceil(transferTime / _timePeriod) + 1;
-    const expectedStatsNumber = this._getExpectedStatsNumberForUnit(timeUnit)
+    const expectedStatsNumber = this._getExpectedStatsNumberForUnit(timeUnit);
     const chartStartTime = _transferStartTime + (availableValuesNumber - expectedStatsNumber) * _timePeriod;
     const scaledStats = statValues.map((statValue, index) => ({
       x: Math.min(chartStartTime + index * _timePeriod, _transferLastUpdateTime),

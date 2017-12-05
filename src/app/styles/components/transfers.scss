@@ -107,22 +107,15 @@
     }
   }
   
-  // FIXME: should they be here? draft of styles
-  
   .transfer-file-icon {
     font-size: 32px;
     line-height: 20px;
     float: left;
   }
   
-  // .transfer-file-name {
-  //   padding-left: 12px;
-  //   float: left;
-  // }
-
   .transfers-table {
     tr.data-row {
-      // to hold a absolute-positioned spinner
+      // to hold an absolute-positioned spinner
       position: relative;
       &:hover {
         background-color: $onedata-light-gray;

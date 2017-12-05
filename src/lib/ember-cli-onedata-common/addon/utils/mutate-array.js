@@ -1,10 +1,9 @@
 /**
- * NOTE: backported and extended from `onedata-gui-common`
+ * Modifies collection of passed `orig` array to be the same as `update` array.
  * 
- * Adds new items to array without changing original array reference and
- * reference to items that are deeply equal to these in new array.
- *
- * @module utils/merge-new-items
+ * NOTE: extended from `onedata-gui-common` `util:push-new-items`
+ * 
+ * @module utils/mutate-array
  * @author Jakub Liput
  * @copyright (C) 2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.

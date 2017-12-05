@@ -1,3 +1,12 @@
+/**
+ * Map of providers, their transfers and provider transfer states.
+ *
+ * @module components/transfers/providers-map
+ * @author Jakub Liput
+ * @copyright (C) 2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 
 import _ from 'lodash';
@@ -23,15 +32,14 @@ export default Component.extend({
    * Ids of providers that are destination of transfers
    * @type {Array<string>}
    */
-  destinationProviderIds: A(['p1', 'p3']),
+  destinationProviderIds: undefined,
   
   /**
    * @virtual
    * Ids of providers that are sources of transfers
    * @type {Array<string>}
    */
-  // FIXME:
-  sourceProviderIds: A(['p2', 'p3']),
+  sourceProviderIds: undefined,
   
   /**
    * @virtual
@@ -39,10 +47,7 @@ export default Component.extend({
    * Only one for pair!
    * @type {Array<Array[string,string]>}
    */
-  // providerTransferConnections: undefined,
-  providerTransferConnections: A([
-    ['p1', 'p2'],
-  ]),
+  providerTransferConnections: undefined,
   
   /**
    * Maps provider id => Provider model

@@ -242,11 +242,13 @@ export default Component.extend({
     }
   ),
 
-  providersColors: computed('providers', function () {
+  providersColors: computed('providers.@each.id', function () {
     const providers = this.get('providers');
-    const providerIds = providers.mapBy('id');
-    const colors = generateColors(providerIds.length);
-    return _.zipObject(providerIds, colors);
+    if (providers) {
+      const providerIds = providers.mapBy('id');
+      const colors = generateColors(providerIds.length);
+      return _.zipObject(providerIds, colors);
+    }
   }),
   
   /**

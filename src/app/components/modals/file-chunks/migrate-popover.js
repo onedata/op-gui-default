@@ -56,7 +56,7 @@ export default Component.extend(ClickOutside, {
   
   /**
    * @virtual 
-   * @type {Ember.Array}
+   * @type {Array<string>}
    */
   disabledProviderIds: undefined,
   
@@ -86,8 +86,8 @@ export default Component.extend(ClickOutside, {
   
   didInsertElement() {
     const bindSelector = this.get('bindSelector');
-    const bindElement = $(bindSelector);
     if (bindSelector) {
+      const bindElement = $(bindSelector);
       bindFloater(this.$(), bindElement, {
         offsetY: -bindElement.height() / 2 + 3,
         stackingContext: this.$().parents('.modal-dialog').get(0)
@@ -106,7 +106,7 @@ export default Component.extend(ClickOutside, {
   
   actions: {
     startMigration(destination) {
-      this.startMigration(this.get('sourceProvider.id'), destination);
+      this.get('startMigration')(this.get('sourceProvider.id'), destination);
     },
   },
 });

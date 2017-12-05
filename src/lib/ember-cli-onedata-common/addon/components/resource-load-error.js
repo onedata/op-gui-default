@@ -1,7 +1,7 @@
 /**
  * A message to display in place of some resource cannot be loaded. 
  * 
- * Module imported from onedata-gui-common.
+ * NOTE: Backported from `onedata-gui-common`.
  *
  * @module components/resource-load-error
  * @author Jakub Liput

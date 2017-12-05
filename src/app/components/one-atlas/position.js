@@ -1,5 +1,5 @@
 /**
- * An one-atlas point component. Represents a place in a map, which 
+ * A one-atlas point component. Represents a place in a map, which 
  * should be specified with latitude and longitude properties.
  * Example of use can be found in one-atlas component.
  * 

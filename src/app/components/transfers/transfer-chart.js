@@ -29,7 +29,6 @@ const {
 } = Ember;
 
 const I18N_PREFIX = 'components.transfers.transferChart.';
-// const UNITS = ['minute', 'hour', 'day', 'month'];
 
 export default Component.extend({
   classNames: ['transfers-transfer-chart'],
@@ -193,7 +192,7 @@ export default Component.extend({
   }),
   
   /**
-   * Stats values for time unit in order: from oldest to newest (inverts backend
+   * Stats values for time unit in order: from the oldest to the newest (inverts backend
    * order). Values from this array will be copied to the _chartValues.
    * (async -> _stats)
    * @type {Ember.ComputedProperty<Array<number>>}
@@ -361,13 +360,13 @@ export default Component.extend({
       customCss,
     };
   }),
-  
+
   init() {
-  this._super(...arguments);
+    this._super(...arguments);
     this.set('_chartValues', []);
     const isCurrent = this.get('transfer.isCurrent');
     const gettingStats = this.get('_timeStatForUnit');
-    
+
     if (isCurrent) {
       console.log('transfer-chart: creating updater');
       gettingStats.then(timeStat => {
@@ -376,10 +375,10 @@ export default Component.extend({
           timeStat,
         });
         this.set('updater', updater);
-      }); 
+      });
     }
   },
-  
+
   willDestroyElement() {
     try {
       const updater = this.get('updater');

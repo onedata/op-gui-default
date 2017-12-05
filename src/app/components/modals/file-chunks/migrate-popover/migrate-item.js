@@ -41,11 +41,14 @@ export default Component.extend({
    * @virtual 
    * @type {function} a providerId is passed as a first arguments
    */
-  action: () => {},
+  action: undefined,
     
   click() {
     if (!this.get('disabled')) {
-      this.action(this.get('providerId'));
+      const action = this.get('action');
+      if (action) {
+        action(this.get('providerId'));
+      }
     }
   },
   

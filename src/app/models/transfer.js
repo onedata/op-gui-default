@@ -2,7 +2,6 @@ import DS from 'ember-data';
 import Ember from 'ember';
 import _ from 'lodash';
 
-import TransferRuntimeMixin from 'op-worker-gui/mixins/models/transfer-runtime';
 import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
 
 const {
@@ -15,7 +14,7 @@ const {
   computed,
 } = Ember;
 
-export default Model.extend(TransferRuntimeMixin, {
+export default Model.extend({
   /**
    * One of:
    * - scheduled
@@ -73,7 +72,7 @@ export default Model.extend(TransferRuntimeMixin, {
   monthStat: belongsTo('transfer-time-stat'),
   
   /**
-   * Id of space that this transfer belongs to
+   * Space in which this transfer is done
    */
   space: belongsTo('space', { async: true, inverse: null }),
   

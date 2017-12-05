@@ -254,7 +254,7 @@
 
 // file chunks
 
-#file-chunks-modal {
+.file-chunks-modal {
   @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
     .modal-dialog.modal-lg {
       width: initial;

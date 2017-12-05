@@ -1,5 +1,5 @@
 /**
- *  
+ * Gives an action to change space transfer route
  * 
  * @module controllers/onedata/transfers
  * @author Jakub Liput

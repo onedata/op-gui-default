@@ -74,7 +74,7 @@ export default Component.extend(ForceReloadCollectionMixin, {
   activeSpaceDidChange: observer('activeSpace', function() {
     const activeSpace = this.get('activeSpace');
     if (activeSpace) {
-      this.goToTransfersForSpace(activeSpace);
+      this.get('goToTransfersForSpace')(activeSpace);
     }
   }),
 

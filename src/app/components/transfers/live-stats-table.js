@@ -1,3 +1,14 @@
+/**
+ * Table listing transfers with details show on click.
+ * 
+ * Works in two modes: desktop (models-table) or mobile (one-collapsible-list)
+ *
+ * @module components/transfers/live-stats-table
+ * @author Michal Borzecki, Jakub Liput
+ * @copyright (C) 2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 import moment from 'moment';
 import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
@@ -11,6 +22,7 @@ const {
     service,
   },
   get,
+  getProperties,
   A,
   Object: EmberObject,
 } = Ember;
@@ -31,7 +43,6 @@ export default Component.extend({
   transfers: undefined,
 
   /**
-   * Providers
    * @virtual
    * @type {Array<Provider>}
    */
@@ -93,18 +104,16 @@ export default Component.extend({
   
   // TODO: this causes n*n invoking this computed property, but transferTableData
   // function is invoked only few times, maybe to refactor, but it's a hard piece of code...
-  // FIXME: handle loading of data (async - table should present loading state)
   /**
    * Transfers converted to format used by table.
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   _tableData: computed(
     'transfers.@each.{tableDataIsLoaded,status,finishTime,fileType,transferredBytes,transferredFiles}',
-    '_tableDataCache',
     'providers',
     'providersColors',
     function () {
-      let _tableDataCache = this.get('_tableDataCache');
+      const _tableDataCache = this.get('_tableDataCache');
       const {
         transfers,
         providers,
@@ -127,7 +136,7 @@ export default Component.extend({
         get(b, 'startedAtComparable') - get(a, 'startedAtComparable')
       );
 
-      return this.set('_tableDataCache', _tableDataCache);
+      return _tableDataCache;
     }
   ),
 
@@ -236,7 +245,13 @@ export default Component.extend({
   },
 });
 
-// TODO: optimize using destructurize and getProperties
+/**
+ * Create data object for live stats table row with transfer data
+ * @param {Transfer} transfer 
+ * @param {Array<Provider>} providers 
+ * @param {Object} providersColors 
+ * @param {Ember.Service} i18n i18n service instance (`t` method)
+ */
 function transferTableData(transfer, providers, providersColors, i18n) {
   // searching for destination
   let destination = i18n.t(I18N_PREFIX + 'destinationUnknown');
@@ -246,26 +261,42 @@ function transferTableData(transfer, providers, providersColors, i18n) {
   if (destProvider) {
     destination = get(destProvider, 'name');
   }
-
-  const transferId = get(transfer, 'id');
-  const path = get(transfer, 'path');
-  const fileType = get(transfer, 'fileType');
-  const startTimestamp = get(transfer, 'startTime');
+  
+  const {
+    id: transferId,
+    path,
+    fileType,
+    startTime: startTimestamp,
+    finishTime: finishTimestamp,
+    currentStat,
+    userName,
+    status,
+    tableDataIsLoaded,
+  } = getProperties(
+    transfer,
+    'id',
+    'path',
+    'fileType',
+    'startTime',
+    'finishTime',
+    'currentStat',
+    'userName',
+    'status',
+    'tableDataIsLoaded'
+  );
   const startMoment = moment.unix(startTimestamp);
-  const finishTimestamp = get(transfer, 'finishTime');
   const finishMoment = moment.unix(finishTimestamp);
-  // FIXME: async properties - add loading states?
-  const transferredBytes = get(transfer, 'currentStat.transferredBytes');
-  const transferredFiles = get(transfer, 'currentStat.transferredFiles');
-  const userName = get(transfer, 'userName');
+  const {
+    transferredBytes,
+    transferredFiles
+  } = getProperties(currentStat, 'transferredBytes', 'transferredFiles');
+  
   const startedAtReadable = startMoment && startMoment.format(START_END_TIME_FORMAT);
   const finishedAtReadable = finishMoment && finishMoment.format(START_END_TIME_FORMAT);
   const totalBytesReadable = bytesToString(transferredBytes);
-  const status = get(transfer, 'status');
-  const isLoading = get(transfer, 'tableDataIsLoaded') === false;
+  const isLoading = (tableDataIsLoaded === false);
   
   return EmberObject.create({
-    // FIXME: user name is async, so it should be in loading state
     transfer,
     transferId,
     providers,
@@ -282,6 +313,6 @@ function transferTableData(transfer, providers, providersColors, i18n) {
     totalBytesReadable,
     totalFiles: transferredFiles,
     status,
-    isLoading, // FIXME: true if loading async fields
+    isLoading,
   });
 }

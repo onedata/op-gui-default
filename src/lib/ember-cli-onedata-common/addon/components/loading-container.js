@@ -1,6 +1,8 @@
 /**
  * Wraps other template into loader or error alert basing on provided state
- *
+ * 
+ * NOTE: Backported from `onedata-gui-common`.
+ * 
  * It helps in building GUI with showing state of some async resource.
  *
  * An example:

@@ -1,7 +1,7 @@
 /**
  * A cell component with transfer representation used by live-stats-table component.
  * 
- * @module components/provider-place
+ * @module components/transfers/live-stats-table/cell-status
  * @author Michal Borzecki
  * @copyright (C) 2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.

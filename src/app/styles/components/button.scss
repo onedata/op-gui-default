@@ -1,4 +1,17 @@
 // TODO: box-shadow none?
+
+.btn-group,
+.btn-group-vertical {
+  > .btn {
+    &:hover,
+    &:focus,
+    &:active,
+    &.active {
+      z-index: 1;
+    }
+  }
+}
+
 .btn {
   border: none !important;
   padding: 10px 40px;

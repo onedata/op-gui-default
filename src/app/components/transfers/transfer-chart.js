@@ -7,8 +7,6 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-/* global Chartist */
- 
 import Ember from 'ember';
 import _ from 'lodash';
 import moment from 'moment';
@@ -39,7 +37,7 @@ export default Component.extend({
    * @virtual
    * @type {Transfer}
    */
-  transfer: undefined,
+  transfer: {},
 
   /**
    * @virtual
@@ -154,7 +152,7 @@ export default Component.extend({
   }),
 
   /**
-   * Expected stats number (number of chart points).
+   * Number of stats, that will be grouped under the same x axis label
    * @returns {Ember.ComputedProperty<number>}
    */
   _statsNumberPerLabel: computed('timeUnit', function() {
@@ -171,7 +169,7 @@ export default Component.extend({
   }),
 
   /**
-   * Object that sets for each time unit if it should be visible to user
+   * Object that sets for each time unit if it should be visible to user or not
    * @type {Ember.ComputedProperty<Ember.Object>}
    */
   _unitVisibility: computed('_transferStartTime', '_transferLastUpdateTime', function () {
@@ -217,6 +215,10 @@ export default Component.extend({
     });
   }),
 
+  /**
+   * Axis x labels
+   * @type {Ember.ComputedProperty<Array<string>>}
+   */
   _chartXTicks: computed('_statsValues', '_statsNumberPerLabel', function () {
     const {
       _statsValues,
@@ -227,10 +229,10 @@ export default Component.extend({
       return [];
     }
     const ticks = _.map(_statsValues[0], 'x');
-    if (ticks[ticks.length - 2] - ticks[ticks.length - 1] < ticks[1] - ticks[0]) {
+    if (ticks[ticks.length - 1] - ticks[ticks.length - 2] < ticks[1] - ticks[0]) {
       delete ticks[ticks.length - 1];
     }
-    return ticks.filter((value, index) => (index + 1) % _statsNumberPerLabel === 0);
+    return ticks.filter((value, index) => index % _statsNumberPerLabel === 0);
   }),
 
   /**
@@ -313,7 +315,7 @@ export default Component.extend({
     _statsValues.forEach((providerValues, providerIndex) => {
       providerValues.forEach((value, valueIndex) => {
         valuesSumArray[valueIndex].y += value.y;
-        valuesSumArray[valueIndex].x = value.x;
+        valuesSumArray[valueIndex].x = value.x
       });
       _chartValues[_chartValues.length - providerIndex - 1].push(..._.cloneDeep(valuesSumArray));
     });
@@ -326,7 +328,7 @@ export default Component.extend({
         return {
           name: providerName.length > 10 ?
               providerName.substring(0, 8) + '...' : providerName,
-          value: bytesToString(_chartValues[providerIndex][index].y) + '/s',
+          value: bytesToString(_statsValues[providerIndex][index].y) + '/s',
           className: 'ct-tooltip-entry',
           cssString: 'border-color: ' + providersColors[providerId],
         };
@@ -406,10 +408,10 @@ export default Component.extend({
       '_transferStartTime'
     );
 
-    const transferTime = _transferLastUpdateTime - _transferStartTime + 1;
-    const availableValuesNumber = Math.ceil(transferTime / _timePeriod);
-    const expectedStatsNumber = this._getExpectedStatsNumberForUnit(timeUnit);
-    const chartStartTime = _transferStartTime + (availableValuesNumber - expectedStatsNumber + 1) * _timePeriod;
+    const transferTime = _transferLastUpdateTime - _transferStartTime;
+    const availableValuesNumber = Math.ceil(transferTime / _timePeriod) + 1;
+    const expectedStatsNumber = this._getExpectedStatsNumberForUnit(timeUnit)
+    const chartStartTime = _transferStartTime + (availableValuesNumber - expectedStatsNumber) * _timePeriod;
     const scaledStats = statValues.map((statValue, index) => ({
       x: Math.min(chartStartTime + index * _timePeriod, _transferLastUpdateTime),
       y: statValue,

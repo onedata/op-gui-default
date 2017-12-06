@@ -11,7 +11,6 @@ import PromiseLoadingMixin from 'ember-cli-onedata-common/mixins/promise-loading
 import SpaceTransfersUpdater from 'op-worker-gui/utils/space-transfers-updater';
 import Looper from 'ember-cli-onedata-common/utils/looper';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
-import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object'; 
 
 import _ from 'lodash';
 
@@ -24,7 +23,6 @@ const {
   run,
   inject: { service },
   assert,
-  RSVP: { Promise },
 } = Ember;
 
 const SLOW_POLLING_TIME = 10 * 1000;
@@ -106,7 +104,9 @@ export default Component.extend(PromiseLoadingMixin, {
    * @type {Ember.Array<string>}
    */
   providerMigrationsInvoked: undefined,
-    
+  
+  fileBlocksSorting: ['getProvider.name'],
+  
   //#endregion
   
   /**
@@ -129,26 +129,15 @@ export default Component.extend(PromiseLoadingMixin, {
    * File distribution collection sorted by name of provider
    * @type {Ember.ComputedProperty<Array<FileDistribution>|undefined>}
    */
-  fileBlocksSorted: computed.reads('_fileBlocksSorted.content'),
-  
-  /**
-   * @type {Ember.ComputedProperty<Promise<FileDistribution>>}
-   */
-  _fileBlocksSorted: computed(
+  fileBlocksSorted: computed(
     'fileBlocks',
-    'space.providerList.queryList.isSettled',
     'providers.@each.name',
     function getFileBlocksSorted() {
+      const providers = this.get('providers');
       const fileBlocks = this.get('fileBlocks');
-      const promise = Promise.all(
-        fileBlocks.map(fb =>
-          get(fb, 'getProvider').then(provider => [get(provider, 'name'), fb])
-        ))
-        .then(namesFileBlocks => {
-          return _.sortBy(namesFileBlocks, nfb => nfb[0]).map(nfb => nfb[1]);
-        });
-      
-      return PromiseObject.create({ promise });
+      if (fileBlocks && providers && providers.every(p => get(p, 'name') != null)) {
+        return _.sortBy(this.get('fileBlocks').toArray(), fb => get(fb, 'getProvider.name'));
+      }
     }
   ),
 

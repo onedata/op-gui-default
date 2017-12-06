@@ -26,6 +26,7 @@ const {
   inject: {
     service,
   },
+  run,
 } = Ember;
 
 const I18N_PREFIX = 'components.transfers.transferChart.';
@@ -84,7 +85,7 @@ export default Component.extend({
 
   /**
    * Object with stats for specified time unit.
-   * @type {Ember.ComputedProperty<TransferTimeStat>}
+   * @type {Ember.ComputedProperty<Promise<TransferTimeStat>>}
    */
   _timeStatForUnit: computed('transfer', 'timeUnit', function () {
     const {
@@ -363,19 +364,32 @@ export default Component.extend({
   init() {
     this._super(...arguments);
     this.set('_chartValues', []);
-    const isCurrent = this.get('transfer.isCurrent');
+    const transfer = this.get('transfer');
+    const isCurrent = get(transfer, 'isCurrent');
     const gettingStats = this.get('_timeStatForUnit');
-
-    if (isCurrent) {
-      console.log('transfer-chart: creating updater');
-      gettingStats.then(timeStat => {
-        const updater = TransferTimeStatUpdater.create({
-          isEnabled: this.get('_updaterEnabled'),
-          timeStat,
-        });
-        this.set('updater', updater);
+    const secondsAfterFinish = moment().diff(
+      moment.unix(get(transfer, 'finishTime')),
+      'seconds'
+    );
+    const isShortAfterFinish = (secondsAfterFinish < 15);
+ 
+    console.log('transfer-chart: creating updater');
+    gettingStats.then(timeStat => {
+      const updater = TransferTimeStatUpdater.create({
+        isEnabled: isCurrent && this.get('_updaterEnabled'),
+        timeStat,
       });
-    }
+      if (!isCurrent && isShortAfterFinish) {
+        [5, 10, 15].forEach(seconds =>
+          run.later(() => {
+            if (updater && !get(updater, 'isDestroyed')) {
+              updater.fetch();
+            }
+          }, seconds * 1000)
+        );
+      }
+      this.set('updater', updater);
+    });
   },
 
   willDestroyElement() {

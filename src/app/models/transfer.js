@@ -55,10 +55,14 @@ export default Model.extend({
    */
   fileType: attr('string'),
   
+  /**
+   * UNIX timestamp seconds format
+   */
   startTime: attr('number'),
   
   /**
    * Non-empty only if transfer is not current (`isCurrent`)
+   * UNIX timestamp seconds format
    */
   finishTime: attr('number'),
   

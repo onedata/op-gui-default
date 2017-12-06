@@ -1,8 +1,8 @@
-<tr class="data-row {{if (exists-in _selectedItems record) "selected-row"}} {{if (exists-in _expandedRowIndexes index) "expanded-row"}}"
+<tr class="data-row {{if (exists-in _selectedItems record) "selected-row"}} {{if (exists-in _expandedRowIndexes record.transferIndex) "expanded-row"}}"
   {{action (if (not record.isLoading)
-    (if (exists-in _expandedRowIndexes index) "collapseRow" "expandRow")
+    (if (exists-in _expandedRowIndexes record.transferIndex) "collapseRow" "expandRow")
     "collapseRow"
-  ) index bubbles=false}}>
+  ) record.transferIndex bubbles=false}}>
   {{!-- not using loading-container because we are in tr --}}
   {{#if record.isLoading}}
     <td colspan={{processedColumns.length}}>
@@ -38,8 +38,8 @@
     {{/each}}
   {{/if}}
 </tr>
-{{#if (exists-in _expandedRowIndexes index)}}
-  <tr class="expand-row {{concat "expand-" index}} {{if (exists-in _selectedItems record) "selected-expand"}}" {{action "clickOnRow" index record on="click"}}>
+{{#if (exists-in _expandedRowIndexes record.transferIndex)}}
+  <tr class="expand-row {{concat "expand-" record.transferIndex}} {{if (exists-in _selectedItems record) "selected-expand"}}" {{action "clickOnRow" index record on="click"}}>
     <td colspan="{{visibleProcessedColumns.length}}">
       {{partial expandedRowTemplate}}
     </td>

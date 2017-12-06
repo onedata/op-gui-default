@@ -28,14 +28,14 @@
 
           {{else}}
 
-            {{#if (eq currentProviderSupport false)}}
+            {{#if (eq onlySingleProviderSupport true)}}
               <div class="alert alert-info">
-                {{t "components.dataFilesListToolbar.fileChunksModal.noCurrentProviderSupport"}}
+                {{t "components.dataFilesListToolbar.fileChunksModal.onlySingleProviderSupport"}}
               </div>
             {{else}}
-              {{#if (eq onlySingleProviderSupport true)}}
+              {{#if (eq currentProviderSupport false)}}
                 <div class="alert alert-info">
-                  {{t "components.dataFilesListToolbar.fileChunksModal.onlySingleProviderSupport"}}
+                  {{t "components.dataFilesListToolbar.fileChunksModal.noCurrentProviderSupport"}}
                 </div>
               {{/if}}
             {{/if}}

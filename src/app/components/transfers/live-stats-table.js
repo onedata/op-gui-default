@@ -55,6 +55,15 @@ export default Component.extend({
   transferType: 'active',
 
   /**
+   * Global mapping: transferId -> integer index
+   * @type {Object}
+   */
+  _transferIdToIndexMap: {
+    nextTransferIndex: 0,
+    mapping: {},
+  },
+
+  /**
    * If true, component is rendered in mobile mode.
    * @type {boolean}
    */
@@ -122,8 +131,13 @@ export default Component.extend({
       } = this.getProperties('transfers', 'providers', 'providersColors', 'i18n');
       
       if (transfers && providers) {
-        const newTableData = transfers
-          .map((transfer) => transferTableData(transfer, providers, providersColors, i18n));
+        const newTableData = transfers.map((transfer) => transferTableData(
+          this._getIndexForTransfer(transfer),
+          transfer,
+          providers,
+          providersColors,
+          i18n
+        ));
         mutateArray(
           _tableDataCache,
           newTableData,
@@ -243,6 +257,20 @@ export default Component.extend({
       this._super(...arguments);
     }
   },
+
+  /**
+   * Returns unique number id for transfer
+   * @param {Transfer} transfer
+   * @returns {number}
+   */
+  _getIndexForTransfer(transfer) {
+    const _transferIdToIndexMap = this.get('_transferIdToIndexMap');
+    const transferId = get(transfer, 'id');
+    if (_transferIdToIndexMap.mapping[transferId] === undefined) {
+      _transferIdToIndexMap.mapping[transferId] = _transferIdToIndexMap.nextTransferIndex++;
+    }
+    return _transferIdToIndexMap.mapping[transferId];
+  }
 });
 
 /**
@@ -252,7 +280,7 @@ export default Component.extend({
  * @param {Object} providersColors 
  * @param {Ember.Service} i18n i18n service instance (`t` method)
  */
-function transferTableData(transfer, providers, providersColors, i18n) {
+function transferTableData(transferIndex, transfer, providers, providersColors, i18n) {
   // searching for destination
   let destination = i18n.t(I18N_PREFIX + 'destinationUnknown');
   const destProvider = _.find(providers, (provider) => 
@@ -298,6 +326,7 @@ function transferTableData(transfer, providers, providersColors, i18n) {
   
   return EmberObject.create({
     transfer,
+    transferIndex,
     transferId,
     providers,
     providersColors,

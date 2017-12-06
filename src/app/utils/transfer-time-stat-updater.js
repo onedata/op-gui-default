@@ -68,11 +68,13 @@ export default EmberObject.extend({
     if (this.get('isEnabled')) {
       switch (this.get('timespan')) {
         case 'minute':
-          return 5*1000;
+          return (5*1000)/2;
         case 'hour':
-          return 60*1000;
+          return (60*1000)/3;
         case 'day':
-          return 60*60*1000;
+          return (60*60*1000)/3;
+        case 'month':
+          return 60*60*1000*2;
         default:
           return null;
       }

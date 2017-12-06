@@ -1,5 +1,5 @@
 /**
- * A component that creates pie chart of transfers input/output throuthput
+ * A component that creates pie chart of transfers input/output throughput
  * sum per provider.
  * 
  * @module components/transfers/throughput-distribution/chart
@@ -63,7 +63,7 @@ export default OnePieChart.extend({
           providers,
           (p) => get(p, 'id') === get(transfer, 'providerId')
         ), 'name'),
-        value: transfer.bytesPerSec,
+        value: get(transfer, 'bytesPerSec'),
         color: providersColors[get(transfer, 'providerId')],
       }));
     }

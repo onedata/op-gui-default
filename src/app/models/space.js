@@ -2,19 +2,6 @@ import DS from 'ember-data';
 
 import isDefaultMixinFactory from 'ember-cli-onedata-common/mixin-factories/models/is-default';
 
-// FIXME: mocks commented out
-
-// import mockBelongsTo from 'op-worker-gui/utils/mock-belongs-to';
-
-// import {
-//   mockCurrent as currentTransfers,
-//   mockCompleted as completedTransfers,
-// } from 'op-worker-gui/models/space-transfer-list';
-
-// import {
-//   mockProviders as providers,
-// } from 'op-worker-gui/models/space-provider-list';
-
 const {
   attr,
   belongsTo
@@ -51,9 +38,4 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
   currentTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),  
   completedTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
   providerList: belongsTo('space-provider-list', { async: true, inverse: null }),
-
-  // FIXME: currently mocks
-  // currentTransferList: mockBelongsTo(currentTransfers),
-  // completedTransferList: mockBelongsTo(completedTransfers),
-  // providerList: mockBelongsTo(providers),
 });

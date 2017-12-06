@@ -1,3 +1,14 @@
+/**
+ * Converts collection of transfers (each with destination and object of source speeds)
+ * into collection of objects that are pairs source->destination with speed.
+ *
+ * @module utils/transfers/provider-transfers
+ * @author Jakub Liput
+ * @copyright (C) 2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
+
 import Ember from 'ember';
 
 import _ from 'lodash';
@@ -21,7 +32,7 @@ const {
  */
 
 /**
- * Collection of:
+ * Create collection of:
  * ```
  * {
  *   src: 'providerId1',

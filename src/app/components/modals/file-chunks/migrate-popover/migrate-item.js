@@ -1,6 +1,7 @@
 /**
- * FIXME: doc
- * @module components/modals/file-chunks/migrate-popover
+ * An item for migrate data menu (represents single destination provider)
+ * 
+ * @module components/modals/file-chunks/migrate-popover/migrate-item
  * @author Jakub Liput
  * @copyright (C) 2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
@@ -41,11 +42,14 @@ export default Component.extend({
    * @virtual 
    * @type {function} a providerId is passed as a first arguments
    */
-  action: () => {},
+  action: undefined,
     
   click() {
     if (!this.get('disabled')) {
-      this.action(this.get('providerId'));
+      const action = this.get('action');
+      if (action) {
+        action(this.get('providerId'));
+      }
     }
   },
   

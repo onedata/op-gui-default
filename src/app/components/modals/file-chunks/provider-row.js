@@ -1,3 +1,13 @@
+/**
+ * A row in data distribution table that represents distribution of file data
+ * on single provider.
+ *
+ * @module components/modals/file-chunks/provider-row
+ * @author Jakub Liput
+ * @copyright (C) 2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 
 const {
@@ -62,7 +72,7 @@ export default Component.extend({
   stopTransfersUpdater: () => {},
 
   /**
-   * True if migration has been started by used but request is not completed yet
+   * True if migration has been started by user but request is not completed yet
    * @virtual
    * @type {boolean}
    */
@@ -84,11 +94,15 @@ export default Component.extend({
   pendingActionAnimation: 'in-progress animated infinite semi-hinge pulse-mint',
 
   /**
-   * True if replication has been started by used but request is not completed yet
+   * True if replication has been started by user but request is not completed yet
    * @type {boolean}
    */
   replicationInvoked: false,
-  
+
+  /**
+   * True if transfers options should be inactive (not-clickable)
+   * @type {Ember.ComputedProperty<boolean>}
+   */
   transferLocked: computed.or('migrationInProgress', 'replicationInProgress'),
   
   replicationInProgress: computed('transferType', 'replicationInvoked', function () {
@@ -294,8 +308,8 @@ export default Component.extend({
   transfersCount: computed.reads('fileProviderTransfers.length'),
 
   /**
-   * - If it's migration source: 'migration'
-   * - If it's only a replication destination: 'replication'
+   * - If it's migration source: 'migration-source'
+   * - If it's only a replication destination: 'replication-destination'
    * - If it's none of the above: 'unknown' (should not occur)
    * - If there is no transfers: null
    * @type {string|null}

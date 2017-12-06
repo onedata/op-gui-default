@@ -18,34 +18,3 @@ export default DS.Model.extend({
   longitude: attr('number'),
   status: attr('string'),
 });
-
-// -- FIXME: mocks ---
-
-export const mock1 = {
-  id: 'p1',
-  name: 'Provider One',
-  latitude: 10,
-  longitude: 20,
-  status: 'online',
-};
-export const mock2 = {
-  id: 'p2',
-  name: 'Provider Two',
-  latitude: 40,
-  longitude: 60,
-  status: 'online',
-};
-export const mock3 = {
-  id: 'p3',
-  name: 'Provider Three',
-  latitude: -20,
-  longitude: 30,
-  status: 'online',
-};
-export const mock4 = {
-  id: 'p4',
-  name: 'Provider Four',
-  latitude: 50,
-  longitude: -50,
-  status: 'pending',
-};

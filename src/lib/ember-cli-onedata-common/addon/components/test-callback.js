@@ -30,8 +30,6 @@
  * @copyright (C) 2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-
-// TODO: do not use this in passed callback - instead use "self" which will mean a component
  
 import Ember from 'ember';
 

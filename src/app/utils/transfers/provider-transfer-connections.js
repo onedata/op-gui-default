@@ -1,5 +1,11 @@
 /**
- * FIXME: jsdoc
+ * Reduce transfers data to create just pairs of current connections between providers
+ * caused by transfers
+ *
+ * @module utils/transfers/provider-transfer-connections
+ * @author Jakub Liput
+ * @copyright (C) 2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
 import _ from 'lodash';

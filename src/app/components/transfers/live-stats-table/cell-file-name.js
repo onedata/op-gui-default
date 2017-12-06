@@ -1,5 +1,11 @@
 /**
- * FIXME: jsdoc
+ * Cell with file name for transfer row.
+ * Cell component for `models-table` in `live-stats-table`.
+ *
+ * @module components/transfers/live-stats-table/cell-file-name
+ * @author Jakub Liput
+ * @copyright (C) 2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
 import Ember from 'ember';

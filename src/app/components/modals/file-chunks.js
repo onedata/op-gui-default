@@ -29,6 +29,8 @@ const SLOW_POLLING_TIME = 10 * 1000;
 const FAST_POLLING_TIME = 2 * 1000;
 
 export default Component.extend(PromiseLoadingMixin, {
+  classNames: ['file-chunks', 'file-chunks-modal'],
+  
   store: service(),
 
   //#region External properties
@@ -108,9 +110,9 @@ export default Component.extend(PromiseLoadingMixin, {
   //#endregion
   
   /**
-   * @type {Ember.ComputedProperty<boolean|undefined>} true if only one provider
-   *  supports this space; undefined if cannot resolve number of providers yet
-   *  (eg. loading)
+   * True if only one provider supports this space; undefined if cannot resolve
+   * number of providers yet (eg. loading)
+   * @type {Ember.ComputedProperty<boolean|undefined>} 
    */
   onlySingleProviderSupport: computed(
     'space.providerList.content.list.length',
@@ -123,8 +125,14 @@ export default Component.extend(PromiseLoadingMixin, {
     }
   ),
   
-  fileBlocksSorted: computed('fileBlocks', 'providers.@each.name',
-    function () {
+  /**
+   * File distribution collection sorted by name of provider
+   * @type {Ember.ComputedProperty<Array<FileDistribution>|undefined>}
+   */
+  fileBlocksSorted: computed(
+    'fileBlocks',
+    'providers.@each.name',
+    function getFileBlocksSorted() {
       const providers = this.get('providers');
       const fileBlocks = this.get('fileBlocks');
       if (fileBlocks && providers && providers.every(p => get(p, 'name') != null)) {
@@ -173,10 +181,23 @@ export default Component.extend(PromiseLoadingMixin, {
    */
   isFileEmpty: computed.equal('file.size', 0),
 
+  /**
+   * Record with current transfer records list 
+   * @type {SpaceTransferList}
+   */
   currentTransferList: computed.reads('space.currentTransferList'),
 
+  /**
+   * Array of current transfers
+   * @type {Array<Transfer>} with isLoaded Ember property
+   */
   currentTransfers: computed.reads('currentTransferList.list.content'),
 
+  /**
+   * True if each transfer is ready to be inserted into table, _but_ without
+   * async dynamic data like transferred bytes or status
+   * @type {Ember.ComputedProperty<boolean>}
+   */
   currentTransfersDataLoaded: computed(
     'currentTransferList.isLoaded',
     'currentTransfers.@each.isLoaded',
@@ -338,6 +359,10 @@ export default Component.extend(PromiseLoadingMixin, {
   
   //#endregion
     
+  /**
+   * @override
+   * Clean polling updaters
+   */
   willDestroyElement() {
     try {
       // ensure updaters are destroyed (if destroying component without close)

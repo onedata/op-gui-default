@@ -1,5 +1,10 @@
 /**
- * FIXME: doc
+ * Updates transfers data for single pace (except time statistics) by polling
+ * 
+ * Optionally update:
+ * - collection of current transfers records with their current stats
+ * - collection of completed transfers records
+ * - handle updates of current stats when moving transfer from current to done
  *
  * @module utils/space-transfers-updater
  * @author Jakub Liput
@@ -18,15 +23,14 @@ const {
   RSVP: { Promise },
 } = Ember;
 
-// FIXME: 
-
 const DEFAULT_CURRENT_TIME = 2 * 1000;
 const DEFAULT_COMPLETED_TIME = 10 * 1000;
 
 import Looper from 'ember-cli-onedata-common/utils/looper';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 
-// FIXME: update providers if there is provider referenced that is not on list
+// TODO: (low) update providers if there is provider referenced that is not on
+// list; this can help with dynamically added providers
 
 export default EmberObject.extend({
   /**
@@ -102,7 +106,6 @@ export default EmberObject.extend({
   currentIsUpdating: undefined,
 
   /**
-   * FIXME: implement
    * If true, currently fetching info about completed transfers
    * Set by some interval watcher
    * @type {boolean}
@@ -143,7 +146,6 @@ export default EmberObject.extend({
     // enable observers for properties
     this.getProperties('_currentEnabled', '_completedEnabled');
 
-    // FIXME: fill this when fist version of completed ids will be avail
     this.set('_completedIdsCache', []);
     this.set('_currentIdsCache', []);
   },

@@ -1,5 +1,5 @@
 /**
- * FIXME: doc
+ * Updates single transfer chosen time stat data (by polling)
  *
  * @module utils/transfer-time-stat-updater
  * @author Jakub Liput
@@ -19,8 +19,6 @@ const {
 
 import Looper from 'ember-cli-onedata-common/utils/looper';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
-
-// FIXME: update providers if there is provider referenced that is not on list
 
 export default EmberObject.extend({
   /**
@@ -44,7 +42,7 @@ export default EmberObject.extend({
   timespan: computed.reads('timeStat.type'),
   
   /**
-   * Initialized with `_createWatchers`.
+   * Initialized with `_createWatcher`.
    * @type {Looper}
    */
   _watcher: undefined,
@@ -82,8 +80,6 @@ export default EmberObject.extend({
       return null;
     }
   }),
-
-  // FIXME: code for this watcher is cloned from multi-watchers, so reduce it
   
   init() {
     this._super(...arguments);
@@ -92,8 +88,8 @@ export default EmberObject.extend({
       isUpdating: true,
     });
 
-    this._createWatchers();
-    this._reconfigureWatchers();
+    this._createWatcher();
+    this._reconfigureWatcher();
 
     // get properties to enable observers
     this.getProperties('_interval');
@@ -111,7 +107,7 @@ export default EmberObject.extend({
     }
   },
 
-  _reconfigureWatchers: observer(
+  _reconfigureWatcher: observer(
     '_interval',
     function () {
       // debouncing does not let _setWatchersIntervals to be executed multiple
@@ -120,14 +116,10 @@ export default EmberObject.extend({
     }
   ),
 
-  // TODO: there should be no watcher for reports at all - it should be updated:
-  // - after enabling
-  // - on change status.inProgress true -> false
-
   /**
    * Create watchers for fetching information
    */
-  _createWatchers() {
+  _createWatcher() {
     const _watcher = Looper.create({
       immediate: true,
     });

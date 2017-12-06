@@ -1,5 +1,6 @@
 /**
- * FIXME: jsdoc
+ * Parse POSIX file path and return file name
+ * 
  * @param {string} path absolute file path (POSIX separators)
  * @returns {string} parsed file name
  */

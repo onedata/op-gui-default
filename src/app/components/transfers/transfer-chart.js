@@ -82,7 +82,6 @@ export default Component.extend({
     return this.get('_timeStatForUnit.isLoaded');
   }),
 
-  // FIXME: this should be auto updated
   /**
    * Object with stats for specified time unit.
    * @type {Ember.ComputedProperty<TransferTimeStat>}

@@ -40,9 +40,7 @@ export default Component.extend({
    * @type {Array<ProviderTransfer>}
    */
   providerTransfers: undefined,
-  
-  // FIXME: is loading state
-  
+    
   chartDataIsLoaded: computed('providers.[]', 'providerTransfers.[]', function () {
     return isArray(this.get('providers')) && isArray(this.get('providerTransfers'));
   }),
@@ -55,8 +53,8 @@ export default Component.extend({
   transfersDirection: 'out',
   
   /**
-   * FIXME: provide this collection - multiple for single source
-   * only one for destination!
+   * Collection of objects containing (src, dest, speed) of transfers,
+   * see `util:transfers/space-transfers` for details.
    * @type {Array<SpaceInputTransfer|SpaceOutputTransfer>}
    */
   spaceTransfers: computed('transfersDirection', 'providerTransfers.@each.bytesPerSec', function () {

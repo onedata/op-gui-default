@@ -1,5 +1,7 @@
 /**
- * FIXME: doc
+ * A menu in form of dropdown-menu-list with destination providers for
+ * data migration.
+ * 
  * @module components/modals/file-chunks/migrate-popover
  * @author Jakub Liput
  * @copyright (C) 2017 ACK CYFRONET AGH

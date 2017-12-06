@@ -1,6 +1,7 @@
 /**
- * FIXME: doc
- * @module components/modals/file-chunks/migrate-popover
+ * An item for migrate data menu (represents single destination provider)
+ * 
+ * @module components/modals/file-chunks/migrate-popover/migrate-item
  * @author Jakub Liput
  * @copyright (C) 2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.

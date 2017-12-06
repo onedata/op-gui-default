@@ -69,10 +69,9 @@ export default function (options) {
       title.empty();
       title.append(chart.data.labels[data.index]);
       if (options.rangeInTitle) {
-        if (chart.data.labels[data.index + 1]) {
-          title.append(' - ' + chart.data.labels[data.index + 1]);
-        } else if (chart.data.lastLabel) {
-          title.append(' - ' + chart.data.lastLabel);
+        if (chart.data.labels[data.index - 1] &&
+          chart.data.labels[data.index - 1] !== chart.data.labels[data.index]) {
+          title.prepend(chart.data.labels[data.index - 1] + ' - ');
         }
       }
 

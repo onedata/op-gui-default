@@ -296,6 +296,7 @@
 
 .file-blocks-table {
   margin-bottom: 0;
+  table-layout: fixed;
   th:first-of-type {
     padding-right: 20px;
   }
@@ -365,12 +366,6 @@
 
   .provider-name {
     padding-right: 10px;
-    .truncate {
-      max-width: 150px;
-      @media screen and (min-width: 1261px) {
-        max-width: 450px;
-      }
-    }
   }
   .chunks {
     width: 340px;

@@ -33,7 +33,7 @@ export default Component.extend({
    * @virtual
    * @type {Object}
    */
-  providersColors: {},
+  providersColors: Object.freeze({}),
   
   /**
    * @virtual 

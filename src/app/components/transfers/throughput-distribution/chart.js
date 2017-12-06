@@ -35,14 +35,14 @@ export default OnePieChart.extend({
    * @virtual
    * @type {Object}
    */
-  providersColors: {},
+  providersColors: Object.freeze({}),
 
   /**
    * @virtual
    * Space transfers throughput data
    * @type {Ember.Array<SpaceTransfer>}
    */
-  throughputData: [],
+  throughputData: undefined,
 
   /**
    * @override
@@ -68,6 +68,11 @@ export default OnePieChart.extend({
       }));
     }
   ),
+
+  init() {
+    this._super(...arguments);
+    this.set('throughputData', []);
+  },
 
   /**
    * @override

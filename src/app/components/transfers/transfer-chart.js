@@ -40,7 +40,7 @@ export default Component.extend({
    * @virtual
    * @type {Transfer}
    */
-  transfer: {},
+  transfer: Object.freeze({}),
 
   /**
    * @virtual
@@ -60,13 +60,13 @@ export default Component.extend({
    * @virtual
    * @type {Ember.ComputedProperty<Object>}
    */
-  providersColors: {},
+  providersColors: Object.freeze({}),
   
   /**
    * Array of actual chart values.
-   * @type {Array<Array<number>>}
+   * @type {Array<Array<object>>}
    */
-  _chartValues: [],
+  _chartValues: undefined,
 
   /**
    * Initialized when stat record is available (after init)

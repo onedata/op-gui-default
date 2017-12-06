@@ -26,7 +26,6 @@ const {
   inject: {
     service,
   },
-  run,
 } = Ember;
 
 /* global Chartist */
@@ -413,11 +412,6 @@ export default Component.extend({
     const transfer = this.get('transfer');
     const isCurrent = get(transfer, 'isCurrent');
     const gettingStats = this.get('_timeStatForUnit');
-    const secondsAfterFinish = moment().diff(
-      moment.unix(get(transfer, 'finishTime')),
-      'seconds'
-    );
-    const isShortAfterFinish = (secondsAfterFinish < 15);
  
     console.log('transfer-chart: creating updater');
     gettingStats.then(timeStat => {
@@ -425,14 +419,8 @@ export default Component.extend({
         isEnabled: isCurrent && this.get('_updaterEnabled'),
         timeStat,
       });
-      if (!isCurrent && isShortAfterFinish) {
-        [5, 10, 15].forEach(seconds =>
-          run.later(() => {
-            if (updater && !get(updater, 'isDestroyed')) {
-              updater.fetch();
-            }
-          }, seconds * 1000)
-        );
+      if (!isCurrent) {
+        updater.fetch();
       }
       this.set('updater', updater);
     });

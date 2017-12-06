@@ -165,7 +165,8 @@ export default Component.extend({
       _mobileMode,
     } = this.getProperties('i18n', 'transferType', '_mobileMode');
     const onlyCompletedColumns = ['finishedAt'];
-
+    const isTransferActive = (transferType === 'active');
+    
     // field `id` is custom and is used only to check which column should be 
     // filtered out for active/completed table version
     const allColumns = [{
@@ -190,13 +191,15 @@ export default Component.extend({
       id: 'startedAt',
       propertyName: 'startedAtReadable',
       sortedBy: 'startedAtComparable',
-      sortPrecedence: 1,
-      sortDirection: 'desc',
+      sortPrecedence: isTransferActive ? 1 : undefined,
+      sortDirection: isTransferActive ? 'desc' : undefined,
       title: i18n.t(I18N_PREFIX + 'startedAt'),
     }, {
       id: 'finishedAt',
       propertyName: 'finishedAtReadable',
       sortedBy: 'finishedAtComparable',
+      sortPrecedence: isTransferActive ? undefined : 1,
+      sortDirection: isTransferActive ? undefined : 'desc',
       title: i18n.t(I18N_PREFIX + 'finishedAt'),
     }, {
       id: 'totalBytes',
@@ -213,7 +216,7 @@ export default Component.extend({
       title: i18n.t(I18N_PREFIX + 'status'),
       component: 'transfers/live-stats-table/cell-status',
     }];
-    if (transferType === 'active') {
+    if (isTransferActive) {
       return allColumns.filter((column) => 
         onlyCompletedColumns.indexOf(column.id) === -1
       );

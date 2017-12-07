@@ -498,6 +498,7 @@ export default {
       completedTransfers: 'History of transfers',
       noActiveTransfers: 'There are no active transfers',
       noCompletedTransfers: 'There are no past transfers',
+      throughputChartError: 'Failed to load all the data for the chart',
       initializingTransfers: 'Initializing transfers...',
       notSupported: 'Cannot list transfers of selected space because it is not ' +
         'supported by current provider',

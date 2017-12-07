@@ -68,6 +68,11 @@
                   {{else}}
                     <p>{{t "components.transfers.noActiveTransfers"}}</p>
                   {{/if}}
+                  {{#if tData.throughputChartError}}
+                    {{#error-inline}}
+                      {{t "components.transfers.throughputChartError"}}
+                    {{/error-inline}}
+                  {{/if}}
                 {{/loading-container}}
               </div>
             </div>

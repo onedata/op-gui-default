@@ -415,6 +415,9 @@ export default Component.extend({
  
     console.log('transfer-chart: creating updater');
     gettingStats.then(timeStat => {
+      if (!isCurrent) {
+        this.set('timeUnit', this._getPrefferedUnit());
+      }
       const updater = TransferTimeStatUpdater.create({
         isEnabled: isCurrent && this.get('_updaterEnabled'),
         timeStat,
@@ -519,24 +522,25 @@ export default Component.extend({
   },
 
   /**
-   * Return preffered time unit for displaying transfer
+   * Returns preffered time unit for displaying transfer stats
    * @returns {string}
    */
-  // _getPrefferedUnit() {
-  //   const {
-  //     _transferStartTime,
-  //     _transferLastUpdateTime,
-  //   } = this.getProperties('_transferStartTime', '_transferLastUpdateTime');
-  //   const transferTime = _transferLastUpdateTime - _transferStartTime;
-  //   let prefferedUnit;
-  //   UNITS.slice(0).forEach(unit => {
-  //     if (!prefferedUnit) {
-  //       const periodInSeconds = this._getTimePeriodForUnit(unit);
-  //       if (transferTime > periodInSeconds) {
-  //         prefferedUnit = unit;
-  //       }
-  //     }
-  //   });
-  //   return prefferedUnit || 'minute';
-  // }
+  _getPrefferedUnit() {
+    const {
+      _transferStartTime,
+      _transferLastUpdateTime,
+    } = this.getProperties('_transferStartTime', '_transferLastUpdateTime');
+    const transferTime = _transferLastUpdateTime - _transferStartTime;
+    let prefferedUnit;
+    ['minute', 'hour', 'day'].forEach(unit => {
+      if (!prefferedUnit) {
+        const timeWindow = this._getTimePeriodForUnit(unit) *
+          this._getExpectedStatsNumberForUnit(unit);
+        if (transferTime <= timeWindow) {
+          prefferedUnit = unit;
+        }
+      }
+    });
+    return prefferedUnit || 'month';
+  }
 });

@@ -119,6 +119,10 @@ export default Model.extend({
   transferredBytes: computed.reads('currentStat.transferredBytes'),
   transferredFiles: computed.reads('currentStat.transferredFiles'),
   
+  currentStatError: computed('currentStat.{isSettled,content}', function () {
+    return this.get('currentStat.isSettled') && this.get('currentStat.content') == null;
+  }),
+  
   isCurrent: computed('status', function () {
     return _.includes(['finalizing', 'active', 'scheduled'], this.get('status'));
   }),

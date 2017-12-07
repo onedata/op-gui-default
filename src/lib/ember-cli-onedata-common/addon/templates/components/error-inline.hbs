@@ -1,0 +1,8 @@
+{{#unless hasBlock}}
+  {{t 'components.errorInline.defaultShort'}}
+{{else}}
+  {{yield}}
+{{/unless}}
+{{#if hint}}
+  {{bs-tooltip placement="top" title=hint}}
+{{/if}}

@@ -1,5 +1,6 @@
 import sessionLocales from 'ember-cli-onedata-common/locales/en/session';
 import resourceLoadError from 'ember-cli-onedata-common/locales/en/components/resource-load-error';
+import errorInline from 'ember-cli-onedata-common/locales/en/components/error-inline';
 import filePermissions from './file-permissions';
 
 /**
@@ -45,6 +46,7 @@ export default {
   },
   components: {
     resourceLoadError,
+    errorInline,
     filePermissions: {
       error: 'An error occured when loading permissions data:',
       posix: {

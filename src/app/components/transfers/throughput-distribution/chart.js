@@ -28,7 +28,7 @@ export default OnePieChart.extend({
    * Array of all providers, that takes part in transfers.
    * @type {Array<Provider>}
    */
-  providers: [],
+  providers: Object.freeze([]),
 
   /**
    * Predefined providers colors
@@ -42,7 +42,7 @@ export default OnePieChart.extend({
    * Space transfers throughput data
    * @type {Ember.Array<SpaceTransfer>}
    */
-  throughputData: undefined,
+  throughputData: Object.freeze([]),
 
   /**
    * @override
@@ -68,11 +68,6 @@ export default OnePieChart.extend({
       }));
     }
   ),
-
-  init() {
-    this._super(...arguments);
-    this.set('throughputData', []);
-  },
 
   /**
    * @override

@@ -16,7 +16,10 @@
     .chart-row {
       max-width: 600px;
       margin: 0 auto;
-    } 
+    }
+    .zero-chart .ct-series {
+      opacity: 0.4;
+    }
   }
 
   .map-column {

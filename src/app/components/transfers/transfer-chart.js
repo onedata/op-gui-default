@@ -18,6 +18,7 @@ import axisLabels from 'op-worker-gui/utils/chartist/axis-labels';
 import stackedLineMask from 'op-worker-gui/utils/chartist/stacked-line-mask';
 import TransferTimeStatUpdater from 'op-worker-gui/utils/transfer-time-stat-updater';
 import customCss from 'op-worker-gui/utils/chartist/custom-css';
+import centerXLabels from 'op-worker-gui/utils/chartist/center-x-labels';
 
 const {
   Component,
@@ -307,6 +308,7 @@ export default Component.extend({
         customCss({
           filterBySeriesIndex: true,
         }),
+        centerXLabels(),
       ],
     };
   }),

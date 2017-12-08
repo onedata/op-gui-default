@@ -353,7 +353,7 @@ export default Component.extend({
         _chartValues.push([]);
       }
       // calculating new chart values
-      const valuesSumArray = _.range(_expectedStatsNumber).map(() => ({x: 0, y: 0}));
+      const valuesSumArray = _.range(_expectedStatsNumber + 2).map(() => ({x: 0, y: 0}));
       _statsValues.forEach((providerValues, providerIndex) => {
         providerValues.forEach((value, valueIndex) => {
           valuesSumArray[valueIndex].y += value.y;
@@ -365,7 +365,7 @@ export default Component.extend({
           ));
       });
       // creating tooltips
-      const tooltipElements = _.range(_expectedStatsNumber).map((index) => {
+      const tooltipElements = _.range(_expectedStatsNumber + 2).map((index) => {
         return _sortedProvidersIds
           .filter((providerId, providerIndex) => _statsValues[providerIndex].length > index)
           .map((providerId, providerIndex) => {
@@ -384,7 +384,7 @@ export default Component.extend({
       // setting colors
       const customCss = _sortedProvidersIds.map((providerId) => {
         const color = providersColors[providerId];
-        return _.times(_expectedStatsNumber, _.constant({
+        return _.times(_expectedStatsNumber + 2, _.constant({
           line: {
             stroke: color,
           },
@@ -453,27 +453,29 @@ export default Component.extend({
       _timePeriod,
       _transferLastUpdateTime,
       _transferStartTime,
+      _expectedStatsNumber,
     } = this.getProperties(
       '_timePeriod',
       '_transferLastUpdateTime',
-      '_transferStartTime'
+      '_transferStartTime',
+      '_expectedStatsNumber'
     );
     let x = _transferLastUpdateTime + 0.5;
     const scaledStats = [];
     statValues = statValues.filter(y => y !== null);
-    for (let i = 0; i <= statValues.length; i++) {
-      const point = { x, y: statValues[i] };
-
+    for (let i = 0; i < statValues.length; i++) {
+      scaledStats.push({ x, y: statValues[i] });
       const timeDelta = x % _timePeriod === 0 ? _timePeriod : x % _timePeriod;
-      const newX = Math.max(x - timeDelta, _transferStartTime);
+      const newX = Math.max(
+        x - timeDelta,
+        _transferStartTime,
+        _transferLastUpdateTime - _timePeriod * _expectedStatsNumber
+      );
       if (newX === x) {
-        scaledStats.push(point);
         break;
       } else {
         x = newX;
       }
-
-      scaledStats.push(point);
     }
     return scaledStats.reverse();
   },

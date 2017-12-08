@@ -38,7 +38,7 @@ export default Component.extend({
    * @virtual
    * @type {boolean}
    */
-  currentProviderSupport: undefined,
+  transferEnabled: true,
   
   /**
    * @virtual
@@ -77,14 +77,7 @@ export default Component.extend({
    * @type {boolean}
    */
   migrationInvoked: false,
-  
-  /**
-   * If true, transfer icons (migration, replication) for actions and status
-   * are rendered
-   * @type {boolean}
-   */
-  renderTransferIcons: true,
-  
+    
   //#endregion
   
   /**
@@ -104,34 +97,35 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<boolean>}
    */
   transferLocked: computed.or('migrationInProgress', 'replicationInProgress'),
-  
+    
   replicationInProgress: computed('transferType', 'replicationInvoked', function () {
     return this.get('transferType') === 'replication-destination' ||
       this.get('replicationInvoked');
   }),
+  
   replicationEnabled: computed(
     'neverSynchronized',
     'isComplete',
-    'currentProviderSupport',
     'transferLocked',
+    'transferEnabled',
     'file.isDir',
     function () {
       const {
         neverSynchronized,
         isComplete,
-        currentProviderSupport,
         transferLocked,
+        transferEnabled,
         file,
       } = this.getProperties(
         'neverSynchronized',
         'isComplete',
-        'currentProviderSupport',
         'transferLocked',
+        'transferEnabled',
         'file'
       );
-      const fileConditions = get(file, 'isDir') ?
-        true : neverSynchronized || !isComplete;
-      return currentProviderSupport && fileConditions && !transferLocked;
+      return transferEnabled &&
+        (get(file, 'isDir') ? true : (neverSynchronized || !isComplete)) &&
+        !transferLocked;
     }
   ),
   
@@ -143,26 +137,27 @@ export default Component.extend({
   migrationEnabled: computed(
     'neverSynchronized',
     'isEmpty',
-    'currentProviderSupport',
+    'transferEnabled',
     'transferLocked',
     'file.isDir',
     function () {
       const {
         neverSynchronized,
         isEmpty,
-        currentProviderSupport,
         transferLocked,
+        transferEnabled,
         file,
       } = this.getProperties(
         'neverSynchronized',
         'isEmpty',
-        'currentProviderSupport',
         'transferLocked',
+        'transferEnabled',
         'file'
-      );
-      const fileConditions = get(file, 'isDir') ?
-        true : !neverSynchronized && !isEmpty;
-      return currentProviderSupport && fileConditions && !transferLocked;
+      );      
+      
+      return transferEnabled &&
+        (get(file, 'isDir') ? true : (!neverSynchronized && !isEmpty)) &&
+        !transferLocked;
     }
   ),
 

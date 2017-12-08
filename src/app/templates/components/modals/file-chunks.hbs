@@ -49,9 +49,7 @@
                     <th>
                       {{t "components.dataFilesListToolbar.fileChunksModal.providerName"}}
                     </th>
-                    {{#if (eq onlySingleProviderSupport false)}}
-                      <th class="replica-options"></th>
-                    {{/if}}
+                    <th class="replica-options"></th>
                     {{#if (not file.isDir)}}
                       <th>
                         {{t "components.dataFilesListToolbar.fileChunksModal.dataDitribution"}}
@@ -63,7 +61,7 @@
                       {{modals/file-chunks/provider-row
                         class=(concat "provider-row-" fb.provider)
                         fileDistribution=fb
-                        currentProviderSupport=currentProviderSupport
+                        transferEnabled=(and (eq currentProviderSupport true) (eq onlySingleProviderSupport false))
                         file=file
                         openMigrationOptions=(action "openMigrationOptions")
                         startReplication=(action "startReplication")

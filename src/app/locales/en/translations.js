@@ -11,7 +11,7 @@ import filePermissions from './file-permissions';
  * @author Jakub Liput
  * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
-*/
+ */
 export default {
   common: {
     file: 'file',
@@ -415,33 +415,35 @@ export default {
         text: 'Enter new file permissions code:'
       },
       fileChunksModal: {
+        file: 'file',
+        directory: 'directory',
         title: 'Data distribution',
-        text: 'Distribution of file blocks among providers for file',
+        text: 'Management of data distribution for',
         fileIsEmpty: 'This file has no content.',
         neverSynchronized: 'Never synchronized',
         neverSynchronizedHint: 'This file was never read or modified on selected ' +
           'provider. File blocks will be synchronized when needed.  ' +
           'You can also manually replicate the file to selected provider',
         providerName: 'Provider',
-        dataDitribution: 'File blocks',
-        migrateFileDataInto: 'Migrate file data into',
+        dataDistribution: 'Data blocks',
+        migrateFileDataInto: 'Migrate the data into',
         loading: 'Loading file distribution data...',
-        error: 'File distribution table cannot be loaded due to an error',
-        noCurrentProviderSupport: 'Current space is not supported by this ' + 
-          'provider, thus advanced data replication or migration features are ' + 
+        error: 'Data distribution table cannot be loaded due to an error',
+        noCurrentProviderSupport: 'Current space is not supported by this ' +
+          'provider, thus advanced data replication or migration features are ' +
           'not available here. To access them, visit one of the supporting providers.',
         onlySingleProviderSupport: 'Current space is supported by only one provider, ' +
           'thus advanced data replication or migration features are not available.',
-        currentlyTransferredText: 'This file is currently transferred between ' +
+        currentlyTransferredText: 'The data is currently transferred between ' +
           'providers',
         currentlyTransferredLink: 'see ongoing transfers on transfers tab',
         providerRow: {
-          migrationStart: 'Migrate this file to other provider...',
-          migrationInProgress: 'The file is currently migrated from selected provider',
-          migrationDisabled: 'File cannot be migrated from selected provider now',
-          replicationStart: 'Replicate this file to selected provider',
-          replicationInProgress: 'The file is currently replicated to this provider',
-          replicationDisabled: 'File cannot be replicated into selected provider now',
+          migrationStart: 'Migrate the data to other provider...',
+          migrationInProgress: 'The data is currently migrated from selected provider',
+          migrationDisabled: 'The data cannot be migrated from selected provider now',
+          replicationStart: 'Replicate the data to selected provider',
+          replicationInProgress: 'The data is currently replicated to this provider',
+          replicationDisabled: 'The data cannot be replicated into selected provider now',
         },
         migratePopover: {
           migrateItem: {

@@ -17,6 +17,7 @@
       <div class="container-fluid">
         <div class="modal-row large-space">
           {{t "components.dataFilesListToolbar.fileChunksModal.text"}}
+          {{t (concat "components.dataFilesListToolbar.fileChunksModal." (if file.isDir "directory" "file"))}}:
           <strong>{{file.name}}</strong>
         </div>
         <div class="modal-row large-space">
@@ -52,7 +53,7 @@
                     <th class="replica-options"></th>
                     {{#if (not file.isDir)}}
                       <th>
-                        {{t "components.dataFilesListToolbar.fileChunksModal.dataDitribution"}}
+                        {{t "components.dataFilesListToolbar.fileChunksModal.dataDistribution"}}
                       </th>
                     {{/if}}
                   </thead>

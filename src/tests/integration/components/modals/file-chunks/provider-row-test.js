@@ -1,8 +1,14 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import { describe, it, beforeEach } from 'mocha';
 import { setupComponentTest } from 'ember-mocha';
 import hbs from 'htmlbars-inline-precompile';
 import wait from 'ember-test-helpers/wait';
+import { registerService } from '../../../../helpers/stub-service';
+import Ember from 'ember';
+
+const {
+  Service,
+} = Ember;
 
 const P1 = {
   id: 'p1',
@@ -22,12 +28,21 @@ const FILE_DISTRIBUTION_F1_NS = {
   neverSynchronized: false,
 };
 
+const i18n = Service.extend({
+  t() {
+    return '';
+  }
+});
 
 describe('Integration | Component | modals/file chunks/provider row', function () {
   setupComponentTest('modals/file-chunks/provider-row', {
     integration: true
   });
   
+  beforeEach(function () {
+    registerService(this, 'i18n', i18n);
+  });
+
   it('renders provider name', function (done) {
     this.setProperties({
       fileDistribution: FILE_DISTRIBUTION_F1_NS,

@@ -438,12 +438,19 @@ export default {
           'providers',
         currentlyTransferredLink: 'see ongoing transfers on transfers tab',
         providerRow: {
+          replication: 'replication',
+          migration: 'migration',
           migrationStart: 'Migrate the data to other provider...',
-          migrationInProgress: 'The data is currently migrated from selected provider',
-          migrationDisabled: 'The data cannot be migrated from selected provider now',
           replicationStart: 'Replicate the data to selected provider',
-          replicationInProgress: 'The data is currently replicated to this provider',
-          replicationDisabled: 'The data cannot be replicated into selected provider now',
+          disabledSingleProvider: 'is available only with two or more supporting providers',
+          disabledProxyProvider: 'Visit a supporting provider in order to schedule',
+          disabledMigrationIsEmpty: 'Cannot schedule migration as there are no file blocks on this provider',
+          disabledMigrationInProgress: 'The data is currently migrated from selected provider',
+          disabledReplicationIsComplete: 'Cannot schedule replication as all file block are already on this provider',
+          disabledReplicationInProgress: 'The data is currently replicated to selected provider',
+          disabledInProgress: 'Migration/replication unavailable as there are transfers in progress.',
+          disabledMigrationUnknown: 'The data cannot be migrated from selected provider now',
+          disabledReplicationUnknown: 'The data cannot be replicated into selected provider now',
         },
         migratePopover: {
           migrateItem: {

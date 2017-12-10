@@ -110,6 +110,26 @@ export default Component.extend(PromiseLoadingMixin, {
   //#endregion
   
   /**
+   * If transfers options should be disabled for current modal, returns
+   * a non-empty string with main reason
+   * One of: "single-provider", "proxy-provider", null
+   * @type {string|null}
+   */
+  transferDisabledReason: computed(
+    'currentProviderSupport',
+    'onlySingleProviderSupport',
+    function () {
+      if (this.get('onlySingleProviderSupport') === true) {
+        return 'single-provider';
+      } else if (this.get('currentProviderSupport') === false) {
+        return 'proxy-provider';
+      } else {
+        return null;
+      }
+    }
+  ),
+
+  /**
    * True if only one provider supports this space; undefined if cannot resolve
    * number of providers yet (eg. loading)
    * @type {Ember.ComputedProperty<boolean|undefined>} 

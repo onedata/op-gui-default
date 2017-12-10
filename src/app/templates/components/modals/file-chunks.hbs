@@ -62,13 +62,12 @@
                       {{modals/file-chunks/provider-row
                         class=(concat "provider-row-" fb.provider)
                         fileDistribution=fb
-                        transferEnabled=(and (eq currentProviderSupport true) (eq onlySingleProviderSupport false))
+                        transferDisabledReason=transferDisabledReason
                         file=file
                         openMigrationOptions=(action "openMigrationOptions")
                         startReplication=(action "startReplication")
                         fileTransfers=fileTransfers
                         migrationInvoked=(contains fb.provider providerMigrationsInvoked)
-                        renderTransferIcons=(eq onlySingleProviderSupport false)
                       }}
                     {{/each}}
                   </tbody>

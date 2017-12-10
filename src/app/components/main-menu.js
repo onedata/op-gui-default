@@ -47,11 +47,4 @@ export default Ember.Component.extend({
       });
     });    
   },
-
-  actions: {
-    goToItem(itemName) {
-      // menu highlight changed on route activate, see main-route-mixin
-      this.sendAction('goToItem', itemName);
-    }
-  }
 });

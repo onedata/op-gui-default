@@ -20,10 +20,6 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
   session: service(),
 
   actions: {
-    goToItem(name) {
-      this.transitionTo(`onedata.${name}.index`);
-    },
-
     transitionTo() {
       this.transitionTo(...arguments);
     }

@@ -621,5 +621,8 @@ export default {
   error: {
     cannotLoadResource: 'A fatal error occured: the requested resource cannot be loaded.',
     tryRefreshOrContact: 'You can try to refresh the page or contact administrators.'
-  }
+  },
+  onezone: {
+    cannotResolveUrl: 'Cannot resolve Onezone URL',
+  },
 };

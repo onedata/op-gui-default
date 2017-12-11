@@ -229,7 +229,7 @@ export default EmberObject.extend({
     const _currentIdsCache = this.get('_currentIdsCache');
     
     return space.belongsTo(`currentTransferList`).reload()
-      .then(transferList => {        
+      .then(transferList => safeExec(this, () => {        
         const currentIdsNew = transferList.hasMany('list').ids();
         const removedIds = _.difference(
           _currentIdsCache,
@@ -240,12 +240,14 @@ export default EmberObject.extend({
           this.fetchCompleted();
         }
         return transferList.get('list');
-      })
+      }))
       // does not need to update transfer record as for active transfers it
       // changes only status from scheduled to active (we do not present it)
-      .then(list => Promise.all(list.map(t => t.belongsTo('currentStat').reload())))
-      .catch(error => this.set('currentError', error))
-      .finally(() => this.set('currentIsUpdating', false));
+      .then(list => safeExec(this, () => 
+        Promise.all(list.map(t => t.belongsTo('currentStat').reload()))
+      ))
+      .catch(error => safeExec(this, () => this.set('currentError', error)))
+      .finally(() => safeExec(this, () => this.set('currentIsUpdating', false)));
   },
   
   /**
@@ -272,7 +274,7 @@ export default EmberObject.extend({
             completedIdsNew,
             _completedIdsCache
           );
-          this.set('_completedIdsCache', completedIdsNew);
+          safeExec(this, () => this.set('_completedIdsCache', completedIdsNew));
           newIds.forEach(id => {
             const transfer = store.peekRecord('transfer', id);
             if (transfer && transfer.get('isCurrent')) {
@@ -296,8 +298,8 @@ export default EmberObject.extend({
             }
           });
         })
-        .catch(error => this.set(`completedError`, error))
-        .finally(() => this.set(`completedIsUpdating`, false));
+        .catch(error => safeExec(this, () => this.set(`completedError`, error)))
+        .finally(() => safeExec(this, () => this.set(`completedIsUpdating`, false)));
     } else {
       console.debug('util:space-transfers-updater: fetchCompleted skipped');
     }

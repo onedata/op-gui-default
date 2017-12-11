@@ -45,6 +45,9 @@
       position: absolute;
       top: $padding-small-vertical;
       left: $padding-small-vertical;
+      .btn.btn-default:not(.active) {
+        background-color: transparent;
+      }
     }
     .ct-chart {
       padding-top: 40px;

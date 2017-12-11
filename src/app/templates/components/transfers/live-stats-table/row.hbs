@@ -1,4 +1,4 @@
-<tr class="data-row {{if (exists-in _selectedItems record) "selected-row"}} {{if (exists-in _expandedRowIndexes record.transferIndex) "expanded-row"}}"
+<tr class="{{if record.initSelect "animated very-slow notice-blink"}} data-row {{if (exists-in _selectedItems record) "selected-row"}} {{if (exists-in _expandedRowIndexes record.transferIndex) "expanded-row"}}"
   {{action (if (not record.isLoading)
     (if (exists-in _expandedRowIndexes record.transferIndex) "collapseRow" "expandRow")
     "collapseRow"
@@ -44,4 +44,7 @@
       {{partial expandedRowTemplate}}
     </td>
   </tr>
+{{/if}}
+{{#if record.initSelect}}
+  {{test-callback tagName="" callback=(action "expandRow" record.transferIndex)}}
 {{/if}}

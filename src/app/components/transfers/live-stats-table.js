@@ -25,6 +25,7 @@ const {
   getProperties,
   A,
   Object: EmberObject,
+  observer,
 } = Ember;
 
 const START_END_TIME_FORMAT = 'D MMM YYYY H:mm:ss';
@@ -54,6 +55,12 @@ export default Component.extend({
    */
   transferType: 'active',
 
+  /**
+   * Which transfers should be presented as selected on table render
+   * @type {Array<string>|undefined} array of transfer ids
+   */
+  selectedTransfers: undefined,
+  
   /**
    * Global mapping: transferId -> integer index
    * @type {Object}
@@ -121,6 +128,7 @@ export default Component.extend({
     'transfers.@each.{tableDataIsLoaded,status,finishTime,fileType,transferredBytes,transferredFiles,currentStatError}',
     'providers',
     'providersColors',
+    'selectedTransfers.[]',
     function () {
       const _tableDataCache = this.get('_tableDataCache');
       const {
@@ -128,7 +136,8 @@ export default Component.extend({
         providers,
         providersColors,
         i18n,
-      } = this.getProperties('transfers', 'providers', 'providersColors', 'i18n');
+        selectedTransfers,
+      } = this.getProperties('transfers', 'providers', 'providersColors', 'i18n', 'selectedTransfers');
       
       if (transfers && providers) {
         const newTableData = transfers.map((transfer) => transferTableData(
@@ -136,7 +145,8 @@ export default Component.extend({
           transfer,
           providers,
           providersColors,
-          i18n
+          i18n,
+          selectedTransfers
         ));
         mutateArray(
           _tableDataCache,
@@ -163,10 +173,11 @@ export default Component.extend({
       i18n,
       transferType,
       _mobileMode,
-    } = this.getProperties('i18n', 'transferType', '_mobileMode');
+      sortBy,
+    } = this.getProperties('i18n', 'transferType', '_mobileMode', 'sortBy');
     const onlyCompletedColumns = ['finishedAt'];
     const isTransferActive = (transferType === 'active');
-    
+        
     // field `id` is custom and is used only to check which column should be 
     // filtered out for active/completed table version
     const allColumns = [{
@@ -175,18 +186,24 @@ export default Component.extend({
       title: i18n.t(I18N_PREFIX + 'path'),
       component: _mobileMode ?
         undefined : 'transfers/live-stats-table/cell-file-name',
+      sortPrecedence: sortBy === 'path' ? 2 : undefined,
+      sortDirection: sortBy === 'path' ? 'desc' : undefined,
     }, {
       id: 'userName',
       propertyName: 'userName',
       title: i18n.t(I18N_PREFIX + 'userName'),
       component: _mobileMode ?
         undefined : 'transfers/live-stats-table/cell-truncated',
+      sortPrecedence: sortBy === 'userName' ? 2 : undefined,
+      sortDirection: sortBy === 'userName' ? 'desc' : undefined,
     }, {
       id: 'destination',
       propertyName: 'destination',
       title: i18n.t(I18N_PREFIX + 'destination'),
       component: _mobileMode ?
         undefined : 'transfers/live-stats-table/cell-truncated',
+      sortPrecedence: sortBy === 'destination' ? 2 : undefined,
+      sortDirection: sortBy === 'destination' ? 'desc' : undefined,
     }, {
       id: 'startedAt',
       propertyName: 'startedAtReadable',
@@ -207,16 +224,22 @@ export default Component.extend({
       sortedBy: 'totalBytes',
       title: i18n.t(I18N_PREFIX + 'totalBytes'),
       component: 'transfers/live-stats-table/cell-errorable',
+      sortPrecedence: sortBy === 'totalBytes' ? 2 : undefined,
+      sortDirection: sortBy === 'totalBytes' ? 'desc' : undefined,
     }, {
       id: 'totalFiles',
       propertyName: 'totalFiles',
       title: i18n.t(I18N_PREFIX + 'totalFiles'),
       component: 'transfers/live-stats-table/cell-errorable',
+      sortPrecedence: sortBy === 'totalFiles' ? 2 : undefined,
+      sortDirection: sortBy === 'totalFiles' ? 'desc' : undefined,
     }, {
       id: 'status',
       propertyName: 'status',
       title: i18n.t(I18N_PREFIX + 'status'),
       component: 'transfers/live-stats-table/cell-status',
+      sortPrecedence: sortBy === 'status' ? 2 : undefined,
+      sortDirection: sortBy === 'status' ? 'desc' : undefined,
     }];
     if (isTransferActive) {
       return allColumns.filter((column) => 
@@ -237,6 +260,16 @@ export default Component.extend({
     };
   }),
 
+  /**
+   * Also open all selected transfers
+   */
+  scrollToSelectedTransfers: observer('selectedTransfers.[]', function () {
+    const selectedTransfers = this.get('selectedTransfers');
+    if (selectedTransfers) {
+      
+    }
+  }),
+  
   init() {
     this._super(...arguments);
 
@@ -249,6 +282,8 @@ export default Component.extend({
 
     _resizeEventHandler();
     _window.addEventListener('resize', _resizeEventHandler);
+    
+    this.scrollToSelectedTransfers();
   },
 
   willDestroyElement() {
@@ -284,8 +319,9 @@ export default Component.extend({
  * @param {Array<Provider>} providers 
  * @param {Object} providersColors 
  * @param {Ember.Service} i18n i18n service instance (`t` method)
+ * @param {Array<string>|undefined} selectedTransfers
  */
-function transferTableData(transferIndex, transfer, providers, providersColors, i18n) {
+function transferTableData(transferIndex, transfer, providers, providersColors, i18n, selectedTransfers) {
   // searching for destination
   let destination = i18n.t(I18N_PREFIX + 'destinationUnknown');
   const destProvider = _.find(providers, (provider) => 
@@ -330,6 +366,7 @@ function transferTableData(transferIndex, transfer, providers, providersColors, 
   const finishedAtReadable = finishMoment && finishMoment.format(START_END_TIME_FORMAT);
   const totalBytesReadable = bytesToString(transferredBytes);
   const isLoading = (tableDataIsLoaded === false);
+  const initSelect = _.includes(selectedTransfers, transferId);
   
   return EmberObject.create({
     transfer,
@@ -351,5 +388,6 @@ function transferTableData(transferIndex, transfer, providers, providersColors, 
     status,
     isLoading,
     currentStatError,
+    initSelect,
   });
 }

@@ -143,6 +143,9 @@
         min-height: 24px;
       }
     }
+    th {
+      white-space: nowrap;
+    }
     th, td {
       padding: 16px 8px;
       text-align: center;

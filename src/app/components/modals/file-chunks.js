@@ -243,6 +243,16 @@ export default Component.extend(PromiseLoadingMixin, {
   }),
   
   /**
+   * @type {string}
+   */
+  transferIdsQuery: computed('fileTransfers.@each.id', function () {
+    const fileTransfers = this.get('fileTransfers');
+    if (fileTransfers) {
+      return fileTransfers.map(t => get(t, 'id')).join(',');
+    }
+  }),
+  
+  /**
    * @type {Ember.ComputedProperty<Array<string>>|null}
    */
   currentMigrationSourceIds: computed('fileTransfers.@each.migrationSource', function () {

@@ -22,6 +22,8 @@ export default Component.extend({
   classNames: ['show-space-transfers'],
   session: service(),
   
+  //#region External properties
+  
   /**
    * Space model, which transfers will be listed
    * @virtual
@@ -30,12 +32,24 @@ export default Component.extend({
   space: undefined,
   
   /**
+   * @type {string|undefined}
+   */
+  sortBy: undefined,
+  
+  /**
+   * @type {Array<string>|undefined}
+   */
+  selectedProviders: undefined,
+  
+  /**
    * What speed (input, output) should be presented per provider
    * on throughput chart.
    * One of: out, in
    * @type {string}
    */
   transfersPieChartDirection: 'out',
+  
+  //#region External properties
   
   /**
    * Alias for Id of this provider - used for checking if transfers can be fetched

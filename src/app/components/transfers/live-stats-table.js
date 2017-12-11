@@ -118,7 +118,7 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   _tableData: computed(
-    'transfers.@each.{tableDataIsLoaded,status,finishTime,fileType,transferredBytes,transferredFiles}',
+    'transfers.@each.{tableDataIsLoaded,status,finishTime,fileType,transferredBytes,transferredFiles,currentStatError}',
     'providers',
     'providersColors',
     function () {
@@ -206,10 +206,12 @@ export default Component.extend({
       propertyName: 'totalBytesReadable',
       sortedBy: 'totalBytes',
       title: i18n.t(I18N_PREFIX + 'totalBytes'),
+      component: 'transfers/live-stats-table/cell-errorable',
     }, {
       id: 'totalFiles',
       propertyName: 'totalFiles',
       title: i18n.t(I18N_PREFIX + 'totalFiles'),
+      component: 'transfers/live-stats-table/cell-errorable',
     }, {
       id: 'status',
       propertyName: 'status',
@@ -303,6 +305,7 @@ function transferTableData(transferIndex, transfer, providers, providersColors, 
     userName,
     status,
     tableDataIsLoaded,
+    currentStatError,
   } = getProperties(
     transfer,
     'id',
@@ -313,7 +316,8 @@ function transferTableData(transferIndex, transfer, providers, providersColors, 
     'currentStat',
     'userName',
     'status',
-    'tableDataIsLoaded'
+    'tableDataIsLoaded',
+    'currentStatError'
   );
   const startMoment = moment.unix(startTimestamp);
   const finishMoment = moment.unix(finishTimestamp);
@@ -346,5 +350,6 @@ function transferTableData(transferIndex, transfer, providers, providersColors, 
     totalFiles: transferredFiles,
     status,
     isLoading,
+    currentStatError,
   });
 }

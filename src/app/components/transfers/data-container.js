@@ -252,6 +252,18 @@ export default Component.extend({
   }),
   
   /**
+   * True if at least one current transfer's current stat cannot be loaded
+   * @type {boolean}
+   */
+  throughputChartError: computed('currentTransfers.@each.currentStatError', function () {
+    const currentTransfers = this.get('currentTransfers');
+    if (currentTransfers) {
+      // using every, because this kind of array doesn't have "some"
+      return !currentTransfers.every(t => !t || !get(t, 'currentStatError'));
+    }
+  }),
+  
+  /**
    * Watches updater settings dependecies and changes its settings
    */
   configureTransfersUpdater: observer(

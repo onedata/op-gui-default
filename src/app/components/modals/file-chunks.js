@@ -110,6 +110,26 @@ export default Component.extend(PromiseLoadingMixin, {
   //#endregion
   
   /**
+   * If transfers options should be disabled for current modal, returns
+   * a non-empty string with main reason
+   * One of: "single-provider", "proxy-provider", null
+   * @type {string|null}
+   */
+  transferDisabledReason: computed(
+    'currentProviderSupport',
+    'onlySingleProviderSupport',
+    function () {
+      if (this.get('onlySingleProviderSupport') === true) {
+        return 'single-provider';
+      } else if (this.get('currentProviderSupport') === false) {
+        return 'proxy-provider';
+      } else {
+        return null;
+      }
+    }
+  ),
+
+  /**
    * True if only one provider supports this space; undefined if cannot resolve
    * number of providers yet (eg. loading)
    * @type {Ember.ComputedProperty<boolean|undefined>} 
@@ -129,12 +149,17 @@ export default Component.extend(PromiseLoadingMixin, {
    * File distribution collection sorted (TODO: sort by provider name)
    * @type {Ember.ComputedProperty<Array<FileDistribution>|undefined>}
    */
-  fileBlocksSorted: computed(
+  fileDistributionsSorted: computed(
+    'providers',
     'fileBlocks.@each.provider',
-    function getFileBlocksSorted() {
+    function getFileDistributionsSorted() {
       const fileBlocks = this.get('fileBlocks');
-      if (fileBlocks) {
-        return _.sortBy(this.get('fileBlocks').toArray(), fb => get(fb, 'provider'));
+      const providers = this.get('providers');
+      if (fileBlocks && providers) {
+        return _.sortBy(
+          this.get('fileBlocks').toArray(),
+          fb => get(_.find(providers, p => get(p, 'id') === get(fb, 'provider')), 'name')
+        );
       }
     }
   ),
@@ -147,7 +172,7 @@ export default Component.extend(PromiseLoadingMixin, {
   }),
 
   /**
-   * @type {Array<PromiseObject<Provider>>}
+   * @type {Array<Provider>|null}
    */
   providers: computed.reads('space.providerList.queryList.content'),
   

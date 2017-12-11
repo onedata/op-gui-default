@@ -44,6 +44,30 @@ describe('Integration | Component | transfers/data container', function () {
       },
     });
     this.set('space', space);
+    
+    const transfersErrored = A([
+      EmberObject.create({
+        destination: 'p1',
+        bytesPerSec: bps1,
+        tableDataIsLoaded: true,
+        currentStatError: true,
+      }),
+      EmberObject.create({
+        destination: 'p2',
+        bytesPerSec: bps2,
+        tableDataIsLoaded: true,
+        currentStatError: false,
+      }),
+    ]);
+    
+    const spaceErrored = EmberObject.create({
+      currentTransferList: {
+        list: {
+          content: transfersErrored,
+        },
+      },
+    });
+    this.set('spaceErrored', spaceErrored);
   });
 
   it('yields destinationProviderIds', function (done) {
@@ -134,4 +158,35 @@ describe('Integration | Component | transfers/data container', function () {
       done();
     });
   });
+
+  it('yields throughputChartError as true if any of current transfers has currentStatError',
+    function (done) {
+      let throughputChartError;
+      const checkYield = function (tc) {
+        throughputChartError = tc.get('throughputChartError');
+      };
+      this.set('checkYield', checkYield);
+
+      this.render(hbs`
+        {{#transfers/data-container
+          currentTransfersLoaded=true
+          isSupportedByCurrentProvider=true
+          transfersUpdaterEnabled=false
+          space=spaceErrored
+          as |tData|
+        }}
+          {{test-callback
+            callback=checkYield
+            throughputChartError=tData.throughputChartError
+          }}
+        {{/transfers/data-container}}
+      `);
+
+      wait().then(() => {
+        expect(throughputChartError).to.be.true;
+        done();
+      });
+    }
+  );
+  
 });

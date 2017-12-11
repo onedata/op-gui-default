@@ -3,26 +3,24 @@
     {{providerName}}
   {{/truncated-string}}
 </td>
-{{#if (eq renderTransferIcons true)}}
-  <td class="transfer-btns">
-    <div class="btn-group">
-      {{!-- TODO: a partial loading state only for these buttons
-        can be done to render distribution first --}}
-      <a class={{concat migrateButtonClasses " btn-migrate"}}
-        {{action "openMigrationOptions" file providerId}}>
-        {{#one-icon icon="migrate"}}
-          {{bs-tooltip placement="top" title=migrateButtonTooltip}}
-        {{/one-icon}}
-      </a>
-      <a class={{concat replicateButtonClasses " btn-replicate"}}
-        {{action "startReplication" file providerId}}>
-        {{#one-icon icon="replicate"}}
-          {{bs-tooltip placement="top" title=replicateButtonTooltip}}
-        {{/one-icon}}
-      </a>
-    </div>
-  </td>
-{{/if}}
+<td class="transfer-btns">
+  <div class="btn-group">
+    {{!-- TODO: a partial loading state only for these buttons
+      can be done to render distribution first --}}
+    <a class={{concat migrateButtonClasses " btn-migrate"}}
+      {{action "openMigrationOptions" file providerId}}>
+      {{#one-icon icon="migrate"}}
+        {{bs-tooltip placement="top" title=migrateButtonTooltip}}
+      {{/one-icon}}
+    </a>
+    <a class={{concat replicateButtonClasses " btn-replicate"}}
+      {{action "startReplication" file providerId}}>
+      {{#one-icon icon="replicate"}}
+        {{bs-tooltip placement="top" title=replicateButtonTooltip}}
+      {{/one-icon}}
+    </a>
+  </div>
+</td>
 {{#if (not file.isDir)}}
   <td class="chunks">
     {{#if neverSynchronized}}

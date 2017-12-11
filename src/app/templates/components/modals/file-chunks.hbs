@@ -17,6 +17,7 @@
       <div class="container-fluid">
         <div class="modal-row large-space">
           {{t "components.dataFilesListToolbar.fileChunksModal.text"}}
+          {{t (concat "components.dataFilesListToolbar.fileChunksModal." (if file.isDir "directory" "file"))}}:
           <strong>{{file.name}}</strong>
         </div>
         <div class="modal-row large-space">
@@ -36,6 +37,8 @@
               {{#if (eq currentProviderSupport false)}}
                 <div class="alert alert-info">
                   {{t "components.dataFilesListToolbar.fileChunksModal.noCurrentProviderSupport"}}
+                  {{!-- in one line, because dot should be on the end --}}
+                  {{#link-to "onezone.providers"}}{{t "components.dataFilesListToolbar.fileChunksModal.providersLink"}}{{/link-to}}.
                 </div>
               {{/if}}
             {{/if}}
@@ -49,27 +52,24 @@
                     <th>
                       {{t "components.dataFilesListToolbar.fileChunksModal.providerName"}}
                     </th>
-                    {{#if (eq onlySingleProviderSupport false)}}
-                      <th class="replica-options"></th>
-                    {{/if}}
+                    <th class="replica-options"></th>
                     {{#if (not file.isDir)}}
                       <th>
-                        {{t "components.dataFilesListToolbar.fileChunksModal.dataDitribution"}}
+                        {{t "components.dataFilesListToolbar.fileChunksModal.dataDistribution"}}
                       </th>
                     {{/if}}
                   </thead>
                   <tbody>
-                    {{#each fileBlocksSorted as |fb|}}
+                    {{#each fileDistributionsSorted as |fd|}}
                       {{modals/file-chunks/provider-row
-                        class=(concat "provider-row-" fb.provider)
-                        fileDistribution=fb
-                        currentProviderSupport=currentProviderSupport
+                        class=(concat "provider-row-" fd.provider)
+                        fileDistribution=fd
+                        transferDisabledReason=transferDisabledReason
                         file=file
                         openMigrationOptions=(action "openMigrationOptions")
                         startReplication=(action "startReplication")
                         fileTransfers=fileTransfers
-                        migrationInvoked=(contains fb.provider providerMigrationsInvoked)
-                        renderTransferIcons=(eq onlySingleProviderSupport false)
+                        migrationInvoked=(contains fd.provider providerMigrationsInvoked)
                       }}
                     {{/each}}
                   </tbody>

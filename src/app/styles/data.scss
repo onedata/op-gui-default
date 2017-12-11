@@ -292,6 +292,17 @@
       text-transform: initial;
     }
   }
+  .loader-container {
+    position: relative;
+    height: 130px;
+  }
+  .loading-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
 }
 
 .file-blocks-table {

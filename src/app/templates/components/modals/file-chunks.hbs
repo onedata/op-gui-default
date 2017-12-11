@@ -98,12 +98,12 @@
               {{/if}}
 
             {{else}}
-              <div class="one-row">
-                <div class="loading-throbber"></div>
+              <div class="loader-container">
+                {{spin-spinner-block sizeClass="md" class="centered"}}
                 <div class="loading-label">
                   {{t "components.dataFilesListToolbar.fileChunksModal.loading"}}
                 </div>
-              </div>            
+              </div>          
             {{/if}}
             
           {{/if}}

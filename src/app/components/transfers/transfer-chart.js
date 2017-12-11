@@ -160,14 +160,12 @@ export default Component.extend({
    */
   _statsNumberPerLabel: computed('timeUnit', function() {
     switch (this.get('timeUnit')) {
-      case 'month':
-        return 2;
       case 'day':
-        return 3;
+        return 4;
       case 'hour':
         return 5;
       default:
-        return 1;
+        return 2;
     }
   }),
 

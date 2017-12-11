@@ -149,12 +149,17 @@ export default Component.extend(PromiseLoadingMixin, {
    * File distribution collection sorted (TODO: sort by provider name)
    * @type {Ember.ComputedProperty<Array<FileDistribution>|undefined>}
    */
-  fileBlocksSorted: computed(
+  fileDistributionsSorted: computed(
+    'providers',
     'fileBlocks.@each.provider',
-    function getFileBlocksSorted() {
+    function getFileDistributionsSorted() {
       const fileBlocks = this.get('fileBlocks');
-      if (fileBlocks) {
-        return _.sortBy(this.get('fileBlocks').toArray(), fb => get(fb, 'provider'));
+      const providers = this.get('providers');
+      if (fileBlocks && providers) {
+        return _.sortBy(
+          this.get('fileBlocks').toArray(),
+          fb => get(_.find(providers, p => get(p, 'id') === get(fb, 'provider')), 'name')
+        );
       }
     }
   ),
@@ -167,7 +172,7 @@ export default Component.extend(PromiseLoadingMixin, {
   }),
 
   /**
-   * @type {Array<PromiseObject<Provider>>}
+   * @type {Array<Provider>|null}
    */
   providers: computed.reads('space.providerList.queryList.content'),
   

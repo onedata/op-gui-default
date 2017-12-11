@@ -60,16 +60,16 @@
                     {{/if}}
                   </thead>
                   <tbody>
-                    {{#each fileBlocksSorted as |fb|}}
+                    {{#each fileDistributionsSorted as |fd|}}
                       {{modals/file-chunks/provider-row
-                        class=(concat "provider-row-" fb.provider)
-                        fileDistribution=fb
+                        class=(concat "provider-row-" fd.provider)
+                        fileDistribution=fd
                         transferDisabledReason=transferDisabledReason
                         file=file
                         openMigrationOptions=(action "openMigrationOptions")
                         startReplication=(action "startReplication")
                         fileTransfers=fileTransfers
-                        migrationInvoked=(contains fb.provider providerMigrationsInvoked)
+                        migrationInvoked=(contains fd.provider providerMigrationsInvoked)
                       }}
                     {{/each}}
                   </tbody>

@@ -62,8 +62,7 @@ export default Component.extend(ClickOutside, {
    */
   disabledProviderIds: undefined,
   
-  // TODO: sort by name (must be done in file-chunks modal also)
-  providersSorting: ['id'],
+  providersSorting: ['name'],
   providersSorted: computed.sort('providers', 'providersSorting'),
   
   bindSelector: computed('sourceProvider.id', function () {

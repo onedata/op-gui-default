@@ -263,14 +263,18 @@ export default Component.extend(PromiseLoadingMixin, {
   },
 
   _fastTransfersUpdater() {
-    if (this.get('transfersUpdater.pollingTimeCurrent') !== FAST_POLLING_TIME) {
-      this.set('transfersUpdater.pollingTimeCurrent', FAST_POLLING_TIME);
+    const transfersUpdater = this.get('transfersUpdater');
+    if (transfersUpdater &&
+      transfersUpdater.get('pollingTimeCurrent') !== FAST_POLLING_TIME) {
+      transfersUpdater.set('pollingTimeCurrent', FAST_POLLING_TIME);
     }
   },
 
   _slowTransfersUpdater() {
-    if (this.get('transfersUpdater.pollingTimeCurrent') !== SLOW_POLLING_TIME) {
-      this.set('transfersUpdater.pollingTimeCurrent', SLOW_POLLING_TIME);
+    const transfersUpdater = this.get('transfersUpdater');
+    if (transfersUpdater &&
+      transfersUpdater.get('pollingTimeCurrent') !== SLOW_POLLING_TIME) {
+      transfersUpdater.set('pollingTimeCurrent', SLOW_POLLING_TIME);
     }
   },
   
@@ -331,18 +335,22 @@ export default Component.extend(PromiseLoadingMixin, {
 
   _fastDistributionUpdater() {
     const isDir = this.get('file.isDir');
+    const distributionUpdater = this.get('distributionUpdater');
     if (!isDir) {
-      if (this.get('distributionUpdater.interval') !== FAST_POLLING_TIME) {
-        this.set('distributionUpdater.interval', FAST_POLLING_TIME);
+      if (distributionUpdater &&
+        distributionUpdater.get('interval') !== FAST_POLLING_TIME) {
+        distributionUpdater.set('interval', FAST_POLLING_TIME);
       }
     }
   },
 
   _slowDistributionUpdater() {
     const isDir = this.get('file.isDir');
+    const distributionUpdater = this.get('distributionUpdater');
     if (!isDir) {
-      if (this.get('distributionUpdater.interval') !== SLOW_POLLING_TIME) {
-        this.set('distributionUpdater.interval', SLOW_POLLING_TIME);
+      if (distributionUpdater &&
+        distributionUpdater.get('interval') !== SLOW_POLLING_TIME) {
+        distributionUpdater.set('interval', SLOW_POLLING_TIME);
       }
     }
   },

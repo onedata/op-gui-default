@@ -431,7 +431,8 @@ export default {
         error: 'Data distribution table cannot be loaded due to an error',
         noCurrentProviderSupport: 'Current space is not supported by this ' +
           'provider, thus advanced data replication or migration features are ' +
-          'not available here. To access them, visit one of the supporting providers.',
+          'not available here. To access them, visit one of the supporting ',
+        providersLink: 'providers',
         onlySingleProviderSupport: 'Current space is supported by only one provider, ' +
           'thus advanced data replication or migration features are not available.',
         currentlyTransferredText: 'The data is currently transferred between ' +

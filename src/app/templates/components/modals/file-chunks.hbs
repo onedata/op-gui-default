@@ -37,6 +37,8 @@
               {{#if (eq currentProviderSupport false)}}
                 <div class="alert alert-info">
                   {{t "components.dataFilesListToolbar.fileChunksModal.noCurrentProviderSupport"}}
+                  {{!-- in one line, because dot should be on the end --}}
+                  {{#link-to "onezone.providers"}}{{t "components.dataFilesListToolbar.fileChunksModal.providersLink"}}{{/link-to}}.
                 </div>
               {{/if}}
             {{/if}}

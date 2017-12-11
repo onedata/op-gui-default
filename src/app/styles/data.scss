@@ -308,6 +308,11 @@
 .file-blocks-table {
   margin-bottom: 0;
   table-layout: fixed;
+  
+  > thead > th {
+    padding: 8px;
+  }
+  
   th:first-of-type {
     padding-right: 20px;
   }
@@ -321,7 +326,7 @@
   $file-chunks-height: 20px;
   .file-chunks {
     position: relative;
-    
+        
     width: $file-chunks-width;
     height: $file-chunks-height;
 
@@ -379,7 +384,10 @@
     padding-right: 10px;
   }
   .chunks {
-    width: 340px;
+    width: 337px;
+    .file-chunks-bar {
+      float: right;
+    }
   }
   .transfer-btns {
     .btn-group {

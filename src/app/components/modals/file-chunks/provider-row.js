@@ -86,7 +86,7 @@ export default Component.extend({
    * @type {boolean}
    */
   transferEnabled: computed('transferDisabledReason', function () {
-    return !isEmpty(this.get('transferDisabledReason'));
+    return isEmpty(this.get('transferDisabledReason'));
   }),
 
   /**

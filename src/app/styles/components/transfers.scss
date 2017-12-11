@@ -44,7 +44,7 @@
     .btn-group {
       position: absolute;
       top: $padding-small-vertical;
-      left: $padding-small-vertical;
+      right: $padding-small-vertical;
       .btn.btn-default:not(.active) {
         background-color: transparent;
       }
@@ -86,10 +86,17 @@
   }
 
   .one-collapsible-list {
+    .btn-group {
+      left: 50%;
+      right: initial;
+      transform: translateX(-50%);
+    }
     .chart-row {
-      overflow-x: auto;
-      padding-top: 100px;
+      padding-top: 120px;
       margin-top: -100px;
+    }
+    .loadable-row {
+      overflow-x: auto;
     }
     svg {
       min-width: 600px;

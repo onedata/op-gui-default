@@ -242,10 +242,14 @@ export default Component.extend({
     }
   ),
 
+  /**
+   * Global colors for each provider
+   * @type {Ember.ComputedProperty<Object>}
+   */
   providersColors: computed('providers.@each.id', function () {
     const providers = this.get('providers');
     if (providers) {
-      const providerIds = providers.mapBy('id');
+      const providerIds = providers.mapBy('id').sort();
       const colors = generateColors(providerIds.length);
       return _.zipObject(providerIds, colors);
     }

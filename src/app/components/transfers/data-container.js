@@ -29,6 +29,7 @@ const {
   inject: { service },
   observer,
   isEmpty,
+  run,
 } = Ember;
 
 import SpaceTransfersUpdater from 'op-worker-gui/utils/space-transfers-updater';
@@ -36,6 +37,8 @@ import providerTransfers from 'op-worker-gui/utils/transfers/provider-transfers'
 import providerTransferConnections from 'op-worker-gui/utils/transfers/provider-transfer-connections';
 import mutateArray from 'ember-cli-onedata-common/utils/mutate-array';
 import generateColors from 'op-worker-gui/utils/generate-colors';
+
+const RE_TRANSFER_ROW_ID = /transfer-row-(.*)/;
 
 export default Component.extend({
   classNames: ['transfers-data-container'],
@@ -48,6 +51,12 @@ export default Component.extend({
    * @type {Space}
    */
   space: undefined,
+  
+  /**
+   * @virtual
+   * @type {Array<string>|undefined}
+   */
+  selectedTransfers: undefined,
 
   /**
    * @public
@@ -115,6 +124,20 @@ export default Component.extend({
     }
   ),
   
+  /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  allTablesLoaded: computed(
+    'providersLoaded',
+    'currentTransfersLoaded',
+    'completedTransfersLoaded',
+    function () {
+      return this.get('providersLoaded') &&
+        this.get('currentTransfersLoaded'),
+        this.get('completedTransfersLoaded');
+    }
+  ),
+  
   //#endregion
   
   /**
@@ -124,6 +147,12 @@ export default Component.extend({
    * @type {Ember.Array<ProviderTransfer>}
    */
   _providerTransfersCache: null,
+  
+  /**
+   * If true, this instance of data container already scrolled to selected transfers
+   * @type {boolean}
+   */
+  _scrolledToSelectedTransfers: false,
   
   /**
    * Each object is a one-direction transfer from one provider to another.
@@ -287,6 +316,27 @@ export default Component.extend({
       });
     }
   ),
+    
+  observeScrollToSelectedTransfers: observer('allTablesLoaded', function () { 
+    if (this.get('_scrolledToSelectedTransfers') === false && this.get('allTablesLoaded')) {
+      run.next(() => this._scrollToFirstSelectedTransfer());
+      this.set('_scrolledToSelectedTransfers', true);
+    }
+  }),
+  
+  _scrollToFirstSelectedTransfer() {
+    const selectedTransfers = this.get('selectedTransfers');
+    
+    const trs = this.$('tr.transfer-row').toArray();
+    for (let i = 0; i < trs.length; i++) {
+      const transferElement = trs[i];
+      const tid = transferElement.id.match(RE_TRANSFER_ROW_ID)[1];
+      if (_.includes(selectedTransfers, tid)) {
+        $('#content-scroll').scrollTop($(transferElement).offset().top - 80);
+        break;
+      }
+    }
+  },
   
   init() {
     this._super(...arguments);
@@ -297,7 +347,9 @@ export default Component.extend({
     } = this.getProperties(
       '_transfersUpdaterEnabled',
       'space',
-      'store'
+      'store',
+      // just enable observers
+      'allTablesLoaded'
     );
     
     const transfersUpdater = SpaceTransfersUpdater.create({

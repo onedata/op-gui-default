@@ -1,4 +1,6 @@
-<tr class="data-row {{if (exists-in _selectedItems record) "selected-row"}} {{if (exists-in _expandedRowIndexes record.transferIndex) "expanded-row"}}"
+<tr
+  id="transfer-row-{{record.transferId}}"
+  class="transfer-row data-row {{if (exists-in _selectedItems record) "selected-row"}} {{if (exists-in _expandedRowIndexes record.transferIndex) "expanded-row"}}"
   {{action (if (not record.isLoading)
     (if (exists-in _expandedRowIndexes record.transferIndex) "collapseRow" "expandRow")
     "collapseRow"
@@ -13,7 +15,7 @@
   {{else}}
     {{#each processedColumns as |column|}}
       {{#if column.isVisible}}
-        <td class="{{if record.initSelect "animated hinge notice-blink"}} {{column.className}}">
+        <td class="{{if record.initSelect "animated very-slow notice-blink"}} {{column.className}}">
           {{#if column.routeName}}
             {{#link-to column.routeName record.id}}
               {{#if column.propertyName}}

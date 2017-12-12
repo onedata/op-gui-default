@@ -50,6 +50,12 @@ export default Component.extend({
   providers: undefined,
   
   /**
+   * @virtual 
+   * @type {Function}
+   */
+  notifyLoaded: () => {},
+  
+  /**
    * Type of transfers. May be `active` or `completed`
    * @type {string}
    */

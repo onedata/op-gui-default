@@ -15,7 +15,11 @@
       {{#loading-container
         isLoading=(not (eq isSupportedByCurrentProvider true))
       }}
-        {{#transfers/data-container space=space as |tData|}}
+        {{#transfers/data-container
+          space=space
+          selectedTransfers=selectedTransfers
+          as |tData|
+        }}
           <div class="row row-active-transfers">
             <div class="col-xs-12 col-md-7 col-providers-map map-column">
               <h2>
@@ -108,7 +112,7 @@
               <div class="row loadable-row">
                 {{#loading-container isLoading=(or
                     (not tData.providersLoaded)
-                    (not tData.currentTransfersLoaded)
+                    (not tData.completedTransfersLoaded)
                   )
                   class="loading-completed-table"
                 }}

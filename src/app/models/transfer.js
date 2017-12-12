@@ -16,18 +16,6 @@ const {
 
 export default Model.extend({
   /**
-   * One of:
-   * - scheduled
-   * - active
-   * - finalizing
-   * - skipped
-   * - completed
-   * - cancelled
-   * - failed
-   */
-  status: attr('string'),
-  
-  /**
    * Id of Provider that is destination of this transfer
    */
   destination: attr('string'),
@@ -44,6 +32,11 @@ export default Model.extend({
    * Id of provider that will invalidate the file after transfer
    */
   migrationSource: attr('string'),
+  
+  /**
+   * If true, the transfer is in progress (should be in current transfers collection)
+   */
+  isOngoing: attr('boolean'),
   
   /**
    * Absolute file or directory path that is transferred
@@ -74,6 +67,8 @@ export default Model.extend({
   hourStat: belongsTo('transfer-time-stat'),
   dayStat: belongsTo('transfer-time-stat'),
   monthStat: belongsTo('transfer-time-stat'),
+  
+  status: computed.reads('currentStat.status'),
   
   /**
    * Space in which this transfer is done
@@ -123,7 +118,5 @@ export default Model.extend({
     return this.get('currentStat.isSettled') && this.get('currentStat.content') == null;
   }),
   
-  isCurrent: computed('status', function () {
-    return _.includes(['finalizing', 'active', 'scheduled'], this.get('status'));
-  }),
+  isCurrent: computed.reads('isOngoing'),
 });

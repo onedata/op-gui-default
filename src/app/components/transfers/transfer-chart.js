@@ -19,11 +19,13 @@ import stackedLineMask from 'op-worker-gui/utils/chartist/stacked-line-mask';
 import TransferTimeStatUpdater from 'op-worker-gui/utils/transfer-time-stat-updater';
 import customCss from 'op-worker-gui/utils/chartist/custom-css';
 import centerXLabels from 'op-worker-gui/utils/chartist/center-x-labels';
+import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object'; 
 
 const {
   Component,
   computed,
   get,
+  RSVP: { Promise },
   inject: {
     service,
   },
@@ -81,20 +83,31 @@ export default Component.extend({
    * True if data for chart is loaded
    * @type {boolean}
    */
-  _statsLoaded: computed('_timeStatForUnit.stats', function() {
+  _statsLoaded: computed('_timeStatForUnit.isLoaded', function() {
     return this.get('_timeStatForUnit.isLoaded');
   }),
 
   /**
-   * Object with stats for specified time unit.
-   * @type {Ember.ComputedProperty<Promise<TransferTimeStat>>}
+   * Proxy object that resolves with stats for specified time unit.
+   * @type {Ember.ComputedProperty<PromiseObject<TransferTimeStat>>}
    */
   _timeStatForUnit: computed('transfer', 'timeUnit', function () {
     const {
       transfer,
       timeUnit,
     } = this.getProperties('transfer', 'timeUnit');
-    return get(transfer, `${timeUnit}Stat`);
+    if (get(transfer, 'isLoaded')) {
+      return get(transfer, `${timeUnit}Stat`);
+    } else {
+      const promise = new Promise((resolve, reject) => {
+        transfer.on('didLoad', () => {
+          get(transfer, `${timeUnit}Stat`)
+            .then(resolve)
+            .catch(reject);
+        });
+      });
+      return PromiseObject.create({ promise });
+    }
   }),
   
   /**
@@ -409,6 +422,18 @@ export default Component.extend({
   init() {
     this._super(...arguments);
     this.set('_chartValues', []);
+    const transfer = this.get('transfer');
+    
+    if (get(transfer, 'isLoaded')) {
+      this._createTimeStatsUpdater();
+    } else {
+      transfer.on('didLoad', () => {
+        this._createTimeStatsUpdater();
+      });
+    }
+  },
+  
+  _createTimeStatsUpdater() {
     const transfer = this.get('transfer');
     const isCurrent = get(transfer, 'isCurrent');
     const gettingStats = this.get('_timeStatForUnit');

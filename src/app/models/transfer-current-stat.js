@@ -19,4 +19,16 @@ export default Model.extend({
   transferredBytes: attr('number'),
   transferredFiles: attr('number'),
   bytesPerSec: attr('object'),
+  
+  /**
+   * One of:
+   * - scheduled
+   * - active
+   * - finalizing
+   * - skipped
+   * - completed
+   * - cancelled
+   * - failed
+   */
+  status: attr('string'),
 });

@@ -17,13 +17,6 @@ const {
   inject: { service },
 } = Ember;
 
-const ICON_MAPPING = {
-  file: 'file',
-  dir: 'folder',
-  deleted: 'close',
-  unknown: 'sign-warning',
-};
-
 export default Component.extend({
   classNames: 'cell-file-name',
   i18n: service(),
@@ -37,13 +30,27 @@ export default Component.extend({
    */
   fileType: computed.reads('record.fileType'),
   filePath: computed.reads('record.path'),
+  totalFiles: computed.reads('record.totalFiles'),
   
   fileName: computed('filePath', function () {
     return fileName(this.get('filePath'));
   }),
   
-  icon: computed('fileType', function () {
-    return ICON_MAPPING[this.get('fileType')];
+  icon: computed('fileType', 'totalFiles', function () {
+    const {
+      fileType,
+      totalFiles
+    } = this.getProperties('fileType', 'totalFiles');
+    switch (fileType) {
+      case 'file':
+        return 'file';
+      case 'dir':
+        return 'folder';
+      case 'deleted':
+        return totalFiles > 1 ? 'folder-deleted' : 'file-deleted';
+      default:
+        return 'unknown';
+    }
   }),
   
   hint: computed('filePath', 'fileType', function () {

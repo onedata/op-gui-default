@@ -120,8 +120,8 @@
 
 // Generic custom animations
 
-@include blink-keyframes(notice-blink-yellow, background-color, $color-one-yellow, initial);
+@include blink-keyframes(notice-blink-mint, background-color, $color-one-mint, initial);
 
-.notice-blink {
-  animation-name: notice-blink-yellow;
+.notice-blink, .notice-blink-mint {
+    animation-name: notice-blink-mint; 
 }

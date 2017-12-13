@@ -5,6 +5,9 @@
 </div>
 <ul class="dropdown-menu open dropdown-menu-list space-dropdown-menu dropdown-menu-settings {{posXClasses}}">
   {{#each menuActions as |act index|}}
-    <li {{action "runAction" index}}><div class="menu-item">{{act.title}}</div></li>
+    <li {{action "runAction" index}}>
+      <span class="item-icon">{{one-icon icon=act.icon}}</span>
+      <span class="item-label">{{act.title}}</span>
+    </li>
   {{/each}}
 </ul>

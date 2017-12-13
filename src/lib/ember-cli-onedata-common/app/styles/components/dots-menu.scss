@@ -29,7 +29,16 @@
 
   .dropdown-menu {
     &:before {
-      top: 10px;
+      top: 13px;
     }
+  }
+
+  .item-label {
+    vertical-align: text-top;
+  }
+
+  .item-icon {
+    line-height: 100%;
+    vertical-align: middle;
   }
 }

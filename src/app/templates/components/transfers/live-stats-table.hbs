@@ -5,10 +5,10 @@
     {{#one-collapsible-list as |list|}}
       {{#each _tableData as |tableRowData|}}
         {{#list.item as |listItem|}}
-          {{#listItem.header disableToggleIcon=(not (eq transferType "active"))}}
+          {{#listItem.header disableToggleIcon=(eq transferType "active")}}
             {{transfers/live-stats-table/cell-file-name record=tableRowData}}
           {{/listItem.header}}
-          {{#if (not (eq transferType "active"))}}
+          {{#if (eq transferType "active")}}
             {{transfers/live-stats-table/cell-actions record=tableRowData}}
           {{/if}}
           {{#listItem.content}}

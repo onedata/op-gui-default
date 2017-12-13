@@ -56,7 +56,7 @@ export default Component.extend(ClickOutside, {
       this.set('refreshPosition', bindFloater(this.$('.dropdown-menu'), bindElement, {
         posX,
         posY: 'top',
-        offsetY: -3,
+        offsetY: -5,
         offsetX: posX === 'right' ? bindElement.outerWidth() : 0,
       }));
     }

@@ -183,8 +183,7 @@ export default Component.extend({
       sortBy,
     } = this.getProperties('i18n', 'transferType', '_mobileMode', 'sortBy');
     const onlyCompletedColumns = ['finishedAt'];
-    // TODO add actions column
-    const onlyActiveColumns = [];
+    const onlyActiveColumns = ['actions'];
     const isTransferActive = (transferType === 'active');
         
     // field `id` is custom and is used only to check which column should be 
@@ -378,6 +377,7 @@ function transferTableData(transferIndex, transfer, providers, providersColors, 
   const actions = [Ember.Object.create({
     title: i18n.t(I18N_PREFIX + 'cancelTransfer'),
     action: () => console.log('todo cancel transfer action'),
+    icon: 'cancelled',
   })];
   
   return EmberObject.create({

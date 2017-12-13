@@ -183,6 +183,8 @@ export default Component.extend({
       sortBy,
     } = this.getProperties('i18n', 'transferType', '_mobileMode', 'sortBy');
     const onlyCompletedColumns = ['finishedAt'];
+    // TODO add actions column
+    const onlyActiveColumns = [];
     const isTransferActive = (transferType === 'active');
         
     // field `id` is custom and is used only to check which column should be 
@@ -247,13 +249,22 @@ export default Component.extend({
       component: 'transfers/live-stats-table/cell-status',
       sortPrecedence: sortBy === 'status' ? 2 : undefined,
       sortDirection: sortBy === 'status' ? 'desc' : undefined,
+    }, {
+      id: 'actions',
+      component: 'transfers/live-stats-table/cell-actions',
+      className: 'transfer-actions-cell',
+      notClickable: true,
+      headerClassName: 'transfer-actions-cell',
+      disableSorting: true,
     }];
     if (isTransferActive) {
       return allColumns.filter((column) => 
         onlyCompletedColumns.indexOf(column.id) === -1
       );
     } else {
-      return allColumns;
+      return allColumns.filter((column) => 
+        onlyActiveColumns.indexOf(column.id) === -1
+      );
     }
   }),
 
@@ -362,6 +373,11 @@ function transferTableData(transferIndex, transfer, providers, providersColors, 
   const totalBytesReadable = bytesToString(transferredBytes);
   const isLoading = (tableDataIsLoaded === false);
   const initSelect = _.includes(selectedTransferIds, transferId);
+  // TODO pass actual
+  const actions = [Ember.Object.create({
+    title: i18n.t(I18N_PREFIX + 'cancelTransfer'),
+    action: () => console.log('todo cancel transfer action'),
+  })];
   
   return EmberObject.create({
     transfer,
@@ -384,5 +400,6 @@ function transferTableData(transferIndex, transfer, providers, providersColors, 
     isLoading,
     currentStatError,
     initSelect,
+    actions,
   });
 }

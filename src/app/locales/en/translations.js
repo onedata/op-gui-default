@@ -524,6 +524,7 @@ export default {
         totalFiles: 'Total files',
         status: 'Status',
         destinationUnknown: 'Unknown',
+        cancelTransfer: 'Cancel transfer',
         cellFileName: {
           deleted: 'deleted',
         },

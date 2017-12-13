@@ -213,4 +213,13 @@
       color: $onedata-graphite;
     }
   }
+  .transfer-actions-cell {
+    position: relative;
+    width: 40px;
+    .cell-actions {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+  }
 }

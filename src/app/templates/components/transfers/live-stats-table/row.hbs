@@ -1,10 +1,6 @@
 <tr
   id="transfer-row-{{record.transferId}}"
-  class="transfer-row data-row {{if (exists-in _selectedItems record) "selected-row"}} {{if (exists-in _expandedRowIndexes record.transferIndex) "expanded-row"}}"
-  {{action (if (not record.isLoading)
-    (if (exists-in _expandedRowIndexes record.transferIndex) "collapseRow" "expandRow")
-    "collapseRow"
-  ) record.transferIndex bubbles=false}}>
+  class="transfer-row data-row {{if (exists-in _selectedItems record) "selected-row"}} {{if (exists-in _expandedRowIndexes record.transferIndex) "expanded-row"}}">
   {{!-- not using loading-container because we are in tr --}}
   {{#if record.isLoading}}
     <td colspan={{processedColumns.length}}>
@@ -15,7 +11,11 @@
   {{else}}
     {{#each processedColumns as |column|}}
       {{#if column.isVisible}}
-        <td class="{{if record.initSelect "animated very-slow notice-blink"}} {{column.className}}">
+        <td class="{{if record.initSelect "animated very-slow notice-blink"}} {{column.className}}"
+        {{action (if (and (not record.isLoading) (not column.notClickable))
+            (if (exists-in _expandedRowIndexes record.transferIndex) "collapseRow" "expandRow")
+            (if (exists-in _expandedRowIndexes record.transferIndex) "expandRow" "collapseRow")
+          ) record.transferIndex}}>
           {{#if column.routeName}}
             {{#link-to column.routeName record.id}}
               {{#if column.propertyName}}

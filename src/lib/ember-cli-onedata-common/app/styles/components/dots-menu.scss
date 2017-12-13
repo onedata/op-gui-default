@@ -1,0 +1,35 @@
+.dots-menu {
+  $dot-size: 4px;
+  display: inline-block;
+  .dots-trigger { 
+    padding: $padding-base-vertical $padding-base-horizontal;
+    border: 1px solid transparent;
+    border-radius: $border-radius-small;
+    &:hover {
+      border-color: $color-content-separator;
+      background-color: rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+    }
+  }
+  
+  .dot {
+    width: $dot-size;
+    height: $dot-size;
+    margin-bottom: $dot-size;
+    border-radius: 100%;
+    background-color: $text-color;
+  }
+
+  .menu-item {
+    padding: 4px;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .dropdown-menu {
+    &:before {
+      top: 10px;
+    }
+  }
+}

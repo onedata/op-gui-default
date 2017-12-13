@@ -28,6 +28,12 @@ export default Component.extend({
    */
   space: undefined,
   
+  /**
+   * @virtual
+   * @type {Function}
+   */
+  openTransfersForSpace: () => {},
+
   isActive: computed('secondaryMenu.activeItem.id', 'space.id', function() {
     return this.get('secondaryMenu.activeItem.id') === this.get('space.id');
   }),
@@ -37,7 +43,7 @@ export default Component.extend({
      * Should show transfers view for space
      */
     activate() {
-      this.set('secondaryMenu.activeItem', this.get('space'));
+      this.get('openTransfersForSpace')();
     },
   }
 });

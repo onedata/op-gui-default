@@ -8,7 +8,7 @@
   {{#each validSpacesSorted as |space|}}
     {{transfers-menu-item space=space
       isExpanded=(eq activeSpace.id space.id)
-      openTransfersForSpace="openTransfersForSpace"
+      openTransfersForSpace=(action "openTransfersForSpace" space)
     }}
   {{/each}}
 </ul>

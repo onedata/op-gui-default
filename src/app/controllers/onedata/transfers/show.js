@@ -33,6 +33,13 @@ export default Controller.extend({
   
   sortBy: computed.reads('sort_by'),
   
+  resetQueryParams() {
+    this.setProperties({
+      sort_by: undefined,
+      selected_transfers: undefined,
+    });
+  },
+
   changeMenuActiveItem() {
     this.set('secondaryMenu.activeItem', this.get('model'));
 
@@ -46,5 +53,11 @@ export default Controller.extend({
     if (this.get('model')) {
       this.changeMenuActiveItem();
     }
+  },
+
+  actions: {
+    resetQueryParams() {
+      this.resetQueryParams();
+    },
   },
 });

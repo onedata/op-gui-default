@@ -19,5 +19,14 @@ export default Controller.extend({
     goToTransfersForSpace(space) {
       return this.transitionToRoute('onedata.transfers.show', space);
     },
+    
+    resetShowQueryParams() {
+      return this.transitionToRoute({
+        queryParams: {
+          selected_transfers: undefined,
+          sort_by: undefined,
+        },
+      });
+    },
   }
 });

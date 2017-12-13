@@ -18,7 +18,7 @@ export default Ember.Controller.extend({
       const firstGroup = groups.sortBy('name').objectAt(0);
       if (firstGroup && !firstGroup.get('isDeleted') && !firstGroup.get('_invalidRoute')) {
         console.debug(`groups.index: Transition to default group ${firstGroup.get('id')}`);
-        Ember.run.next(() => this.transitionToRoute('onedata.groups.show', firstGroup));
+        this.transitionToRoute('onedata.groups.show', firstGroup);
       } else {
         console.debug('groups.index: No first group found yet');
       }

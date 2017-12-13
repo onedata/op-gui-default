@@ -15,7 +15,7 @@ export default Ember.Controller.extend({
     console.debug(`controller:onedata.transfers.index: Will try to go to default tr. for space`);
     let defaultSpace = getDefaultSpace(this.get('model'));
     if (defaultSpace) {
-      Ember.run.next(() => this.transitionToRoute('onedata.transfers.show', defaultSpace));
+      this.transitionToRoute('onedata.transfers.show', defaultSpace);
     } else {
       console.debug(`controller:onedata.transfers.index: No space to go`);
     }

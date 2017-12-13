@@ -5,22 +5,27 @@
     {{#one-collapsible-list as |list|}}
       {{#each _tableData as |tableRowData|}}
         {{#list.item as |listItem|}}
-          {{#listItem.header}}
+          {{#listItem.header disableToggleIcon=(not (eq transferType "active"))}}
             {{transfers/live-stats-table/cell-file-name record=tableRowData}}
           {{/listItem.header}}
+          {{#if (not (eq transferType "active"))}}
+            {{transfers/live-stats-table/cell-actions record=tableRowData}}
+          {{/if}}
           {{#listItem.content}}
             <div class="item-table">
               <div class="item-table-content-cell">
                 {{#each _tableColumns as |column|}}
-                  <div class="row content-row">
-                    {{!-- using data processing similar to the one used by ember-models-table --}}
-                    <strong>{{column.title}}:</strong>
-                    {{#if column.component}}
-                      {{component column.component data=_tableData record=tableRowData column=column}}
-                    {{else}}
-                      <span class="one-label">{{get tableRowData column.propertyName}}</span>
-                    {{/if}}
-                  </div>
+                  {{#if (not column.disableMobile)}}
+                    <div class="row content-row">
+                      {{!-- using data processing similar to the one used by ember-models-table --}}
+                      <strong>{{column.title}}:</strong>
+                      {{#if column.component}}
+                        {{component column.component data=_tableData record=tableRowData column=column}}
+                      {{else}}
+                        <span class="one-label">{{get tableRowData column.propertyName}}</span>
+                      {{/if}}
+                    </div>
+                  {{/if}}
                 {{/each}}
                 {{#if listItem.isActive}}
                   <div class="row content-row chart-row">

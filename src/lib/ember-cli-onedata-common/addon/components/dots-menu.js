@@ -78,6 +78,7 @@ export default Component.extend(ClickOutside, {
     },
     runAction(index) {
       this.get('menuActions')[index].action();
+      this.set('isOpened', false);
     },
   }
 });

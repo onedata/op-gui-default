@@ -86,6 +86,10 @@
     }
   }
 
+  .one-collapsible-list-item {
+    position: relative;
+  }
+
   .one-collapsible-list-item-header.row {
     padding-left: $padding-large-horizontal;
     padding-right: 45px;;
@@ -106,6 +110,11 @@
     }
     svg {
       min-width: 600px;
+    }
+    .cell-actions {
+      position: absolute;
+      top: 8px;
+      right: 8px;
     }
   }
 

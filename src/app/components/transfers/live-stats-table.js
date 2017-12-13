@@ -256,6 +256,7 @@ export default Component.extend({
       notClickable: true,
       headerClassName: 'transfer-actions-cell',
       disableSorting: true,
+      disableMobile: true,
     }];
     if (isTransferActive) {
       return allColumns.filter((column) => 

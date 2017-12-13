@@ -1,11 +1,15 @@
-<div class="row loadable-row">
-{{#loading-container isLoading=(not _statsLoaded)}}
-  {{chartist-chart data=_chartData options=_chartOptions type="line"}}
-{{/loading-container}}
+<div class="row loadable-row row-main-chart">
+  {{#if statsError}}
+    {{resource-load-error reason=statsError}}
+  {{else}}
+    {{#loading-container isLoading=(not _statsLoaded)}}
+      {{chartist-chart data=_chartData options=_chartOptions type="line"}}
+    {{/loading-container}}
+  {{/if}}
 </div>
 {{#bs-button-group value=timeUnit type="radio" size="sm"}}
-  {{#if _unitVisibility.minute}}{{#bs-button value='minute'}}{{t 'components.transfers.transferChart.minute'}}{{/bs-button}}{{/if}}
-  {{#if _unitVisibility.hour}}{{#bs-button value='hour'}}{{t 'components.transfers.transferChart.hour'}}{{/bs-button}}{{/if}}
-  {{#if _unitVisibility.day}}{{#bs-button value='day'}}{{t 'components.transfers.transferChart.day'}}{{/bs-button}}{{/if}}
-  {{#if _unitVisibility.month}}{{#bs-button value='month'}}{{t 'components.transfers.transferChart.month'}}{{/bs-button}}{{/if}}
+  {{#if _unitVisibility.minute}}{{#bs-button value="minute"}}{{t "components.transfers.transferChart.minute"}}{{/bs-button}}{{/if}}
+  {{#if _unitVisibility.hour}}{{#bs-button value="hour"}}{{t "components.transfers.transferChart.hour"}}{{/bs-button}}{{/if}}
+  {{#if _unitVisibility.day}}{{#bs-button value="day"}}{{t "components.transfers.transferChart.day"}}{{/bs-button}}{{/if}}
+  {{#if _unitVisibility.month}}{{#bs-button value="month"}}{{t "components.transfers.transferChart.month"}}{{/bs-button}}{{/if}}
 {{/bs-button-group}}

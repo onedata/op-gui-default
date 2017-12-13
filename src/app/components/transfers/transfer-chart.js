@@ -80,6 +80,13 @@ export default Component.extend({
   _updaterEnabled: true,
 
   /**
+   * Set this value if want to override updater.fetchError (eg. if updater cannot be
+   * created)
+   * @type {string}
+   */
+  _statsError: undefined,
+  
+  /**
    * True if data for chart is loaded
    * @type {boolean}
    */
@@ -87,6 +94,13 @@ export default Component.extend({
     return this.get('_timeStatForUnit.isLoaded');
   }),
 
+  /**
+   * @type {Ember.ComputedProperty<string|null>}
+   */
+  statsError: computed('updater.fetchError', '_statsError', function () {
+    return this.get('updater.fetchError') || this.get('_statsError');
+  }),
+  
   /**
    * Proxy object that resolves with stats for specified time unit.
    * @type {Ember.ComputedProperty<PromiseObject<TransferTimeStat>>}
@@ -136,10 +150,13 @@ export default Component.extend({
 
   /**
    * Sorted provider ids.
-   * @type {Ember.ComputedProperty<Array<string>>}
+   * @type {Ember.ComputedProperty<Array<string>|undefined>}
    */
   _sortedProvidersIds: computed('_stats', function () {
-    return Object.keys(this.get('_stats')).sort();
+    const _stats = this.get('_stats');
+    if (_stats) {
+      return Object.keys(_stats).sort();
+    }
   }),
 
   /**
@@ -208,7 +225,7 @@ export default Component.extend({
    * Stats values for time unit in order: from the oldest to the newest (inverts backend
    * order). Values from this array will be copied to the _chartValues.
    * (async -> _stats)
-   * @type {Ember.ComputedProperty<Array<number>>}
+   * @type {Ember.ComputedProperty<Array<number>|undefined>}
    */
   _statsValues: computed('_stats', '_sortedProvidersIds', '_expectedStatsNumber', function () {
     const {
@@ -220,13 +237,15 @@ export default Component.extend({
       '_sortedProvidersIds',
       '_expectedStatsNumber'
     );
-    return _sortedProvidersIds.map(key => {
-      let values = _stats[key];
-      if (values.length < _expectedStatsNumber) {
-        values = values.concat(_.times(_expectedStatsNumber - values.length, _.constant(null)));
-      }
-      return this._scaleStatValue(values);
-    });
+    if (_sortedProvidersIds) {
+      return _sortedProvidersIds.map(key => {
+        let values = _stats[key];
+        if (values.length < _expectedStatsNumber) {
+          values = values.concat(_.times(_expectedStatsNumber - values.length, _.constant(null)));
+        }
+        return this._scaleStatValue(values);
+      }); 
+    }
   }),
 
   /**
@@ -326,7 +345,7 @@ export default Component.extend({
 
   /**
    * Data for chartist (async -> _statsValues)
-   * @type {computed.Object}
+   * @type {Ember.ComputedProperty<Object|undefined>}
    */
   _chartData: computed(
     '_statsValues',
@@ -336,7 +355,7 @@ export default Component.extend({
     'providers.@each.name',
     '_expectedStatsNumber',
     function () {
-      let {
+      const {
         _statsValues,
         _chartValues,
         _sortedProvidersIds,
@@ -353,69 +372,71 @@ export default Component.extend({
         '_expectedStatsNumber',
         '_transferStartTime'
       );
-      // clearing out old chart values
-      _chartValues.forEach(providerValues => {
-        while (providerValues.length) {
-          providerValues.shift();
-        }
-      });
-      // extending chart values to hold all needed providers
-      while (_chartValues.length < _statsValues.length) {
-        _chartValues.push([]);
-      }
-      // calculating new chart values
-      const valuesSumArray = _.range(_expectedStatsNumber + 2).map(() => ({x: 0, y: 0}));
-      _statsValues.forEach((providerValues, providerIndex) => {
-        providerValues.forEach((value, valueIndex) => {
-          valuesSumArray[valueIndex].y += value.y;
-          valuesSumArray[valueIndex].x = value.x;
-        });
-        _chartValues[_chartValues.length - providerIndex - 1]
-          .push(..._.cloneDeep(
-            valuesSumArray.filter(({x}) => x >= _transferStartTime)
-          ));
-      });
-      // creating tooltips
-      const tooltipElements = _.range(_expectedStatsNumber + 2).map((index) => {
-        return _sortedProvidersIds
-          .filter((providerId, providerIndex) => _statsValues[providerIndex].length > index)
-          .map((providerId, providerIndex) => {
-            const provider =
-              _.find(providers, (provider) => provider.get('id') === providerId) || {};
-            const providerName = get(provider, 'name') || providerId;
-            return {
-              name: providerName.length > 10 ?
-                  providerName.substring(0, 8) + '...' : providerName,
-              value: bytesToString(_statsValues[providerIndex][index].y) + '/s',
-              className: 'ct-tooltip-entry',
-              cssString: 'border-color: ' + providersColors[providerId],
-            };
-          });
-      });
-      // setting colors
-      const customCss = _sortedProvidersIds.map((providerId) => {
-        const color = providersColors[providerId];
-        return _.times(_expectedStatsNumber + 2, _.constant({
-          line: {
-            stroke: color,
-          },
-          point: {
-            stroke: color,
-          },
-          area: {
-            fill: color,
+      if (_statsValues) {
+        // clearing out old chart values
+        _chartValues.forEach(providerValues => {
+          while (providerValues.length) {
+            providerValues.shift();
           }
-        }));
-      });
-      // creating chart data object
-      return {
-        labels: this._getChartLabels(),
-        series: _chartValues.map((providerValues) => ({
-          data: providerValues,
-          tooltipElements,
-        })),
-        customCss,
-      };
+        });
+        // extending chart values to hold all needed providers
+        while (_chartValues.length < _statsValues.length) {
+          _chartValues.push([]);
+        }
+        // calculating new chart values
+        const valuesSumArray = _.range(_expectedStatsNumber + 2).map(() => ({ x: 0, y: 0 }));
+        _statsValues.forEach((providerValues, providerIndex) => {
+          providerValues.forEach((value, valueIndex) => {
+            valuesSumArray[valueIndex].y += value.y;
+            valuesSumArray[valueIndex].x = value.x;
+          });
+          _chartValues[_chartValues.length - providerIndex - 1]
+            .push(..._.cloneDeep(
+              valuesSumArray.filter(({ x }) => x >= _transferStartTime)
+            ));
+        });
+        // creating tooltips
+        const tooltipElements = _.range(_expectedStatsNumber + 2).map((index) => {
+          return _sortedProvidersIds
+            .filter((providerId, providerIndex) => _statsValues[providerIndex].length > index)
+            .map((providerId, providerIndex) => {
+              const provider =
+                _.find(providers, (provider) => provider.get('id') === providerId) || {};
+              const providerName = get(provider, 'name') || providerId;
+              return {
+                name: providerName.length > 10 ?
+                  providerName.substring(0, 8) + '...' : providerName,
+                value: bytesToString(_statsValues[providerIndex][index].y) + '/s',
+                className: 'ct-tooltip-entry',
+                cssString: 'border-color: ' + providersColors[providerId],
+              };
+            });
+        });
+        // setting colors
+        const customCss = _sortedProvidersIds.map((providerId) => {
+          const color = providersColors[providerId];
+          return _.times(_expectedStatsNumber + 2, _.constant({
+            line: {
+              stroke: color,
+            },
+            point: {
+              stroke: color,
+            },
+            area: {
+              fill: color,
+            }
+          }));
+        });
+        // creating chart data object
+        return {
+          labels: this._getChartLabels(),
+          series: _chartValues.map((providerValues) => ({
+            data: providerValues,
+            tooltipElements,
+          })),
+          customCss,
+        }; 
+      }
     }
   ),
   
@@ -440,6 +461,7 @@ export default Component.extend({
  
     console.log('transfer-chart: creating updater');
     gettingStats.then(timeStat => {
+      this.set('_statsError', null);
       if (!isCurrent) {
         this.set('timeUnit', this._getPrefferedUnit());
       }
@@ -451,6 +473,9 @@ export default Component.extend({
         updater.fetch();
       }
       this.set('updater', updater);
+    });
+    gettingStats.catch(error => {
+      this.set('_statsError', error);
     });
   },
 

@@ -332,7 +332,29 @@ export default Component.extend({
       const transferElement = trs[i];
       const tid = transferElement.id.match(RE_TRANSFER_ROW_ID)[1];
       if (_.includes(selectedTransfers, tid)) {
-        $('#content-scroll').scrollTop($(transferElement).offset().top - 80);
+        // estimate height of top toolbar + height of the table header
+        // (it's better to present table header if possible)
+        let navHeight;
+        let thHeight;
+        try {
+          navHeight = parseInt(
+            window.getComputedStyle($('header')[0])
+              .getPropertyValue('height')
+          );
+          thHeight = parseInt(
+            window.getComputedStyle($('.transfers-live-stats-table thead')[0])
+              .getPropertyValue('height')
+          );
+        } catch (error) {
+          console.warn(
+            'component:transfers/data-container: an error occured when ' + 
+            'computing scrolling offset, falling back to default'
+          );
+          console.warn(error);
+          navHeight = 80;
+          thHeight = 52;
+        }
+        $('#content-scroll').scrollTop($(transferElement).offset().top - (navHeight + thHeight));
         break;
       }
     }

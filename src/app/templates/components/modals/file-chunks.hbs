@@ -80,7 +80,7 @@
                   <div class="alert alert-info">
                     {{t "components.dataFilesListToolbar.fileChunksModal.currentlyTransferredText"}}
                     &ndash;
-                    {{#link-to 'onedata.transfers' (query-params sort_by="path" selected_transfers=transferIdsQuery)}}{{t "components.dataFilesListToolbar.fileChunksModal.currentlyTransferredLink"}}{{/link-to}}.
+                    {{#link-to 'onedata.transfers' (query-params selected_transfers=transferIdsQuery)}}{{t "components.dataFilesListToolbar.fileChunksModal.currentlyTransferredLink"}}{{/link-to}}.
                   </div>
                 </div>
               {{/if}}

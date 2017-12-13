@@ -183,6 +183,10 @@
     .one-icon {
       position: absolute;
     }
+    .oneicon-folder, .oneicon-folder-deleted {
+      // custom pull up for folder icons
+      margin-top: -2px;
+    }
     .transfer-file-name {
       padding-left: 40px;
     }

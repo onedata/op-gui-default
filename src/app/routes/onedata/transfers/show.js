@@ -26,6 +26,7 @@ export default Route.extend(RouteRejectHandler, {
   },
 
   resetController(controller) {
+    this._super(...arguments);
     controller.resetQueryParams();
   },
 

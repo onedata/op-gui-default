@@ -11,7 +11,7 @@ export default Ember.Controller.extend({
   defaultOption: 'users',
 
   goToDefaultOption() {
-    this.transitionToRoute(`onedata.spaces.show.${this.get('defaultOption')}`);
+    Ember.run.next(() => this.transitionToRoute(`onedata.spaces.show.${this.get('defaultOption')}`));
   },
 
   /**

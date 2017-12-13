@@ -11,7 +11,7 @@ export default Ember.Controller.extend({
   defaultOption: 'members',
 
   goToDefaultOption() {
-    this.transitionToRoute(`onedata.groups.show.${this.get('defaultOption')}`);
+    Ember.run.next(() => this.transitionToRoute(`onedata.groups.show.${this.get('defaultOption')}`));
   },
 
   /**

@@ -1,6 +1,5 @@
 import DS from 'ember-data';
 import Ember from 'ember';
-import _ from 'lodash';
 
 import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
 

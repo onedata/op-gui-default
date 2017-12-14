@@ -43,6 +43,7 @@ const SERIES_HOVER_TRANSITION_TIME = 0.3;
 
 export default Ember.Component.extend({
   classNames: ['one-pie-chart'],
+  classNameBindings: ['_valuesSum::zero-chart'],
 
   /**
    * Data for a chart.
@@ -146,7 +147,7 @@ export default Ember.Component.extend({
    * Chartist chart series
    * @type {computed.Array.Object}
    */
-  _chartDataSeries: computed('_sortedData.@each.value', function () {
+  _chartDataSeries: computed('_sortedData.@each.value', '_valuesSum', function () {
     return this.generateChartDataSeries();
   }),
 
@@ -154,7 +155,7 @@ export default Ember.Component.extend({
    * Chartist chart pie labels
    * @type {computed.Array.string}
    */
-  _chartPieLabels: computed('_sortedData.@each.label', function () {
+  _chartPieLabels: computed('_sortedData.@each.label', '_valuesSum', function () {
     return this.generateChartPieLabels();
   }),
 
@@ -347,10 +348,16 @@ export default Ember.Component.extend({
    * @returns {Array.Object} Chartist data series.
    */
   generateChartDataSeries() {
-    let _sortedData = this.get('_sortedData');
-    return _sortedData.map((series) => {
+    const {
+      _sortedData,
+      _valuesSum,
+    } = this.getProperties('_sortedData', '_valuesSum');
+    // If each series == 0 (so _valuesSum == 0), then each series should be drawed 
+    // using the same value > 0 (here is 1) to give them the same space in chart
+    const valuesToDraw = _valuesSum ? _sortedData.mapBy('value') : _sortedData.map(() => 1);
+    return _sortedData.map((series, index) => {
       return {
-        data: series.get('value'),
+        data: valuesToDraw[index],
         className: 'slice-id-' + series.get('id'),
         tooltipElements: [{
           name: 'Value',
@@ -432,7 +439,12 @@ export default Ember.Component.extend({
    * @returns {number} A value 0 < x <= 1
    */
   getSeriesPercentSize(series) {
-    return series.get('value') / this.get('_valuesSum');
+    const {
+      _valuesSum,
+      _sortedData,
+    } = this.getProperties('_valuesSum', '_sortedData');
+    return _valuesSum ? series.get('value') / this.get('_valuesSum') :
+      1 / _sortedData.get('length');
   },
 
   /**

@@ -110,6 +110,26 @@ export default Component.extend(PromiseLoadingMixin, {
   //#endregion
   
   /**
+   * If transfers options should be disabled for current modal, returns
+   * a non-empty string with main reason
+   * One of: "single-provider", "proxy-provider", null
+   * @type {string|null}
+   */
+  transferDisabledReason: computed(
+    'currentProviderSupport',
+    'onlySingleProviderSupport',
+    function () {
+      if (this.get('onlySingleProviderSupport')) {
+        return 'single-provider';
+      } else if (this.get('currentProviderSupport') === false) {
+        return 'proxy-provider';
+      } else {
+        return null;
+      }
+    }
+  ),
+
+  /**
    * True if only one provider supports this space; undefined if cannot resolve
    * number of providers yet (eg. loading)
    * @type {Ember.ComputedProperty<boolean|undefined>} 
@@ -129,12 +149,19 @@ export default Component.extend(PromiseLoadingMixin, {
    * File distribution collection sorted (TODO: sort by provider name)
    * @type {Ember.ComputedProperty<Array<FileDistribution>|undefined>}
    */
-  fileBlocksSorted: computed(
+  fileDistributionsSorted: computed(
+    'providers',
     'fileBlocks.@each.provider',
-    function getFileBlocksSorted() {
-      const fileBlocks = this.get('fileBlocks');
-      if (fileBlocks) {
-        return _.sortBy(this.get('fileBlocks').toArray(), fb => get(fb, 'provider'));
+    function getFileDistributionsSorted() {
+      const {
+        fileBlocks,
+        providers,
+      } = this.getProperties('fileBlocks', 'providers');
+      if (fileBlocks && providers) {
+        return _.sortBy(
+          this.get('fileBlocks').toArray(),
+          fb => get(_.find(providers, p => get(p, 'id') === get(fb, 'provider')), 'name')
+        );
       }
     }
   ),
@@ -147,7 +174,7 @@ export default Component.extend(PromiseLoadingMixin, {
   }),
 
   /**
-   * @type {Array<PromiseObject<Provider>>}
+   * @type {Array<Provider>|null}
    */
   providers: computed.reads('space.providerList.queryList.content'),
   
@@ -218,6 +245,16 @@ export default Component.extend(PromiseLoadingMixin, {
   }),
   
   /**
+   * @type {string}
+   */
+  transferIdsQuery: computed('fileTransfers.@each.id', function () {
+    const fileTransfers = this.get('fileTransfers');
+    if (fileTransfers) {
+      return fileTransfers.map(t => get(t, 'id')).join(',');
+    }
+  }),
+  
+  /**
    * @type {Ember.ComputedProperty<Array<string>>|null}
    */
   currentMigrationSourceIds: computed('fileTransfers.@each.migrationSource', function () {
@@ -263,14 +300,18 @@ export default Component.extend(PromiseLoadingMixin, {
   },
 
   _fastTransfersUpdater() {
-    if (this.get('transfersUpdater.pollingTimeCurrent') !== FAST_POLLING_TIME) {
-      this.set('transfersUpdater.pollingTimeCurrent', FAST_POLLING_TIME);
+    const transfersUpdater = this.get('transfersUpdater');
+    if (transfersUpdater &&
+      transfersUpdater.get('pollingTimeCurrent') !== FAST_POLLING_TIME) {
+      transfersUpdater.set('pollingTimeCurrent', FAST_POLLING_TIME);
     }
   },
 
   _slowTransfersUpdater() {
-    if (this.get('transfersUpdater.pollingTimeCurrent') !== SLOW_POLLING_TIME) {
-      this.set('transfersUpdater.pollingTimeCurrent', SLOW_POLLING_TIME);
+    const transfersUpdater = this.get('transfersUpdater');
+    if (transfersUpdater &&
+      transfersUpdater.get('pollingTimeCurrent') !== SLOW_POLLING_TIME) {
+      transfersUpdater.set('pollingTimeCurrent', SLOW_POLLING_TIME);
     }
   },
   
@@ -331,18 +372,22 @@ export default Component.extend(PromiseLoadingMixin, {
 
   _fastDistributionUpdater() {
     const isDir = this.get('file.isDir');
+    const distributionUpdater = this.get('distributionUpdater');
     if (!isDir) {
-      if (this.get('distributionUpdater.interval') !== FAST_POLLING_TIME) {
-        this.set('distributionUpdater.interval', FAST_POLLING_TIME);
+      if (distributionUpdater &&
+        distributionUpdater.get('interval') !== FAST_POLLING_TIME) {
+        distributionUpdater.set('interval', FAST_POLLING_TIME);
       }
     }
   },
 
   _slowDistributionUpdater() {
     const isDir = this.get('file.isDir');
+    const distributionUpdater = this.get('distributionUpdater');
     if (!isDir) {
-      if (this.get('distributionUpdater.interval') !== SLOW_POLLING_TIME) {
-        this.set('distributionUpdater.interval', SLOW_POLLING_TIME);
+      if (distributionUpdater &&
+        distributionUpdater.get('interval') !== SLOW_POLLING_TIME) {
+        distributionUpdater.set('interval', SLOW_POLLING_TIME);
       }
     }
   },

@@ -15,7 +15,11 @@
       {{#loading-container
         isLoading=(not (eq isSupportedByCurrentProvider true))
       }}
-        {{#transfers/data-container space=space as |tData|}}
+        {{#transfers/data-container
+          space=space
+          selectedTransferIds=selectedTransferIds
+          as |tData|
+        }}
           <div class="row row-active-transfers">
             <div class="col-xs-12 col-md-7 col-providers-map map-column">
               <h2>
@@ -68,6 +72,11 @@
                   {{else}}
                     <p>{{t "components.transfers.noActiveTransfers"}}</p>
                   {{/if}}
+                  {{#if tData.throughputChartError}}
+                    {{#error-inline}}
+                      {{t "components.transfers.throughputChartError"}}
+                    {{/error-inline}}
+                  {{/if}}
                 {{/loading-container}}
               </div>
             </div>
@@ -89,6 +98,8 @@
                     transferType="active"
                     providers=tData.providers
                     providersColors=tData.providersColors
+                    sortBy=sortBy
+                    selectedTransferIds=selectedTransferIds
                   }}
                 {{/loading-container}}
               </div>
@@ -101,7 +112,7 @@
               <div class="row loadable-row">
                 {{#loading-container isLoading=(or
                     (not tData.providersLoaded)
-                    (not tData.currentTransfersLoaded)
+                    (not tData.completedTransfersLoaded)
                   )
                   class="loading-completed-table"
                 }}
@@ -110,6 +121,8 @@
                     transferType="completed"
                     providers=tData.providers
                     providersColors=tData.providersColors
+                    sortBy=sortBy
+                    selectedTransferIds=selectedTransferIds
                   }}
                 {{/loading-container}}
               </div>

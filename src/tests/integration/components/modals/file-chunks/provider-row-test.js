@@ -1,8 +1,14 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import { describe, it, beforeEach } from 'mocha';
 import { setupComponentTest } from 'ember-mocha';
 import hbs from 'htmlbars-inline-precompile';
 import wait from 'ember-test-helpers/wait';
+import { registerService } from '../../../../helpers/stub-service';
+import Ember from 'ember';
+
+const {
+  Service,
+} = Ember;
 
 const P1 = {
   id: 'p1',
@@ -17,18 +23,27 @@ const FILE_DISTRIBUTION_F1_NS = {
   },
   provider: P1.id,
   getProvider: P1,
-  isEmpty: true,
+  isEmpty: false,
   isComplete: false,
   neverSynchronized: false,
 };
 
+const i18n = Service.extend({
+  t() {
+    return '';
+  }
+});
 
 describe('Integration | Component | modals/file chunks/provider row', function () {
   setupComponentTest('modals/file-chunks/provider-row', {
     integration: true
   });
+  
+  beforeEach(function () {
+    registerService(this, 'i18n', i18n);
+  });
 
-  it('renders provider name', function(done) {
+  it('renders provider name', function (done) {
     this.setProperties({
       fileDistribution: FILE_DISTRIBUTION_F1_NS,
       fileTransfers: [],
@@ -36,7 +51,6 @@ describe('Integration | Component | modals/file chunks/provider row', function (
     
     this.render(hbs`{{modals/file-chunks/provider-row
       fileDistribution=fileDistribution
-      currentProviderSupport=true
       fileTransfers=fileTransfers
     }}`);
     
@@ -47,8 +61,8 @@ describe('Integration | Component | modals/file chunks/provider row', function (
       done();
     });
   });
-  
-  it('renders migration button as disabled when file was never synchronized', function (done) {
+    
+  it('renders transfer icons as disabled if transfersEnabled is false', function (done) {
     this.setProperties({
       fileDistribution: FILE_DISTRIBUTION_F1_NS,
       fileTransfers: [],
@@ -56,20 +70,25 @@ describe('Integration | Component | modals/file chunks/provider row', function (
     
     this.render(hbs`{{modals/file-chunks/provider-row
       fileDistribution=fileDistribution
-      currentProviderSupport=true
       fileTransfers=fileTransfers
+      transferEnabled=false
     }}`);
     
     wait().then(() => {
       const $providerRow = this.$('.provider-row');
       const $btnMigrate = $providerRow.find('.btn-migrate');
-      expect($btnMigrate).to.exist;
-      expect($btnMigrate, $btnMigrate[0].className).to.have.class('disabled');
+      const $btnReplicate = $providerRow.find('.btn-replicate');
+            
+      expect($btnMigrate).to.be.visible;
+      expect($btnReplicate).to.be.visible;
+      expect($btnMigrate, 'btn-migrate').to.have.class('disabled');
+      expect($btnReplicate, 'btn-replicate').to.have.class('disabled');
+      
       done();
     });
   });
   
-  it('renders transfer icons if renderTransfers if true', function (done) {
+  it('renders transfer icons as enabled if transferEnabled if true', function (done) {
     this.setProperties({
       fileDistribution: FILE_DISTRIBUTION_F1_NS,
       fileTransfers: [],
@@ -77,38 +96,22 @@ describe('Integration | Component | modals/file chunks/provider row', function (
     
     this.render(hbs`{{modals/file-chunks/provider-row
       fileDistribution=fileDistribution
-      currentProviderSupport=true
       fileTransfers=fileTransfers
-      renderTransferIcons=true
+      transferEnabled=true
     }}`);
     
     wait().then(() => {
       const $providerRow = this.$('.provider-row');
-      expect($providerRow.find('.btn-migrate')).to.be.visible;
-      expect($providerRow.find('.btn-replicate')).to.be.visible;
-      done();
-    });
-  });
-  
-  it('does not render transfer icons if renderTransfers if false', function (done) {
-    this.setProperties({
-      fileDistribution: FILE_DISTRIBUTION_F1_NS,
-      fileTransfers: [],
-    });
-    
-    this.render(hbs`{{modals/file-chunks/provider-row
-      fileDistribution=fileDistribution
-      currentProviderSupport=true
-      fileTransfers=fileTransfers
-      renderTransferIcons=false
-    }}`);
-    
-    wait().then(() => {
-      const $providerRow = this.$('.provider-row');
-      expect($providerRow.find('.btn-migrate'), 'no migrate button')
-        .to.not.exist;
-      expect($providerRow.find('.btn-replicate'), 'no replicate button')
-        .to.not.exist;
+      const $btnMigrate = $providerRow.find('.btn-migrate');
+      const $btnReplicate = $providerRow.find('.btn-replicate');
+      
+      expect($btnMigrate).to.be.visible;
+      expect($btnReplicate).to.be.visible;
+      expect($btnMigrate, 'btn-migrate').to.not.have.class('disabled');
+      expect($btnReplicate, 'btn-replicate').to.not.have.class('disabled');
+      
+      // TODO: check clickability
+      
       done();
     });
   });

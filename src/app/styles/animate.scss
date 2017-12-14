@@ -41,6 +41,21 @@
   animation-duration: 4s;
 }
 
+@mixin blink-keyframes($name, $attributes, $val1, $val2) {
+  @keyframes #{$name} {
+    0% {
+      @each $attr in $attributes {
+        #{$attr}: $val1;
+      }
+    }
+    100% {
+      @each $attr in $attributes {
+        #{$attr}: $val2;
+      }
+    }
+  }
+}
+
 @mixin pulse-keyframes($name, $attributes, $val1, $val2) {
   @keyframes #{$name} {
     0% {
@@ -101,4 +116,12 @@
 
 .fadeOut {
   animation-name: fadeOut;
+}
+
+// Generic custom animations
+
+@include blink-keyframes(notice-blink-mint, background-color, $color-one-mint, initial);
+
+.notice-blink, .notice-blink-mint {
+  animation-name: notice-blink-mint; 
 }

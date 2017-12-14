@@ -15,6 +15,8 @@ const {
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
+  classNames: ['file-chunks-bar'],
+  
   file: null,
   fileBlocks: null,
 

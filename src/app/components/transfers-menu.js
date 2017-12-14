@@ -38,6 +38,12 @@ export default Component.extend(ForceReloadCollectionMixin, {
    */
   goToTransfersForSpace: undefined,
   
+  /**
+   * @virtual
+   * @type {Function}
+   */
+  resetShowQueryParams: () => {},
+
   spaces: null,
   collection: readOnly('spaces'),
   
@@ -87,5 +93,15 @@ export default Component.extend(ForceReloadCollectionMixin, {
   spaceActionMessage(notifyType, messageId, spaceName) {
     let message = this.get('i18n').t(`components.spacesMenu.notify.${messageId}`, {spaceName: spaceName});
     this.get('notify')[notifyType](message);
-  },    
+  },
+
+  actions: {
+    openTransfersForSpace(space) {
+      if (this.get('secondaryMenu.activeItem') === space) {
+        this.get('resetShowQueryParams')(space);
+      } else {
+        this.set('secondaryMenu.activeItem', space);
+      }
+    },
+  }
 });

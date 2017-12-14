@@ -33,7 +33,7 @@ export default Component.extend({
    * If not null - show a close button in alert panel.
    * @type {function|undefined}
    */
-  onClose: () => {},
+  onClose: undefined,
 
   /**
    * Displayed error details generated from reason error object

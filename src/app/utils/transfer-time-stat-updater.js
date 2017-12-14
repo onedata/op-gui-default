@@ -149,6 +149,12 @@ export default EmberObject.extend({
     this.set('isUpdating', true);
     
     return timeStat.reload()
+      .then(record => {
+        if (!this.get('isDestroyed')) {
+          this.set('fetchError', null);
+        }
+        return record;
+      })
       .catch(error => !this.get('isDestroyed') && this.set('fetchError', error))
       .finally(() => !this.get('isDestroyed') && this.set('isUpdating', false));
   },

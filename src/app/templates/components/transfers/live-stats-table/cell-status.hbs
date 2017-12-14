@@ -1,2 +1,6 @@
-{{one-icon icon=_icon class="transfer-status-icon"}}
-{{bs-tooltip placement="top" title=_hint}}
+{{#if record.currentStatError}}
+  {{error-inline}}
+{{else}}
+  {{one-icon icon=_icon class="transfer-status-icon"}}
+  {{bs-tooltip placement="top" title=_hint}}
+{{/if}}

@@ -17,8 +17,8 @@ const {
 
 export default Component.extend({
   tagName: 'span',
-  classNames: 'cell-status',
-  classNameBindings: ['_statusClass'],
+  classNames: ['cell-status'],
+  classNameBindings: ['_status'],
   i18n: service(),
   
   /**
@@ -33,27 +33,6 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<string>}
    */
   _status: computed.reads('record.status'),
-
-  /**
-   * Cell class (sets sicon color).
-   * @type {Ember.ComputedProperty<string>}
-   */
-  _statusClass: computed('_status', function () {
-    switch (this.get('_status')) {
-      case 'completed':
-      case 'finalizing':
-        return 'success';
-      case 'skipped':
-        return 'skipped';
-      case 'cancelled':
-      case 'failed':
-        return 'failure';
-      case 'active':
-        return 'active';
-      case 'scheduled':
-        return 'inactive';
-    }
-  }),
 
   /**
    * Status icon.

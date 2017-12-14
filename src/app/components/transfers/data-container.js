@@ -29,6 +29,7 @@ const {
   inject: { service },
   observer,
   isEmpty,
+  run,
 } = Ember;
 
 import SpaceTransfersUpdater from 'op-worker-gui/utils/space-transfers-updater';
@@ -36,6 +37,8 @@ import providerTransfers from 'op-worker-gui/utils/transfers/provider-transfers'
 import providerTransferConnections from 'op-worker-gui/utils/transfers/provider-transfer-connections';
 import mutateArray from 'ember-cli-onedata-common/utils/mutate-array';
 import generateColors from 'op-worker-gui/utils/generate-colors';
+
+const RE_TRANSFER_ROW_ID = /transfer-row-(.*)/;
 
 export default Component.extend({
   classNames: ['transfers-data-container'],
@@ -48,6 +51,12 @@ export default Component.extend({
    * @type {Space}
    */
   space: undefined,
+  
+  /**
+   * @virtual
+   * @type {Array<string>|undefined}
+   */
+  selectedTransferIds: undefined,
 
   /**
    * @public
@@ -115,6 +124,20 @@ export default Component.extend({
     }
   ),
   
+  /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  allTablesLoaded: computed(
+    'providersLoaded',
+    'currentTransfersLoaded',
+    'completedTransfersLoaded',
+    function () {
+      return this.get('providersLoaded') &&
+        this.get('currentTransfersLoaded'),
+        this.get('completedTransfersLoaded');
+    }
+  ),
+  
   //#endregion
   
   /**
@@ -124,6 +147,12 @@ export default Component.extend({
    * @type {Ember.Array<ProviderTransfer>}
    */
   _providerTransfersCache: null,
+  
+  /**
+   * If true, this instance of data container already scrolled to selected transfers
+   * @type {boolean}
+   */
+  _scrolledToSelectedTransfers: false,
   
   /**
    * Each object is a one-direction transfer from one provider to another.
@@ -242,12 +271,28 @@ export default Component.extend({
     }
   ),
 
+  /**
+   * Global colors for each provider
+   * @type {Ember.ComputedProperty<Object>}
+   */
   providersColors: computed('providers.@each.id', function () {
     const providers = this.get('providers');
     if (providers) {
-      const providerIds = providers.mapBy('id');
+      const providerIds = providers.mapBy('id').sort();
       const colors = generateColors(providerIds.length);
       return _.zipObject(providerIds, colors);
+    }
+  }),
+  
+  /**
+   * True if at least one current transfer's current stat cannot be loaded
+   * @type {boolean}
+   */
+  throughputChartError: computed('currentTransfers.@each.currentStatError', function () {
+    const currentTransfers = this.get('currentTransfers');
+    if (currentTransfers) {
+      // using every, because this kind of array doesn't have "some"
+      return !currentTransfers.every(t => !t || !get(t, 'currentStatError'));
     }
   }),
   
@@ -271,6 +316,13 @@ export default Component.extend({
       });
     }
   ),
+    
+  observeScrollToSelectedTransfers: observer('allTablesLoaded', function () { 
+    if (this.get('_scrolledToSelectedTransfers') === false && this.get('allTablesLoaded')) {
+      run.next(() => this._scrollToFirstSelectedTransfer());
+      this.set('_scrolledToSelectedTransfers', true);
+    }
+  }),
   
   init() {
     this._super(...arguments);
@@ -281,7 +333,9 @@ export default Component.extend({
     } = this.getProperties(
       '_transfersUpdaterEnabled',
       'space',
-      'store'
+      'store',
+      // just enable observers
+      'allTablesLoaded'
     );
     
     const transfersUpdater = SpaceTransfersUpdater.create({
@@ -292,6 +346,42 @@ export default Component.extend({
     this.set('transfersUpdater', transfersUpdater);
     
     this._initializeDefaultValues();
+  },
+  
+  _scrollToFirstSelectedTransfer() {
+    const selectedTransferIds = this.get('selectedTransferIds');
+    
+    const trs = this.$('tr.transfer-row').toArray();
+    for (let i = 0; i < trs.length; i++) {
+      const transferElement = trs[i];
+      const tid = transferElement.id.match(RE_TRANSFER_ROW_ID)[1];
+      if (_.includes(selectedTransferIds, tid)) {
+        // estimate height of top toolbar + height of the table header
+        // (it's better to present table header if possible)
+        let navHeight;
+        let thHeight;
+        try {
+          navHeight = parseInt(
+            window.getComputedStyle($('header')[0])
+              .getPropertyValue('height')
+          );
+          thHeight = parseInt(
+            window.getComputedStyle($('.transfers-live-stats-table thead')[0])
+              .getPropertyValue('height')
+          );
+        } catch (error) {
+          console.warn(
+            'component:transfers/data-container: an error occured when ' + 
+            'computing scrolling offset, falling back to default'
+          );
+          console.warn(error);
+          navHeight = 80;
+          thHeight = 52;
+        }
+        $('#content-scroll').scrollTop($(transferElement).offset().top - (navHeight + thHeight));
+        break;
+      }
+    }
   },
   
   _initializeDefaultValues() {

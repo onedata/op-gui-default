@@ -1,46 +1,70 @@
 <ul>
   <div class="small-logo"></div>
 
-    {{main-menu-item name="data" title=(t 'components.mainMenu.data')
-      icon="menu-data" goToItem='goToItem'}}
+    {{main-menu-item
+      name="data"
+      title=(t "components.mainMenu.data")
+      icon="menu-data"
+      link="onedata.data"
+    }}
 
     {{!--
 
-    {{main-menu-item name="links" title=(t 'components.mainMenu.links')
-      icon="menu-links" goToItem='goToItem'}}
+    {{main-menu-item name="links" title=(t "components.mainMenu.links")
+      icon="menu-links" goToItem="goToItem"}}
 
-    {{main-menu-item name="recent" title=(t 'components.mainMenu.recent')
-      icon="menu-recent" goToItem='goToItem'}}
+    {{main-menu-item name="recent" title=(t "components.mainMenu.recent")
+      icon="menu-recent" goToItem="goToItem"}}
 
     --}}
 
-    {{main-menu-item name="shares" title=(t 'components.mainMenu.shared')
-      icon="menu-shared" goToItem='goToItem'}}
+    {{main-menu-item
+      name="shares"
+      title=(t "components.mainMenu.shared")
+      icon="menu-shared"
+      link="onedata.shares"
+    }}
 
     {{!--
 
-    {{main-menu-item name="trash" title=(t 'components.mainMenu.trash')
-      icon="menu-trash" goToItem='goToItem'}}
+    {{main-menu-item name="trash" title=(t "components.mainMenu.trash")
+      icon="menu-trash" goToItem="goToItem"}}
 
     --}}
 
-    {{main-menu-item name="spaces" title=(t 'components.mainMenu.spaces')
-      icon="space-empty" goToItem='goToItem'}}
+    {{main-menu-item
+      name="spaces"
+      title=(t "components.mainMenu.spaces")
+      icon="space-empty"
+      link="onedata.spaces"
+    }}
 
-    {{main-menu-item name="groups" title=(t 'components.mainMenu.groups')
-      icon="menu-groups" goToItem='goToItem'}}
+    {{main-menu-item
+      name="groups"
+      title=(t "components.mainMenu.groups")
+      icon="menu-groups"
+      link="onedata.groups"
+    }}
       
-    {{main-menu-item name="transfers" title=(t 'components.mainMenu.transfers')
-      icon="menu-transfers" goToItem='goToItem'}}
-      
-    {{#if onezoneUrl}}
-      {{main-menu-item name="token" title=(t 'components.mainMenu.token')
-        icon="menu-token" link=(concat onezoneUrl "?expand_tokens=true")
-        goToItem='goToItem'}}
+    {{main-menu-item
+      name="transfers"
+      title=(t "components.mainMenu.transfers")
+      icon="menu-transfers"
+      link="onedata.transfers"
+    }}
+    
+    {{main-menu-item
+      name="token"
+      title=(t "components.mainMenu.token")
+      icon="menu-token"
+      link="onezone.tokens"
+    }}
 
-      {{main-menu-item name="providers" title=(t 'components.mainMenu.providers')
-        icon="menu-providers" link=(concat onezoneUrl "?expand_providers=true")
-        goToItem='goToItem'}}
-    {{/if}}
+    {{main-menu-item
+      name="providers"
+      title=(t "components.mainMenu.providers")
+      icon="menu-providers"
+      link="onezone.providers"
+    }}
 
 </ul>

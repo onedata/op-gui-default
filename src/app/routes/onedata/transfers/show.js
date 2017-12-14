@@ -24,7 +24,11 @@ export default Route.extend(RouteRejectHandler, {
   afterModel(model) {
     this.handleAfterModelErrors(model);
   },
-  
+
+  resetController(controller) {
+    controller.resetQueryParams();
+  },
+
   actions: {
     /**
       Capture goToTransfersForSpace event, because if we are already there,

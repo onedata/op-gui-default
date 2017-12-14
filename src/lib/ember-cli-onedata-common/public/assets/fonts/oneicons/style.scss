@@ -2,11 +2,11 @@
 
 @font-face {
   font-family: 'oneicons';
-  src:  url('#{$icomoon-font-path}/oneicons.eot?3rnz42');
-  src:  url('#{$icomoon-font-path}/oneicons.eot?3rnz42#iefix') format('embedded-opentype'),
-    url('#{$icomoon-font-path}/oneicons.ttf?3rnz42') format('truetype'),
-    url('#{$icomoon-font-path}/oneicons.woff?3rnz42') format('woff'),
-    url('#{$icomoon-font-path}/oneicons.svg?3rnz42#oneicons') format('svg');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?mrsnqs');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?mrsnqs#iefix') format('embedded-opentype'),
+    url('#{$icomoon-font-path}/oneicons.ttf?mrsnqs') format('truetype'),
+    url('#{$icomoon-font-path}/oneicons.woff?mrsnqs') format('woff'),
+    url('#{$icomoon-font-path}/oneicons.svg?mrsnqs#oneicons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -136,9 +136,19 @@
     content: $oneicon-file;
   }
 }
+.oneicon-file-deleted {
+  &:before {
+    content: $oneicon-file-deleted;
+  }
+}
 .oneicon-folder {
   &:before {
     content: $oneicon-folder;
+  }
+}
+.oneicon-folder-deleted {
+  &:before {
+    content: $oneicon-folder-deleted;
   }
 }
 .oneicon-folder-new {
@@ -514,6 +524,11 @@
 .oneicon-transfer {
   &:before {
     content: $oneicon-transfer;
+  }
+}
+.oneicon-unknown {
+  &:before {
+    content: $oneicon-unknown;
   }
 }
 .oneicon-update {

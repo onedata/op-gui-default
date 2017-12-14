@@ -1,6 +1,14 @@
+/**
+ * Data transfer from multiple sources to single provider
+ *
+ * @module models/transfer
+ * @author Jakub Liput
+ * @copyright (C) 2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import DS from 'ember-data';
 import Ember from 'ember';
-import _ from 'lodash';
 
 import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
 
@@ -15,18 +23,6 @@ const {
 } = Ember;
 
 export default Model.extend({
-  /**
-   * One of:
-   * - scheduled
-   * - active
-   * - finalizing
-   * - skipped
-   * - completed
-   * - cancelled
-   * - failed
-   */
-  status: attr('string'),
-  
   /**
    * Id of Provider that is destination of this transfer
    */
@@ -44,6 +40,11 @@ export default Model.extend({
    * Id of provider that will invalidate the file after transfer
    */
   migrationSource: attr('string'),
+  
+  /**
+   * If true, the transfer is in progress (should be in current transfers collection)
+   */
+  isOngoing: attr('boolean'),
   
   /**
    * Absolute file or directory path that is transferred
@@ -74,7 +75,7 @@ export default Model.extend({
   hourStat: belongsTo('transfer-time-stat'),
   dayStat: belongsTo('transfer-time-stat'),
   monthStat: belongsTo('transfer-time-stat'),
-  
+    
   /**
    * Space in which this transfer is done
    */
@@ -113,13 +114,16 @@ export default Model.extend({
     }
   ),
   
+  status: computed.reads('currentStat.status'),
   dest: computed.reads('destination'),
   bytesPerSec: computed.reads('currentStat.bytesPerSec'),
   userName: computed.reads('systemUser.name'),
   transferredBytes: computed.reads('currentStat.transferredBytes'),
   transferredFiles: computed.reads('currentStat.transferredFiles'),
   
-  isCurrent: computed('status', function () {
-    return _.includes(['finalizing', 'active', 'scheduled'], this.get('status'));
+  currentStatError: computed('currentStat.{isSettled,content}', function () {
+    return this.get('currentStat.isSettled') && this.get('currentStat.content') == null;
   }),
+  
+  isCurrent: computed.reads('isOngoing'),
 });

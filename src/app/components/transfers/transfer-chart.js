@@ -18,11 +18,14 @@ import axisLabels from 'op-worker-gui/utils/chartist/axis-labels';
 import stackedLineMask from 'op-worker-gui/utils/chartist/stacked-line-mask';
 import TransferTimeStatUpdater from 'op-worker-gui/utils/transfer-time-stat-updater';
 import customCss from 'op-worker-gui/utils/chartist/custom-css';
+import centerXLabels from 'op-worker-gui/utils/chartist/center-x-labels';
+import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object'; 
 
 const {
   Component,
   computed,
   get,
+  RSVP: { Promise },
   inject: {
     service,
   },
@@ -77,23 +80,48 @@ export default Component.extend({
   _updaterEnabled: true,
 
   /**
+   * Set this value if want to override updater.fetchError (eg. if updater cannot be
+   * created)
+   * @type {string}
+   */
+  _statsError: undefined,
+  
+  /**
    * True if data for chart is loaded
    * @type {boolean}
    */
-  _statsLoaded: computed('_timeStatForUnit.stats', function() {
+  _statsLoaded: computed('_timeStatForUnit.isLoaded', function() {
     return this.get('_timeStatForUnit.isLoaded');
   }),
 
   /**
-   * Object with stats for specified time unit.
-   * @type {Ember.ComputedProperty<Promise<TransferTimeStat>>}
+   * @type {Ember.ComputedProperty<string|null>}
    */
-  _timeStatForUnit: computed('transfer', 'timeUnit', function () {
+  statsError: computed('updater.fetchError', '_statsError', function () {
+    return this.get('updater.fetchError') || this.get('_statsError');
+  }),
+  
+  /**
+   * Proxy object that resolves with stats for specified time unit.
+   * @type {Ember.ComputedProperty<PromiseObject<TransferTimeStat>>}
+   */
+  _timeStatForUnit: computed('transfer.isLoaded', 'timeUnit', function () {
     const {
       transfer,
       timeUnit,
     } = this.getProperties('transfer', 'timeUnit');
-    return get(transfer, `${timeUnit}Stat`);
+    if (get(transfer, 'isLoaded')) {
+      return get(transfer, `${timeUnit}Stat`);
+    } else {
+      const promise = new Promise((resolve, reject) => {
+        transfer.on('didLoad', () => {
+          get(transfer, `${timeUnit}Stat`)
+            .then(resolve)
+            .catch(reject);
+        });
+      });
+      return PromiseObject.create({ promise });
+    }
   }),
   
   /**
@@ -122,10 +150,13 @@ export default Component.extend({
 
   /**
    * Sorted provider ids.
-   * @type {Ember.ComputedProperty<Array<string>>}
+   * @type {Ember.ComputedProperty<Array<string>|undefined>}
    */
   _sortedProvidersIds: computed('_stats', function () {
-    return Object.keys(this.get('_stats')).sort();
+    const _stats = this.get('_stats');
+    if (_stats) {
+      return Object.keys(_stats).sort();
+    }
   }),
 
   /**
@@ -159,14 +190,12 @@ export default Component.extend({
    */
   _statsNumberPerLabel: computed('timeUnit', function() {
     switch (this.get('timeUnit')) {
-      case 'month':
-        return 2;
       case 'day':
-        return 3;
+        return 4;
       case 'hour':
         return 5;
       default:
-        return 1;
+        return 2;
     }
   }),
 
@@ -193,10 +222,9 @@ export default Component.extend({
   }),
   
   /**
-   * Stats values for time unit in order: from the oldest to the newest (inverts backend
-   * order). Values from this array will be copied to the _chartValues.
+   * Stats values (points x,y), that will be used to as a source for chart values.
    * (async -> _stats)
-   * @type {Ember.ComputedProperty<Array<number>>}
+   * @type {Ember.ComputedProperty<Array<number>|undefined>}
    */
   _statsValues: computed('_stats', '_sortedProvidersIds', '_expectedStatsNumber', function () {
     const {
@@ -208,13 +236,15 @@ export default Component.extend({
       '_sortedProvidersIds',
       '_expectedStatsNumber'
     );
-    return _sortedProvidersIds.map(key => {
-      let values = _stats[key];
-      if (values.length < _expectedStatsNumber) {
-        values = values.concat(_.times(_expectedStatsNumber - values.length, _.constant(null)));
-      }
-      return this._scaleStatValue(values);
-    });
+    if (_sortedProvidersIds) {
+      return _sortedProvidersIds.map(key => {
+        let values = _stats[key];
+        if (values.length < _expectedStatsNumber) {
+          values = values.concat(_.times(_expectedStatsNumber - values.length, _.constant(null)));
+        }
+        return this._scaleStatValue(values);
+      }); 
+    }
   }),
 
   /**
@@ -307,13 +337,14 @@ export default Component.extend({
         customCss({
           filterBySeriesIndex: true,
         }),
+        centerXLabels(),
       ],
     };
   }),
 
   /**
    * Data for chartist (async -> _statsValues)
-   * @type {computed.Object}
+   * @type {Ember.ComputedProperty<Object|undefined>}
    */
   _chartData: computed(
     '_statsValues',
@@ -323,7 +354,7 @@ export default Component.extend({
     'providers.@each.name',
     '_expectedStatsNumber',
     function () {
-      let {
+      const {
         _statsValues,
         _chartValues,
         _sortedProvidersIds,
@@ -340,69 +371,71 @@ export default Component.extend({
         '_expectedStatsNumber',
         '_transferStartTime'
       );
-      // clearing out old chart values
-      _chartValues.forEach(providerValues => {
-        while (providerValues.length) {
-          providerValues.shift();
-        }
-      });
-      // extending chart values to hold all needed providers
-      while (_chartValues.length < _statsValues.length) {
-        _chartValues.push([]);
-      }
-      // calculating new chart values
-      const valuesSumArray = _.range(_expectedStatsNumber).map(() => ({x: 0, y: 0}));
-      _statsValues.forEach((providerValues, providerIndex) => {
-        providerValues.forEach((value, valueIndex) => {
-          valuesSumArray[valueIndex].y += value.y;
-          valuesSumArray[valueIndex].x = value.x;
-        });
-        _chartValues[_chartValues.length - providerIndex - 1]
-          .push(..._.cloneDeep(
-            valuesSumArray.filter(({x}) => x >= _transferStartTime)
-          ));
-      });
-      // creating tooltips
-      const tooltipElements = _.range(_expectedStatsNumber).map((index) => {
-        return _sortedProvidersIds
-          .filter((providerId, providerIndex) => _statsValues[providerIndex].length > index)
-          .map((providerId, providerIndex) => {
-            const provider =
-              _.find(providers, (provider) => provider.get('id') === providerId) || {};
-            const providerName = get(provider, 'name') || providerId;
-            return {
-              name: providerName.length > 10 ?
-                  providerName.substring(0, 8) + '...' : providerName,
-              value: bytesToString(_statsValues[providerIndex][index].y) + '/s',
-              className: 'ct-tooltip-entry',
-              cssString: 'border-color: ' + providersColors[providerId],
-            };
-          });
-      });
-      // setting colors
-      const customCss = _sortedProvidersIds.map((providerId) => {
-        const color = providersColors[providerId];
-        return _.times(_expectedStatsNumber, _.constant({
-          line: {
-            stroke: color,
-          },
-          point: {
-            stroke: color,
-          },
-          area: {
-            fill: color,
+      if (_statsValues) {
+        // clearing out old chart values
+        _chartValues.forEach(providerValues => {
+          while (providerValues.length) {
+            providerValues.shift();
           }
-        }));
-      });
-      // creating chart data object
-      return {
-        labels: this._getChartLabels(),
-        series: _chartValues.map((providerValues) => ({
-          data: providerValues,
-          tooltipElements,
-        })),
-        customCss,
-      };
+        });
+        // extending chart values to hold all needed providers
+        while (_chartValues.length < _statsValues.length) {
+          _chartValues.push([]);
+        }
+        // calculating new chart values
+        const valuesSumArray = _.range(_expectedStatsNumber + 2).map(() => ({ x: 0, y: 0 }));
+        _statsValues.forEach((providerValues, providerIndex) => {
+          providerValues.forEach((value, valueIndex) => {
+            valuesSumArray[valueIndex].y += value.y;
+            valuesSumArray[valueIndex].x = value.x;
+          });
+          _chartValues[_chartValues.length - providerIndex - 1]
+            .push(..._.cloneDeep(
+              valuesSumArray.filter(({ x }) => x >= _transferStartTime)
+            ));
+        });
+        // creating tooltips
+        const tooltipElements = _.range(_expectedStatsNumber + 2).map((index) => {
+          return _sortedProvidersIds
+            .filter((providerId, providerIndex) => _statsValues[providerIndex].length > index)
+            .map((providerId, providerIndex) => {
+              const provider =
+                _.find(providers, (provider) => provider.get('id') === providerId) || {};
+              const providerName = get(provider, 'name') || providerId;
+              return {
+                name: providerName.length > 10 ?
+                  providerName.substring(0, 8) + '...' : providerName,
+                value: bytesToString(_statsValues[providerIndex][index].y) + '/s',
+                className: 'ct-tooltip-entry',
+                cssString: 'border-color: ' + providersColors[providerId],
+              };
+            });
+        });
+        // setting colors
+        const customCss = _sortedProvidersIds.map((providerId) => {
+          const color = providersColors[providerId];
+          return _.times(_expectedStatsNumber + 2, _.constant({
+            line: {
+              stroke: color,
+            },
+            point: {
+              stroke: color,
+            },
+            area: {
+              fill: color,
+            }
+          }));
+        });
+        // creating chart data object
+        return {
+          labels: this._getChartLabels(),
+          series: _chartValues.map((providerValues) => ({
+            data: providerValues,
+            tooltipElements,
+          })),
+          customCss,
+        }; 
+      }
     }
   ),
   
@@ -410,22 +443,16 @@ export default Component.extend({
     this._super(...arguments);
     this.set('_chartValues', []);
     const transfer = this.get('transfer');
-    const isCurrent = get(transfer, 'isCurrent');
-    const gettingStats = this.get('_timeStatForUnit');
- 
-    console.log('transfer-chart: creating updater');
-    gettingStats.then(timeStat => {
-      const updater = TransferTimeStatUpdater.create({
-        isEnabled: isCurrent && this.get('_updaterEnabled'),
-        timeStat,
+    
+    if (get(transfer, 'isLoaded')) {
+      this._createTimeStatsUpdater();
+    } else {
+      transfer.on('didLoad', () => {
+        this._createTimeStatsUpdater();
       });
-      if (!isCurrent) {
-        updater.fetch();
-      }
-      this.set('updater', updater);
-    });
+    }
   },
-
+  
   willDestroyElement() {
     try {
       const updater = this.get('updater');
@@ -437,6 +464,31 @@ export default Component.extend({
     }
   },
 
+  _createTimeStatsUpdater() {
+    const transfer = this.get('transfer');
+    const isCurrent = get(transfer, 'isCurrent');
+    const gettingStats = this.get('_timeStatForUnit');
+ 
+    console.log('transfer-chart: creating updater');
+    gettingStats.then(timeStat => {
+      this.set('_statsError', null);
+      if (!isCurrent) {
+        this.set('timeUnit', this._getPrefferedUnit());
+      }
+      const updater = TransferTimeStatUpdater.create({
+        isEnabled: isCurrent && this.get('_updaterEnabled'),
+        timeStat,
+      });
+      if (!isCurrent) {
+        updater.fetch();
+      }
+      this.set('updater', updater);
+    });
+    gettingStats.catch(error => {
+      this.set('_statsError', error);
+    });
+  },
+  
   /**
    * Calculates throughput value for given bytes number and time step index
    * @param {Array<number>} statValue transfered bytes/s for chart value
@@ -448,27 +500,29 @@ export default Component.extend({
       _timePeriod,
       _transferLastUpdateTime,
       _transferStartTime,
+      _expectedStatsNumber,
     } = this.getProperties(
       '_timePeriod',
       '_transferLastUpdateTime',
-      '_transferStartTime'
+      '_transferStartTime',
+      '_expectedStatsNumber'
     );
     let x = _transferLastUpdateTime + 0.5;
     const scaledStats = [];
     statValues = statValues.filter(y => y !== null);
-    for (let i = 0; i <= statValues.length; i++) {
-      const point = { x, y: statValues[i] };
-
+    for (let i = 0; i < statValues.length; i++) {
+      scaledStats.push({ x, y: statValues[i] });
       const timeDelta = x % _timePeriod === 0 ? _timePeriod : x % _timePeriod;
-      const newX = Math.max(x - timeDelta, _transferStartTime);
+      const newX = Math.max(
+        x - timeDelta,
+        _transferStartTime,
+        _transferLastUpdateTime - _timePeriod * _expectedStatsNumber
+      );
       if (newX === x) {
-        scaledStats.push(point);
         break;
       } else {
         x = newX;
       }
-
-      scaledStats.push(point);
     }
     return scaledStats.reverse();
   },
@@ -519,24 +573,25 @@ export default Component.extend({
   },
 
   /**
-   * Return preffered time unit for displaying transfer
+   * Returns preffered time unit for displaying transfer stats
    * @returns {string}
    */
-  // _getPrefferedUnit() {
-  //   const {
-  //     _transferStartTime,
-  //     _transferLastUpdateTime,
-  //   } = this.getProperties('_transferStartTime', '_transferLastUpdateTime');
-  //   const transferTime = _transferLastUpdateTime - _transferStartTime;
-  //   let prefferedUnit;
-  //   UNITS.slice(0).forEach(unit => {
-  //     if (!prefferedUnit) {
-  //       const periodInSeconds = this._getTimePeriodForUnit(unit);
-  //       if (transferTime > periodInSeconds) {
-  //         prefferedUnit = unit;
-  //       }
-  //     }
-  //   });
-  //   return prefferedUnit || 'minute';
-  // }
+  _getPrefferedUnit() {
+    const {
+      _transferStartTime,
+      _transferLastUpdateTime,
+    } = this.getProperties('_transferStartTime', '_transferLastUpdateTime');
+    const transferTime = _transferLastUpdateTime - _transferStartTime;
+    let prefferedUnit;
+    ['minute', 'hour', 'day'].forEach(unit => {
+      if (!prefferedUnit) {
+        const timeWindow = this._getTimePeriodForUnit(unit) *
+          this._getExpectedStatsNumberForUnit(unit);
+        if (transferTime <= timeWindow) {
+          prefferedUnit = unit;
+        }
+      }
+    });
+    return prefferedUnit || 'month';
+  }
 });

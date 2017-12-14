@@ -25,7 +25,6 @@ const {
   getProperties,
   A,
   Object: EmberObject,
-  observer,
 } = Ember;
 
 const START_END_TIME_FORMAT = 'D MMM YYYY H:mm:ss';
@@ -65,7 +64,7 @@ export default Component.extend({
    * Which transfers should be presented as selected on table render
    * @type {Array<string>|undefined} array of transfer ids
    */
-  selectedTransfers: undefined,
+  selectedTransferIds: undefined,
   
   /**
    * Global mapping: transferId -> integer index
@@ -134,7 +133,7 @@ export default Component.extend({
     'transfers.@each.{tableDataIsLoaded,status,finishTime,fileType,transferredBytes,transferredFiles,currentStatError}',
     'providers',
     'providersColors',
-    'selectedTransfers.[]',
+    'selectedTransferIds.[]',
     function () {
       const _tableDataCache = this.get('_tableDataCache');
       const {
@@ -142,8 +141,8 @@ export default Component.extend({
         providers,
         providersColors,
         i18n,
-        selectedTransfers,
-      } = this.getProperties('transfers', 'providers', 'providersColors', 'i18n', 'selectedTransfers');
+        selectedTransferIds,
+      } = this.getProperties('transfers', 'providers', 'providersColors', 'i18n', 'selectedTransferIds');
       
       if (transfers && providers) {
         const newTableData = transfers.map((transfer) => transferTableData(
@@ -152,7 +151,7 @@ export default Component.extend({
           providers,
           providersColors,
           i18n,
-          selectedTransfers
+          selectedTransferIds
         ));
         mutateArray(
           _tableDataCache,
@@ -265,16 +264,6 @@ export default Component.extend({
       this.set('_mobileMode', this.get('_window.innerWidth') < 1200);
     };
   }),
-
-  /**
-   * Also open all selected transfers
-   */
-  scrollToSelectedTransfers: observer('selectedTransfers.[]', function () {
-    const selectedTransfers = this.get('selectedTransfers');
-    if (selectedTransfers) {
-      
-    }
-  }),
   
   init() {
     this._super(...arguments);
@@ -288,8 +277,6 @@ export default Component.extend({
 
     _resizeEventHandler();
     _window.addEventListener('resize', _resizeEventHandler);
-    
-    this.scrollToSelectedTransfers();
   },
 
   willDestroyElement() {
@@ -325,9 +312,9 @@ export default Component.extend({
  * @param {Array<Provider>} providers 
  * @param {Object} providersColors 
  * @param {Ember.Service} i18n i18n service instance (`t` method)
- * @param {Array<string>|undefined} selectedTransfers
+ * @param {Array<string>|undefined} selectedTransferIds
  */
-function transferTableData(transferIndex, transfer, providers, providersColors, i18n, selectedTransfers) {
+function transferTableData(transferIndex, transfer, providers, providersColors, i18n, selectedTransferIds) {
   // searching for destination
   let destination = i18n.t(I18N_PREFIX + 'destinationUnknown');
   const destProvider = _.find(providers, (provider) => 
@@ -372,7 +359,7 @@ function transferTableData(transferIndex, transfer, providers, providersColors, 
   const finishedAtReadable = finishMoment && finishMoment.format(START_END_TIME_FORMAT);
   const totalBytesReadable = bytesToString(transferredBytes);
   const isLoading = (tableDataIsLoaded === false);
-  const initSelect = _.includes(selectedTransfers, transferId);
+  const initSelect = _.includes(selectedTransferIds, transferId);
   
   return EmberObject.create({
     transfer,

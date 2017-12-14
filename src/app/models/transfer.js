@@ -1,3 +1,12 @@
+/**
+ * Data transfer from multiple sources to single provider
+ *
+ * @module models/transfer
+ * @author Jakub Liput
+ * @copyright (C) 2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import DS from 'ember-data';
 import Ember from 'ember';
 
@@ -66,9 +75,7 @@ export default Model.extend({
   hourStat: belongsTo('transfer-time-stat'),
   dayStat: belongsTo('transfer-time-stat'),
   monthStat: belongsTo('transfer-time-stat'),
-  
-  status: computed.reads('currentStat.status'),
-  
+    
   /**
    * Space in which this transfer is done
    */
@@ -107,6 +114,7 @@ export default Model.extend({
     }
   ),
   
+  status: computed.reads('currentStat.status'),
   dest: computed.reads('destination'),
   bytesPerSec: computed.reads('currentStat.bytesPerSec'),
   userName: computed.reads('systemUser.name'),

@@ -39,7 +39,7 @@ export default Component.extend({
   /**
    * @type {Array<string>|undefined}
    */
-  selectedTransfers: undefined,
+  selectedTransferIds: undefined,
   
   /**
    * What speed (input, output) should be presented per provider

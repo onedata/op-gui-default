@@ -13,8 +13,8 @@ export default function () {
       $(chart.container).find('.ct-labels .ct-label.ct-horizontal.ct-end')
         .parent()
         .each((index, element) => {
-          let label = $(element);
-          let width = parseFloat(label.attr('width'));
+          const label = $(element);
+          const width = parseFloat(label.attr('width'));
           label.css({'transform': `translateX(-${width / 2}px)`});
         });
     });

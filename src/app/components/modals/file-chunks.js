@@ -119,7 +119,7 @@ export default Component.extend(PromiseLoadingMixin, {
     'currentProviderSupport',
     'onlySingleProviderSupport',
     function () {
-      if (this.get('onlySingleProviderSupport') === true) {
+      if (this.get('onlySingleProviderSupport')) {
         return 'single-provider';
       } else if (this.get('currentProviderSupport') === false) {
         return 'proxy-provider';

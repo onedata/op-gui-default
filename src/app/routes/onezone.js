@@ -26,7 +26,7 @@ export default Route.extend({
       transition.abort();
     }
     return {
-      onezoneUrl: this.get('session.sessionDetails.manageProvidersURL'),
+      onezoneUrl,
     };
   },
 });

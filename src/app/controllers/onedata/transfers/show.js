@@ -24,7 +24,7 @@ export default Controller.extend({
   /**
    * @type {Ember.ComputedProperty<Array<String>>}
    */
-  selectedTransfers: computed('selected_transfers', function () {
+  selectedTransferIds: computed('selected_transfers', function () {
     const selected_transfers = this.get('selected_transfers');
     if (selected_transfers) {
       return selected_transfers.toString().split(',');

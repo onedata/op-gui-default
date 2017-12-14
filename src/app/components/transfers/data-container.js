@@ -56,7 +56,7 @@ export default Component.extend({
    * @virtual
    * @type {Array<string>|undefined}
    */
-  selectedTransfers: undefined,
+  selectedTransferIds: undefined,
 
   /**
    * @public
@@ -325,13 +325,13 @@ export default Component.extend({
   }),
   
   _scrollToFirstSelectedTransfer() {
-    const selectedTransfers = this.get('selectedTransfers');
+    const selectedTransferIds = this.get('selectedTransferIds');
     
     const trs = this.$('tr.transfer-row').toArray();
     for (let i = 0; i < trs.length; i++) {
       const transferElement = trs[i];
       const tid = transferElement.id.match(RE_TRANSFER_ROW_ID)[1];
-      if (_.includes(selectedTransfers, tid)) {
+      if (_.includes(selectedTransferIds, tid)) {
         // estimate height of top toolbar + height of the table header
         // (it's better to present table header if possible)
         let navHeight;

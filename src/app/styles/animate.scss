@@ -123,5 +123,5 @@
 @include blink-keyframes(notice-blink-mint, background-color, $color-one-mint, initial);
 
 .notice-blink, .notice-blink-mint {
-    animation-name: notice-blink-mint; 
+  animation-name: notice-blink-mint; 
 }

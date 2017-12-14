@@ -352,7 +352,9 @@ export default Ember.Component.extend({
       _sortedData,
       _valuesSum,
     } = this.getProperties('_sortedData', '_valuesSum');
-    let valuesToDraw = _valuesSum ? _sortedData.mapBy('value') : _sortedData.map(() => 1);
+    // If each series == 0 (so _valuesSum == 0), then each series should be drawed 
+    // using the same value > 0 (here is 1) to give them the same space in chart
+    const valuesToDraw = _valuesSum ? _sortedData.mapBy('value') : _sortedData.map(() => 1);
     return _sortedData.map((series, index) => {
       return {
         data: valuesToDraw[index],

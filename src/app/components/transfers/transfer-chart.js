@@ -222,8 +222,7 @@ export default Component.extend({
   }),
   
   /**
-   * Stats values for time unit in order: from the oldest to the newest (inverts backend
-   * order). Values from this array will be copied to the _chartValues.
+   * Stats values (points x,y), that will be used to as a source for chart values.
    * (async -> _stats)
    * @type {Ember.ComputedProperty<Array<number>|undefined>}
    */

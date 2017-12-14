@@ -1,5 +1,11 @@
 /**
- * 
+ * Renders "three dots" button with popover menu. Creates menu items using
+ * menuActions array, which each element is an object in format:
+ * {
+ *  title {string},
+ *  action {callback},
+ *  icon {string}
+ * }
  * 
  * @module components/dots-menu
  * @author Michal Borzecki
@@ -15,7 +21,6 @@ import layout from '../templates/components/dots-menu';
 const {
   Component,
   computed,
-  get,
   run,
 } = Ember;
 
@@ -25,18 +30,51 @@ export default Component.extend(ClickOutside, {
   classNames: ['dots-menu'],
   classNameBindings: ['isOpened:open'],
 
-  posX: 'left',
-
-  isOpened: false,
-
+  /**
+   * Array of menu items.
+   * @type {Array<Object>}
+   * @virtual
+   */
   menuActions: [],
 
+  /**
+   * Selector for the parent element, which scroll event should be listened to
+   * perform popover autoclose
+   * @type {string}
+   */
+  scrollableParentSelector: undefined,
+
+  /**
+   * X position. Possible values: left, right.
+   * @type {string}
+   */
+  posX: 'left',
+
+  /**
+   * If true, popover menu is opened.
+   * @type {boolean}
+   */
+  isOpened: false,
+
+  /**
+   * Callback, that recalculates popover position
+   * @type {function}
+   */
   refreshPosition: () => {},
   
+  /**
+   * Selector for the element, which is a target point where popover
+   * should be rendered
+   * @type {Emebr.ComputedProperty<string>}
+   */
   bindSelector: computed('elementId', function() {
     return `#${this.get('elementId')} .dots-trigger`;
   }),
 
+  /**
+   * Specific css classes for x postion
+   * @type {Emebr.ComputedProperty<string>}
+   */
   posXClasses: computed('posX', function () {
     switch (this.get('posX')) {
       case 'right':
@@ -46,11 +84,28 @@ export default Component.extend(ClickOutside, {
     }
   }),
 
+  /**
+   * Parent element scroll event handler. It closes popover.
+   * @type {Ember.ComputedProprty<function>}
+   */
+  scrollEventHandler: computed(function () {
+    return () => {
+      this.set('isOpened', false);
+    };
+  }),
+
   didInsertElement() {
     const {
       bindSelector,
       posX,
-     } = this.getProperties('bindSelector', 'posX');
+      scrollableParentSelector,
+      scrollEventHandler,
+    } = this.getProperties(
+      'bindSelector',
+      'posX',
+      'scrollableParentSelector',
+      'scrollEventHandler'
+    );
     if (bindSelector) {
       const bindElement = $(bindSelector);
       this.set('refreshPosition', bindFloater(this.$('.dropdown-menu'), bindElement, {
@@ -60,11 +115,23 @@ export default Component.extend(ClickOutside, {
         offsetX: posX === 'right' ? bindElement.outerWidth() : 0,
       }));
     }
+    if (scrollableParentSelector) {
+      $(scrollableParentSelector).scroll(scrollEventHandler);
+    }
+    $(window).resize(scrollEventHandler);
     run.next(this, this.addClickOutsideListener);
   },
   
   willDestroyElement() {
+    const {
+      scrollableParentSelector,
+      scrollEventHandler,
+    } = this.getProperties('scrollableParentSelector', 'scrollEventHandler');
     this.removeClickOutsideListener();
+    if (scrollableParentSelector) {
+      $(scrollableParentSelector).unbind('scroll', scrollEventHandler);
+    }
+    $(window).unbind('resize', scrollEventHandler);
   },
   
   clickOutside() {

@@ -1,5 +1,5 @@
 /**
- * FIXME: doc 
+ * Redirect to client tokens management in Onezone
  *
  * @module routes/onezone/tokens
  * @author Jakub Liput

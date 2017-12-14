@@ -324,6 +324,30 @@ export default Component.extend({
     }
   }),
   
+  init() {
+    this._super(...arguments);
+    const {
+      _transfersUpdaterEnabled,
+      space,
+      store,
+    } = this.getProperties(
+      '_transfersUpdaterEnabled',
+      'space',
+      'store',
+      // just enable observers
+      'allTablesLoaded'
+    );
+    
+    const transfersUpdater = SpaceTransfersUpdater.create({
+      store,
+      isEnabled: _transfersUpdaterEnabled,
+      space: space,
+    });    
+    this.set('transfersUpdater', transfersUpdater);
+    
+    this._initializeDefaultValues();
+  },
+  
   _scrollToFirstSelectedTransfer() {
     const selectedTransferIds = this.get('selectedTransferIds');
     
@@ -358,30 +382,6 @@ export default Component.extend({
         break;
       }
     }
-  },
-  
-  init() {
-    this._super(...arguments);
-    const {
-      _transfersUpdaterEnabled,
-      space,
-      store,
-    } = this.getProperties(
-      '_transfersUpdaterEnabled',
-      'space',
-      'store',
-      // just enable observers
-      'allTablesLoaded'
-    );
-    
-    const transfersUpdater = SpaceTransfersUpdater.create({
-      store,
-      isEnabled: _transfersUpdaterEnabled,
-      space: space,
-    });    
-    this.set('transfersUpdater', transfersUpdater);
-    
-    this._initializeDefaultValues();
   },
   
   _initializeDefaultValues() {

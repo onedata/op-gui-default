@@ -105,7 +105,7 @@ export default Component.extend({
    * Proxy object that resolves with stats for specified time unit.
    * @type {Ember.ComputedProperty<PromiseObject<TransferTimeStat>>}
    */
-  _timeStatForUnit: computed('transfer', 'timeUnit', function () {
+  _timeStatForUnit: computed('transfer.isLoaded', 'timeUnit', function () {
     const {
       transfer,
       timeUnit,
@@ -453,6 +453,17 @@ export default Component.extend({
     }
   },
   
+  willDestroyElement() {
+    try {
+      const updater = this.get('updater');
+      if (updater) {
+        updater.destroy();
+      }
+    } finally {
+      this._super(...arguments);
+    }
+  },
+
   _createTimeStatsUpdater() {
     const transfer = this.get('transfer');
     const isCurrent = get(transfer, 'isCurrent');
@@ -477,18 +488,7 @@ export default Component.extend({
       this.set('_statsError', error);
     });
   },
-
-  willDestroyElement() {
-    try {
-      const updater = this.get('updater');
-      if (updater) {
-        updater.destroy();
-      }
-    } finally {
-      this._super(...arguments);
-    }
-  },
-
+  
   /**
    * Calculates throughput value for given bytes number and time step index
    * @param {Array<number>} statValue transfered bytes/s for chart value

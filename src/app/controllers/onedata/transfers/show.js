@@ -1,6 +1,6 @@
 /**
  * Controller used to watch if model of route changed - and then change active
- * spaces menu option.
+ * transfers menu option.
  * @module controllers/transfers/show
  * @author Jakub Liput
  * @copyright (C) 2017 ACK CYFRONET AGH
@@ -19,6 +19,15 @@ const {
 export default Controller.extend({
   secondaryMenu: service(),
   
+  /**
+   * Query parameters used for onedata.transfers.show route:
+   * - `sort_by` (string) - key of transfers table column to sort by default
+   *    on entering the view; see `live-stats-table` component for column names;
+   *    eg. "path" to sort by file path
+   * - `selected_transfers` (string) - list of transfers ids separated by `,`
+   *    that will be automatically opened, blink and be scrolled to on entering
+   *    the view; eg. "transferid1,transferid2"
+   */
   queryParams: ['sort_by', 'selected_transfers'],
     
   /**

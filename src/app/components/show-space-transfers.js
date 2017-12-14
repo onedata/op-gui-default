@@ -32,11 +32,14 @@ export default Component.extend({
   space: undefined,
   
   /**
+   * Name of transfer table column to sort by default (eg. path)
    * @type {string|undefined}
    */
   sortBy: undefined,
   
   /**
+   * Ids of transfers that should be expanded, "blinked" and scrolled to
+   * on entering view
    * @type {Array<string>|undefined}
    */
   selectedTransferIds: undefined,

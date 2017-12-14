@@ -1,5 +1,5 @@
 /**
- * FIXME: doc 
+ * Parent of routes that redirect to external Onezone app views
  *
  * @module routes/onezone
  * @author Jakub Liput

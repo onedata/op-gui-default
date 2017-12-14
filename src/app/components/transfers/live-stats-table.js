@@ -56,12 +56,14 @@ export default Component.extend({
   
   /**
    * Type of transfers. May be `active` or `completed`
+   * @public
    * @type {string}
    */
   transferType: 'active',
 
   /**
    * Which transfers should be presented as selected on table render
+   * @public
    * @type {Array<string>|undefined} array of transfer ids
    */
   selectedTransferIds: undefined,
@@ -173,7 +175,7 @@ export default Component.extend({
    * Table columns definition.
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  _tableColumns: computed('transferType', '_mobileMode', function () {
+  _tableColumns: computed('transferType', '_mobileMode', 'sortBy', function () {
     const {
       i18n,
       transferType,

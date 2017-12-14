@@ -153,8 +153,10 @@ export default Component.extend(PromiseLoadingMixin, {
     'providers',
     'fileBlocks.@each.provider',
     function getFileDistributionsSorted() {
-      const fileBlocks = this.get('fileBlocks');
-      const providers = this.get('providers');
+      const {
+        fileBlocks,
+        providers,
+      } = this.getProperties('fileBlocks', 'providers');
       if (fileBlocks && providers) {
         return _.sortBy(
           this.get('fileBlocks').toArray(),

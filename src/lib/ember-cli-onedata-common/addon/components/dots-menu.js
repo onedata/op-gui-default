@@ -1,12 +1,14 @@
 /**
  * Renders "three dots" button with popover menu. Creates menu items using
  * menuActions array, which each element is an object in format:
+ * ```
  * {
  *  title {string},
  *  action {callback},
  *  icon {string},
  *  disabled {boolean}, // if true, the position is disabled and not clickable
  * }
+ * ```
  * 
  * @module components/dots-menu
  * @author Michal Borzecki
@@ -36,7 +38,7 @@ export default Component.extend(ClickOutside, {
    * @type {Array<Object>}
    * @virtual
    */
-  menuActions: [],
+  menuActions: Object.freeze([]),
 
   /**
    * Selector for the parent element, which scroll event should be listened to
@@ -124,15 +126,19 @@ export default Component.extend(ClickOutside, {
   },
   
   willDestroyElement() {
-    const {
-      scrollableParentSelector,
-      scrollEventHandler,
-    } = this.getProperties('scrollableParentSelector', 'scrollEventHandler');
-    this.removeClickOutsideListener();
-    if (scrollableParentSelector) {
-      $(scrollableParentSelector).unbind('scroll', scrollEventHandler);
+    try {
+      const {
+        scrollableParentSelector,
+        scrollEventHandler,
+      } = this.getProperties('scrollableParentSelector', 'scrollEventHandler');
+      this.removeClickOutsideListener();
+      if (scrollableParentSelector) {
+        $(scrollableParentSelector).unbind('scroll', scrollEventHandler);
+      }
+      $(window).unbind('resize', scrollEventHandler);
+    } finally {
+      this._super(...arguments);
     }
-    $(window).unbind('resize', scrollEventHandler);
   },
   
   clickOutside() {

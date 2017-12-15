@@ -184,6 +184,9 @@
         }
       }
     }
+    .cell-status {
+      top: 1px;
+    }
   }
   .cell-file-name {
     text-overflow: ellipsis;
@@ -201,9 +204,11 @@
     }
   }
   .cell-status {
-    font-size: 1.5em;
-    line-height: 0;
+    position: relative;
+    font-size: 2em;
+    height:0;
     vertical-align: middle;
+    line-height: 0;
     // regular states
     &.completed,
     &.finalizing {
@@ -228,6 +233,9 @@
       @extend .infinite;
       @extend .hinge;
       @extend .pulse-red-transparent;
+    }
+    .one-icon {
+      line-height: 0;
     }
   }
   .transfer-actions-cell {

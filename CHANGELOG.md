@@ -82,7 +82,6 @@ CHANGELOG
 
 * VFS-2698 Spinners on loading users/groups names
 * VFS-2698 Refactored spaces index go to default
-* VFS-2697 Cleared FIXMEs and fixed tests
 * VFS-2697 Clearing ResumableJS files on complete - Slight style change of file upload to not allow progress bar to disappear - Dynamic visible property - Experimental upload of dir files in Chrome - Refactored error-notifier service (currently unused) - Allow upload of 0-sized files - Reverting ResumableJS as singleton instance
 * VFS-2697 Major refactoring of files upload comp.
 * VFS-2494 Non-uppercase space name in selector

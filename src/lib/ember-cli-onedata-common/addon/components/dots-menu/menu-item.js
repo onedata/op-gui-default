@@ -1,3 +1,13 @@
+/**
+ * A menu item in dots-menu which renders an icon and a title.
+ * An action can be bind on click (use `action` property)
+ *
+ * @module components/dots-menu/menu-item
+ * @author Jakub Liput
+ * @copyright (C) 2017 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 import layout from '../../templates/components/dots-menu/menu-item';
 

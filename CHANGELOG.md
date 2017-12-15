@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-3878 Added transfers cancelling action
 * VFS-3880 Various improvements in transfers management and statistics display
 * VFS-3752 Added transfers tab; added replication and migration options from data distribution
 * VFS-3710 Using binary prefix units for displaying sizes (MiB, GiB, etc.)

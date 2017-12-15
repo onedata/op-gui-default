@@ -4,7 +4,8 @@
  * {
  *  title {string},
  *  action {callback},
- *  icon {string}
+ *  icon {string},
+ *  disabled {boolean}, // if true, the position is disabled and not clickable
  * }
  * 
  * @module components/dots-menu

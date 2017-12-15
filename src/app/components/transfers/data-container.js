@@ -45,6 +45,7 @@ export default Component.extend({
   
   session: service(),
   store: service(),
+  oneproviderServer: service(),
   
   /**
    * @virtual
@@ -87,13 +88,13 @@ export default Component.extend({
    * (active, finalizing or scheduled) transfers
    * @type {Ember.ComputedProperty<Ember.Array<Transfer>>}
    */
-  currentTransfers: computed.reads('currentTransferList.list.content'),
+  completedTransfers: computed.reads('currentTransferList.list.content'),
   
   /**
    * Collection of Transfer model for completed transfers
    * @type {Ember.ComputedProperty<Ember.Array<Transfer>>}
    */
-  completedTransfers: computed.reads('completedTransferList.list.content'),
+  currentTransfers: computed.reads('completedTransferList.list.content'),
 
   /**
    * List of providers that support this space
@@ -342,7 +343,7 @@ export default Component.extend({
       store,
       isEnabled: _transfersUpdaterEnabled,
       space: space,
-    });    
+    });
     this.set('transfersUpdater', transfersUpdater);
     
     this._initializeDefaultValues();
@@ -397,5 +398,16 @@ export default Component.extend({
     } finally {
       this._super(...arguments);
     }
+  },
+  
+  actions: {
+    /**
+     * Start transfer cancel procedure
+     * @param {string} transferId
+     * @returns {Promise<undefined|any>}
+     */
+    cancelTransfer(transferId) {
+      return this.get('oneproviderServer').cancelTransfer(transferId);
+    },
   },
 });

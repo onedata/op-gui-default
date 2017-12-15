@@ -524,7 +524,10 @@ export default {
         totalFiles: 'Total files',
         status: 'Status',
         destinationUnknown: 'Unknown',
-        cancelTransfer: 'Cancel transfer',
+        cancelFailure: 'Cannot cancel the transfer',
+        cellActions: {
+          cancelTransfer: 'Cancel transfer',
+        },
         cellFileName: {
           deleted: 'deleted',
         },
@@ -536,6 +539,7 @@ export default {
           active: 'Active',
           scheduled: 'Scheduled',
           finalizing: 'Finalizing',
+          cancelling: 'Cancelling...',
         },
       },
       transferChart: {

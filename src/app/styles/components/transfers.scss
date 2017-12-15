@@ -204,6 +204,7 @@
     font-size: 1.5em;
     line-height: 0;
     vertical-align: middle;
+    // regular states
     &.completed,
     &.finalizing {
       color: $color-one-mint;
@@ -220,6 +221,13 @@
     }
     &.scheduled {
       color: $onedata-graphite;
+    }
+    // action pending states (frontend)
+    &.cancelling {
+      @extend .animated;
+      @extend .infinite;
+      @extend .hinge;
+      @extend .pulse-red-transparent;
     }
   }
   .transfer-actions-cell {

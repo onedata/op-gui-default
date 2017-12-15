@@ -388,4 +388,22 @@ export default Ember.Service.extend({
       childGroupId: childGroupId
     });
   },
+
+  /**--------------------------------------------------------------------
+   Transfer related procedures
+   -------------------------------------------------------------------- */
+  
+  /**
+   * Cancels the transfer
+   * 
+   * @param {string} transferId 
+   * @returns {RSVP.Promise} A backend operation completion,
+   * ``resolve()`` when cancelling procedure has started successfully
+   * ``reject(object: error)`` on failure
+   */
+  cancelTransfer(transferId) {
+    return this.get('server').privateRPC('cancelTransfer', {
+      transferId,
+    });
+  },
 });

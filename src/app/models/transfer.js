@@ -126,4 +126,15 @@ export default Model.extend({
   }),
   
   isCurrent: computed.reads('isOngoing'),
+  
+  //#region Runtime properties
+  
+  /**
+   * If true, user has invoked transfer cancellation but the transfer
+   * has no set its state to "cancelled" yet
+   * @type {boolean}
+   */
+  isCancelling: false,
+  
+  //#endregion
 });

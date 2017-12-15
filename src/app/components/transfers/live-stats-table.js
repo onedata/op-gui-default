@@ -22,6 +22,7 @@ const {
     service,
   },
   get,
+  set,
   getProperties,
   A,
   Object: EmberObject,
@@ -35,6 +36,7 @@ export default Component.extend({
   classNames: ['transfers-live-stats-table', 'transfers-table'],
 
   i18n: service(),
+  notify: service(),
 
   /**
    * @virtual 
@@ -53,6 +55,17 @@ export default Component.extend({
    * @type {Function}
    */
   notifyLoaded: () => {},
+  
+  // TODO: using undefined, because _we want_ to see error when this is not injected
+  /**
+   * @virtual
+   * @type {Function}
+   * External implementation of cancelTransfer that should actually invoke
+   * a procedure
+   * @returns {Promise<undefined|any>} promise should resolve when cancelling has
+   *    started successfully
+   */
+  cancelTransfer: undefined,
   
   /**
    * Type of transfers. May be `active` or `completed`
@@ -153,7 +166,8 @@ export default Component.extend({
           providers,
           providersColors,
           i18n,
-          selectedTransferIds
+          selectedTransferIds,
+          this.get('_cancelTransfer')
         ));
         mutateArray(
           _tableDataCache,
@@ -305,6 +319,34 @@ export default Component.extend({
   },
 
   /**
+   * Internal cancel of transfer which knows which row (table record) invoked
+   * the procedure, so it can modify row (record) state.
+   * @param {object} record instance of model-table record for which the transfer
+   *    has been canceled
+   */
+  _cancelTransfer: computed('cancelTransfer', function () {
+    const cancelTransfer = this.get('cancelTransfer');
+    return (record) => {
+      const {
+        notify,
+        i18n,
+      } = this.getProperties('notify', 'i18n');
+      set(record, 'transfer.isCancelling', true);
+      cancelTransfer(record.transferId)
+        .catch(error => {
+          notify.error(i18n.t(I18N_PREFIX + 'cancelFailure'));
+          throw error;
+        })
+        .then(() => {
+          return record.transfer.reload();
+        })
+        .finally(() => {
+          set(record, 'transfer.isCancelling', false);
+        });
+    };
+  }),
+  
+  /**
    * Returns unique number id for transfer
    * @param {Transfer} transfer
    * @returns {number}
@@ -326,8 +368,10 @@ export default Component.extend({
  * @param {Object} providersColors 
  * @param {Ember.Service} i18n i18n service instance (`t` method)
  * @param {Array<string>|undefined} selectedTransferIds
+ * @param {Function} cancelTransfer a function to invoke to cancel transfer
+ *    `cancelTransfer(transferId)`
  */
-function transferTableData(transferIndex, transfer, providers, providersColors, i18n, selectedTransferIds) {
+function transferTableData(transferIndex, transfer, providers, providersColors, i18n, selectedTransferIds, cancelTransfer) {
   // searching for destination
   let destination = i18n.t(I18N_PREFIX + 'destinationUnknown');
   const destProvider = _.find(providers, (provider) => 
@@ -373,13 +417,13 @@ function transferTableData(transferIndex, transfer, providers, providersColors, 
   const totalBytesReadable = bytesToString(transferredBytes);
   const isLoading = (tableDataIsLoaded === false);
   const initSelect = _.includes(selectedTransferIds, transferId);
-  // TODO pass actual
-  const actions = [Ember.Object.create({
-    title: i18n.t(I18N_PREFIX + 'cancelTransfer'),
-    action: () => console.log('todo cancel transfer action'),
-    icon: 'cancelled',
-  })];
   
+  const actions = [
+    {
+      id: 'cancelTransfer',
+      action: cancelTransfer,
+    },
+  ];
   return EmberObject.create({
     transfer,
     transferIndex,

@@ -88,13 +88,13 @@ export default Component.extend({
    * (active, finalizing or scheduled) transfers
    * @type {Ember.ComputedProperty<Ember.Array<Transfer>>}
    */
-  completedTransfers: computed.reads('currentTransferList.list.content'),
+  currentTransfers: computed.reads('currentTransferList.list.content'),
   
   /**
    * Collection of Transfer model for completed transfers
    * @type {Ember.ComputedProperty<Ember.Array<Transfer>>}
    */
-  currentTransfers: computed.reads('completedTransferList.list.content'),
+  completedTransfers: computed.reads('completedTransferList.list.content'),
 
   /**
    * List of providers that support this space

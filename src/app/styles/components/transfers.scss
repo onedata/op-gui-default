@@ -1,0 +1,216 @@
+.transfers-data-container {
+  // TODO: this seems to be generic for new style in content views
+  h1, h2 {
+    font-size: 100%;
+    text-transform: uppercase;
+    margin: 0;
+    padding: 17px 0px;
+    font-weight: bold;
+    .btn-group {
+      position: relative;
+      top: -9px;
+    }
+  }
+
+  .transfers-throughput-distribution {
+    .chart-row {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .zero-chart .ct-series {
+      opacity: 0.4;
+    }
+  }
+
+  .map-column {
+    overflow: hidden;
+  }
+
+  .map-container {
+    .one-atlas {
+      padding-top: 73%;
+      margin-bottom: -15%;
+    }
+  }
+
+  .transfers-transfer-chart {
+    $-ct-chart-padding-top: 40px;
+    
+    position: relative;
+    .loadable-row {
+      // height of chart + top-padding (TODO: parametrize height of chart?)
+      min-height: 160px + $-ct-chart-padding-top;
+    }
+    .btn-group {
+      position: absolute;
+      top: $padding-small-vertical;
+      right: $padding-small-vertical;
+      .btn.btn-default:not(.active) {
+        background-color: transparent;
+      }
+    }
+    .ct-chart {
+      padding-top: 40px;
+      margin-bottom: 0;
+    }
+    .ct-area {
+      fill-opacity: 0.5;
+    }
+    .ct-line {
+      stroke-width: 2px;
+    }
+    .ct-point {
+      stroke-width: 6px;
+    }
+    .ct-grid.ct-vertical {
+      stroke: darken($onedata-light-gray, 9%);
+    }
+    .ct-tooltip-entry::before {
+      height: 0;
+      width: 0;
+      border-color: inherit;
+      border-width: 5px;
+    }
+    .ct-label.ct-vertical.ct-start, .ct-label.ct-horizontal.ct-end {
+      white-space: nowrap;
+    }
+    .ct-label.ct-horizontal.ct-end {
+      display: block;
+      text-align: center;
+    }
+    
+    .row-main-chart > .resource-load-error{
+      margin-top: 64px;
+      margin-left: 5%;
+      margin-right: 5%;
+    }
+  }
+
+  .one-collapsible-list-item-header.row {
+    padding-left: $padding-large-horizontal;
+    padding-right: 45px;;
+  }
+
+  .one-collapsible-list {
+    .btn-group {
+      left: 50%;
+      right: initial;
+      transform: translateX(-50%);
+    }
+    .chart-row {
+      padding-top: 120px;
+      margin-top: -100px;
+    }
+    .loadable-row {
+      overflow-x: auto;
+    }
+    svg {
+      min-width: 600px;
+    }
+  }
+
+  .item-icon-container {
+    display: inline-block;
+    font-size: 170%;
+    vertical-align: top;
+    line-height: 0;
+  }
+
+  .content-row {
+    border-bottom: 1px solid $one-main-border-color;
+    padding: $padding-large-vertical 0;
+    margin: 0 $padding-large-horizontal;
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  
+  .transfer-file-icon {
+    font-size: 32px;
+    line-height: 20px;
+    float: left;
+  }
+  
+  .transfers-table {
+    tr.data-row {
+      // to hold an absolute-positioned spinner
+      position: relative;
+      &:hover {
+        background-color: $onedata-light-gray;
+        cursor: pointer;
+      }
+      &.expanded-row {
+        background-color: darken($onedata-light-gray, 5%);
+        &:hover {
+          background-color: darken($onedata-light-gray, 9%);
+        }
+      }
+      .loadable-row {
+        min-height: 24px;
+      }
+    }
+    th {
+      white-space: nowrap;
+    }
+    th, td {
+      padding: 16px 8px;
+      text-align: center;
+      &:first-child {
+        text-align: left;
+      }
+    }
+
+    .expand-row td {
+      background-color: $onedata-light-gray;
+    }
+    
+    table {
+      table-layout: fixed;
+      thead {
+        th {
+          border-bottom-width: 1px;
+          .oneicon {
+            vertical-align: middle;
+          }
+        }
+      }
+    }
+  }
+  .cell-file-name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    .one-icon {
+      position: absolute;
+    }
+    .oneicon-folder, .oneicon-folder-deleted {
+      // custom pull up for folder icons
+      margin-top: -2px;
+    }
+    .transfer-file-name {
+      padding-left: 40px;
+    }
+  }
+  .cell-status {
+    font-size: 1.5em;
+    line-height: 0;
+    vertical-align: middle;
+    &.completed,
+    &.finalizing {
+      color: $color-one-mint;
+    }
+    &.skipped {
+      color: $onedata-azure;
+    }
+    &.failed,
+    &.cancelled {
+      color: $color-one-red;
+    }
+    &.active {
+      color: $color-one-yellow;
+    }
+    &.scheduled {
+      color: $onedata-graphite;
+    }
+  }
+}

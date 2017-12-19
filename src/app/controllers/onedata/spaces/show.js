@@ -20,9 +20,9 @@ export default Ember.Controller.extend({
     });
   },
 
-  onSpaceChange: function() {
+  onSpaceChange: function () {
     if (this.get('model')) {
       this.changeMenuActiveItem();
     }
-  }.observes('model'),
+  },
 });

@@ -1,6 +1,3 @@
-import Ember from 'ember';
-import RouteRejectHandler from 'op-worker-gui/mixins/route-reject-handler';
-
 /**
  * Single group Route - loads Group data before actions/resources for a single
  * space.
@@ -9,9 +6,16 @@ import RouteRejectHandler from 'op-worker-gui/mixins/route-reject-handler';
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default Ember.Route.extend(RouteRejectHandler, {
-  secondaryMenu: Ember.inject.service(),
 
+import Ember from 'ember';
+import RouteRejectHandler from 'op-worker-gui/mixins/route-reject-handler';
+
+const {
+  Route,
+  run,
+} = Ember;
+
+export default Route.extend(RouteRejectHandler, {
   fallbackRoute: 'onedata.groups.index',
 
   model(params) {
@@ -20,11 +24,6 @@ export default Ember.Route.extend(RouteRejectHandler, {
 
   afterModel(model) {
     this.handleAfterModelErrors(model);
-  },
-
-  setupController(controller, model) {
-    this._super(controller, model);
-    controller.changeMenuActiveItem(model);
   },
 
   actions: {
@@ -37,6 +36,13 @@ export default Ember.Route.extend(RouteRejectHandler, {
     */
     goToGroup(group) {
       return !group || group.get('id') !== this.controller.get('model.id');
-    }
+    },
+    
+    didTransition() {
+      run.scheduleOnce('afterRender', () => {
+        this.controller.changeMenuActiveItem(this.model);
+      });
+      return true;
+    },
   }
 });

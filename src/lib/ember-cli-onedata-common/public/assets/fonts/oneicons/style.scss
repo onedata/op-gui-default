@@ -2,11 +2,11 @@
 
 @font-face {
   font-family: 'oneicons';
-  src:  url('#{$icomoon-font-path}/oneicons.eot?8fp96n');
-  src:  url('#{$icomoon-font-path}/oneicons.eot?8fp96n#iefix') format('embedded-opentype'),
-    url('#{$icomoon-font-path}/oneicons.ttf?8fp96n') format('truetype'),
-    url('#{$icomoon-font-path}/oneicons.woff?8fp96n') format('woff'),
-    url('#{$icomoon-font-path}/oneicons.svg?8fp96n#oneicons') format('svg');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?mrsnqs');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?mrsnqs#iefix') format('embedded-opentype'),
+    url('#{$icomoon-font-path}/oneicons.ttf?mrsnqs') format('truetype'),
+    url('#{$icomoon-font-path}/oneicons.woff?mrsnqs') format('woff'),
+    url('#{$icomoon-font-path}/oneicons.svg?mrsnqs#oneicons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -26,14 +26,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.oneicon-add-filled {
-  &:before {
-    content: $oneicon-add-filled;
-  }
-}
 .oneicon-add {
   &:before {
     content: $oneicon-add;
+  }
+}
+.oneicon-add-filled {
+  &:before {
+    content: $oneicon-add-filled;
   }
 }
 .oneicon-arrow-down {
@@ -46,14 +46,14 @@
     content: $oneicon-arrow-right;
   }
 }
+.oneicon-arrow-right-filled {
+  &:before {
+    content: $oneicon-arrow-right-filled;
+  }
+}
 .oneicon-arrow-up {
   &:before {
     content: $oneicon-arrow-up;
-  }
-}
-.oneicon-ban-left-thin {
-  &:before {
-    content: $oneicon-ban-left-thin;
   }
 }
 .oneicon-ban-left {
@@ -61,9 +61,19 @@
     content: $oneicon-ban-left;
   }
 }
-.oneicon-block2 {
+.oneicon-ban-left-thin {
   &:before {
-    content: $oneicon-block2;
+    content: $oneicon-ban-left-thin;
+  }
+}
+.oneicon-cancelled {
+  &:before {
+    content: $oneicon-cancelled;
+  }
+}
+.oneicon-checkbox {
+  &:before {
+    content: $oneicon-checkbox;
   }
 }
 .oneicon-checkbox-check {
@@ -81,6 +91,11 @@
     content: $oneicon-checkbox-filled;
   }
 }
+.oneicon-checkbox-filled-x {
+  &:before {
+    content: $oneicon-checkbox-filled-x;
+  }
+}
 .oneicon-checkbox-option {
   &:before {
     content: $oneicon-checkbox-option;
@@ -89,11 +104,6 @@
 .oneicon-checkbox-x {
   &:before {
     content: $oneicon-checkbox-x;
-  }
-}
-.oneicon-checkbox {
-  &:before {
-    content: $oneicon-checkbox;
   }
 }
 .oneicon-clipboard-copy {
@@ -126,6 +136,21 @@
     content: $oneicon-file;
   }
 }
+.oneicon-file-deleted {
+  &:before {
+    content: $oneicon-file-deleted;
+  }
+}
+.oneicon-folder {
+  &:before {
+    content: $oneicon-folder;
+  }
+}
+.oneicon-folder-deleted {
+  &:before {
+    content: $oneicon-folder-deleted;
+  }
+}
 .oneicon-folder-new {
   &:before {
     content: $oneicon-folder-new;
@@ -141,9 +166,9 @@
     content: $oneicon-folder-share;
   }
 }
-.oneicon-folder {
+.oneicon-group {
   &:before {
-    content: $oneicon-folder;
+    content: $oneicon-group;
   }
 }
 .oneicon-group-add {
@@ -161,24 +186,19 @@
     content: $oneicon-group-leave-group;
   }
 }
-.oneicon-group {
-  &:before {
-    content: $oneicon-group;
-  }
-}
 .oneicon-groups {
   &:before {
     content: $oneicon-groups;
   }
 }
-.oneicon-home-outline {
-  &:before {
-    content: $oneicon-home-outline;
-  }
-}
 .oneicon-home {
   &:before {
     content: $oneicon-home;
+  }
+}
+.oneicon-home-outline {
+  &:before {
+    content: $oneicon-home-outline;
   }
 }
 .oneicon-inbox {
@@ -251,6 +271,11 @@
     content: $oneicon-menu-token;
   }
 }
+.oneicon-menu-transfers {
+  &:before {
+    content: $oneicon-menu-transfers;
+  }
+}
 .oneicon-menu-trash {
   &:before {
     content: $oneicon-menu-trash;
@@ -259,6 +284,11 @@
 .oneicon-metadata {
   &:before {
     content: $oneicon-metadata;
+  }
+}
+.oneicon-migrate {
+  &:before {
+    content: $oneicon-migrate;
   }
 }
 .oneicon-move-down {
@@ -271,9 +301,19 @@
     content: $oneicon-move-up;
   }
 }
+.oneicon-node {
+  &:before {
+    content: $oneicon-node;
+  }
+}
 .oneicon-password-change {
   &:before {
     content: $oneicon-password-change;
+  }
+}
+.oneicon-provider {
+  &:before {
+    content: $oneicon-provider;
   }
 }
 .oneicon-provider-add {
@@ -291,14 +331,19 @@
     content: $oneicon-provider-home;
   }
 }
-.oneicon-provider {
+.oneicon-provider-remove {
   &:before {
-    content: $oneicon-provider;
+    content: $oneicon-provider-remove;
   }
 }
 .oneicon-providers-outline {
   &:before {
     content: $oneicon-providers-outline;
+  }
+}
+.oneicon-provider-sync {
+  &:before {
+    content: $oneicon-provider-sync;
   }
 }
 .oneicon-remove {
@@ -311,6 +356,11 @@
     content: $oneicon-rename;
   }
 }
+.oneicon-replicate {
+  &:before {
+    content: $oneicon-replicate;
+  }
+}
 .oneicon-search {
   &:before {
     content: $oneicon-search;
@@ -321,14 +371,14 @@
     content: $oneicon-settings;
   }
 }
-.oneicon-share-collection {
-  &:before {
-    content: $oneicon-share-collection;
-  }
-}
 .oneicon-share {
   &:before {
     content: $oneicon-share;
+  }
+}
+.oneicon-share-collection {
+  &:before {
+    content: $oneicon-share-collection;
   }
 }
 .oneicon-sign-error {
@@ -349,6 +399,11 @@
 .oneicon-sign-warning {
   &:before {
     content: $oneicon-sign-warning;
+  }
+}
+.oneicon-skipped {
+  &:before {
+    content: $oneicon-skipped;
   }
 }
 .oneicon-social-dropbox {
@@ -391,6 +446,11 @@
     content: $oneicon-social-rhea;
   }
 }
+.oneicon-space {
+  &:before {
+    content: $oneicon-space;
+  }
+}
 .oneicon-space-add {
   &:before {
     content: $oneicon-space-add;
@@ -416,6 +476,16 @@
     content: $oneicon-space-home;
   }
 }
+.oneicon-space-import {
+  &:before {
+    content: $oneicon-space-import;
+  }
+}
+.oneicon-space-import-provider {
+  &:before {
+    content: $oneicon-space-import-provider;
+  }
+}
 .oneicon-space-join {
   &:before {
     content: $oneicon-space-join;
@@ -426,9 +496,9 @@
     content: $oneicon-space-reload;
   }
 }
-.oneicon-space {
+.oneicon-star {
   &:before {
-    content: $oneicon-space;
+    content: $oneicon-star;
   }
 }
 .oneicon-star-empty {
@@ -436,19 +506,44 @@
     content: $oneicon-star-empty;
   }
 }
-.oneicon-star {
-  &:before {
-    content: $oneicon-star;
-  }
-}
 .oneicon-support {
   &:before {
     content: $oneicon-support;
   }
 }
+.oneicon-time {
+  &:before {
+    content: $oneicon-time;
+  }
+}
+.oneicon-tokens {
+  &:before {
+    content: $oneicon-tokens;
+  }
+}
+.oneicon-transfer {
+  &:before {
+    content: $oneicon-transfer;
+  }
+}
+.oneicon-unknown {
+  &:before {
+    content: $oneicon-unknown;
+  }
+}
+.oneicon-update {
+  &:before {
+    content: $oneicon-update;
+  }
+}
 .oneicon-upload {
   &:before {
     content: $oneicon-upload;
+  }
+}
+.oneicon-user {
+  &:before {
+    content: $oneicon-user;
   }
 }
 .oneicon-user-add {
@@ -459,11 +554,6 @@
 .oneicon-user-profile {
   &:before {
     content: $oneicon-user-profile;
-  }
-}
-.oneicon-user {
-  &:before {
-    content: $oneicon-user;
   }
 }
 .oneicon-view-grid {

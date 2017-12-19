@@ -3,7 +3,7 @@
 
  * @module router
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -17,7 +17,7 @@ const Router = Ember.Router.extend({
 Router.map(function() {
 
   // /onedata - root route for authenticated users
-  this.route('onedata', {resetNamespace: true}, function() {
+  this.route('onedata', { resetNamespace: true }, function() {
 
     // onedata/spaces/ - all spaces configuration reached from primary sidebar
     this.route('spaces', function() {
@@ -59,10 +59,16 @@ Router.map(function() {
         });
     });
 
+    // onedata/transfers/ - browse transfers view for spaces
+    this.route('transfers', function() {
+      // onedata/transfers/:space_id - show transfers view for specified Space
+      this.route('show', {path: ':space_id'});
+    });
+    
   });
 
   // /public - a root of all views that does not use authentication (public)
-  this.route('public', {resetNamespace: true}, function() {
+  this.route('public', { resetNamespace: true }, function() {
     // nothing here, TODO: redirect to index or something
     this.route('shares', function() {
       // public/shares/show/:share_id/:dir - open a public share
@@ -76,6 +82,12 @@ Router.map(function() {
 
   // /login - show info about login and redirect to /login.html after timeout
   this.route('login');
+
+  // /onezone - redirect to known Onezone pages
+  this.route('onezone', function () {
+    this.route('tokens');
+    this.route('providers');
+  });
 
   // handle routes not handled above and langauge-prefixed paths (e.g. /en/spaces)
   this.route('wildcard', { path: "*path"});

@@ -254,17 +254,79 @@
 
 // file chunks
 
+#file-chunks-modal {
+  @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+    .modal-dialog.modal-lg {
+      width: initial;
+      margin: 0px 10px;
+    }
+  }
+  .empty-file-info {
+    position: relative;
+    height: 190px;
+    background-image: url(/assets/images/empty-file.svg);
+    background-position: center top;
+    background-size: 150px auto;
+    background-repeat: no-repeat;
+    .empty-file-info-msg {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+    }
+  }
+  .migrate-popover {
+    .menu-group-name {
+      margin-bottom: 10px;
+      padding-left: 12px;
+    }
+    .item-icon {
+      font-size: 28px !important;
+      vertical-align: middle;
+      .one-icon {
+        top: 2px;
+      }
+    }
+    .item-label {
+      text-transform: initial;
+    }
+  }
+  .loader-container {
+    position: relative;
+    height: 130px;
+  }
+  .loading-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
+}
+
 .file-blocks-table {
+  margin-bottom: 0;
+  table-layout: fixed;
+  
+  > thead > th {
+    padding: 8px;
+  }
+  
   th:first-of-type {
     padding-right: 20px;
   }
 
+  th.replica-options {
+    width: 80px;
+  }
+  
   // NOTE: should be synchronized with utils/file-chunks-bar.js
   $file-chunks-width: 320px;
   $file-chunks-height: 20px;
   .file-chunks {
     position: relative;
-    
+        
     width: $file-chunks-width;
     height: $file-chunks-height;
 
@@ -320,15 +382,26 @@
 
   .provider-name {
     padding-right: 10px;
-    .truncate {
-      max-width: 150px;
-      @media screen and (min-width: 1261px) {
-        max-width: 450px;
-      }
-    }
   }
   .chunks {
-    width: 340px;
+    // using something like width of canvas-based file chunks-bar
+    width: 337px;
+    .file-chunks-bar {
+      float: right;
+    }
+  }
+  .transfer-btns {
+    .btn-group {
+      white-space: nowrap;
+      font-size: 170%;
+      line-height: 0;
+      a {
+        text-decoration: none;
+        &.toolbar-icon.disabled {
+          pointer-events: initial;
+        }
+      }
+    }
   }
 }
 

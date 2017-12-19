@@ -7,3 +7,39 @@
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
 }
+
+.icon-btn {
+  border: 0;
+  background-color: transparent;
+  height: 1em;
+  position: relative;
+  padding: 0;
+  color: $btn-default-bg;
+  &:hover,
+  &:active,
+  &:hover:active,
+  &:focus {
+    color: $btn-default-bg;
+    background-color: transparent;
+    border: 0;
+  }
+  .one-icon {
+    position: relative;
+    top: 0.1em;
+  }
+  &.btn-primary {
+    color: $btn-primary-bg;
+    background-color: transparent;
+    border: 0;
+    &:hover,
+    &:active,
+    &:hover:active,
+    &:focus {
+      color: $btn-primary-bg;
+    }
+  }
+  &.active,
+  &:active {
+    color: $color-one-red;
+  }
+}

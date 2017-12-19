@@ -1,4 +1,6 @@
 import sessionLocales from 'ember-cli-onedata-common/locales/en/session';
+import resourceLoadError from 'ember-cli-onedata-common/locales/en/components/resource-load-error';
+import errorInline from 'ember-cli-onedata-common/locales/en/components/error-inline';
 import filePermissions from './file-permissions';
 
 /**
@@ -9,7 +11,7 @@ import filePermissions from './file-permissions';
  * @author Jakub Liput
  * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
-*/
+ */
 export default {
   common: {
     file: 'file',
@@ -43,6 +45,8 @@ export default {
     session: sessionLocales
   },
   components: {
+    resourceLoadError,
+    errorInline,
     filePermissions: {
       error: 'An error occured when loading permissions data:',
       posix: {
@@ -85,7 +89,8 @@ export default {
       spaces: 'spaces',
       groups: 'groups',
       token: 'tokens',
-      providers: 'providers'
+      providers: 'providers',
+      transfers: 'transfers',
     },
     modals: {
       aboutModal: {
@@ -268,6 +273,9 @@ export default {
 
       }
     },
+    transfersMenu: {
+      title: 'space data transfers',
+    },
     sharesMenu: {
       title: 'shares',
       join: 'Join',
@@ -374,7 +382,7 @@ export default {
         copy: 'Copy element',
         cut: 'Cut element',
         remove: 'Remove element',
-        chunks: 'Show file distribution',
+        chunks: 'Show data distribution',
         metadata: 'Edit metadata',
       },
       renameFileModal: {
@@ -407,15 +415,49 @@ export default {
         text: 'Enter new file permissions code:'
       },
       fileChunksModal: {
-        title: 'File distribution',
-        text: 'Distribution of file blocks among providers for file',
+        file: 'file',
+        directory: 'directory',
+        title: 'Data distribution',
+        text: 'Management of data distribution for',
+        fileIsEmpty: 'This file has no content.',
         neverSynchronized: 'Never synchronized',
-        neverSynchronizedHint: 'This file was never read or modified on this ' +
-          'provider. File blocks will be synchronized when needed.',
+        neverSynchronizedHint: 'This file was never read or modified on selected ' +
+          'provider. File blocks will be synchronized when needed.  ' +
+          'You can also manually replicate the file to selected provider',
         providerName: 'Provider',
-        dataDitribution: 'File blocks',
-        loading: 'Loading file chunks table...',
-        error: 'File chunks table cannot be loaded due to an error'
+        dataDistribution: 'Data blocks',
+        migrateFileDataInto: 'Migrate the data into',
+        loading: 'Loading file distribution data...',
+        error: 'Data distribution table cannot be loaded due to an error',
+        noCurrentProviderSupport: 'Current space is not supported by this ' +
+          'provider, thus advanced data replication or migration features are ' +
+          'not available here. To access them, visit one of the supporting ',
+        providersLink: 'providers',
+        onlySingleProviderSupport: 'Current space is supported by only one provider, ' +
+          'thus advanced data replication or migration features are not available.',
+        currentlyTransferredText: 'The data is currently transferred between ' +
+          'providers',
+        currentlyTransferredLink: 'see ongoing transfers on transfers tab',
+        providerRow: {
+          replication: 'replication',
+          migration: 'migration',
+          migrationStart: 'Migrate the data to other provider...',
+          replicationStart: 'Replicate the data to selected provider',
+          disabledSingleProvider: 'is available only with two or more supporting providers',
+          disabledProxyProvider: 'Visit a supporting provider in order to schedule',
+          disabledMigrationIsEmpty: 'Cannot schedule migration as there are no file blocks on this provider',
+          disabledMigrationInProgress: 'The data is currently migrated from selected provider',
+          disabledReplicationIsComplete: 'Cannot schedule replication as all file block are already on this provider',
+          disabledReplicationInProgress: 'The data is currently replicated to selected provider',
+          disabledInProgress: 'Migration/replication unavailable as there are transfers in progress.',
+          disabledMigrationUnknown: 'The data cannot be migrated from selected provider now',
+          disabledReplicationUnknown: 'The data cannot be replicated into selected provider now',
+        },
+        migratePopover: {
+          migrateItem: {
+            busy: 'busy',
+          },
+        },
       },
       notify: {
         createFileFailed: 'File or directory "{{fileName}}" creation failed'
@@ -457,7 +499,53 @@ export default {
       publicUrl: 'Public URL',
       publicHandle: 'Public handle',
       publish: 'Publish',
-    }
+    },
+    transfers: {
+      transfersFor: 'Transfer for',
+      providersMapOfDist: 'Active transfers map',
+      throughputDistribution: 'Providers throughput',
+      activeTransfers: 'Active transfers',
+      completedTransfers: 'History of transfers',
+      noActiveTransfers: 'There are no active transfers',
+      noCompletedTransfers: 'There are no past transfers',
+      throughputChartError: 'Failed to load all the data for the chart',
+      initializingTransfers: 'Initializing transfers...',
+      notSupported: 'Cannot list transfers of selected space because it is not ' +
+        'supported by current provider',
+      in: 'Input',
+      out: 'Output',
+      liveTableStats: {
+        path: 'File/directory',
+        userName: 'Username',
+        destination: 'Destination',
+        startedAt: 'Started at',
+        finishedAt: 'Finished at',
+        totalBytes: 'Transferred',
+        totalFiles: 'Total files',
+        status: 'Status',
+        destinationUnknown: 'Unknown',
+        cellFileName: {
+          deleted: 'deleted',
+        },
+        cellStatus: {
+          completed: 'Completed',
+          skipped: 'Skipped',
+          cancelled: 'Cancelled',
+          failed: 'Failed',
+          active: 'Active',
+          scheduled: 'Scheduled',
+          finalizing: 'Finalizing',
+        },
+      },
+      transferChart: {
+        minute: 'Minute',
+        hour: 'Hour',
+        day: 'Day',
+        month: 'Month',
+        time: 'Time',
+        throughput: 'Throughput',
+      },
+    },
   },
   notFound: {
     notifyMessage: 'Requested path not found'
@@ -519,6 +607,12 @@ export default {
       }
     }
   },
+  transfers: {
+    title: 'Transfers',
+    show: {
+      title: 'Transfers for space'
+    },
+  },
   spacesError: {
     fetchFailure: 'An error occured on fetching spaces list.',
     noSpaceSupported: 'This provider does not support any space.',
@@ -528,5 +622,8 @@ export default {
   error: {
     cannotLoadResource: 'A fatal error occured: the requested resource cannot be loaded.',
     tryRefreshOrContact: 'You can try to refresh the page or contact administrators.'
-  }
+  },
+  onezone: {
+    cannotResolveUrl: 'Cannot resolve Onezone URL',
+  },
 };

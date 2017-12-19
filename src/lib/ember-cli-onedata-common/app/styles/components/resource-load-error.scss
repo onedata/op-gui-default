@@ -1,0 +1,64 @@
+$inline-alert-left-border-width: 60px;
+
+.alert-promise-error {
+  position: relative;
+  // Padding for "close" button
+  padding-right: 2em;
+  background-color: transparent;
+  border: 1px solid $color-one-red;
+  border-left-width: $inline-alert-left-border-width;
+  &:before {
+    position: absolute;
+    left: -$inline-alert-left-border-width / 2;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    font-family: 'oneicons';
+    font-size: 2.5em;
+    font-weight: bold;
+  }
+  &.alert-danger:before {
+    content: $oneicon-checkbox-x;
+    color: $color-one-white;
+  }
+  .error-close {
+    position: absolute;
+    right: $alert-padding;
+    top: $alert-padding;
+    transform: translateY(33%);
+    .one-icon {
+      font-weight: bold;
+    }
+    &:hover {
+      color: darken($color-one-red, 10%);
+    }
+  }
+  .promise-error-show-details {
+    cursor: pointer;
+  }
+  .error-details {
+    max-height: 0;
+    margin-top: 0;
+    transition: $collapse-transition, margin-top .2s linear;
+    opacity: 0;
+    // color: $main-text-color;
+    &.active {
+      opacity: 1; 
+      // Different heights for animation purposes
+      max-height: 20em;
+      margin-top: 10px;
+      &.sm-row, &.lg-row {
+        overflow: auto;
+      }
+      &.sm-row {
+        max-height: 5em;
+      }
+      &.lg-row {
+        max-height: 50em;
+      }
+    }
+  }
+
+  @media (max-width: $screen-xs-max) {
+    border-right-width: 0;
+  }
+}

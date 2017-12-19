@@ -6,6 +6,8 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-3880 Various improvements in transfers management and statistics display
+* VFS-3752 Added transfers tab; added replication and migration options from data distribution
 * VFS-3710 Using binary prefix units for displaying sizes (MiB, GiB, etc.)
 * VFS-3455 Refactored reconnect Websocket modal
 * VFS-3600 Refactored file distribution modal

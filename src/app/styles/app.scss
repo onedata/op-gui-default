@@ -54,6 +54,9 @@ $screen-sm-min: $min-width-tablet;
 $screen-md-min: $min-width-desktop-small;
 $screen-lg-min: $min-width-desktop-medium;
 
+$collapse-transition-time: .2s;
+$height-collapse-transition: max-height $collapse-transition-time linear;
+$collapse-transition: $height-collapse-transition, padding $collapse-transition-time linear, opacity $collapse-transition-time linear;
 
 @import "bootstrap";
 .row {
@@ -65,6 +68,7 @@ $screen-lg-min: $min-width-desktop-medium;
 @import 'onedata-common';
 
 @import 'colors';
+@import 'animate';
 
 @media screen
   and (min-width: $min-width-desktop-large) {
@@ -131,6 +135,9 @@ $screen-lg-min: $min-width-desktop-medium;
 // original stylesheet for ember-power-select
 @import "ember-power-select";
 
+@import 'chartist';
+@import 'chartist-overrides';
+
 // OP components
 @import 'components/modal';
 @import 'components/button';
@@ -143,6 +150,15 @@ $screen-lg-min: $min-width-desktop-medium;
 @import 'components/share-info-head';
 @import 'components/file-breadcrumbs';
 @import "components/ember-power-select";
+@import 'components/one-atlas';
+@import 'components/provider-place';
+@import 'components/one-pie-chart';
+@import 'components/transfers';
+@import 'components/one-collapsible-list';
+@import 'components/one-collapsible-list-item';
+@import 'components/one-collapsible-list-item-header';
+@import 'components/one-collapsible-list-item-content';
+@import 'components/providers-map';
 
 // onedata-common components
 @import 'components/button-common';
@@ -152,3 +168,5 @@ $screen-lg-min: $min-width-desktop-medium;
 @import 'components/one-overlay';
 @import 'components/select2';
 @import 'components/spin-button-base';
+@import 'components/resource-load-error';
+@import 'components/error-inline';

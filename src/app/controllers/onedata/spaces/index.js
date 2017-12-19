@@ -22,10 +22,10 @@ export default Ember.Controller.extend({
   },
 
   /**
-    Observe for a default space to appear in spaces route model (which is a spaces list).
-    When found - show this space.
-    This is a workaround for afterModel, which does not recieve ready spaces list.
-  */
+   * Observe for a default space to appear in spaces route model (which is a spaces list).
+   * When found - show this space.
+   * This is a workaround for afterModel, which does not recieve ready spaces list.
+   */
   onModelChange: Ember.observer('model.@each.isLoaded', 'model.isUpdating',
     function() {
       if (this.get('isActive')) {

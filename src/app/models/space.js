@@ -1,4 +1,5 @@
 import DS from 'ember-data';
+
 import isDefaultMixinFactory from 'ember-cli-onedata-common/mixin-factories/models/is-default';
 
 const {
@@ -30,8 +31,11 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
 
   /** Collection of users permissions - effectively all rows in permissions table */
   userList: belongsTo('space-user-list', { async: true }),
-  
+
   /** Collection of group permissions - effectively all rows in permissions table */
   groupList: belongsTo('space-group-list', { async: true }),
 
+  currentTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),  
+  completedTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
+  providerList: belongsTo('space-provider-list', { async: true, inverse: null }),
 });

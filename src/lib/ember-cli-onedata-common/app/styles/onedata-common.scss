@@ -27,6 +27,27 @@
     font-style: normal;
 }
 
+// NOTE: Mixins backported from onedata-gui-common
+
+@mixin vertical-align-middle() {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@mixin absolute-align-middle-center() {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+}
+
+@mixin fill-align-middle-center() {
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 
 .one-row {
   display: table;
@@ -132,6 +153,51 @@
   &.spinner-middle {
     height: 100% !important;
   }
+  
+   
+  // NOTE: backported from onedata-gui-common
+  
+  $spinner-container-base-size: 120px;
+  
+  @mixin spinner-container-size-class($name, $size) {
+    &.#{$name} {
+      width: $size*$spinner-container-base-size;
+      height: $size*$spinner-container-base-size;
+  
+      .spinner-logo {
+        width: $size*$spinner-container-base-size;
+        height: $size*$spinner-container-base-size;
+      }
+    }
+  }
+  
+  @include spinner-container-size-class(xs, 0.2);
+  @include spinner-container-size-class(sm, 0.4);
+  @include spinner-container-size-class(md, 0.8);
+  @include spinner-container-size-class(lg, 1.2);
+  
+  &.centered {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  &.absolute-middle-centered {
+    @include absolute-align-middle-center();
+  }
+
+  &.fill-middle-centered {
+    @include fill-align-middle-center();
+  }
+
+  // DEPRECATED: backward compatible
+  &.middle-centered {
+    @extend .absolute-middle-centered;
+  }
+
+  .spinner-logo {
+    background-size: 30%;
+  }
+  
 }
 
 .tooltip .tooltip-inner {
@@ -183,4 +249,14 @@
 .table-no-border>tfoot{
   border-top: none !important;
   border-bottom: none !important;
+}
+
+// parent for spinner container - prevents to make to small row when loading
+.loadable-row {
+  position: relative;
+  min-height: 150px;
+  
+  &.xs {
+    min-height: 32px;
+  }
 }

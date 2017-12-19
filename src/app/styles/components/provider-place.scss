@@ -1,0 +1,138 @@
+$provider-place-circle-size: 64px;
+$color-provider-online: $color-one-mint;
+$color-provider-offline: $color-one-red;
+
+@include animation-fg-color-change(
+  pulse-red-mint,
+  $color-one-red,
+  $color-one-mint
+);
+
+@mixin create-circles($color) {
+  .circle {
+    border-color: $color;
+    color: $color;
+  }
+  .super-circle {
+    background-color: transparentize($color-provider-online, 0.5);
+  }
+}
+
+.provider-place {
+  position: relative;
+
+  &.online {
+    @include create-circles($color-provider-online);
+  }
+  
+  &.pending {
+    .circle {
+      @extend .animated;
+      @extend .infinite;
+      @extend .hinge;
+      @extend .pulse-red-mint;
+    }
+  }
+  
+  &.offline {
+    @include create-circles($color-provider-offline);
+  }
+
+  .circle {
+    position: relative;
+    // initial size
+    width: $provider-place-circle-size;
+    height: $provider-place-circle-size;
+    font-size: ($provider-place-circle-size * 0.75);
+    border-radius: 50%;
+    border-width: 2px;
+    border-style: solid;
+    background-color: white;
+    cursor: pointer;
+
+    .one-icon {
+      position: static;
+      &::before {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%) translateX(-50%);
+        left: 50%;
+      }
+    }
+  }
+    
+  @mixin min-super-circle {
+    width: 100%;
+    height: 100%;
+    opacity: 0.9;
+  }
+  
+  @mixin max-super-circle {
+    width: 400%;
+    height: 400%;
+    opacity: 0;
+  }
+  
+  @keyframes gather-circle {
+    0% {
+      @include max-super-circle();
+    }
+    100% {
+      @include min-super-circle();
+    }
+  }
+  
+  @keyframes broadcast-circle {
+    0% {
+      @include min-super-circle();
+    }
+    100% {
+      @include max-super-circle();
+    }
+  }
+  
+  @keyframes full-duplex-circle {
+    0% {
+      @include min-super-circle();
+    }
+    50% {
+      @include max-super-circle();
+    }
+    100% {
+      @include min-super-circle();
+    }
+  }
+  
+  $-super-circle-animation-duration: 2s;
+  
+  .super-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    z-index: -1;
+    
+    border-radius: 50%;
+    
+    animation-delay: 0s;
+    animation-iteration-count: infinite;
+    
+    &.destination {
+      animation-name: gather-circle;
+      animation-timing-function: ease-out;
+      animation-duration: $-super-circle-animation-duration;
+    }
+    
+    &.source {
+      animation-name: broadcast-circle;
+      animation-timing-function: ease-in;
+      animation-duration: $-super-circle-animation-duration;
+    }
+    
+    &.destination.source {
+      animation-name: full-duplex-circle;
+      animation-timing-function: ease;
+      animation-duration: $-super-circle-animation-duration * 2;
+    }
+  }
+}

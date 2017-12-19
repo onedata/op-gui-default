@@ -8,6 +8,7 @@
  */
 
 import Ember from 'ember';
+import _ from 'lodash';
 
 const {
   run,
@@ -23,10 +24,11 @@ const {
 } = Ember;
 
 export default Ember.Component.extend({
-  notify: inject.service('notify'),
-  fileUpload: inject.service('fileUpload'),
+  notify: inject.service(),
+  fileUpload: inject.service(),
   store: inject.service(),
   fileSystemTree: inject.service(),
+  session: inject.service(),
 
   tagName: 'ul',
   classNames: ['data-files-list-toolbar', 'nav', 'navbar-nav', 'navbar-right', 'toolbar-group'],
@@ -49,11 +51,26 @@ export default Ember.Component.extend({
 
   selectedCount: computed.alias('dir.selectedFiles.length'),
   
+  currentProviderId: computed.alias('session.sessionDetails.providerId'),
+  
   /**
    * A width of its element. Updated on window resize (see ``didInsertElement``).
    * @type {Number}
    */
   width: undefined,
+  
+  currentProviderSupport: computed(
+    'currentProviderId',
+    'fileSystemTree.selectedSpace.providerList.list',
+    function () {
+      const providerIdList =
+        this.get('fileSystemTree.selectedSpace.providerList.list');
+      const currentProviderId = this.get('currentProviderId');
+      if (providerIdList) {
+        return _.includes(providerIdList, currentProviderId);
+      }
+    }
+  ),
 
   // TODO: compute or detect dynamically, when the toolbar should collapse
   /**
@@ -199,7 +216,7 @@ export default Ember.Component.extend({
           id: 'file-chunks-tool',
           icon: 'provider',
           action: 'showChunks',
-          disabled: !(isSingleFileSelected && isSingleSelectedFileAFile),
+          disabled: !isSingleFileSelected,
           tooltip: i18n.t('components.dataFilesListToolbar.tooltip.chunks')
         },
       ];

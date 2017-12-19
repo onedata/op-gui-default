@@ -1,0 +1,14 @@
+<div class="secondary-sidebar-header">
+  <div class="title">
+    {{t "components.transfersMenu.title"}}
+  </div>
+</div>
+
+<ul class="spaces-list">
+  {{#each validSpacesSorted as |space|}}
+    {{transfers-menu-item space=space
+      isExpanded=(eq activeSpace.id space.id)
+      openTransfersForSpace=(action "openTransfersForSpace" space)
+    }}
+  {{/each}}
+</ul>

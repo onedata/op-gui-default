@@ -1,0 +1,12 @@
+.one-collapsible-list-item-content {
+  overflow-y: hidden;
+  opacity: 0;
+  max-height: 0;
+  transition: $collapse-transition;
+  border-bottom: 0;
+  &.opened {
+    max-height: 2500px;
+    opacity: 1;
+    border-bottom: 1px solid $one-main-border-color;
+  }
+}

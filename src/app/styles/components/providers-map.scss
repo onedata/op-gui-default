@@ -1,0 +1,14 @@
+.atlas-draw-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+path.transfer {
+  stroke: $color-transfer;
+  fill: none;
+  stroke-width: 3px;
+}
+  

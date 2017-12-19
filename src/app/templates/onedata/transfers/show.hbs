@@ -1,0 +1,9 @@
+{{!-- Content for transfers for single space --}}
+{{page-title (t "transfers.show.title")}}
+
+{{show-space-transfers
+  space=model
+  sortBy=sortBy
+  selectedTransferIds=selectedTransferIds
+  resetQueryParams=(action "resetQueryParams")
+}}

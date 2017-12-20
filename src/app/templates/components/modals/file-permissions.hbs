@@ -42,7 +42,14 @@
         {{#if (eq permissionsType 'p')}}
           {{file-permissions/posix modal=this permissions=posixCache submit="submit"}}
         {{else if (eq permissionsType 'a')}}
-          {{file-permissions/acl modal=this acl=aclCache filesType=filesType mixedAcl=mixedAcl}}
+          {{file-permissions/acl
+            modal=this
+            acl=aclCache
+            filesType=filesType
+            mixedAcl=mixedAcl
+            isEditing=aclEditing
+            startEditing=(mut aclEditing true)
+          }}
         {{/if}}
       {{/status-panel}}
 

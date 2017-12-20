@@ -70,6 +70,9 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
 
   .basic-new-entry {
     text-align: right;
+    input.basic-new-entry-key {
+      text-align: right;
+    }
     &.invalid {
       input.basic-new-entry-key {
         color: $color-panel-red !important;

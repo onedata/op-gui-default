@@ -76,8 +76,12 @@ export default Ember.Component.extend({
    */
   submit() {
     this.set('isSubmitting');
+    const {
+      newKey,
+      newValue,
+    } = this.getProperties('newKey', 'newValue');
     const p = new Promise((resolve) => {
-      this.sendAction('createNewEntry', this.get('newKey'), this.get('newValue'), resolve);
+      this.get('createNewEntry')(newKey, newValue, resolve);
     });
     p.then(() => {
       this.setProperties({
@@ -103,7 +107,7 @@ export default Ember.Component.extend({
     let {
       newKey, newValue, isValid
     } = this.getProperties('newKey', 'newValue', 'isValid');
-    this.sendAction('entryChanged', newKey, newValue, isValid);
+    this.get('entryChanged')(newKey, newValue, isValid);
   },
 
   actions: {

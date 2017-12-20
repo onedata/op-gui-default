@@ -1,17 +1,21 @@
 <table class="metadata-basic-table">
   <tbody>
     {{#each liveData as |entry|}}
-      {{metadata/basic-entry key=entry.[0] value=entry.[1] removeEntry="removeEntry"
+      {{metadata/basic-entry
+        key=entry.[0]
+        value=entry.[1]
+        removeEntry=(action "removeEntry")
         isRecent=(eq entry.[0] recentKey)
         readOnly=readOnly
-        entryChanged="entryChanged"}}
+      }}
     {{/each}}
 
     {{#unless readOnly}}
       {{metadata/basic-new-entry
         existingKeys=(readonly existingKeys)
-        createNewEntry="createNewEntry"
-        entryChanged="newEntryChanged"}}
+        createNewEntry=(action "createNewEntry")
+        entryChanged=(action "newEntryChanged")
+      }}
     {{/unless}}
 
   </tbody>

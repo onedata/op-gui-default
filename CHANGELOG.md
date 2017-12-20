@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-3591 Fixed infinite loading of metadata panel when failed to fetch metadata for file
 * VFS-3210 Fixed displaying long text in basic file metadata keys and values
 * VFS-3880 Various improvements in transfers management and statistics display
 * VFS-3752 Added transfers tab; added replication and migration options from data distribution

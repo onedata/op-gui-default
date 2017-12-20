@@ -1,8 +1,14 @@
 import Ember from 'ember';
 
-export default Ember.Component.extend({
-  notify: Ember.inject.service(),
-  fileSystemTree: Ember.inject.service(),
+const {
+  computed,
+  Component,
+  inject: { service },
+} = Ember;
+
+export default Component.extend({
+  notify: service(),
+  fileSystemTree: service(),
 
   tagName: 'tr',
   classNames: ['first-level'],
@@ -15,13 +21,18 @@ export default Ember.Component.extend({
    */
   file: null,
 
-  metadata: Ember.computed.alias('file.fileProperty.content'),
+  metadataProxy: computed.reads('file.fileProperty'),
+  metadata: computed.alias('metadataProxy.content'),
 
-  isLoading: Ember.computed('metadata', function() {
-    return !this.get('metadata');
-  }),
+  isLoading: computed.equal('metadataProxy.isPending', true),
+  
+  /**
+   * Is true if failed to fetch file metadata
+   * @type {Ember.ComputedProperty<boolean|undefined>}
+   */
+  metadataError: computed.reads('file.metadataError'),
 
-  highlightClass: Ember.computed('file.isSelected', function() {
+  highlightClass: computed('file.isSelected', function() {
     return this.get('file.isSelected') ? 'active' : 'metadata-opened';
   }),
 
@@ -75,6 +86,6 @@ export default Ember.Component.extend({
           this.handleMetadataRemoved(true, error);
         });
       }
-    }
+    },
   }
 });

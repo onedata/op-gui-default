@@ -36,20 +36,24 @@ export default Ember.Service.extend(Ember.Evented, {
    * @param  {File} file
    */
   openMetadataEditor(file) {
-    file.get('fileProperty').then(
-      (metadata) => {
-        if (!metadata) {
-          const fileType = file.get('constructor.modelName');
-          const metadataType =
-            (fileType === 'file-shared') ? 'filePropertyShared' : 'fileProperty';
-          metadata = this.get('store').createRecord(metadataType, {
-            file: file
-          });
-          file.set('fileProperty', metadata);
-        }
-      }
-    );
-
+    // TODO: try to reload a file property if it failed before
+    if (!file.get('metadataError')) {
+      file.get('fileProperty')
+        .then(
+          (metadata) => {
+            if (!metadata) {
+              const fileType = file.get('constructor.modelName');
+              const metadataType =
+                (fileType === 'file-shared') ? 'filePropertyShared' : 'fileProperty';
+              metadata = this.get('store').createRecord(metadataType, { file });
+              file.set('fileProperty', metadata);
+            }
+          }
+        )
+        .catch(error => {
+          file.set('metadataError', error);
+        });
+    }
     file.set('isEditingMetadata', true);
   },
 

@@ -3,10 +3,10 @@
     enter="trySubmit" disabled=isSubmitting}}
 </th>
 <td>
-  {{input value=newValue placeholder="Value" class="basic-new-entry-value form-control"
+  {{textarea value=newValue placeholder="Value" class="basic-new-entry-value form-control"
     enter="trySubmit" disabled=isSubmitting}}
 </td>
-<td class="basic-entry-button-cell table-space-fill">
+<td class="basic-entry-button-cell">
   <div class="basic-entry-button" {{action "trySubmit"}}>
     {{one-icon icon='add'}}
   </div>

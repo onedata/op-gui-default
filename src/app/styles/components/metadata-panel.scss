@@ -64,18 +64,15 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
   th {
     width: 200px;
     padding-right: 20px;
-  }
-  td {
-    width: 200px;
-  }
-  .metadata-key {
-    color: #32373B; // TODO: color variable
-  }
-  .metadata-value {
-    color: #768D9F;
+    text-align: right;
+    vertical-align: top;
   }
 
   .basic-new-entry {
+    text-align: right;
+    input.basic-new-entry-key {
+      text-align: right;
+    }
     &.invalid {
       input.basic-new-entry-key {
         color: $color-panel-red !important;
@@ -85,6 +82,7 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
 
   .basic-entry-button-cell {
     position: relative;
+    width: 32px;
 
     .basic-entry-button {
       display: inline;
@@ -108,15 +106,26 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
     }
   }
 
+  .basic-metadata-key-truncate {
+    max-width: 200px;
+  }
 
 }
 
 .metadata-panel {
   textarea {
-    resize: horizontal;
+    font-family: monospace;
+    resize: vertical;
+  }
+  textarea.basic-value {
+    margin-right: 120px;
+    &:read-only {
+      background-color: inherit;
+    }
+  }
+  textarea.large {
     min-height: 280px;
     width: 100%;
-    font-family: monospace;
   }
   .parse-error {
     textarea {
@@ -134,3 +143,5 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
 .save-metadata-row {
   margin-top: 10px;
 }
+
+

@@ -15,6 +15,11 @@ export default Ember.Component.extend({
   layout,
 
   /**
+   * @type {string}
+   */
+  tooltipPlacement: 'top',
+
+  /**
    * Should tooltip be enabled? (set by overflow detection algorithm)
    * @type {boolean}
    */

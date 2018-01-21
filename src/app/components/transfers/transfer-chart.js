@@ -26,6 +26,7 @@ const {
   computed,
   get,
   RSVP: { Promise },
+  observer,
   inject: {
     service,
   },
@@ -123,7 +124,7 @@ export default Component.extend({
       return PromiseObject.create({ promise });
     }
   }),
-  
+
   /**
    * @type {Ember.ComputedProperty<Object>}
    */
@@ -439,6 +440,18 @@ export default Component.extend({
     }
   ),
   
+  changeUpdaterUnit: observer(
+    'updater',
+    '_timeStatForUnit.content',
+    function observeChangeUpdaterUnit() {
+      const timeStat = this.get('_timeStatForUnit.content');
+      const updater = this.get('updater');
+      if (updater && timeStat && timeStat !== this.get('updater.timeStat')) {
+        this.set('updater.timeStat', timeStat);
+      }
+    }
+  ),
+
   init() {
     this._super(...arguments);
     this.set('_chartValues', []);

@@ -441,10 +441,12 @@ export default Component.extend({
   ),
   
   changeUpdaterUnit: observer(
+    'updater',
     '_timeStatForUnit.content',
     function observeChangeUpdaterUnit() {
       const timeStat = this.get('_timeStatForUnit.content');
-      if (timeStat && timeStat !== this.get('updater.timeStat')) {
+      const updater = this.get('updater');
+      if (updater && timeStat && timeStat !== this.get('updater.timeStat')) {
         this.set('updater.timeStat', timeStat);
       }
     }

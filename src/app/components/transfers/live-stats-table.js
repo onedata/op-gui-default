@@ -188,81 +188,81 @@ export default Component.extend({
     // field `id` is custom and is used only to check which column should be 
     // filtered out for active/completed table version
     const allColumns = [
-    {
-      id: 'path',
-      propertyName: 'path',
-      title: i18n.t(I18N_PREFIX + 'path'),
-      component: _mobileMode ?
-        undefined : 'transfers/live-stats-table/cell-file-name',
-      sortPrecedence: sortBy === 'path' ? 2 : undefined,
-      sortDirection: sortBy === 'path' ? 'desc' : undefined,
-    }, {
-      id: 'userName',
-      propertyName: 'userName',
-      title: i18n.t(I18N_PREFIX + 'userName'),
-      component: _mobileMode ?
-        undefined : 'transfers/live-stats-table/cell-truncated',
-      sortPrecedence: sortBy === 'userName' ? 2 : undefined,
-      sortDirection: sortBy === 'userName' ? 'desc' : undefined,
-    }, {
-      id: 'destination',
-      propertyName: 'destination',
-      title: i18n.t(I18N_PREFIX + 'destination'),
-      component: _mobileMode ?
-        undefined : 'transfers/live-stats-table/cell-truncated',
-      sortPrecedence: sortBy === 'destination' ? 2 : undefined,
-      sortDirection: sortBy === 'destination' ? 'desc' : undefined,
-    }, {
-      id: 'startedAt',
-      propertyName: 'startedAtReadable',
-      sortedBy: 'startedAtComparable',
-      sortPrecedence: isTransferActive ? 1 : undefined,
-      sortDirection: isTransferActive ? 'desc' : undefined,
-      title: i18n.t(I18N_PREFIX + 'startedAt'),
-    }, {
-      id: 'finishedAt',
-      propertyName: 'finishedAtReadable',
-      sortedBy: 'finishedAtComparable',
-      sortPrecedence: isTransferActive ? undefined : 1,
-      sortDirection: isTransferActive ? undefined : 'desc',
-      title: i18n.t(I18N_PREFIX + 'finishedAt'),
-    }, {
-      id: 'totalBytes',
-      propertyName: 'totalBytesReadable',
-      sortedBy: 'totalBytes',
-      title: i18n.t(I18N_PREFIX + 'totalBytes'),
-      component: 'transfers/live-stats-table/cell-errorable',
-      sortPrecedence: sortBy === 'totalBytes' ? 2 : undefined,
-      sortDirection: sortBy === 'totalBytes' ? 'desc' : undefined,
-    }, {
-      id: 'totalFiles',
-      propertyName: 'totalFiles',
-      title: i18n.t(I18N_PREFIX + 'totalFiles'),
-      component: 'transfers/live-stats-table/cell-errorable',
-      sortPrecedence: sortBy === 'totalFiles' ? 2 : undefined,
-      sortDirection: sortBy === 'totalFiles' ? 'desc' : undefined,
-    },
-    {
-      id: 'type',
-      propertyName: 'type',
-      className: 'col-icon',
-      title: i18n.t(I18N_PREFIX + 'type'),
-      component: _mobileMode ? undefined : 'transfers/live-stats-table/cell-type',
-      sortPrecedence: sortBy === 'type' ? 2 : undefined,
-      sortDirection: sortBy === 'type' ? 'desc' : undefined,
-    },
-    {
-      id: 'status',
-      propertyName: 'status',
-      className: 'col-icon',
-      title: i18n.t(I18N_PREFIX + 'status'),
-      component: 'transfers/live-stats-table/cell-status',
-      sortPrecedence: sortBy === 'status' ? 2 : undefined,
-      sortDirection: sortBy === 'status' ? 'desc' : undefined,
-    },
-  ];
+      {
+        id: 'path',
+        propertyName: 'path',
+        title: i18n.t(I18N_PREFIX + 'path'),
+        component: _mobileMode ?
+          undefined : 'transfers/live-stats-table/cell-file-name',
+        sortPrecedence: sortBy === 'path' ? 2 : undefined,
+        sortDirection: sortBy === 'path' ? 'desc' : undefined,
+      }, {
+        id: 'userName',
+        propertyName: 'userName',
+        title: i18n.t(I18N_PREFIX + 'userName'),
+        component: _mobileMode ?
+          undefined : 'transfers/live-stats-table/cell-truncated',
+        sortPrecedence: sortBy === 'userName' ? 2 : undefined,
+        sortDirection: sortBy === 'userName' ? 'desc' : undefined,
+      }, {
+        id: 'destination',
+        propertyName: 'destination',
+        title: i18n.t(I18N_PREFIX + 'destination'),
+        component: _mobileMode ?
+          undefined : 'transfers/live-stats-table/cell-truncated',
+        sortPrecedence: sortBy === 'destination' ? 2 : undefined,
+        sortDirection: sortBy === 'destination' ? 'desc' : undefined,
+      }, {
+        id: 'startedAt',
+        propertyName: 'startedAtReadable',
+        sortedBy: 'startedAtComparable',
+        sortPrecedence: isTransferActive ? 1 : undefined,
+        sortDirection: isTransferActive ? 'desc' : undefined,
+        title: i18n.t(I18N_PREFIX + 'startedAt'),
+      }, {
+        id: 'finishedAt',
+        propertyName: 'finishedAtReadable',
+        sortedBy: 'finishedAtComparable',
+        sortPrecedence: isTransferActive ? undefined : 1,
+        sortDirection: isTransferActive ? undefined : 'desc',
+        title: i18n.t(I18N_PREFIX + 'finishedAt'),
+      }, {
+        id: 'totalBytes',
+        propertyName: 'totalBytesReadable',
+        sortedBy: 'totalBytes',
+        title: i18n.t(I18N_PREFIX + 'totalBytes'),
+        component: 'transfers/live-stats-table/cell-errorable',
+        sortPrecedence: sortBy === 'totalBytes' ? 2 : undefined,
+        sortDirection: sortBy === 'totalBytes' ? 'desc' : undefined,
+      }, {
+        id: 'totalFiles',
+        propertyName: 'totalFiles',
+        title: i18n.t(I18N_PREFIX + 'totalFiles'),
+        component: 'transfers/live-stats-table/cell-errorable',
+        sortPrecedence: sortBy === 'totalFiles' ? 2 : undefined,
+        sortDirection: sortBy === 'totalFiles' ? 'desc' : undefined,
+      },
+      {
+        id: 'type',
+        propertyName: 'type',
+        className: 'col-icon',
+        title: i18n.t(I18N_PREFIX + 'type'),
+        component: _mobileMode ? undefined : 'transfers/live-stats-table/cell-type',
+        sortPrecedence: sortBy === 'type' ? 2 : undefined,
+        sortDirection: sortBy === 'type' ? 'desc' : undefined,
+      },
+      {
+        id: 'status',
+        propertyName: 'status',
+        className: 'col-icon',
+        title: i18n.t(I18N_PREFIX + 'status'),
+        component: 'transfers/live-stats-table/cell-status',
+        sortPrecedence: sortBy === 'status' ? 2 : undefined,
+        sortDirection: sortBy === 'status' ? 'desc' : undefined,
+      },
+    ];
     if (isTransferActive) {
-      return allColumns.filter((column) => 
+      return allColumns.filter((column) =>
         onlyCompletedColumns.indexOf(column.id) === -1
       );
     } else {
@@ -377,9 +377,7 @@ function transferTableData(transferIndex, transfer, providers, providersColors, 
   const totalBytesReadable = bytesToString(transferredBytes);
   const isLoading = (tableDataIsLoaded === false);
   const initSelect = _.includes(selectedTransferIds, transferId);
-  
-  console.log('type: ' + type);
-  
+    
   return EmberObject.create({
     transfer,
     transferIndex,

@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-4002 Showing transfer type (replication/migration/invalidation) in transfers table
 * VFS-4000 Fixed fetching wrong transfer statistics for chosen timespan
 * VFS-3956 Fixed provider name tooltip rendering in migrate menu of data distribution modal
 * VFS-3595 Fixed locking ACL edit when switching between ACL and POSIX in permissions modal

@@ -24,7 +24,7 @@ export default Model.extend({
    * One of:
    * - scheduled
    * - active
-   * - finalizing
+   * - invalidating
    * - skipped
    * - completed
    * - cancelled

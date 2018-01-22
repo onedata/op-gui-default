@@ -159,6 +159,13 @@
         text-align: left;
       }
     }
+    th.table-header {
+      // TODO: this is a HACK to style two last columns with icons
+      // because ember-models-table v1 don't assign classes on headers
+      &.col-icon, &:nth-last-of-type(1), &:nth-last-of-type(2) {
+        width: 70px;
+      }
+    }
 
     .expand-row td {
       background-color: $onedata-light-gray;
@@ -191,12 +198,12 @@
       padding-left: 40px;
     }
   }
-  .cell-status {
-    font-size: 1.5em;
+  .cell-icon {
+    font-size: 2em;
     line-height: 0;
     vertical-align: middle;
     &.completed,
-    &.finalizing {
+    &.invalidating {
       color: $color-one-mint;
     }
     &.skipped {

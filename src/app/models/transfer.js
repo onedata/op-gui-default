@@ -126,4 +126,16 @@ export default Model.extend({
   }),
   
   isCurrent: computed.reads('isOngoing'),
+  
+  /**
+   * @type {string}
+   * One of: migration, invalidation, replication
+   */
+  type: computed('migration', 'destination', function getType() {
+    if (this.get('migration')) {
+      return this.get('destination') ? 'migration' : 'invalidation';
+    } else {
+      return 'replication';
+    }
+  }),
 });

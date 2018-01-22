@@ -132,7 +132,7 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   _tableData: computed(
-    'transfers.@each.{tableDataIsLoaded,status,finishTime,fileType,transferredBytes,transferredFiles,currentStatError}',
+    'transfers.@each.{tableDataIsLoaded,status,finishTime,fileType,transferredBytes,transferredFiles,currentStatError,type}',
     'providers',
     'providersColors',
     'selectedTransferIds.[]',
@@ -187,7 +187,8 @@ export default Component.extend({
         
     // field `id` is custom and is used only to check which column should be 
     // filtered out for active/completed table version
-    const allColumns = [{
+    const allColumns = [
+    {
       id: 'path',
       propertyName: 'path',
       title: i18n.t(I18N_PREFIX + 'path'),
@@ -240,14 +241,26 @@ export default Component.extend({
       component: 'transfers/live-stats-table/cell-errorable',
       sortPrecedence: sortBy === 'totalFiles' ? 2 : undefined,
       sortDirection: sortBy === 'totalFiles' ? 'desc' : undefined,
-    }, {
+    },
+    {
+      id: 'type',
+      propertyName: 'type',
+      className: 'col-icon',
+      title: i18n.t(I18N_PREFIX + 'type'),
+      component: _mobileMode ? undefined : 'transfers/live-stats-table/cell-type',
+      sortPrecedence: sortBy === 'type' ? 2 : undefined,
+      sortDirection: sortBy === 'type' ? 'desc' : undefined,
+    },
+    {
       id: 'status',
       propertyName: 'status',
+      className: 'col-icon',
       title: i18n.t(I18N_PREFIX + 'status'),
       component: 'transfers/live-stats-table/cell-status',
       sortPrecedence: sortBy === 'status' ? 2 : undefined,
       sortDirection: sortBy === 'status' ? 'desc' : undefined,
-    }];
+    },
+  ];
     if (isTransferActive) {
       return allColumns.filter((column) => 
         onlyCompletedColumns.indexOf(column.id) === -1
@@ -319,9 +332,9 @@ export default Component.extend({
 function transferTableData(transferIndex, transfer, providers, providersColors, i18n, selectedTransferIds) {
   // searching for destination
   let destination = i18n.t(I18N_PREFIX + 'destinationUnknown');
-  const destProvider = _.find(providers, (provider) => 
+  const destProvider = destination ? _.find(providers, (provider) => 
     get(provider, 'id') === get(transfer, 'destination')
-  );
+  ) : null;
   if (destProvider) {
     destination = get(destProvider, 'name');
   }
@@ -337,6 +350,7 @@ function transferTableData(transferIndex, transfer, providers, providersColors, 
     status,
     tableDataIsLoaded,
     currentStatError,
+    type,
   } = getProperties(
     transfer,
     'id',
@@ -348,7 +362,8 @@ function transferTableData(transferIndex, transfer, providers, providersColors, 
     'userName',
     'status',
     'tableDataIsLoaded',
-    'currentStatError'
+    'currentStatError',
+    'type'
   );
   const startMoment = moment.unix(startTimestamp);
   const finishMoment = moment.unix(finishTimestamp);
@@ -362,6 +377,8 @@ function transferTableData(transferIndex, transfer, providers, providersColors, 
   const totalBytesReadable = bytesToString(transferredBytes);
   const isLoading = (tableDataIsLoaded === false);
   const initSelect = _.includes(selectedTransferIds, transferId);
+  
+  console.log('type: ' + type);
   
   return EmberObject.create({
     transfer,
@@ -384,5 +401,6 @@ function transferTableData(transferIndex, transfer, providers, providersColors, 
     isLoading,
     currentStatError,
     initSelect,
+    type,
   });
 }

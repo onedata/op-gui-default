@@ -515,6 +515,7 @@ export default {
       in: 'Input',
       out: 'Output',
       liveTableStats: {
+        type: 'Type',
         path: 'File/directory',
         userName: 'Username',
         destination: 'Destination',
@@ -523,7 +524,7 @@ export default {
         totalBytes: 'Transferred',
         totalFiles: 'Total files',
         status: 'Status',
-        destinationUnknown: 'Unknown',
+        destinationUnknown: '-',
         cellFileName: {
           deleted: 'deleted',
         },
@@ -534,7 +535,12 @@ export default {
           failed: 'Failed',
           active: 'Active',
           scheduled: 'Scheduled',
-          finalizing: 'Finalizing',
+          invalidating: 'Invalidating',
+        },
+        cellType: {
+          replication: 'Replication',
+          migration: 'Migration',
+          invalidation: 'Invalidation',
         },
       },
       transferChart: {

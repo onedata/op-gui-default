@@ -23,6 +23,6 @@ export default Route.extend(userCollectionModel('spaces', { nonEmpty: true }), {
   
   beforeModel() {
     this._super(...arguments);
-    this.get('secondaryMenu').clear();
+    this.set('secondaryMenu.component', null);
   },
 });

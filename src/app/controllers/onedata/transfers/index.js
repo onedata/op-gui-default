@@ -1,19 +1,28 @@
-import Ember from 'ember';
-import getDefaultSpace from 'op-worker-gui/utils/get-default-space';
-
 /**
  * Controller used to redirect to default transfers for space on model load.
  * Not using afterModel of route, because there were some problems
  * (afterModel was invoked before model load).
  * @module controllers/transfers/index
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default Ember.Controller.extend({
+
+import Ember from 'ember';
+import getDefaultSpace from 'op-worker-gui/utils/get-default-space';
+
+const {
+  Controller,
+  inject: { service },
+} = Ember;
+
+export default Controller.extend({
+  secondaryMenu: service(),
+  fileSystemTree: service(),
+  
   goToDefaultTransfersForSpace() {
     console.debug(`controller:onedata.transfers.index: Will try to go to default tr. for space`);
-    let defaultSpace = getDefaultSpace(this.get('model'));
+    let defaultSpace = this._getDefaultSpace(this.get('model'));
     if (defaultSpace) {
       this.transitionToRoute('onedata.transfers.show', defaultSpace);
     } else {
@@ -21,6 +30,14 @@ export default Ember.Controller.extend({
     }
   },
 
+  /**
+   * Try to use space that is loaded into secondary menu before using default one
+   * @param {Array<Space>} model 
+   */
+  _getDefaultSpace(model) {
+    return this.get('secondaryMenu.activeSpace') || getDefaultSpace(model);
+  },
+  
   /**
    * Observe for a default space to appear in spaces route model (which is a spaces list).
    * When found - show this space.

@@ -4,7 +4,7 @@
  * Could list a Spaces for user, who can select the Space and configure it.
  * @module routes/onedata/spaces
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -23,7 +23,7 @@ export default Route.extend(userCollectionModel('spaces', { nonEmpty: true }), {
 
   beforeModel() {
     this._super(...arguments);
-    this.get('secondaryMenu').clear();
+    this.set('secondaryMenu.component', null);
   },
   
   actions: {

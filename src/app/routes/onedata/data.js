@@ -3,7 +3,7 @@
  *
  * @module routes/data
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -27,7 +27,11 @@ export default Ember.Route.extend(userCollectionModel('spaces', { nonEmpty: true
 
   actions: {
     goToDataSpace(spaceId) {
-      this.transitionTo('onedata.data.data-space', spaceId);
+      if (spaceId) {
+        this.transitionTo('onedata.data.data-space', spaceId);
+      } else {
+        this.transitionTo('onedata.data.index');
+      }
     }
   }
 });

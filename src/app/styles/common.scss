@@ -403,6 +403,7 @@ html, body {
         .item-element {
           display: table-cell;
           vertical-align: middle;
+          @include vendor-prefix(user-select, none);
         }
 
         .item-icon {

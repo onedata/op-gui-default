@@ -13,7 +13,6 @@ import Ember from 'ember';
 
 const {
   computed,
-  observer,
   String: {
     htmlSafe,
   },
@@ -52,11 +51,7 @@ export default Ember.Component.extend({
     return htmlSafe(`color: ${circleColor};`);
   }),
 
-  atlasWidthObserver: observer('atlasWidth', function () {
-    this._recalculateSize();
-  }),
-
-  didInsertElement() {
+  didRender() {
     this._super(...arguments);
     this._recalculateSize();
   },

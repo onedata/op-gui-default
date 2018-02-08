@@ -10,7 +10,7 @@ import {
 } from 'mocha';
 import startApp from 'op-worker-gui/tests/helpers/start-app';
 import hbs from 'htmlbars-inline-precompile';
-import waitFor from 'ember-cli-onedata-common/utils/wait-for';
+import wait from 'ember-test-helpers/wait';
 
 describe('Integration: FileBreadcrumbsComponent', function() {
   setupComponentTest('file-breadcrumbs', {
@@ -40,7 +40,7 @@ describe('Integration: FileBreadcrumbsComponent', function() {
     expect(this.$()).to.have.length(1);
   });
 
-  it('displays name of the injected file', function(done) {
+  it('displays name of the injected file', function() {
     const file = this.store.createRecord('file', {
       name: 'hello1'
     });
@@ -50,12 +50,15 @@ describe('Integration: FileBreadcrumbsComponent', function() {
     this.render(hbs`{{file-breadcrumbs file=file}}`);
 
     let fileName = file.get('name');
-    waitFor(() => this.$().text().match(fileName), {resolve: done});
-
+ 
     file.updateDirsPath();
+        
+    return wait().then(() => {
+      expect(this.$()).to.contain(fileName);
+    });
   });
 
-  it('displays parent name of the injected file', function(done) {
+  it('displays parent name of the injected file', function() {
     const file1 = this.store.createRecord('file', {
       name: 'hello01'
     });
@@ -69,9 +72,12 @@ describe('Integration: FileBreadcrumbsComponent', function() {
     this.render(hbs`{{file-breadcrumbs file=file2}}`);
 
     let fileName = file1.get('name');
-    waitFor(() => this.$().text().match(fileName), {resolve: done});
 
     file2.updateDirsPath();
+    
+    return wait().then(() => {
+      expect(this.$()).to.contain(fileName);
+    });
   });
 
   it('does not displays parent path dirs above specified rootDir', function(done) {

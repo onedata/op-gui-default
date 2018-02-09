@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-4068 Fixed incorrect icons positioning in transfers table
 * VFS-4062 Remember opened space when switching between data-spaces-transfers views; fixes in data-space sidebar
 * VFS-4059 Fixed provider icon scaling in transfers view
 * VFS-4002 Showing transfer type (replication/migration/invalidation) in transfers table

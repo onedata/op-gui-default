@@ -1,19 +1,28 @@
-import Ember from 'ember';
-
-import getDefaultSpace from 'op-worker-gui/utils/get-default-space';
-
 /**
  * A global state of file browser
  * @module service/file-system-tree
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default Ember.Service.extend(Ember.Evented, {
-  store: Ember.inject.service(),
+
+import Ember from 'ember';
+
+import getDefaultSpace from 'op-worker-gui/utils/get-default-space';
+
+const {
+  Service,
+  inject: { service },
+  Evented,
+  computed: { alias },
+} = Ember;
+
+export default Service.extend(Evented, {
+  store: service(),
+  secondaryMenu: service(),
 
   spaces: null,
-  selectedSpace: null,
+  selectedSpace: alias('secondaryMenu.activeSpace'),
   prevSelectedSpace: null,
 
   isLoading: null,
@@ -23,7 +32,7 @@ export default Ember.Service.extend(Ember.Evented, {
    * @type Set<String>
    */
   failedDirs: null,
-
+  
   init() {
     this._super();
     this.set('failedDirs', new Set());

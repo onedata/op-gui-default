@@ -350,10 +350,13 @@ export default Component.extend({
       const fileProviderTransfers = this.get('fileProviderTransfers');
       const providerId = this.get('providerId');
       if (fileProviderTransfers && !isEmpty(fileProviderTransfers)) {
-        if (fileProviderTransfers.some(t => get(t, 'migrationSource') === providerId)) {
+        if (fileProviderTransfers.some(t =>
+          get(t, 'migration') && get(t, 'migrationSource') === providerId)
+        ) {
           return 'migration-source';
-        } else if (fileProviderTransfers.some(t => get(t, 'destination') ===
-            providerId)) {
+        } else if (fileProviderTransfers.some(t =>
+          get(t, 'destination') === providerId)
+        ) {
           return 'replication-destination';
         } else {
           return 'unknown';

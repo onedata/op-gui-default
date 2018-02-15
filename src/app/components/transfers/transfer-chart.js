@@ -386,6 +386,7 @@ export default Component.extend({
         // calculating new chart values
         const valuesSumArray = _.range(_expectedStatsNumber + 2).map(() => ({ x: 0, y: 0 }));
         for (let i = _statsValues.length - 1; i >= 0; i--) {
+          /* jshint loopfunc: true */
           const providerValues = _statsValues[i];
           providerValues.forEach((value, valueIndex) => {
             valuesSumArray[valueIndex].y += value.y;

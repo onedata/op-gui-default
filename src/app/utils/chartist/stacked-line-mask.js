@@ -16,6 +16,8 @@ export default function () {
     chart.on('draw', (data) => {
       if (data.type === 'area') {
         const svg = chart.svg;
+        const chartId = $(svg.getNode()).parent().attr('id');
+        const maskId = `series-mask-${data.seriesIndex}-${chartId}`;
         if (data.seriesIndex === 0) {
           svg.elem('defs', undefined, undefined, true);
         } else {
@@ -25,7 +27,6 @@ export default function () {
           );
           const areaPathD = area.attr('d');
           const defs = svg.querySelector('defs');
-          const maskId = 'series-mask-' + (data.seriesIndex);
           const mask = defs.elem('mask', { id: maskId });
           mask.elem('rect', {
             x: '0',

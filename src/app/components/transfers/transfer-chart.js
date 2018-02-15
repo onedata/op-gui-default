@@ -385,16 +385,17 @@ export default Component.extend({
         }
         // calculating new chart values
         const valuesSumArray = _.range(_expectedStatsNumber + 2).map(() => ({ x: 0, y: 0 }));
-        _statsValues.forEach((providerValues, providerIndex) => {
+        for (let i = _statsValues.length - 1; i >= 0; i--) {
+          const providerValues = _statsValues[i];
           providerValues.forEach((value, valueIndex) => {
             valuesSumArray[valueIndex].y += value.y;
             valuesSumArray[valueIndex].x = value.x;
           });
-          _chartValues[_chartValues.length - providerIndex - 1]
+          _chartValues[i]
             .push(..._.cloneDeep(
               valuesSumArray.filter(({ x }) => x >= _transferStartTime)
             ));
-        });
+        }
         // creating tooltips
         const tooltipElements = _.range(_expectedStatsNumber + 2).map((index) => {
           return _sortedProvidersIds

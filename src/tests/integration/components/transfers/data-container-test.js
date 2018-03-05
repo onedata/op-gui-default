@@ -7,6 +7,8 @@ import wait from 'ember-test-helpers/wait';
 
 const {
   Object: EmberObject,
+  ObjectProxy,
+  ArrayProxy,
   A,
 } = Ember;
 
@@ -35,13 +37,23 @@ describe('Integration | Component | transfers/data container', function () {
         tableDataIsLoaded: true,
       }),
     ]);
+    const listRelation = {
+      ids() {
+        return ['p1', 'p2'];
+      }
+    };
     transfers.isLoaded = true;
     const space = EmberObject.create({
-      currentTransferList: {
-        list: {
-          content: transfers,
+      currentTransferList: ObjectProxy.create({
+        content: {
+          list: ArrayProxy.create({
+            content: transfers,
+          }),
+          hasMany() {
+            return listRelation;
+          },
         },
-      },
+      }),
     });
     this.set('space', space);
     
@@ -61,11 +73,16 @@ describe('Integration | Component | transfers/data container', function () {
     ]);
     
     const spaceErrored = EmberObject.create({
-      currentTransferList: {
-        list: {
-          content: transfersErrored,
+      currentTransferList: ObjectProxy.create({
+        content: {
+          list: ArrayProxy.create({
+            content: transfersErrored,
+          }),
+          hasMany() {
+            return listRelation;
+          },
         },
-      },
+      }),
     });
     this.set('spaceErrored', spaceErrored);
   });

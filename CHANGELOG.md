@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-4154 Dynamically adjust polling interval of transfers data; fixed transfer chart loading
 * VFS-4088 Fixed incorrect ordering and stacking of transfer chart series
 * VFS-4068 Fixed incorrect icons positioning in transfers table
 * VFS-4062 Remember opened space when switching between data-spaces-transfers views; fixes in data-space sidebar

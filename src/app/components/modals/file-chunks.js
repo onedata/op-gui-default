@@ -295,23 +295,22 @@ export default Component.extend(PromiseLoadingMixin, {
       isEnabled: true,
       currentEnabled: true,
       completedEnabled: false,
-      pollingTimeCurrent: SLOW_POLLING_TIME,
     }));
   },
 
   _fastTransfersUpdater() {
     const transfersUpdater = this.get('transfersUpdater');
     if (transfersUpdater &&
-      transfersUpdater.get('pollingTimeCurrent') !== FAST_POLLING_TIME) {
-      transfersUpdater.set('pollingTimeCurrent', FAST_POLLING_TIME);
+      transfersUpdater.get('basePollingTime') !== FAST_POLLING_TIME) {
+      transfersUpdater.set('basePollingTime', FAST_POLLING_TIME);
     }
   },
 
   _slowTransfersUpdater() {
     const transfersUpdater = this.get('transfersUpdater');
     if (transfersUpdater &&
-      transfersUpdater.get('pollingTimeCurrent') !== SLOW_POLLING_TIME) {
-      transfersUpdater.set('pollingTimeCurrent', SLOW_POLLING_TIME);
+      transfersUpdater.get('basePollingTime') !== SLOW_POLLING_TIME) {
+      transfersUpdater.set('basePollingTime', SLOW_POLLING_TIME);
     }
   },
   

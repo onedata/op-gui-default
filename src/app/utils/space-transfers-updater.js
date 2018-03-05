@@ -1,5 +1,5 @@
 /**
- * Updates transfers data for single pace (except time statistics) by polling
+ * Updates transfers data for single space (except time statistics) by polling
  * 
  * Optionally update:
  * - collection of current transfers records with their current stats
@@ -8,23 +8,31 @@
  *
  * @module utils/space-transfers-updater
  * @author Jakub Liput
- * @copyright (C) 2017 ACK CYFRONET AGH
+ * @copyright (C) 2017-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
 import Ember from 'ember';
 import _ from 'lodash';
+import ENV from 'op-worker-gui/config/environment';
 
 const {
   Object: EmberObject,
+  get,
   set,
   observer,
   computed,
   RSVP: { Promise },
+  run: { later, debounce, next },
 } = Ember;
 
-const DEFAULT_CURRENT_TIME = 2 * 1000;
-const DEFAULT_COMPLETED_TIME = 10 * 1000;
+/** 
+ * How many milliseconds to wait between polling for single transfer data
+ * @type {number}
+ */
+const TRANSFER_COLLECTION_DELAY = 300;
+
+const DEFAULT_COMPLETED_TIME = 30 * 1000;
 
 import Looper from 'ember-cli-onedata-common/utils/looper';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
@@ -39,7 +47,7 @@ export default EmberObject.extend({
    * @type {Ember.Service}
    */
   store: undefined,
-  
+
   /**
    * @virtual
    * The model of space, will be used to perform fetching
@@ -54,18 +62,34 @@ export default EmberObject.extend({
    */
   isEnabled: false,
 
+  _currentTransfersCount: 0,
+
+  /**
+   * Minimum time for polling (if there are no transfers)
+   * @type {Ember.Computed<number>}
+   */
+  basePollingTime: 3 * 1000,
+
   /**
    * Polling interval (ms) used for fetching current transfers
    * @type {number}
    */
-  pollingTimeCurrent: DEFAULT_CURRENT_TIME,
-  
+  pollingTimeCurrent: computed(
+    '_currentTransfersCount',
+    'basePollingTime',
+    function getPollingTimeCurrent() {
+      const currentTransfersCount = this.get('_currentTransfersCount');
+      return currentTransfersCount ? this.computeCurrentPollingTime(currentTransfersCount) :
+        this.get('basePollingTime');
+    }
+  ),
+
   /**
    * Polling interval (ms) used for fetching completed transfers
    * @type {number}
    */
   pollingTimeCompleted: DEFAULT_COMPLETED_TIME,
-  
+
   /**
    * @type {boolean}
    */
@@ -97,7 +121,7 @@ export default EmberObject.extend({
    * @type {Looper}
    */
   _completedWatcher: undefined,
-  
+
   /**
    * If true, currently fetching info about current transfers
    * Set by some interval watcher
@@ -123,13 +147,21 @@ export default EmberObject.extend({
    * @type {any} typically a request error object
    */
   completedError: null,
-  
+
+  /**
+   * How much time [ms] to debounce when some property changes that
+   * can occur watchers reconfiguration.
+   * Set it to 0 for tests purposes.
+   * @type {number}
+   */
+  _toggleWatchersDelay: ENV.environment === 'test' ? 0 : 1000,
+
   /**
    * Interval [ms] used by `_currentWatcher`
    * @type {number}
    */
   _currentInterval: computed.reads('_sharedInterval'),
-  
+
   _completedInterval: computed.reads('_sharedInterval'),
 
   init() {
@@ -142,12 +174,14 @@ export default EmberObject.extend({
 
     this._createWatchers();
     this._toggleWatchers();
-    
+
     // enable observers for properties
     this.getProperties('_currentEnabled', '_completedEnabled');
 
     this.set('_completedIdsCache', []);
     this.set('_currentIdsCache', []);
+
+    next(() => safeExec(this, 'countCurrentTransfers'));
   },
 
   destroy() {
@@ -161,6 +195,14 @@ export default EmberObject.extend({
     }
   },
 
+  countCurrentTransfers() {
+    const newCount = this.get('space.currentTransferList.content').hasMany('list').ids()
+      .length;
+    if (newCount !== this.get('_currentTransfersCount')) {
+      this.set('_currentTransfersCount', newCount);
+    }
+  },
+  
   /**
    * Create watchers for fetching information
    */
@@ -180,41 +222,54 @@ export default EmberObject.extend({
       .on('tick', () =>
         safeExec(this, 'fetchCompleted')
       );
-      
+
     this.setProperties({
       _currentWatcher,
       _completedWatcher,
     });
   },
 
-  _toggleWatchers: observer(
+  observeToggleWatchers: observer(
     '_currentEnabled',
     '_completedEnabled',
     'pollingTimeCurrent',
     'pollingTimeCompleted',
+    '_toggleWatchersDelay',
     function () {
-      // this method is invoked from debounce, so it's "this" can be destroyed
-      if (this.isDestroyed === false) {
-        const {
-        _currentEnabled,
-          _completedEnabled,
-          _currentWatcher,
-          _completedWatcher,
-          pollingTimeCurrent,
-          pollingTimeCompleted,
-      } = this.getProperties(
-            '_currentEnabled',
-            '_completedEnabled',
-            '_currentWatcher',
-            '_completedWatcher',
-            'pollingTimeCurrent',
-            'pollingTimeCompleted'
-          );
-
-        set(_currentWatcher, 'interval', _currentEnabled ? pollingTimeCurrent : null);
-        set(_completedWatcher, 'interval', _completedEnabled ? pollingTimeCompleted : null);
-      }
+      debounce(this, '_toggleWatchers', this.get('_toggleWatchersDelay'));
     }),
+
+  _toggleWatchers() {
+    // this method is invoked from debounce, so it's "this" can be destroyed
+    safeExec(this, () => {
+      const {
+        _currentEnabled,
+        _completedEnabled,
+        _currentWatcher,
+        _completedWatcher,
+        pollingTimeCurrent,
+        pollingTimeCompleted,
+      } = this.getProperties(
+        '_currentEnabled',
+        '_completedEnabled',
+        '_currentWatcher',
+        '_completedWatcher',
+        'pollingTimeCurrent',
+        'pollingTimeCompleted'
+      );
+
+      set(
+        _currentWatcher,
+        'interval',
+        _currentEnabled ? pollingTimeCurrent : null
+      );
+      set(
+        _completedWatcher,
+        'interval',
+        _completedEnabled ? pollingTimeCompleted : null
+      );
+    });
+  },
 
   /**
    * Function invoked when current transfers should be updated by polling timer
@@ -222,14 +277,13 @@ export default EmberObject.extend({
    *    of updated current transfers
    */
   fetchCurrent() {
-    console.debug('util:space-transfers-updater: fetchCurrent');
-    
     const space = this.get('space');
     this.set('currentIsUpdating', true);
     const _currentIdsCache = this.get('_currentIdsCache');
-    
+
     return space.belongsTo(`currentTransferList`).reload()
-      .then(transferList => safeExec(this, () => {        
+      .then(transferList => safeExec(this, () => {
+        this.countCurrentTransfers();
         const currentIdsNew = transferList.hasMany('list').ids();
         const removedIds = _.difference(
           _currentIdsCache,
@@ -243,11 +297,41 @@ export default EmberObject.extend({
       }))
       // does not need to update transfer record as for active transfers it
       // changes only status from scheduled to active (we do not present it)
-      .then(list => safeExec(this, () => 
-        Promise.all(list.map(t => t.belongsTo('currentStat').reload()))
-      ))
+      .then(list => safeExec(this, () => {
+        const transfersCount = get(list, 'length');
+        return Promise.all(
+          list.map((transfer, i) =>
+            safeExec(
+              this,
+              '_reloadTransferCurrentStat',
+              transfer,
+              i,
+              transfersCount
+            )
+          ));
+      }))
       .catch(error => safeExec(this, () => this.set('currentError', error)))
       .finally(() => safeExec(this, () => this.set('currentIsUpdating', false)));
+  },
+
+  _reloadTransferCurrentStat(transfer, index, transfersCount) {
+    const pollingTimeCurrent = this.get('pollingTimeCurrent');
+    const delay = (pollingTimeCurrent * index) / transfersCount;
+    console.log('fired, will delay: ' + delay);
+    return new Promise((resolve, reject) => {
+      later(
+        () => {
+          transfer.belongsTo('currentStat').reload()
+            .then(resolve)
+            .catch(reject);
+        },
+        delay
+      );
+    });
+  },
+
+  computeCurrentPollingTime(transfersCount) {
+    return TRANSFER_COLLECTION_DELAY * transfersCount + this.get('basePollingTime');
   },
   
   /**
@@ -255,18 +339,16 @@ export default EmberObject.extend({
    * - array of current transfers changes
    */
   fetchCompleted() {
-    console.debug('util:space-transfers-updater: fetchCompleted invoked');
-    
     if (this.get('completedIsUpdating') !== true) {
       console.debug('util:space-transfers-updater: fetchCompleted started');
       const store = this.get('store');
       const space = this.get('space');
-              
+
       this.set(`completedIsUpdating`, true);
-      
+
       const _completedIdsCache = this.get('_completedIdsCache');
       let newIds = [];
-    
+
       return space.belongsTo(`completedTransferList`).reload()
         .then(transferList => {
           const completedIdsNew = transferList.hasMany('list').ids();

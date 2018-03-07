@@ -138,4 +138,16 @@ export default Model.extend({
       return 'replication';
     }
   }),
+  
+  /**
+   * True if statistics of this provider are stored on the currently opened provider
+   * @param {string} providerId ID of current provider
+   * @returns {boolean}
+   */
+  getIsLocal(providerId) {
+    const type = this.get('type');
+    const property = (type === 'replication' || type === 'migration' && this.get('status') === 'invalidating') ?
+      'destination' : 'migrationSource';
+    return this.get(property) === providerId;
+  },
 });

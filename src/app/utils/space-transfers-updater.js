@@ -317,7 +317,6 @@ export default EmberObject.extend({
   _reloadTransferCurrentStat(transfer, index, transfersCount) {
     const pollingTimeCurrent = this.get('pollingTimeCurrent');
     const delay = (pollingTimeCurrent * index) / transfersCount;
-    console.log('fired, will delay: ' + delay);
     return new Promise((resolve, reject) => {
       later(
         () => {

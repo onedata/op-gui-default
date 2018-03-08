@@ -91,9 +91,7 @@ export default Component.extend({
    * True if data for chart is loaded
    * @type {boolean}
    */
-  _statsLoaded: computed('_timeStatForUnit.isLoaded', function() {
-    return this.get('_timeStatForUnit.isLoaded');
-  }),
+  _statsLoaded: computed.reads('_timeStatForUnit.isFulfilled'),
 
   /**
    * @type {Ember.ComputedProperty<string|null>}
@@ -106,7 +104,7 @@ export default Component.extend({
    * Proxy object that resolves with stats for specified time unit.
    * @type {Ember.ComputedProperty<PromiseObject<TransferTimeStat>>}
    */
-  _timeStatForUnit: computed('transfer.isLoaded', 'timeUnit', function () {
+  _timeStatForUnit: computed('timeUnit', function () {
     const {
       transfer,
       timeUnit,

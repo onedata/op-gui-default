@@ -61,6 +61,11 @@
                   (not tData.currentTransfersLoaded)
                 )}}
                   {{#if tData.providerTransfers.length}}
+                    {{#if tData.someTransfersRemote}}
+                      <p>
+                        {{t "components.transfers.someTransfersRemote"}}
+                      </p>
+                    {{/if}}
                     {{transfers/throughput-distribution
                       providers=tData.providers
                       providersColors=tData.providersColors

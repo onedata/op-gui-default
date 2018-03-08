@@ -163,10 +163,19 @@ export default Component.extend({
         );
       }
       
-      _tableDataCache.sort((a, b) => 
-        get(b, 'startedAtComparable') - get(a, 'startedAtComparable')
-      );
-
+      // the last, unique sorting - if other sorting properties are the same
+      _tableDataCache.sort((a, b) => {
+        const aval = get(a, 'id');
+        const bval = get(b, 'id');
+        if (aval < bval) {
+          return -1;
+        } else if (aval > bval) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+      
       return _tableDataCache;
     }
   ),

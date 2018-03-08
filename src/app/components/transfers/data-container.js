@@ -45,7 +45,7 @@ export default Component.extend({
   
   session: service(),
   store: service(),
-  
+    
   /**
    * @virtual
    * @type {Space}
@@ -71,6 +71,8 @@ export default Component.extend({
    * @type {SpaceTransfersUpdater}
    */
   transfersUpdater: undefined,
+  
+  providerId: computed.reads('session.sessionDetails.providerId'),
   
   _transfersUpdaterEnabled: computed.readOnly('transfersUpdaterEnabled'),
   
@@ -182,26 +184,6 @@ export default Component.extend({
       return this.get('_providerTransfersCache');
     }
   ),
-  
-  /**
-   * Updates (adds/removes) ProviderTransfers in cache
-   * @param {Ember.Array<ProviderTransfer>} ptCache 
-   * @param {Ember.Array<Transfer>} currentTransfers 
-   */
-  _updateProviderTransfersCache(ptCache, currentTransfers) {
-    const ptNewList = providerTransfers(currentTransfers.toArray());
-    _.remove(ptCache, pt =>
-      !_.find(ptNewList, { src: get(pt, 'src'), dest: get(pt, 'dest') })
-    );
-    ptNewList.forEach(pt => {
-      const ptOldVer = _.find(ptCache, { src: get(pt, 'src'), dest: get(pt, 'dest') });
-      if (ptOldVer) {
-        set(ptOldVer, 'bytesPerSec', get(pt, 'bytesPerSec'));
-      } else {
-        ptCache.pushObject(pt);
-      }
-    });
-  },
 
   /**
    * Cache for `providerTransferConnections`
@@ -291,10 +273,23 @@ export default Component.extend({
   throughputChartError: computed('currentTransfers.@each.currentStatError', function () {
     const currentTransfers = this.get('currentTransfers');
     if (currentTransfers) {
-      // using every, because this kind of array doesn't have "some"
-      return !currentTransfers.every(t => !t || !get(t, 'currentStatError'));
+      return currentTransfers.toArray().some(t => !t || get(t, 'currentStatError'));
     }
   }),
+
+  /**
+   * True if at least one current transfer is controlled by remote provider
+   * so statistics can be slightly delayed.
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  someTransfersRemote: computed(
+    'currentTransfers.@each.{type,status}',
+    'providerId',
+    function getSomeTransfersRemote() {
+      const providerId = this.get('providerId');
+      return this.get('currentTransfers').toArray().some(t => !t.getIsLocal(providerId));
+    }
+  ),
   
   /**
    * Watches updater settings dependecies and changes its settings
@@ -346,6 +341,26 @@ export default Component.extend({
     this.set('transfersUpdater', transfersUpdater);
     
     this._initializeDefaultValues();
+  },
+   
+  /**
+   * Updates (adds/removes) ProviderTransfers in cache
+   * @param {Ember.Array<ProviderTransfer>} ptCache 
+   * @param {Ember.Array<Transfer>} currentTransfers 
+   */
+  _updateProviderTransfersCache(ptCache, currentTransfers) {
+    const ptNewList = providerTransfers(currentTransfers.toArray());
+    _.remove(ptCache, pt =>
+      !_.find(ptNewList, { src: get(pt, 'src'), dest: get(pt, 'dest') })
+    );
+    ptNewList.forEach(pt => {
+      const ptOldVer = _.find(ptCache, { src: get(pt, 'src'), dest: get(pt, 'dest') });
+      if (ptOldVer) {
+        set(ptOldVer, 'bytesPerSec', get(pt, 'bytesPerSec'));
+      } else {
+        ptCache.pushObject(pt);
+      }
+    });
   },
   
   _scrollToFirstSelectedTransfer() {

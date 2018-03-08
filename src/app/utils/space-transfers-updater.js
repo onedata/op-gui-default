@@ -291,7 +291,14 @@ export default EmberObject.extend({
         );
         this.set('_currentIdsCache', currentIdsNew);
         if (!_.isEmpty(removedIds)) {
-          this.fetchCompleted();
+          later(() => {
+            this.fetchCompleted()
+            .then(newCompletedTransfers => {
+              if (get(newCompletedTransfers, 'length') !== get(removedIds, 'length')) {
+                later(this, 'fetchCompleted', 6000);
+              }
+            });
+          }, 1000);
         }
         return transferList.get('list');
       }))
@@ -336,16 +343,18 @@ export default EmberObject.extend({
   /**
    * Should be invoked when:
    * - array of current transfers changes
+   * @returns {Promise<Array<Transfer>>} transfers that was added to completed list
    */
   fetchCompleted() {
     if (this.get('completedIsUpdating') !== true) {
       console.debug('util:space-transfers-updater: fetchCompleted started');
-      const store = this.get('store');
-      const space = this.get('space');
-
+      const {
+        store,
+        space,
+        _completedIdsCache,
+      } = this.getProperties('store', 'space', '_completedIdsCache');
+      
       this.set(`completedIsUpdating`, true);
-
-      const _completedIdsCache = this.get('_completedIdsCache');
       let newIds = [];
 
       return space.belongsTo(`completedTransferList`).reload()
@@ -366,18 +375,19 @@ export default EmberObject.extend({
             newIds.map(id => store.findRecord('transfer', id, { reload: true }))
           );
         })
-        .then(transfers => {
+        .then(modifiedTransfers => {
           return Promise.all(
-            transfers.map(t => t.belongsTo('currentStat').reload())
+            modifiedTransfers.map(t => t.belongsTo('currentStat').reload())
           );
         })
-        .then(() => {
+        .then(modifiedTransfers => {
           newIds.forEach(id => {
             const transfer = store.peekRecord('transfer', id);
             if (transfer) {
               transfer.set('_completedReloading', undefined);
             }
           });
+          return modifiedTransfers;
         })
         .catch(error => safeExec(this, () => this.set(`completedError`, error)))
         .finally(() => safeExec(this, () => this.set(`completedIsUpdating`, false)));

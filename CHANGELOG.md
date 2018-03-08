@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-4157 Requesting completed transfers list with delay to be compatible with backend fixes
 * VFS-4012 Info about remote statistics on transfers view; fixed transfer row sort issues
 * VFS-4154 Dynamically adjust polling interval of transfers data; fixed transfer chart loading
 * VFS-4088 Fixed incorrect ordering and stacking of transfer chart series

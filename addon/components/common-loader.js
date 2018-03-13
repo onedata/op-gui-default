@@ -9,7 +9,8 @@ const {
   computed: {
     alias
   },
-  observer
+  observer,
+  String: { htmlSafe },
 } = Ember;
 
 /**
@@ -17,7 +18,7 @@ const {
  * It allows to show loading information with spinner and two lines of text.
  * @module components/common-loader
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
@@ -27,7 +28,8 @@ export default Ember.Component.extend({
 
   classNames: ['common-loader'],
   classNameBindings: ['isLoading::hidden', 'areaClass', 'solidBackground:solid-background:semi-transparent'],
-
+  attributeBindings: ['style'],
+  
   areaClass: computed('commonLoader.area', function() {
     const _area = this.get('commonLoader.area');
     return `loader-area-${_area}`;
@@ -47,6 +49,17 @@ export default Ember.Component.extend({
     }
   }),
 
+  style: computed('area', function() {
+    if (this.get('area') === 'content-with-secondary-top') {
+      const $contentScroll = $('#content-scroll');
+      if ($contentScroll.length > 0) {
+        return htmlSafe(`left: ${$contentScroll.offset().left}px;`);
+      }
+    } else {
+      return htmlSafe('');
+    }
+  }),
+  
   resetProperties() {
     this.setProperties({
       message: null,

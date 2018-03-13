@@ -311,7 +311,7 @@ export default Component.extend({
         low: _chartXLow,
       },
       axisY: {
-        labelInterpolationFnc: value => bytesToString(value) + '/s',
+        labelInterpolationFnc: value => bytesToString(value, { format: 'bit' }) + '/s',
       },
       low: 0,
       showArea: true,
@@ -406,7 +406,7 @@ export default Component.extend({
               return {
                 name: providerName.length > 10 ?
                   providerName.substring(0, 8) + '...' : providerName,
-                value: bytesToString(_statsValues[providerIndex][index].y) + '/s',
+                value: bytesToString(_statsValues[providerIndex][index].y, { format: 'bit' }) + '/s',
                 className: 'ct-tooltip-entry',
                 cssString: 'border-color: ' + providersColors[providerId],
               };

@@ -65,6 +65,29 @@ function bytesToStringSI(bytes) {
   return [number, multiplicator, unit];
 }
 
+function byteBitUnit(unit) {
+  let newUnit = unit;
+  if (unit[0] === 'B') {
+    return 'b';
+  } else if (unit[0] === 'K') {
+    newUnit = 'kb';
+  } else {
+    newUnit = unit[0] + 'b';
+  }
+  return `${newUnit}it`;
+}
+
+function bytesToStringBit(bytes) {
+  const [number, multiplicator, unit] = bytesToStringSI(bytes * 8);
+  return [number, multiplicator, byteBitUnit(unit)];
+}
+
+const converters = {
+  si: bytesToStringSI,
+  iec: bytesToStringIEC,
+  bit: bytesToStringBit,
+};
+
 /**
  * Convert number of bytes to human readable size string. Eg. 2.34 MB.
  * IEC format (KiB, MiB, etc.) can also be used (see options).
@@ -72,6 +95,8 @@ function bytesToStringSI(bytes) {
  * @param {Number} bytes
  * @param {Object} [options]
  * @param {Boolean} [options.iecFormat=true] If true, use IEC format: KiB, MiB, GiB
+ *    DEPRECATED, use `options.format` instead. If `options.format` is specified it will be ignored.
+ * @param {Boolean} [options.format=si] One of: si, iec, bit
  * @param {Boolean} [options.separated=false] If true, instead of string, 
  * object with fields: number {number}, multiplicator {number}, unit {string}
  * will be returned.
@@ -80,9 +105,13 @@ function bytesToStringSI(bytes) {
 export default function bytesToString(bytes, options = {}) {
   let iecFormat = options.iecFormat;
   let separated = options.separated;
+  let format = options.format;
 
-  if (iecFormat === undefined) {
-    iecFormat = true;
+  if (iecFormat !== undefined && format === undefined) {
+    format = (iecFormat === true ? 'iec' : 'si');
+  }
+  if (format === undefined) {
+    format = 'iec';
   }
   if (separated === undefined) {
     separated = false;
@@ -91,8 +120,7 @@ export default function bytesToString(bytes, options = {}) {
   if (!bytes && bytes !== 0) {
     return '';
   } else {
-    let [number, multiplicator, unit] =
-      (iecFormat ? bytesToStringIEC : bytesToStringSI)(bytes);
+    let [number, multiplicator, unit] = converters[format](bytes);
     number = Math.round(number * 10) / 10;
     if (separated) {
       return {

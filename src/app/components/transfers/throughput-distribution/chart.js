@@ -73,6 +73,6 @@ export default OnePieChart.extend({
    * @override
    */
   formatValue(value) {
-    return bytesToString(value) + '/s';
+    return bytesToString(value, { format: 'bit' }) + '/s';
   },
 });

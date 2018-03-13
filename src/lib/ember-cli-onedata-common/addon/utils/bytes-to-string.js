@@ -7,10 +7,34 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-const TERA = 1000000000000;
-const GIGA = 1000000000;
-const MEGA = 1000000;
-const KILO = 1000;
+export const siUnits = [{
+  name: 'B',
+  multiplicator: 1,
+}, {
+  name: 'KB',
+  multiplicator: 1000,
+}, {
+  name: 'MB',
+  multiplicator: Math.pow(1000, 2),
+}, {
+  name: 'GB',
+  multiplicator: Math.pow(1000, 3),
+}, {
+  name: 'TB',
+  multiplicator: Math.pow(1000, 4),
+}, {
+  name: 'PB',
+  multiplicator: Math.pow(1000, 5),
+}, {
+  name: 'EB',
+  multiplicator: Math.pow(1000, 6),
+}, {
+  name: 'ZB',
+  multiplicator: Math.pow(1000, 7),
+}, {
+  name: 'YB',
+  multiplicator: Math.pow(1000, 8),
+}];
 
 export const iecUnits = [{
   name: 'B',
@@ -20,13 +44,25 @@ export const iecUnits = [{
   multiplicator: 1024,
 }, {
   name: 'MiB',
-  multiplicator: 1048576,
+  multiplicator: Math.pow(1024, 2),
 }, {
   name: 'GiB',
-  multiplicator: 1073741824,
+  multiplicator: Math.pow(1024, 3),
 }, {
   name: 'TiB',
-  multiplicator: 1099511627776,
+  multiplicator: Math.pow(1024, 4),
+}, {
+  name: 'PiB',
+  multiplicator: Math.pow(1024, 5),
+}, {
+  name: 'EiB',
+  multiplicator: Math.pow(1024, 6),
+}, {
+  name: 'ZiB',
+  multiplicator: Math.pow(1024, 7),
+}, {
+  name: 'YiB',
+  multiplicator: Math.pow(1024, 8),
 }];
 
 function bytesToStringIEC(bytes) {
@@ -43,26 +79,14 @@ function bytesToStringIEC(bytes) {
 
 function bytesToStringSI(bytes) {
   let number = bytes;
-  let unit = 'B';
-  let multiplicator = 1;
-  if (bytes >= TERA) {
-    unit = 'TB';
-    number = bytes / TERA;
-    multiplicator = TERA;
-  } else if (bytes >= GIGA) {
-    unit = 'GB';
-    number = bytes / GIGA;
-    multiplicator = GIGA;
-  } else if (bytes >= MEGA) {
-    unit = 'MB';
-    number = bytes / MEGA;
-    multiplicator = MEGA;
-  } else if (bytes >= KILO) {
-    unit = 'KB';
-    number = bytes / KILO;
-    multiplicator = KILO;
-  }
-  return [number, multiplicator, unit];
+  let unit = iecUnits[0];
+  siUnits.slice(1).forEach((u) => {
+    if (bytes >= u.multiplicator) {
+      unit = u;
+      number = bytes / u.multiplicator;
+    }
+  });
+  return [number, unit.multiplicator, unit.name];
 }
 
 function byteBitUnit(unit) {

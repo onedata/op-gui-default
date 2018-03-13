@@ -35,7 +35,7 @@ describe('Unit | Utility | bytes to string', function () {
 
   it('can convert to bit', function () {
     let result = bytesToString(1, { format: 'bit' });
-    expect(result).to.be.equal('8 bit');
+    expect(result).to.be.equal('8 b');
   });
   
   it('can convert to kbit', function () {

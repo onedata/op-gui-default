@@ -19,4 +19,9 @@ describe('Unit | Helper | bytes to string', function () {
       expect(result).to.be.equal('1.5 KB');
     }
   );
+  
+  it('supports format iec option of bytes-to-string util', function () {
+    let result = bytesToString([1024], { format: 'iec' });
+    expect(result).to.be.equal('1 KiB');
+  });
 });

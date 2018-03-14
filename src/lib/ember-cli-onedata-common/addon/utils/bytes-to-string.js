@@ -7,85 +7,41 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-export const siUnits = [{
-  name: 'B',
-  multiplicator: 1,
-}, {
-  name: 'KB',
-  multiplicator: 1000,
-}, {
-  name: 'MB',
-  multiplicator: Math.pow(1000, 2),
-}, {
-  name: 'GB',
-  multiplicator: Math.pow(1000, 3),
-}, {
-  name: 'TB',
-  multiplicator: Math.pow(1000, 4),
-}, {
-  name: 'PB',
-  multiplicator: Math.pow(1000, 5),
-}, {
-  name: 'EB',
-  multiplicator: Math.pow(1000, 6),
-}, {
-  name: 'ZB',
-  multiplicator: Math.pow(1000, 7),
-}, {
-  name: 'YB',
-  multiplicator: Math.pow(1000, 8),
-}];
+const bytesPrefixes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
 
-export const iecUnits = [{
-  name: 'B',
-  multiplicator: 1,
-}, {
-  name: 'KiB',
-  multiplicator: 1024,
-}, {
-  name: 'MiB',
-  multiplicator: Math.pow(1024, 2),
-}, {
-  name: 'GiB',
-  multiplicator: Math.pow(1024, 3),
-}, {
-  name: 'TiB',
-  multiplicator: Math.pow(1024, 4),
-}, {
-  name: 'PiB',
-  multiplicator: Math.pow(1024, 5),
-}, {
-  name: 'EiB',
-  multiplicator: Math.pow(1024, 6),
-}, {
-  name: 'ZiB',
-  multiplicator: Math.pow(1024, 7),
-}, {
-  name: 'YiB',
-  multiplicator: Math.pow(1024, 8),
-}];
+export const siUnits =
+  bytesPrefixes.map(
+    (prefix, index) => ({
+      name: prefix + 'B',
+      multiplicator: Math.pow(1000, index)
+    })
+  );
+
+export const iecUnits =
+  bytesPrefixes.map(
+    (prefix, index) => ({
+      name: prefix === '' ? 'B' : prefix + 'iB',
+      multiplicator: Math.pow(1024, index)
+    })
+  );
 
 function bytesToStringIEC(bytes) {
   let number = bytes;
   let unit = iecUnits[0];
-  iecUnits.slice(1).forEach((u) => {
-    if (bytes >= u.multiplicator) {
-      unit = u;
-      number = bytes / u.multiplicator;
-    }
-  });
+  for (let i = 1; i < iecUnits.length && bytes >= iecUnits[i].multiplicator; i++) {
+    unit = iecUnits[i];
+    number = bytes / iecUnits[i].multiplicator;
+  }
   return [number, unit.multiplicator, unit.name];
 }
 
 function bytesToStringSI(bytes) {
   let number = bytes;
-  let unit = iecUnits[0];
-  siUnits.slice(1).forEach((u) => {
-    if (bytes >= u.multiplicator) {
-      unit = u;
-      number = bytes / u.multiplicator;
-    }
-  });
+  let unit = siUnits[0];
+  for (let i = 1; i < siUnits.length && bytes >= siUnits[i].multiplicator; i++) {
+    unit = siUnits[i];
+    number = bytes / siUnits[i].multiplicator;
+  }
   return [number, unit.multiplicator, unit.name];
 }
 

@@ -66,15 +66,14 @@ function bytesToStringSI(bytes) {
 }
 
 function byteBitUnit(unit) {
-  let newUnit = unit;
   if (unit[0] === 'B') {
     return 'b';
   } else if (unit[0] === 'K') {
-    newUnit = 'kb';
+    // kilo is an exception when the first letter is small
+    return 'kb';
   } else {
-    newUnit = unit[0] + 'b';
+    return unit[0] + 'b';
   }
-  return `${newUnit}it`;
 }
 
 function bytesToStringBit(bytes) {

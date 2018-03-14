@@ -100,11 +100,11 @@ describe('Unit | Utility | bytes to string', function () {
   
   it('can convert to kbit', function () {
     let result = bytesToString(8000, { format: 'bit' });
-    expect(result).to.be.equal('64 kbit');
+    expect(result).to.be.equal('64 kb');
   });
 
   it('can convert to Mbit', function () {
     let result = bytesToString(625000, { format: 'bit' });
-    expect(result).to.be.equal('5 Mbit');
+    expect(result).to.be.equal('5 Mb');
   });
 });

@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-4157 Requesting completed transfers list with delay to be compatible with backend fixes
 * VFS-4223 Fixed long time of loading data distribution modal
 * VFS-4027 Added support for peta-, exa-, zetta- and yottabytes
 * VFS-4206 Changed speed units on transfers view to Xbits/s

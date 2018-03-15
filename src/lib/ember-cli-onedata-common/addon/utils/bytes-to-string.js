@@ -7,62 +7,42 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-const TERA = 1000000000000;
-const GIGA = 1000000000;
-const MEGA = 1000000;
-const KILO = 1000;
+const bytesPrefixes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
 
-export const iecUnits = [{
-  name: 'B',
-  multiplicator: 1,
-}, {
-  name: 'KiB',
-  multiplicator: 1024,
-}, {
-  name: 'MiB',
-  multiplicator: 1048576,
-}, {
-  name: 'GiB',
-  multiplicator: 1073741824,
-}, {
-  name: 'TiB',
-  multiplicator: 1099511627776,
-}];
+export const siUnits =
+  bytesPrefixes.map(
+    (prefix, index) => ({
+      name: prefix + 'B',
+      multiplicator: Math.pow(1000, index)
+    })
+  );
+
+export const iecUnits =
+  bytesPrefixes.map(
+    (prefix, index) => ({
+      name: prefix === '' ? 'B' : prefix + 'iB',
+      multiplicator: Math.pow(1024, index)
+    })
+  );
 
 function bytesToStringIEC(bytes) {
   let number = bytes;
   let unit = iecUnits[0];
-  iecUnits.slice(1).forEach((u) => {
-    if (bytes >= u.multiplicator) {
-      unit = u;
-      number = bytes / u.multiplicator;
-    }
-  });
+  for (let i = 1; i < iecUnits.length && bytes >= iecUnits[i].multiplicator; i++) {
+    unit = iecUnits[i];
+    number = bytes / iecUnits[i].multiplicator;
+  }
   return [number, unit.multiplicator, unit.name];
 }
 
 function bytesToStringSI(bytes) {
   let number = bytes;
-  let unit = 'B';
-  let multiplicator = 1;
-  if (bytes >= TERA) {
-    unit = 'TB';
-    number = bytes / TERA;
-    multiplicator = TERA;
-  } else if (bytes >= GIGA) {
-    unit = 'GB';
-    number = bytes / GIGA;
-    multiplicator = GIGA;
-  } else if (bytes >= MEGA) {
-    unit = 'MB';
-    number = bytes / MEGA;
-    multiplicator = MEGA;
-  } else if (bytes >= KILO) {
-    unit = 'KB';
-    number = bytes / KILO;
-    multiplicator = KILO;
+  let unit = siUnits[0];
+  for (let i = 1; i < siUnits.length && bytes >= siUnits[i].multiplicator; i++) {
+    unit = siUnits[i];
+    number = bytes / siUnits[i].multiplicator;
   }
-  return [number, multiplicator, unit];
+  return [number, unit.multiplicator, unit.name];
 }
 
 function byteBitUnit(unit) {

@@ -54,10 +54,6 @@ $screen-sm-min: $min-width-tablet;
 $screen-md-min: $min-width-desktop-small;
 $screen-lg-min: $min-width-desktop-medium;
 
-$collapse-transition-time: .2s;
-$height-collapse-transition: max-height $collapse-transition-time linear;
-$collapse-transition: $height-collapse-transition, padding $collapse-transition-time linear, opacity $collapse-transition-time linear;
-
 @import "bootstrap";
 .row {
   margin-left: 0px;

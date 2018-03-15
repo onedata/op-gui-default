@@ -276,7 +276,7 @@ export default EmberObject.extend({
    * @return {Promise<Array<TransferCurrentStat>>} resolves with current stats
    *    of updated current transfers
    */
-  fetchCurrent() {
+  fetchCurrent(immediate = false) {
     const space = this.get('space');
     this.set('currentIsUpdating', true);
     const _currentIdsCache = this.get('_currentIdsCache');
@@ -306,16 +306,23 @@ export default EmberObject.extend({
       // changes only status from scheduled to active (we do not present it)
       .then(list => safeExec(this, () => {
         const transfersCount = get(list, 'length');
-        return Promise.all(
-          list.map((transfer, i) =>
-            safeExec(
-              this,
-              '_reloadTransferCurrentStat',
-              transfer,
-              i,
-              transfersCount
-            )
+        if (immediate) {
+          return Promise.all(list.map(transfer =>
+            transfer.belongsTo('currentStat').reload()
           ));
+        } else {
+          return Promise.all(
+            list.map((transfer, i) =>
+              safeExec(
+                this,
+                '_reloadTransferCurrentStat',
+                transfer,
+                i,
+                transfersCount
+              )
+            ));
+        }
+        
       }))
       .catch(error => safeExec(this, () => this.set('currentError', error)))
       .finally(() => safeExec(this, () => this.set('currentIsUpdating', false)));
@@ -327,9 +334,12 @@ export default EmberObject.extend({
     return new Promise((resolve, reject) => {
       later(
         () => {
-          transfer.belongsTo('currentStat').reload()
+          // checking if updater is still in use
+          if (!this.isDestroyed) {
+            transfer.belongsTo('currentStat').reload()
             .then(resolve)
-            .catch(reject);
+            .catch(reject); 
+          }
         },
         delay
       );

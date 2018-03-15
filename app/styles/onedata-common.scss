@@ -260,3 +260,7 @@
     min-height: 32px;
   }
 }
+  
+$collapse-transition-time: .2s;
+$height-collapse-transition: max-height $collapse-transition-time linear;
+$collapse-transition: $height-collapse-transition, padding $collapse-transition-time linear, opacity $collapse-transition-time linear;

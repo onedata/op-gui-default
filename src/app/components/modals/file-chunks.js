@@ -426,7 +426,7 @@ export default Component.extend(PromiseLoadingMixin, {
       
       const transfersUpdater = this._initTransfersUpdater();
       this.set('transfersLoading', true);
-      transfersUpdater.fetchCurrent()
+      transfersUpdater.fetchCurrent(true)
         .catch(error => {
           // TODO: i18n
           this.set('chunksModalError', 'Loading transfers data failed');

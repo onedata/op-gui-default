@@ -12,7 +12,11 @@
 import _ from 'lodash';
 import emberObjectMerge from 'ember-cli-onedata-common/utils/ember-object-merge';
 
-export default function mergeNewItems(orig, update, compare, deep = true) {
+function equal(x, y) {
+  return x === y;
+}
+
+export default function mutateArray(orig, update, compare = equal, deep = true) {
   const isEmberArray = !!orig.pushObject;
   let arrayModified = false;
   try {

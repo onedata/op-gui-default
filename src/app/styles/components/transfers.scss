@@ -1,4 +1,8 @@
-.transfers-data-container {
+.show-space-transfers {
+  .transfer-row {
+    height: 73px;
+  }
+  
   // TODO: this seems to be generic for new style in content views
   h1, h2 {
     font-size: 100%;
@@ -223,6 +227,38 @@
     }
     &.scheduled {
       color: $onedata-graphite;
+    }
+  }
+}
+
+.transfers-overview {
+  .row-active-transfers {
+    transition: top 0.5s ease-out;
+    padding-bottom: 50px;
+    &.sticky {
+      z-index: 1;
+      position: fixed;
+    }
+  }
+  
+  .row-overview {
+    background-color: $color-main-background;
+  }
+  
+  .row-expand-handler {
+    opacity: 0;
+    display: block;
+    padding-left: 22px;
+    padding-right: 22px;
+    background-color: $onedata-light-gray;
+    line-height: 50px;
+    transition: opacity 0.5s linear;
+  }
+  
+  .sticky {
+    .row-expand-handler {
+      opacity: 1;
+      cursor: pointer;
     }
   }
 }

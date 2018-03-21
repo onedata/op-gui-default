@@ -145,7 +145,7 @@ $screen-lg-min: $min-width-desktop-medium;
 @import 'components/metadata-panel';
 @import 'components/share-info-head';
 @import 'components/file-breadcrumbs';
-@import "components/ember-power-select";
+@import 'components/ember-power-select';
 @import 'components/one-atlas';
 @import 'components/provider-place';
 @import 'components/one-pie-chart';
@@ -166,3 +166,6 @@ $screen-lg-min: $min-width-desktop-medium;
 @import 'components/spin-button-base';
 @import 'components/resource-load-error';
 @import 'components/error-inline';
+
+// additional styles for external components
+@import 'components/bs-tab';

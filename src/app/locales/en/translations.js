@@ -501,7 +501,6 @@ export default {
       publish: 'Publish',
     },
     transfers: {
-      transfersFor: 'Transfer for',
       providersMapOfDist: 'Active transfers map',
       throughputDistribution: 'Providers throughput',
       activeTransfers: 'Active transfers',
@@ -552,6 +551,10 @@ export default {
         month: 'Month',
         time: 'Time',
         throughput: 'Throughput',
+      },
+      transfersOverview: {
+        hide: 'Hide transfers overview',
+        show: 'Show transfers overview',
       },
     },
   },

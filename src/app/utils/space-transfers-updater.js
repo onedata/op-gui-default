@@ -71,6 +71,12 @@ export default EmberObject.extend({
   basePollingTime: 3 * 1000,
 
   /**
+   * Only transfers with these ids will be updated
+   * @type {Array<string>}
+   */
+  visibleIds: Object.freeze([]),
+  
+  /**
    * Polling interval (ms) used for fetching current transfers
    * @type {number}
    */
@@ -195,6 +201,9 @@ export default EmberObject.extend({
     }
   },
 
+  /**
+   * Updates `_currentTransfersCount` property
+   */
   countCurrentTransfers() {
     const newCount = this.get('space.currentTransferList.content').hasMany('list').ids()
       .length;
@@ -271,14 +280,32 @@ export default EmberObject.extend({
     });
   },
 
+  fetchSpecificRecords(ids, reload = false) {
+    const store = this.get('store');
+    return Promise.all(ids.map(id =>
+      store.findRecord('transfer', id, { reload })
+        .then(transfer => {
+          if (reload) {
+            return transfer.belongsTo('currentStat').reload()
+              .then(() => transfer);
+          } else {
+            return transfer;
+          }
+        })
+    ));
+  },
+  
   /**
    * Function invoked when current transfers should be updated by polling timer
    * @return {Promise<Array<TransferCurrentStat>>} resolves with current stats
    *    of updated current transfers
    */
   fetchCurrent(immediate = false) {
+    // FIXME: use ids (new ids to fetch)
+    console.debug('FIXME: xdebug util:space-transfers-updater: fetchCurrent started');
     const space = this.get('space');
     this.set('currentIsUpdating', true);
+    const visibleIds = this.get('visibleIds');
     const _currentIdsCache = this.get('_currentIdsCache');
 
     return space.belongsTo(`currentTransferList`).reload()
@@ -289,19 +316,18 @@ export default EmberObject.extend({
           _currentIdsCache,
           currentIdsNew
         );
+        // TODO: not very safe - _currentIdsCache could be changed before async
+        // fetchCompleted will be invoked
         this.set('_currentIdsCache', currentIdsNew);
+        // FIXME: this auto-update can be replaced with fetching when changing tab
         if (!_.isEmpty(removedIds)) {
           later(() => {
-            this.fetchCompleted()
-            .then(newCompletedTransfers => {
-              if (get(newCompletedTransfers, 'length') !== get(removedIds, 'length')) {
-                later(this, 'fetchCompleted', 6000);
-              }
-            });
-          }, 1000);
+            this.fetchSpecificRecords(removedIds);
+          }, 5000);
         }
-        return transferList.get('list');
+        return transferList;
       }))
+      .then(() => this.fetchSpecificRecords(visibleIds, true))
       // does not need to update transfer record as for active transfers it
       // changes only status from scheduled to active (we do not present it)
       .then(list => safeExec(this, () => {
@@ -357,47 +383,20 @@ export default EmberObject.extend({
    */
   fetchCompleted() {
     if (this.get('completedIsUpdating') !== true) {
-      console.debug('util:space-transfers-updater: fetchCompleted started');
+      console.debug('FIXME: xdebug util:space-transfers-updater: fetchCompleted started');
       const {
-        store,
         space,
-        _completedIdsCache,
-      } = this.getProperties('store', 'space', '_completedIdsCache');
+      } = this.getProperties('space');
       
       this.set(`completedIsUpdating`, true);
-      let newIds = [];
+      // const visibleIds = this.get('visibleIds');
 
       return space.belongsTo(`completedTransferList`).reload()
-        .then(transferList => {
-          const completedIdsNew = transferList.hasMany('list').ids();
-          newIds = _.difference(
-            completedIdsNew,
-            _completedIdsCache
-          );
-          safeExec(this, () => this.set('_completedIdsCache', completedIdsNew));
-          newIds.forEach(id => {
-            const transfer = store.peekRecord('transfer', id);
-            if (transfer && transfer.get('isCurrent')) {
-              transfer.set('_completedReloading', true);
-            }
-          });
-          return Promise.all(
-            newIds.map(id => store.findRecord('transfer', id, { reload: true }))
-          );
-        })
+        // .then(() => this.fetchSpecificRecords(visibleIds))
         .then(modifiedTransfers => {
           return Promise.all(
             modifiedTransfers.map(t => t.belongsTo('currentStat').reload())
           );
-        })
-        .then(modifiedTransfers => {
-          newIds.forEach(id => {
-            const transfer = store.peekRecord('transfer', id);
-            if (transfer) {
-              transfer.set('_completedReloading', undefined);
-            }
-          });
-          return modifiedTransfers;
         })
         .catch(error => safeExec(this, () => this.set(`completedError`, error)))
         .finally(() => safeExec(this, () => this.set(`completedIsUpdating`, false)));

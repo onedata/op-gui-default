@@ -28,37 +28,67 @@ describe('Integration | Component | show space transfers', function() {
     registerService(this, 'session', SessionStub);
   });
   
-  it('renders warning message if space is not supported by session provider', function(done) {
+  it('renders warning message if space is not supported by session provider', function() {
     const space = {
       id: 's1',
       providerList: {
         queryList: mockHasMany(['p2', 'p3'])
-      }
+      },
+      currentTransferList: {
+        content: {
+          hasMany() {
+            return {
+              ids() {
+                return [];
+              }
+            };
+          },
+        },
+      },
     };
     this.set('space', space);
     
-    this.render(hbs`{{show-space-transfers space=space}}`);
+    this.render(hbs`
+    <div id="content-scroll">
+      {{show-space-transfers space=space transfersUpdaterEnabled=false}}
+    </div>
+    `);
     
-    wait().then(() => {
+    return wait().then(() => {
       expect(this.$('.error-space-not-supported'), 'error message renders')
         .to.exist;
-      done();
     });
   });
   
-  it('renders loading spinner if space support by provider is not yet defined', function(done) {
+  it('renders loading spinner if space support by provider is not yet defined', function() {
     const space = {
       id: 's1',
       providerList: {
         queryList: mockHasMany(['p2', 'p3'])
-      }
+      },
+      currentTransferList: {
+        content: {
+          hasMany() {
+            return {
+              ids() {
+                return [];
+              }
+            };
+          },
+        },
+      },
     };
     this.set('space', space);
     
-    this.render(hbs`{{show-space-transfers space=space}}`);
+    this.render(hbs`
+    <div id="content-scroll">
+      {{show-space-transfers space=space transfersUpdaterEnabled=false}}
+    </div>
+    `);
     
-    expect(this.$('.row-transfers-data-container > .spin-spinner-block'), 'error message renders')
-      .to.exist;
-    done();
+    expect(
+      this.$('.row-transfers-data-container > .spin-spinner-block'),
+      'loading spinner renders'
+    ).to.exist;
   });
 });

@@ -1,3 +1,4 @@
+{{!-- FIXME: refactor by doing a partial/row that uses the row component --}}
 <tr
   id="transfer-row-{{record.transferId}}"
   class="transfer-row data-row {{if (exists-in _selectedItems record) "selected-row"}} {{if (exists-in _expandedRowIndexes record.transferIndex) "expanded-row"}}"
@@ -7,7 +8,9 @@
   ) record.transferIndex bubbles=false}}>
   {{!-- not using loading-container because we are in tr --}}
   {{#if record.isLoading}}
-    <td colspan={{processedColumns.length}}>
+    {{!-- subtract hidden list index column --}}
+    <td colspan={{sub processedColumns.length 1}}
+      style={{if (eq index 0) (concat "padding-top: " (add (mult record.listIndex 73) 16) "px;") ""}}>
       <div class="row loadable-row xs">
         {{spin-spinner-block sizeClass="xs" class="absolute-middle-centered"}}
       </div>
@@ -15,7 +18,8 @@
   {{else}}
     {{#each processedColumns as |column|}}
       {{#if column.isVisible}}
-        <td class="{{if record.initSelect "animated very-slow notice-blink"}} {{column.className}}">
+        <td class="{{if record.initSelect "animated very-slow notice-blink"}} {{column.className}}"
+          style={{if (eq index 0) (concat "padding-top: " (add (mult record.listIndex 73) 16) "px;") ""}}>
           {{#if column.routeName}}
             {{#link-to column.routeName record.id}}
               {{#if column.propertyName}}
@@ -51,3 +55,4 @@
 {{#if record.initSelect}}
   {{test-callback tagName="" callback=(action "expandRow" record.transferIndex)}}
 {{/if}}
+

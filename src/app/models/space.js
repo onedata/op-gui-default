@@ -38,4 +38,10 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
   currentTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),  
   completedTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
   providerList: belongsTo('space-provider-list', { async: true, inverse: null }),
+
+  transferMinuteStat: belongsTo('space-transfer-time-stat'),
+  transferHourStat: belongsTo('space-transfer-time-stat'),
+  transferDayStat: belongsTo('space-transfer-time-stat'),
+  transferMonthStat: belongsTo('space-transfer-time-stat'),
+  transferProviderMap: belongsTo('space-transfer-provider-map'),
 });

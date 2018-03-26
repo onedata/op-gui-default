@@ -1,8 +1,38 @@
-<div class="row chart-row">
-  {{#loading-container isLoading=(not chartDataIsLoaded)}}
-    {{transfers/throughput-distribution/chart
-      providers=providers
-      throughputData=spaceTransfers
-      providersColors=providersColors}}
-  {{/loading-container}}
+<div class="row loadable-row row-main-chart">
+  {{#if statsError}}
+    {{resource-load-error reason=statsError}}
+  {{else}}
+    {{#loading-container isLoading=(not _statsLoaded)}}
+      {{#chartist-chart data=_chartData options=_chartOptions type="line"}}
+        <div class="ct-tooltip">
+          <div class="tooltip-header">
+            {{_tooltipHeader}}
+          </div>
+          {{#if _tooltipInProviders.length}}
+            {{transfers/throughput-distribution/tooltip-providers-list
+              providers=_tooltipInProviders
+              title="Input"
+              sum=_tooltipInSum}}
+          {{/if}}
+          {{#if _tooltipOutProviders.length}}
+            {{transfers/throughput-distribution/tooltip-providers-list
+              providers=_tooltipOutProviders
+              title="Output"
+              sum=_tooltipOutSum}}
+          {{/if}}
+          <div class="ct-tooltip-arrow"></div>
+        </div>
+        <div class="input-half half-description">{{t "components.transfers.throughputDistributionChart.input"}}</div>
+        <div class="output-half half-description">{{t "components.transfers.throughputDistributionChart.output"}}</div>
+      {{/chartist-chart}}
+    {{/loading-container}}
+  {{/if}}
 </div>
+{{#if (and (not statsError) _statsLoaded)}}
+  {{#bs-button-group value=timeUnit type="radio" size="sm"}}
+    {{#bs-button value="minute"}}{{t "components.transfers.transferChart.minute"}}{{/bs-button}}
+    {{#bs-button value="hour"}}{{t "components.transfers.transferChart.hour"}}{{/bs-button}}
+    {{#bs-button value="day"}}{{t "components.transfers.transferChart.day"}}{{/bs-button}}
+    {{#bs-button value="month"}}{{t "components.transfers.transferChart.month"}}{{/bs-button}}
+  {{/bs-button-group}}
+{{/if}}

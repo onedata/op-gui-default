@@ -566,7 +566,7 @@ export default Component.extend({
   _getExpectedStatsNumberForUnit(unit) {
     switch (unit) {
       case 'month':
-        return 15;
+        return 30;
       case 'day':
         return 24;
       case 'hour':

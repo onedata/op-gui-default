@@ -113,6 +113,7 @@ export default EmberObject.extend({
    * Updates info about current transfers:
    * - space.currentTransferList
    *   - for each transfer: transfer.currentStat
+   * - space.transferProviderMap
    * @type {Looper}
    */
   _currentWatcher: undefined,
@@ -130,6 +131,13 @@ export default EmberObject.extend({
   currentIsUpdating: undefined,
 
   /**
+   * If true, currently fetching info about providers transfer mapping
+   * Set by some interval watcher
+   * @type {boolean}
+   */
+  mapIsUpdating: undefined,
+
+  /**
    * If true, currently fetching info about completed transfers
    * Set by some interval watcher
    * @type {boolean}
@@ -141,6 +149,12 @@ export default EmberObject.extend({
    * @type {any} typically a request error object
    */
   currentError: null,
+
+  /**
+   * Error object from fetching providers transfer mapping info
+   * @type {any} typically a request error object
+   */
+  mapError: null,
 
   /**
    * Error object from fetching completed transfers info
@@ -211,8 +225,10 @@ export default EmberObject.extend({
       immediate: true,
     });
     _currentWatcher
-      .on('tick', () =>
-        safeExec(this, 'fetchCurrent')
+      .on('tick', () => {
+          safeExec(this, 'fetchProviderMap');
+          safeExec(this, 'fetchCurrent');
+        }
       );
 
     const _completedWatcher = Looper.create({
@@ -348,6 +364,18 @@ export default EmberObject.extend({
 
   computeCurrentPollingTime(transfersCount) {
     return TRANSFER_COLLECTION_DELAY * transfersCount + this.get('basePollingTime');
+  },
+
+   /**
+   * Function invoked when providers transfer mapping should be updated by
+   * polling timer
+   * @return {Promise<SpaceTransferProviderMap>}
+   */
+  fetchProviderMap() {
+    this.set('mapIsUpdating', true);
+    return this.get('space').belongsTo(`transferProviderMap`).reload()
+      .catch(error => safeExec(this, () => this.set('mapError', error)))
+      .finally(() => safeExec(this, () => this.set('mapIsUpdating', false)));
   },
   
   /**

@@ -24,6 +24,7 @@ export default function (options) {
     xLabelYOffset: -20,
     yLabelXOffset: 20,
     yLabelYOffset: 20,
+    yAlignment: 'left',
   };
   options = Chartist.extend({}, defaultOptions, options);
 
@@ -32,9 +33,11 @@ export default function (options) {
       let svgNode = $(chart.svg._node);
       let axisLabelsGroup = chart.svg.elem('g', {}, 'ct-axis-labels');
       axisLabelsGroup.elem('text', {
-        x: -svgNode.innerHeight() / 2 + options.yLabelYOffset,
-        y: options.yLabelXOffset,
-      }, 'ct-axis-y-label').text(options.yLabel);
+        x: (options.yAlignment === 'right' ? -1 : 1) *
+          (-svgNode.innerHeight() / 2 + options.yLabelYOffset),
+        y: options.yAlignment === 'right' ?
+          -svgNode.innerWidth() - options.yLabelXOffset : options.yLabelXOffset,
+      }, 'ct-axis-y-label ' + options.yAlignment).text(options.yLabel);
       axisLabelsGroup.elem('text', {
         x: svgNode.innerWidth() / 2 + options.xLabelXOffset,
         y: svgNode.innerHeight() + options.xLabelYOffset,

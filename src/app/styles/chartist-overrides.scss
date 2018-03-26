@@ -49,6 +49,9 @@ $chart-border-color: $one-main-border-color;
     .ct-axis-y-label {
       text-anchor: middle;
       transform: rotate(-90deg);
+      &.right {
+        transform: rotate(90deg);
+      }
     }
     .ct-axis-x-label {
       text-anchor: middle;

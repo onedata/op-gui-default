@@ -18,22 +18,13 @@ describe('Integration | Component | transfers/data container', function () {
   });
 
   beforeEach(function () {
-    const bps1 = {
-      p2: 1,
-      p3: 3,
-    };
-    const bps2 = {
-      p3: 7,
-    };
     const transfers = A([
       EmberObject.create({
         destination: 'p1',
-        bytesPerSec: bps1,
         tableDataIsLoaded: true,
       }),
       EmberObject.create({
         destination: 'p2',
-        bytesPerSec: bps2,
         tableDataIsLoaded: true,
       }),
     ]);
@@ -60,13 +51,11 @@ describe('Integration | Component | transfers/data container', function () {
     const transfersErrored = A([
       EmberObject.create({
         destination: 'p1',
-        bytesPerSec: bps1,
         tableDataIsLoaded: true,
         currentStatError: true,
       }),
       EmberObject.create({
         destination: 'p2',
-        bytesPerSec: bps2,
         tableDataIsLoaded: true,
         currentStatError: false,
       }),

@@ -11,13 +11,13 @@
           {{#if _tooltipInProviders.length}}
             {{transfers/throughput-distribution/tooltip-providers-list
               providers=_tooltipInProviders
-              title="Input"
+              title=(t "components.transfers.throughputDistributionChart.input")
               sum=_tooltipInSum}}
           {{/if}}
           {{#if _tooltipOutProviders.length}}
             {{transfers/throughput-distribution/tooltip-providers-list
               providers=_tooltipOutProviders
-              title="Output"
+              title=(t "components.transfers.throughputDistributionChart.output")
               sum=_tooltipOutSum}}
           {{/if}}
           <div class="ct-tooltip-arrow"></div>

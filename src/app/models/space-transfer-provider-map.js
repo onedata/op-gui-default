@@ -16,11 +16,6 @@ const {
 
 export default Model.extend({
   /**
-   * Unix timestamp of last mapping state update
-   */
-  timestamp: attr('number'),
-  
-  /**
    * Keys: source provider Id
    * Values: array of destination providers ids
    */

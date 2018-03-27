@@ -30,11 +30,7 @@
     
     position: relative;
     .loadable-row {
-      min-height: 160px + $-ct-chart-padding-top;
-    }
-    .chart-row {
-      max-width: 600px;
-      margin: 0 auto;
+      min-height: 140px + $-ct-chart-padding-top;
     }
     .ct-chart {
       margin-top: 40px;

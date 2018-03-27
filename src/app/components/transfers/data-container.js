@@ -15,7 +15,6 @@ import _ from 'lodash';
 const {
   Component,
   computed,
-  get,
   A,
   inject: { service },
   observer,
@@ -194,7 +193,7 @@ export default Component.extend({
     function getSourceProviderIds() {
       const providersMap = this.get('providersMap');
       if (!isEmpty(providersMap)) {
-        return _.uniq(Object.keys(providersMap));
+        return Object.keys(providersMap);
       }
     }
   ),
@@ -211,20 +210,6 @@ export default Component.extend({
       return _.zipObject(providerIds, colors);
     }
   }),
-
-  /**
-   * True if at least one current transfer is controlled by remote provider
-   * so statistics can be slightly delayed.
-   * @type {Ember.ComputedProperty<boolean>}
-   */
-  someTransfersRemote: computed(
-    'currentTransfers.@each.{type,status}',
-    'providerId',
-    function getSomeTransfersRemote() {
-      const providerId = this.get('providerId');
-      return this.get('currentTransfers').toArray().some(t => !t.getIsLocal(providerId));
-    }
-  ),
   
   /**
    * Watches updater settings dependecies and changes its settings

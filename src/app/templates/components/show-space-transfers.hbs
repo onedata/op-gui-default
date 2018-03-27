@@ -57,10 +57,10 @@
               </h2>
               <div class="row loadable-row">
                 {{#loading-container isLoading=(not tData.providersLoaded)}}
-                {{transfers/throughput-distribution
-                  space=space
-                  providers=tData.providers
-                  providersColors=tData.providersColors}}
+                  {{transfers/throughput-distribution
+                    space=space
+                    providers=tData.providers
+                    providersColors=tData.providersColors}}
                 {{/loading-container}}
               </div>
             </div>

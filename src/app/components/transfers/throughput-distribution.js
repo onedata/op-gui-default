@@ -2,7 +2,7 @@
  * A stacked line chart component for visualizing all transfers throughput history.
  * 
  * @module components/transfers/throughput-distribution
- * @author Michal Borzecki
+ * @author Michal Borzecki, Jakub Liput
  * @copyright (C) 2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
@@ -27,7 +27,6 @@ const {
   Component,
   computed,
   get,
-  RSVP: { Promise },
   observer,
   inject: {
     service,
@@ -157,7 +156,7 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<number>}
    */
   _maxStatsInSum: computed('_statsIn', function () {
-    return this._calculateStatsMaxSum(this.get('_statsIn') || {});
+    return this._calculateStatsMaxSum(this.get('_statsIn'));
   }),
 
   /**
@@ -165,7 +164,7 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<number>}
    */
   _maxStatsOutSum: computed('_statsOut', function () {
-    return this._calculateStatsMaxSum(this.get('_statsOut') || {});
+    return this._calculateStatsMaxSum(this.get('_statsOut'));
   }),
 
   /**
@@ -188,15 +187,8 @@ export default Component.extend({
    * Sorted output provider ids.
    * @type {Ember.ComputedProperty<Array<string>>}
    */
-  _sortedOutProvidersIds: computed('_sortedInProvidersIds', '_statsOut', function () {
-    const {
-      _sortedInProvidersIds,
-      _statsOut,
-    } = this.getProperties('_sortedInProvidersIds', '_statsOut');
-    const outProviders = Object.keys(_statsOut).sort();
-    const inAndOutProviders = _sortedInProvidersIds.filter(id => outProviders.indexOf(id) !== -1).sort();
-    const outNotInProviders = outProviders.filter(id => _sortedInProvidersIds.indexOf(id) === -1).sort();
-    return inAndOutProviders.concat(outNotInProviders);
+  _sortedOutProvidersIds: computed('_statsOut', function () {
+    return Object.keys(this.get('_statsOut')).sort();
   }),
 
   /**
@@ -243,7 +235,7 @@ export default Component.extend({
   _statsNumberPerLabel: computed('timeUnit', function() {
     switch (this.get('timeUnit')) {
       case 'month':
-        return 2;
+        return 3;
       case 'day':
         return 4;
       case 'hour':
@@ -254,8 +246,7 @@ export default Component.extend({
   }),
   
   /**
-   * Stats values (points x,y), that will be used to as a source for chart values.
-   * (async -> _stats)
+   * Stats values (points x,y), that will be used as a source for chart values.
    * @type {Ember.ComputedProperty<Array<number>|undefined>}
    */
   _statsValues: computed('_statsIn', '_statsOut', '_sortedProvidersIds', '_expectedStatsNumber', function () {
@@ -384,7 +375,7 @@ export default Component.extend({
     const _chartYMax = this.get('_chartYMax');
     const delta = _chartYMax / numberOfTicksPerSide;
     const ticks = _.range(numberOfTicksPerSide).map(i => delta * (i + 1));
-    return ticks.concat([0], ticks.slice(0).reverse().map(n => n * -1));
+    return ticks.concat([0], ticks.map(n => n * -1).reverse());
   }),
 
   /**
@@ -397,11 +388,13 @@ export default Component.extend({
       _chartXMin,
       _chartYTicks,
       _chartYMax,
+      i18n,
     } = this.getProperties(
       '_chartXTicks',
       '_chartXMin',
       '_chartYTicks',
-      '_chartYMax'
+      '_chartYMax',
+      'i18n'
     );
     return {
       axisX: {
@@ -416,7 +409,8 @@ export default Component.extend({
         low: -_chartYMax,
         high: _chartYMax,
         type: Chartist.FixedScaleAxis,
-        labelInterpolationFnc: value => bytesToString(Math.abs(value), { format: 'bit' }) + 'ps',
+        labelInterpolationFnc:
+          value => bytesToString(Math.abs(value), { format: 'bit' }) + 'ps',
         ticks: _chartYTicks,
         position: 'end',
       },
@@ -435,14 +429,16 @@ export default Component.extend({
         }),
         centerXLabels(),
         axisLabels({
-          xLabel: 'Time',
-          yLabel: 'Throughput',
+          xLabel: i18n.t(I18N_PREFIX + 'time'),
+          yLabel: i18n.t(I18N_PREFIX + 'throughput'),
           xLabelYOffset: 0,
           yAlignment: 'right',
           yLabelXOffset: -10,
           yLabelYOffset: 0,
         }),
-        eventListener({ eventHandler: (eventData) => this._chartEventHandler(eventData) }),
+        eventListener({
+          eventHandler: (eventData) => this._chartEventHandler(eventData),
+        }),
       ],
     };
   }),
@@ -652,54 +648,6 @@ export default Component.extend({
     this._super(...arguments);
     this.set('_chartValues', []);
     this._createTimeStatsUpdater();
-    // this.setProperties({
-    //   providersColors: Object.freeze({
-    //     '1': '#3EA5F9',
-    //     '2': '#8549D4',
-    //     '3': '#F7AA04',
-    //     '4': '#3B5998',
-    //   }),
-    //   providers: [
-    //     Ember.Object.create({
-    //       id: '1',
-    //       name: 'provider1',
-    //     }),
-    //     Ember.Object.create({
-    //       id: '2',
-    //       name: 'provider2',
-    //     }),
-    //     Ember.Object.create({
-    //       id: '3',
-    //       name: 'provider3',
-    //     }),
-    //     Ember.Object.create({
-    //       id: '4',
-    //       name: 'provider4',
-    //     }),
-    //   ],
-    //   _timeStatForUnit: PromiseObject.create({
-    //     promise: new Promise((resolve) => {
-    //       const num = 62;
-    //       const sum = _.range(num).map(() => 0);
-    //       resolve(Ember.Object.create({
-    //         timestamp: 1521632431,
-    //         type: 'minute',
-    //         statsIn: {
-    //           '1': _.range(num).map((i) => {const val = Math.random() * 1000000; sum[i] += val; return val;}),
-    //           '2': _.range(num).map((i) => {const val = Math.random() * 1000000; sum[i] += val; return val;}),
-    //           '3': _.range(num).map((i) => {const val = Math.random() * 1000000; sum[i] += val; return val;}),
-    //           '4': _.range(num).map((i) => {const val = Math.random() * 1000000; sum[i] += val; return val;}),
-    //         },
-    //         statsOut: {
-    //           '1': _.range(num).map((i) => {const val = Math.min(Math.random() * 1000000, sum[i]); sum[i] -= val; return val;}),
-    //           '2': _.range(num).map((i) => {const val = Math.min(Math.random() * 1000000, sum[i]); sum[i] -= val; return val;}),
-    //           '3': _.range(num).map((i) => {const val = Math.min(Math.random() * 1000000, sum[i]); sum[i] -= val; return val;}),
-    //           '4': sum,
-    //         },
-    //       }));
-    //     })
-    //   })
-    // })
   },
   
   willDestroyElement() {
@@ -807,7 +755,7 @@ export default Component.extend({
    * @param {object} stats 
    */
   _calculateStatsMaxSum(stats) {
-    const arrays = Object.keys(stats).map(key => stats[key]);
+    const arrays = _.values(stats);
     if (!arrays.length) {
       return 0;
     }

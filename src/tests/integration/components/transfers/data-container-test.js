@@ -45,6 +45,14 @@ describe('Integration | Component | transfers/data container', function () {
           },
         },
       }),
+      transferProviderMap: ObjectProxy.create({
+        content: Ember.Object.create({
+          mapping: {
+            p2: ['p1'],
+            p3: ['p1', 'p2'],
+          },
+        }),
+      }),
     });
     this.set('space', space);
     
@@ -134,10 +142,10 @@ describe('Integration | Component | transfers/data container', function () {
     });
   });
   
-  it('yields computed providerTransfers', function (done) {    
-    let providerTransfers;
+  it('yields computed providerTransferConnections', function (done) {    
+    let providerTransferConnections;
     const checkYield = function (tc) {
-      providerTransfers = tc.get('providerTransfers');
+      providerTransferConnections = tc.get('providerTransferConnections');
     };
     this.set('checkYield', checkYield);
 
@@ -151,48 +159,17 @@ describe('Integration | Component | transfers/data container', function () {
       }}
         {{test-callback
           callback=checkYield
-          providerTransfers=tData.providerTransfers
+          providerTransferConnections=tData.providerTransferConnections
         }}
       {{/transfers/data-container}}
     `);
     
     wait().then(() => {
       // p2->p1, p3->p1, p3->p2
-      expect(providerTransfers).to.have.lengthOf(3);
+      expect(providerTransferConnections).to.have.lengthOf(3);
       // more tests for providerTransfers computation can be found
       // in tests for util:providerTransfers
       done();
     });
-  });
-
-  it('yields throughputChartError as true if any of current transfers has currentStatError',
-    function (done) {
-      let throughputChartError;
-      const checkYield = function (tc) {
-        throughputChartError = tc.get('throughputChartError');
-      };
-      this.set('checkYield', checkYield);
-
-      this.render(hbs`
-        {{#transfers/data-container
-          currentTransfersLoaded=true
-          isSupportedByCurrentProvider=true
-          transfersUpdaterEnabled=false
-          space=spaceErrored
-          as |tData|
-        }}
-          {{test-callback
-            callback=checkYield
-            throughputChartError=tData.throughputChartError
-          }}
-        {{/transfers/data-container}}
-      `);
-
-      wait().then(() => {
-        expect(throughputChartError).to.be.true;
-        done();
-      });
-    }
-  );
-  
+  });  
 });

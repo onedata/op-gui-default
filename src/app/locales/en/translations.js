@@ -513,8 +513,6 @@ export default {
         'supported by current provider',
       in: 'Input',
       out: 'Output',
-      someTransfersRemote: 'At least one transfer is not controlled by the current ' +
-        'provider, thus current throughput statistics may be slightly inaccurate.',
       liveTableStats: {
         type: 'Type',
         path: 'File/directory',
@@ -553,8 +551,8 @@ export default {
         throughput: 'Throughput',
       },
       throughputDistributionChart: {
-        input: 'input',
-        output: 'output',
+        input: 'Input',
+        output: 'Output',
       },
     },
   },

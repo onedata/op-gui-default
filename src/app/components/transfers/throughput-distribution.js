@@ -22,6 +22,7 @@ import eventListener from 'op-worker-gui/utils/chartist/event-listener';
 import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
 import $ from 'jquery';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
+import computedPipe from 'ember-cli-onedata-common/utils/ember/computed-pipe';
 
 const {
   Component,
@@ -134,16 +135,12 @@ export default Component.extend({
   /**
    * @type {Ember.ComputedProperty<Object>}
    */
-  _statsIn: computed('_timeStatForUnit.statsIn', function () {
-    return this._removeZeroStats(this.get('_timeStatForUnit.statsIn'));
-  }),
+  _statsIn: computedPipe('_timeStatForUnit.statsIn', '_removeZeroStats'),
 
   /**
    * @type {Ember.ComputedProperty<Object>}
    */
-  _statsOut: computed('_timeStatForUnit.statsOut', function () {
-    return this._removeZeroStats(this.get('_timeStatForUnit.statsOut'));
-  }),
+  _statsOut: computedPipe('_timeStatForUnit.statsOut', '_removeZeroStats'),
 
   /**
    * Last update time (async -> _timeStatForUnit)
@@ -155,25 +152,19 @@ export default Component.extend({
    * Maximum input stats sum in all time slots
    * @type {Ember.ComputedProperty<number>}
    */
-  _maxStatsInSum: computed('_statsIn', function () {
-    return this._calculateStatsMaxSum(this.get('_statsIn'));
-  }),
+  _maxStatsInSum: computedPipe('_statsIn', '_calculateStatsMaxSum'),
 
   /**
    * Maximum output stats sum in all time slots
    * @type {Ember.ComputedProperty<number>}
    */
-  _maxStatsOutSum: computed('_statsOut', function () {
-    return this._calculateStatsMaxSum(this.get('_statsOut'));
-  }),
+  _maxStatsOutSum: computedPipe('_statsOut', '_calculateStatsMaxSum'),
 
   /**
    * Expected stats number (number of chart points).
    * @type {Ember.ComputedProperty<number>}
    */
-  _expectedStatsNumber: computed('timeUnit', function () {
-    return this._getExpectedStatsNumberForUnit(this.get('timeUnit'));
-  }),
+  _expectedStatsNumber: computedPipe('timeUnit','_getExpectedStatsNumberForUnit'),
 
   /**
    * Sorted input provider ids.
@@ -207,9 +198,7 @@ export default Component.extend({
    * Chart time period
    * @type {Ember.ComputedProperty<number>}
    */
-  _timePeriod: computed('timeUnit', function () {
-    return this._getTimePeriodForUnit(this.get('timeUnit'));
-  }),
+  _timePeriod: computedPipe('timeUnit', '_getTimePeriodForUnit'),
   
   /**
    * Chart time format
@@ -600,9 +589,7 @@ export default Component.extend({
   /**
    * @type {Ember.ComputedProperty<string>}
    */
-  _tooltipInSum: computed('_tooltipInProviders', function () {
-    return this._generateTooltipItemsSum(this.get('_tooltipInProviders'));
-  }),
+  _tooltipInSum: computedPipe('_tooltipInProviders', '_generateTooltipItemsSum'),
 
   /**
    * @type {Ember.ComputedProperty<Array<object>>}
@@ -628,9 +615,7 @@ export default Component.extend({
   /**
    * @type {Ember.ComputedProperty<string>}
    */
-  _tooltipOutSum: computed('_tooltipOutProviders', function () {
-    return this._generateTooltipItemsSum(this.get('_tooltipOutProviders'));
-  }),
+  _tooltipOutSum: computedPipe('_tooltipOutProviders', '_generateTooltipItemsSum'),
   
   changeUpdaterUnit: observer(
     'updater',
@@ -747,7 +732,11 @@ export default Component.extend({
   _formatXAxisLabel(time) {
     const duration = moment.duration(time, 'seconds');
     const timeUnit = this.get('timeUnit');
-    return duration.get(subunit[timeUnit] + 's') + subunitSuffix[timeUnit];
+    if (timeUnit === 'minute') {
+      // minute stats are delayed by 30 seconds
+      duration.subtract(30, 'seconds');
+    }
+    return duration.as(subunit[timeUnit] + 's') + subunitSuffix[timeUnit];
   },
 
   /**

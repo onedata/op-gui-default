@@ -3,7 +3,8 @@
  * 
  * Options:
  * - xLabel, yLabel - labels
- * - xLabelXOffset, xLabelYOffset, yLabelXOffset, yLabelYOffset - position 
+ * - xLabelXOffset, xLabelYOffset, yLabelXOffset, yLabelYOffset - position
+ * - yAlignment - 'left' (default) or 'right' - y axis label alignment
  * adjustments for x and y labels
  * 
  * Module imported from onedata-gui-common.

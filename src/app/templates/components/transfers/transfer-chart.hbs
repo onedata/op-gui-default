@@ -3,7 +3,11 @@
     {{resource-load-error reason=statsError}}
   {{else}}
     {{#loading-container isLoading=(not _statsLoaded)}}
-      {{chartist-chart data=_chartData options=_chartOptions type="line"}}
+      {{#if _isWaitingForStats}}
+        <div class="waiting-for-stats">{{t "components.transfers.transferChart.waitingForStats" }}</div>
+      {{else}}
+        {{chartist-chart data=_chartData options=_chartOptions type="line"}}
+      {{/if}}
     {{/loading-container}}
   {{/if}}
 </div>

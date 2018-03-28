@@ -38,7 +38,7 @@ const {
   },
 } = Ember;
 
-const I18N_PREFIX = 'components.transfers.transferChart.';
+const I18N_PREFIX = 'components.transfers.throughputDistributionChart.';
 
 const subunitSuffix = {
   minute: 's',
@@ -123,7 +123,7 @@ export default Component.extend({
    * Proxy object that resolves with stats for specified time unit.
    * @type {Ember.ComputedProperty<PromiseObject<SpaceTransferTimeStat>>}
    */
-  _timeStatForUnit: computed('timeUnit', function () {
+  _timeStatForUnit: computed('space', 'timeUnit', function () {
     const {
       space,
       timeUnit,
@@ -371,66 +371,68 @@ export default Component.extend({
    * Chartist settings
    * @type {Object}
    */
-  _chartOptions: computed('_chartXTicks', '_chartXMin', '_chartYTicks', '_chartYMax', function () {
-    const {
-      _chartXTicks,
-      _chartXMin,
-      _chartYTicks,
-      _chartYMax,
-      i18n,
-    } = this.getProperties(
-      '_chartXTicks',
-      '_chartXMin',
-      '_chartYTicks',
-      '_chartYMax',
-      'i18n'
-    );
-    return {
-      axisX: {
-        low: _chartXMin,
-        high: 0,
-        type: Chartist.FixedScaleAxis,
-        ticks: _chartXTicks,
-        labelInterpolationFnc: value => this._formatXAxisLabel(value),
-        showGrid: false,
-      },
-      axisY: {
-        low: -_chartYMax,
-        high: _chartYMax,
-        type: Chartist.FixedScaleAxis,
-        labelInterpolationFnc:
-          value => bytesToString(Math.abs(value), { format: 'bit' }) + 'ps',
-        ticks: _chartYTicks,
-        position: 'end',
-      },
-      showArea: true,
-      fullWidth: true,
-      chartPadding: {
-        top: 30,
-        bottom: 0,
-        left: 30,
-        right: 40,
-      },
-      plugins: [
-        stackedLineMask(),
-        customCss({
-          filterBySeriesIndex: true,
-        }),
-        centerXLabels(),
-        axisLabels({
-          xLabel: i18n.t(I18N_PREFIX + 'time'),
-          yLabel: i18n.t(I18N_PREFIX + 'throughput'),
-          xLabelYOffset: 0,
-          yAlignment: 'right',
-          yLabelXOffset: -10,
-          yLabelYOffset: 0,
-        }),
-        eventListener({
-          eventHandler: (eventData) => this._chartEventHandler(eventData),
-        }),
-      ],
-    };
-  }),
+  _chartOptions: computed(
+    '_chartXTicks',
+    '_chartXMin',
+    '_chartYTicks',
+    '_chartYMax',
+    function () {
+      const {
+        _chartXTicks,
+        _chartXMin,
+        _chartYTicks,
+        _chartYMax,
+      } = this.getProperties(
+        '_chartXTicks',
+        '_chartXMin',
+        '_chartYTicks',
+        '_chartYMax'
+      );
+      return {
+        axisX: {
+          low: _chartXMin,
+          high: 0,
+          type: Chartist.FixedScaleAxis,
+          ticks: _chartXTicks,
+          labelInterpolationFnc: value => this._formatXAxisLabel(value),
+          showGrid: false,
+        },
+        axisY: {
+          low: -_chartYMax,
+          high: _chartYMax,
+          type: Chartist.FixedScaleAxis,
+          labelInterpolationFnc:
+            value => bytesToString(Math.abs(value), { format: 'bit' }) + 'ps',
+          ticks: _chartYTicks,
+          position: 'end',
+        },
+        showArea: true,
+        fullWidth: true,
+        chartPadding: {
+          top: 30,
+          bottom: 15,
+          left: 30,
+          right: 40,
+        },
+        plugins: [
+          stackedLineMask(),
+          customCss({
+            filterBySeriesIndex: true,
+          }),
+          centerXLabels(),
+          axisLabels({
+            xLabelYOffset: -10,
+            yAlignment: 'right',
+            yLabelXOffset: -10,
+            yLabelYOffset: 0,
+          }),
+          eventListener({
+            eventHandler: (eventData) => this._chartEventHandler(eventData),
+          }),
+        ],
+      };
+    }
+  ),
 
   /**
    * Data for chartist (async -> _statsValues)
@@ -449,13 +451,17 @@ export default Component.extend({
         providersColors,
         _statsIn,
         _pointsNumber,
+        i18n,
+        _statEndTime,
       } = this.getProperties(
         '_statsValues',
         '_chartValues',
         '_sortedProvidersIds',
         'providersColors',
         '_statsIn',
-        '_pointsNumber'
+        '_pointsNumber',
+        'i18n',
+        '_statEndTime'
       );
       if (_statsValues) {
         // clearing out old chart values
@@ -506,6 +512,13 @@ export default Component.extend({
             data: providerValues,
           })),
           customCss,
+          axisLabels: {
+            xLabel: i18n.t(
+              I18N_PREFIX + 'timeLastUpdate',
+              { lastUpdate: this._formatStatTime(_statEndTime + 30, 'HH:mm:ss') }
+            ),
+            yLabel: i18n.t(I18N_PREFIX + 'throughput'),
+          }
         }; 
       }
     }
@@ -718,11 +731,12 @@ export default Component.extend({
   },
 
   /**
-   * Formats timestamp according to _timeFormat
+   * Formats timestamp according to format or _timeFormat
    * @param {number} time timestamp
+   * @param {string} format
    */
-  _formatStatTime(time) {
-    return moment.unix(time).format(this.get('_timeFormat'));
+  _formatStatTime(time, format=undefined) {
+    return moment.unix(time).format(format || this.get('_timeFormat'));
   },
 
   /**

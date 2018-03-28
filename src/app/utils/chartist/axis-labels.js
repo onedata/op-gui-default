@@ -27,10 +27,15 @@ export default function (options) {
     yLabelYOffset: 20,
     yAlignment: 'left',
   };
-  options = Chartist.extend({}, defaultOptions, options);
 
   return (chart) => {
     chart.on('created', function () {
+      options = Chartist.extend({}, defaultOptions, options);
+      const dataAxisLabels = chart.data.axisLabels;
+      if (dataAxisLabels) {
+        options.xLabel = dataAxisLabels.xLabel;
+        options.yLabel = dataAxisLabels.yLabel;
+      }
       let svgNode = $(chart.svg._node);
       let axisLabelsGroup = chart.svg.elem('g', {}, 'ct-axis-labels');
       axisLabelsGroup.elem('text', {

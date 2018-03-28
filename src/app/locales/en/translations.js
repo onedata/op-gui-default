@@ -549,10 +549,14 @@ export default {
         month: 'Month',
         time: 'Time',
         throughput: 'Throughput',
+        waitingForStats: 'Statistics for this transfer will be available within ' +
+          '30 seconds.',
       },
       throughputDistributionChart: {
         input: 'Input',
         output: 'Output',
+        timeLastUpdate: 'Time (last update: {{lastUpdate}})',
+        throughput: 'Throughput',
       },
     },
   },

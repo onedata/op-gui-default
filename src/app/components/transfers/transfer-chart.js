@@ -140,6 +140,34 @@ export default Component.extend({
   _transferStartTime: computed.reads('transfer.startTime'),
 
   /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  _isWaitingForStats: computed(
+    '_statsLoaded',
+    'transfer.isCurrent',
+    '_transferLastUpdateTime',
+    '_transferStartTime',
+    function () {
+      const {
+        _statsLoaded,
+        transfer,
+        _transferLastUpdateTime,
+        _transferStartTime,
+      } = this.getProperties(
+        '_statsLoaded',
+        'transfer',
+        '_transferLastUpdateTime',
+        '_transferStartTime'
+      );
+      if (!_statsLoaded || !transfer.get('isCurrent')) {
+        return false;
+      } else {
+        return _transferLastUpdateTime - _transferStartTime < 30;
+      }
+    }
+  ),
+
+  /**
    * Expected stats number (number of chart points).
    * @type {Ember.ComputedProperty<number>}
    */
@@ -520,7 +548,7 @@ export default Component.extend({
       '_transferStartTime',
       '_expectedStatsNumber'
     );
-    let x = _transferLastUpdateTime + 0.5;
+    let x = _transferLastUpdateTime - 0.5;
     const scaledStats = [];
     statValues = statValues.filter(y => y !== null);
     for (let i = 0; i < statValues.length; i++) {

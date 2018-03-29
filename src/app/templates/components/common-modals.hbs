@@ -1,3 +1,7 @@
 {{!-- token modals --}}
 
-{{token-modals isOpened=openedToken type=modalParams.type funArgs=modalParams.funArgs}}
+{{token-modals
+  isOpened=(or commonModals.openedToken false)
+  type=commonModals.modalParams.type
+  funArgs=commonModals.modalParams.funArgs
+}}

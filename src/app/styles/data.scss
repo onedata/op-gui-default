@@ -277,6 +277,11 @@
     }
   }
   .migrate-popover {
+    // improve position for triangle for dropdown menus
+    &.dropdown-menu-settings.dropdown-menu-right:before {
+      top: 16px;
+    }
+    
     width: 300px;
     .menu-group-name {
       margin-bottom: 10px;
@@ -491,5 +496,16 @@
 .file-tool {
   &:hover {
     color: $onedata-red;
+  }
+}
+
+.data-files-tree {
+  .dir-item.root-item {
+    position: relative;
+  } 
+  .root-dir-settings-drop {
+    position: absolute;
+    right: 8px;
+    top: 2px;
   }
 }

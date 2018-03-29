@@ -17,7 +17,7 @@
       <div class="container-fluid">
         <div class="modal-row large-space">
           {{t "components.dataFilesListToolbar.fileChunksModal.text"}}
-          {{t (concat "components.dataFilesListToolbar.fileChunksModal." (if file.isDir "directory" "file"))}}:
+          {{t (concat "components.dataFilesListToolbar.fileChunksModal." fileType)}}:
           <strong>{{file.name}}</strong>
         </div>
         <div class="modal-row large-space">

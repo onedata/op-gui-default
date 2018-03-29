@@ -118,6 +118,11 @@ $dropdown-bg: #2B3037;
     width: 220px;
     border-radius: 0px !important;
 
+    // improve position for triangle for dropdown menus
+    &.dropdown-menu-right:before {
+      top: 11px;
+    }
+    
     li {
       color: white;
       padding: 4px 6px;

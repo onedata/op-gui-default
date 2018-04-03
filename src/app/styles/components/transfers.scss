@@ -36,13 +36,6 @@
       margin-top: 40px;
       margin-bottom: 0;
     }
-    .ct-values-line {
-      stroke-width: 0px;
-      stroke: black;
-      &.ct-values-line-active {
-        stroke-width: 0.5px;
-      }
-    }
     .ct-grid.ct-vertical {
       stroke: darken($onedata-light-gray, 9%);
       &.x-axis-line {

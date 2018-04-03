@@ -23,6 +23,7 @@ import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
 import $ from 'jquery';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 import computedPipe from 'ember-cli-onedata-common/utils/ember/computed-pipe';
+import ChartistValuesLine from 'op-worker-gui/mixins/components/chartist-values-line';
 
 const {
   Component,
@@ -54,7 +55,7 @@ const subunit = {
   month: 'day',
 };
 
-export default Component.extend({
+export default Component.extend(ChartistValuesLine, {
   classNames: ['transfers-throughput-distribution'],
   i18n: service(),
 
@@ -885,24 +886,6 @@ export default Component.extend({
   },
 
   /**
-   * Adds values line to the chart svg
-   * @param {object} chart chart object
-   */
-  _addValuesLineToChart(chart) {
-    const verticalGrid = this.$('.ct-grid.ct-vertical');
-    const highestLineY = parseFloat(verticalGrid.last().attr('y1'));
-    const lowestLineY = parseFloat(verticalGrid.first().attr('y1'));
-    const valuesLineGroup = chart.svg.elem('g', { class: 'ct-values-line-group' });
-    valuesLineGroup.elem('line', {
-      y1: highestLineY,
-      y2: lowestLineY,
-      x1: 0,
-      x2: 0,
-      class: 'ct-values-line',
-    });
-  },
-
-  /**
    * Makes X0 axis bold
    */
   _boldX0Axis() {
@@ -961,7 +944,13 @@ export default Component.extend({
    * Attaches all needed handlers to the chart
    * @param {object} param event data
    */
-  _chartEventHandler({ eventName, data, chart }) {
+  _chartEventHandler(eventData) {
+    const {
+      eventName,
+      data,
+      chart,
+    } = eventData;
+    this.addChartValuesLine(eventData);
     safeExec(this, () => {
       if ((eventName === 'draw' && this.get('_chartCreated')) ||
         data.type === 'initial') {
@@ -972,7 +961,6 @@ export default Component.extend({
       }
       if (eventName === 'created') {
         this._positionHalvesDescriptions();
-        this._addValuesLineToChart(chart);
         this._boldX0Axis();
         this._attachValuesColumnHoverListeners(chart);
         this._updateChartHoverState();
@@ -985,32 +973,7 @@ export default Component.extend({
    * Updates chart appearance on mouse event
    */
   _updateChartHoverState() {
-    this._showValuesLineIfNeeded();
     this._showTooltipIfNeeded();
-  },
-
-  /**
-   * Shows/hides value line
-   */
-  _showValuesLineIfNeeded() {
-    const line = this.$('.ct-values-line');
-    if (!line.length) {
-      return;
-    }
-    const _hoveredPointsColumnIndex = this.get('_hoveredPointsColumnIndex');
-    this.$('.ct-point.ct-point-active').removeClass('ct-point-active');
-    if (_hoveredPointsColumnIndex !== -1) {
-      const x = this.get('_pointsColumnXPosition')[_hoveredPointsColumnIndex];
-      line.addClass('ct-values-line-active');
-      line.attr('x1', x);
-      line.attr('x2', x);
-      this.$('.ct-series').toArray().forEach(group => {
-        const point = $(group).find('.ct-point').get(_hoveredPointsColumnIndex);
-        $(point).addClass('ct-point-active');
-      });
-    } else {
-      line.removeClass('ct-values-line-active');
-    }
   },
 
   /**

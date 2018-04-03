@@ -57,6 +57,13 @@ $chart-border-color: $one-main-border-color;
       text-anchor: middle;
     }
   }
+  .ct-values-line {
+    stroke-width: 0px;
+    stroke: black;
+    &.ct-values-line-active {
+      stroke-width: 0.5px;
+    }
+  }
   .ct-legend {
     list-style-type: none;
     margin-bottom: 0;

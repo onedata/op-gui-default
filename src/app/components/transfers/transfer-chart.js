@@ -19,7 +19,9 @@ import stackedLineMask from 'op-worker-gui/utils/chartist/stacked-line-mask';
 import TransferTimeStatUpdater from 'op-worker-gui/utils/transfer-time-stat-updater';
 import customCss from 'op-worker-gui/utils/chartist/custom-css';
 import centerXLabels from 'op-worker-gui/utils/chartist/center-x-labels';
-import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object'; 
+import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
+import eventListener from 'op-worker-gui/utils/chartist/event-listener';
+import ChartistValuesLine from 'op-worker-gui/mixins/components/chartist-values-line';
 
 const {
   Component,
@@ -36,7 +38,7 @@ const {
 
 const I18N_PREFIX = 'components.transfers.transferChart.';
 
-export default Component.extend({
+export default Component.extend(ChartistValuesLine, {
   classNames: ['transfers-transfer-chart'],
   i18n: service(),
   
@@ -337,18 +339,53 @@ export default Component.extend({
   }),
 
   /**
+   * Maximum stats sum in all time slots
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _chartYMax: computed('_stats', function () {
+    const _stats = this.get('_stats');
+    const arrays = _.values(_stats);
+    if (!arrays.length) {
+      return 0;
+    }
+    let maxSum = 0;
+    _.range(arrays[0].length).forEach(i => {
+      const sum = _.sum(arrays.map(ar => ar[i] || 0));
+      if (sum > maxSum) {
+        maxSum = sum;
+      }
+    });
+    return Math.max(maxSum, 8);
+  }),
+
+  /**
+   * Chart ticks for Y axis
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _chartYTicks: computed('_chartYMax', function () {
+    const _chartYMax = this.get('_chartYMax');
+    const numberOfTicks = 4;
+    const delta = _chartYMax / (numberOfTicks - 1);
+    return _.range(numberOfTicks).map(i => delta * i);
+  }),
+
+  /**
    * Chartist settings
    * @type {Object}
    */
-  _chartOptions: computed('_chartXTicks', function() {
+  _chartOptions: computed('_chartXTicks', '_chartYTicks', function() {
     const {
       i18n,
       _chartXTicks,
       _chartXLow,
+      _chartYMax,
+      _chartYTicks,
     } = this.getProperties(
       'i18n',
       '_chartXTicks',
-      '_chartXLow'
+      '_chartXLow',
+      '_chartYMax',
+      '_chartYTicks'
     );
     return {
       axisX: {
@@ -359,7 +396,11 @@ export default Component.extend({
         low: _chartXLow,
       },
       axisY: {
+        low: 0,
+        high: _chartYMax,
+        type: Chartist.FixedScaleAxis,
         labelInterpolationFnc: value => bytesToString(value, { format: 'bit' }) + 'ps',
+        ticks: _chartYTicks,
       },
       low: 0,
       showArea: true,
@@ -385,6 +426,9 @@ export default Component.extend({
           filterBySeriesIndex: true,
         }),
         centerXLabels(),
+        eventListener({
+          eventHandler: (eventData) => this._chartEventHandler(eventData),
+        }),
       ],
     };
   }),
@@ -654,5 +698,13 @@ export default Component.extend({
       }
     });
     return prefferedUnit || 'month';
+  },
+
+  /**
+   * Attaches all needed handlers to the chart
+   * @param {object} param event data
+   */
+  _chartEventHandler(eventData) {
+    this.addChartValuesLine(eventData);
   }
 });

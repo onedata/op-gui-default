@@ -3,17 +3,28 @@
     {{resource-load-error reason=statsError}}
   {{else}}
     {{#loading-container isLoading=(not _statsLoaded)}}
-      {{#if _isWaitingForStats}}
-        <div class="waiting-for-stats">{{t "components.transfers.transferChart.waitingForStats" }}</div>
+      {{#if _transferIsScheduled }}
+        <div class="waiting-for-stats transfer-scheduled-info">
+          {{t "components.transfers.transferChart.waitingForTransferStart"}}
+        </div>
+      {{else if _isWaitingForStats}}
+        <div class="waiting-for-stats stats-delay-info">
+          {{t "components.transfers.transferChart.waitingForStats"}}
+          {{#one-icon icon="sign-question"}}
+            {{bs-tooltip placement="top" title=(t "components.transfers.transferChart.waitingForStatsTip")}}
+          {{/one-icon}}
+        </div>
       {{else}}
         {{chartist-chart data=_chartData options=_chartOptions type="line"}}
       {{/if}}
     {{/loading-container}}
   {{/if}}
 </div>
-{{#bs-button-group value=timeUnit type="radio" size="sm"}}
-  {{#if _unitVisibility.minute}}{{#bs-button value="minute"}}{{t "components.transfers.transferChart.minute"}}{{/bs-button}}{{/if}}
-  {{#if _unitVisibility.hour}}{{#bs-button value="hour"}}{{t "components.transfers.transferChart.hour"}}{{/bs-button}}{{/if}}
-  {{#if _unitVisibility.day}}{{#bs-button value="day"}}{{t "components.transfers.transferChart.day"}}{{/bs-button}}{{/if}}
-  {{#if _unitVisibility.month}}{{#bs-button value="month"}}{{t "components.transfers.transferChart.month"}}{{/bs-button}}{{/if}}
-{{/bs-button-group}}
+{{#if _showUnitButtons}}
+  {{#bs-button-group value=timeUnit type="radio" size="sm"}}
+    {{#if _unitVisibility.minute}}{{#bs-button value="minute"}}{{t "components.transfers.transferChart.minute"}}{{/bs-button}}{{/if}}
+    {{#if _unitVisibility.hour}}{{#bs-button value="hour"}}{{t "components.transfers.transferChart.hour"}}{{/bs-button}}{{/if}}
+    {{#if _unitVisibility.day}}{{#bs-button value="day"}}{{t "components.transfers.transferChart.day"}}{{/bs-button}}{{/if}}
+    {{#if _unitVisibility.month}}{{#bs-button value="month"}}{{t "components.transfers.transferChart.month"}}{{/bs-button}}{{/if}}
+  {{/bs-button-group}}
+{{/if}}

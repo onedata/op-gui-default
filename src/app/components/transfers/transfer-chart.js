@@ -86,12 +86,32 @@ export default Component.extend({
    * @type {string}
    */
   _statsError: undefined,
+
+  /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  _transferIsScheduled: computed.equal('transfer.status', 'scheduled'),
   
   /**
    * True if data for chart is loaded
    * @type {boolean}
    */
-  _statsLoaded: computed.reads('_timeStatForUnit.isFulfilled'),
+  _statsLoaded: computed.and(
+    '_timeStatForUnit.isFulfilled',
+    'transfer.currentStat.isFulfilled'
+  ),
+
+  /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  _showUnitButtons: computed('_transferIsScheduled', '_statsLoaded', '_isWaitingForStats', function () {
+    const {
+      _transferIsScheduled,
+      _statsLoaded,
+      _isWaitingForStats,
+    } = this.getProperties('_transferIsScheduled', '_statsLoaded', '_isWaitingForStats');
+    return _statsLoaded && !_transferIsScheduled && !_isWaitingForStats;
+  }),
 
   /**
    * @type {Ember.ComputedProperty<string|null>}

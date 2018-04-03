@@ -3,7 +3,7 @@
     {{resource-load-error reason=statsError}}
   {{else}}
     {{#loading-container isLoading=(not _statsLoaded)}}
-      {{#chartist-chart data=_chartData options=_chartOptions type="line"}}
+      {{#one-chartist data=_chartData options=_chartOptions type="line"}}
         <div class="ct-tooltip">
           <div class="tooltip-header">
             {{_tooltipHeader}}
@@ -24,7 +24,7 @@
         </div>
         <div class="input-half half-description">{{t "components.transfers.throughputDistributionChart.input"}}</div>
         <div class="output-half half-description">{{t "components.transfers.throughputDistributionChart.output"}}</div>
-      {{/chartist-chart}}
+      {{/one-chartist}}
     {{/loading-container}}
   {{/if}}
 </div>

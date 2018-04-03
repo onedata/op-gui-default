@@ -549,8 +549,10 @@ export default {
         month: 'Month',
         time: 'Time',
         throughput: 'Throughput',
-        waitingForStats: 'Statistics for this transfer will be available within ' +
-          '30 seconds.',
+        waitingForTransferStart: 'Waiting for the the transfer to start...',
+        waitingForStats: 'Gathering transfer statistics...',
+        waitingForStatsTip: 'Statistics are delayed due to synchronization ' +
+          'latency caused by data distribution.',
       },
       throughputDistributionChart: {
         input: 'Input',

@@ -42,19 +42,7 @@
             </div>
             
             <div class="col-xs-12 col-md-5 col-throughput-pie-chart">
-              <h2><span class="one-label">{{t "components.transfers.throughputDistribution"}}</span>
-                {{#if tData.providerTransfers.length}}
-                  {{#bs-button-group
-                    value=transfersPieChartDirection
-                    type="radio"
-                    size="sm"
-                    class="space-transfers-throughput-direction pull-right"
-                  }}
-                    {{#bs-button value="out"}}{{t "components.transfers.out"}}{{/bs-button}}
-                    {{#bs-button value="in"}}{{t "components.transfers.in"}}{{/bs-button}}
-                  {{/bs-button-group}}
-                {{/if}}
-              </h2>
+              <h2><span class="one-label">{{t "components.transfers.throughputDistribution.title"}}</span></h2>
               <div class="row loadable-row">
                 {{#loading-container isLoading=(not tData.providersLoaded)}}
                   {{transfers/throughput-distribution

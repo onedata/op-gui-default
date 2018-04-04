@@ -39,7 +39,7 @@ const {
   },
 } = Ember;
 
-const I18N_PREFIX = 'components.transfers.throughputDistributionChart.';
+const I18N_PREFIX = 'components.transfers.throughputDistribution.';
 
 const subunitSuffix = {
   minute: 's',
@@ -841,7 +841,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
     const verticalGrid = this.$('.ct-grid.ct-vertical');
     $(verticalGrid.get(Math.floor(verticalGrid.length / 2))).addClass('x-axis-line');
   },
-  
+
   /**
    * Attaches all needed handlers to the chart
    * @param {object} param event data

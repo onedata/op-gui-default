@@ -3,7 +3,7 @@
     {{resource-load-error reason=statsError}}
   {{else}}
     {{#loading-container isLoading=(not _statsLoaded)}}
-      {{#if _transferIsScheduled }}
+      {{#if _transferIsScheduled}}
         <div class="waiting-for-stats transfer-scheduled-info">
           {{t "components.transfers.transferChart.waitingForTransferStart"}}
         </div>
@@ -22,7 +22,7 @@
             </div>
             {{transfers/tooltip-providers-list
               providers=_tooltipProviders
-              title=(t "components.transfers.throughputDistributionChart.output")
+              title=(t "components.transfers.transferChart.output")
               sum=_tooltipSum}}
             <div class="ct-tooltip-arrow"></div>
           </div>

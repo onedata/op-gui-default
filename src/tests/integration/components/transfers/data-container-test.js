@@ -167,8 +167,6 @@ describe('Integration | Component | transfers/data container', function () {
     wait().then(() => {
       // p2->p1, p3->p1, p3->p2
       expect(providerTransferConnections).to.have.lengthOf(3);
-      // more tests for providerTransfers computation can be found
-      // in tests for util:providerTransfers
       done();
     });
   });  

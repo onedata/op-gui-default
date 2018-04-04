@@ -9,13 +9,13 @@
             {{_tooltipHeader}}
           </div>
           {{#if _tooltipInProviders.length}}
-            {{transfers/throughput-distribution/tooltip-providers-list
+            {{transfers/tooltip-providers-list
               providers=_tooltipInProviders
               title=(t "components.transfers.throughputDistributionChart.input")
               sum=_tooltipInSum}}
           {{/if}}
           {{#if _tooltipOutProviders.length}}
-            {{transfers/throughput-distribution/tooltip-providers-list
+            {{transfers/tooltip-providers-list
               providers=_tooltipOutProviders
               title=(t "components.transfers.throughputDistributionChart.output")
               sum=_tooltipOutSum}}

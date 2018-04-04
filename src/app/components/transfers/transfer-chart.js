@@ -12,7 +12,6 @@
 import Ember from 'ember';
 import _ from 'lodash';
 import moment from 'moment';
-import tooltip from 'op-worker-gui/utils/chartist/tooltip';
 import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
 import axisLabels from 'op-worker-gui/utils/chartist/axis-labels';
 import stackedLineMask from 'op-worker-gui/utils/chartist/stacked-line-mask';
@@ -22,6 +21,7 @@ import centerXLabels from 'op-worker-gui/utils/chartist/center-x-labels';
 import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
 import eventListener from 'op-worker-gui/utils/chartist/event-listener';
 import ChartistValuesLine from 'op-worker-gui/mixins/components/chartist-values-line';
+import ChartistTooltip from 'op-worker-gui/mixins/components/chartist-tooltip';
 
 const {
   Component,
@@ -32,13 +32,16 @@ const {
   inject: {
     service,
   },
+  String: {
+    htmlSafe
+  },
 } = Ember;
 
 /* global Chartist */
 
 const I18N_PREFIX = 'components.transfers.transferChart.';
 
-export default Component.extend(ChartistValuesLine, {
+export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   classNames: ['transfers-transfer-chart'],
   i18n: service(),
   
@@ -67,6 +70,18 @@ export default Component.extend(ChartistValuesLine, {
    * @type {Ember.ComputedProperty<Object>}
    */
   providersColors: Object.freeze({}),
+
+  /**
+   * @override
+   * @type {string}
+   */
+  chartTooltipSelector: '.ct-tooltip',
+
+  /**
+   * @override
+   * @type {string}
+   */
+  chartTooltipVerticalAlign: 'top',
   
   /**
    * Array of actual chart values.
@@ -239,10 +254,12 @@ export default Component.extend(ChartistValuesLine, {
    */
   _statsNumberPerLabel: computed('timeUnit', function() {
     switch (this.get('timeUnit')) {
+      case 'month':
+        return 3;
       case 'day':
         return 4;
       case 'hour':
-        return 5;
+        return 6;
       default:
         return 2;
     }
@@ -416,11 +433,6 @@ export default Component.extend(ChartistValuesLine, {
           xLabel: i18n.t(I18N_PREFIX + 'time'),
           yLabel: i18n.t(I18N_PREFIX + 'throughput'),
         }),
-        tooltip({
-          chartType: 'line',
-          topOffset: -17,
-          rangeInTitle: true,
-        }),
         stackedLineMask(),
         customCss({
           filterBySeriesIndex: true,
@@ -450,7 +462,6 @@ export default Component.extend(ChartistValuesLine, {
         _chartValues,
         _sortedProvidersIds,
         providersColors,
-        providers,
         _expectedStatsNumber,
         _transferStartTime,
       } = this.getProperties(
@@ -458,7 +469,6 @@ export default Component.extend(ChartistValuesLine, {
         '_chartValues',
         '_sortedProvidersIds',
         'providersColors',
-        'providers',
         '_expectedStatsNumber',
         '_transferStartTime'
       );
@@ -487,23 +497,6 @@ export default Component.extend(ChartistValuesLine, {
               valuesSumArray.filter(({ x }) => x >= _transferStartTime)
             ));
         }
-        // creating tooltips
-        const tooltipElements = _.range(_expectedStatsNumber + 2).map((index) => {
-          return _sortedProvidersIds
-            .filter((providerId, providerIndex) => _statsValues[providerIndex].length > index)
-            .map((providerId, providerIndex) => {
-              const provider =
-                _.find(providers, (provider) => provider.get('id') === providerId) || {};
-              const providerName = get(provider, 'name') || providerId;
-              return {
-                name: providerName.length > 10 ?
-                  providerName.substring(0, 8) + '...' : providerName,
-                value: bytesToString(_statsValues[providerIndex][index].y, { format: 'bit' }) + 'ps',
-                className: 'ct-tooltip-entry',
-                cssString: 'border-color: ' + providersColors[providerId],
-              };
-            });
-        });
         // setting colors
         const customCss = _sortedProvidersIds.map((providerId) => {
           const color = providersColors[providerId];
@@ -521,16 +514,87 @@ export default Component.extend(ChartistValuesLine, {
         });
         // creating chart data object
         return {
-          labels: this._getChartLabels(),
           series: _chartValues.map((providerValues) => ({
             data: providerValues,
-            tooltipElements,
           })),
           customCss,
         }; 
       }
     }
   ),
+
+  /**
+   * @type {Ember.ComputedProperty<string>}
+   */
+  _tooltipHeader: computed(
+    '_statsValues',
+    'chartTooltipHoveredColumn',
+    function () {
+      const chartTooltipHoveredColumn = this.get('chartTooltipHoveredColumn');
+      const chartLabels = this._getChartLabels();
+      const startTime = chartLabels[chartTooltipHoveredColumn];
+      const endTime = chartLabels[chartTooltipHoveredColumn - 1];
+      if (chartTooltipHoveredColumn === 0 || startTime === endTime) {
+        return startTime;
+      } else {
+        return endTime + ' - ' + startTime;
+      }
+    }
+  ),
+
+  /**
+   * @type {Ember.ComputedProperty<Array<object>>}
+   */
+  _tooltipProviders: computed(
+    '_sortedProvidersIds',
+    'providersColors',
+    'providers',
+    '_stats',
+    'chartTooltipHoveredColumn',
+    function () {
+      const {
+        _sortedProvidersIds,
+        _stats,
+        providersColors,
+        providers,
+        chartTooltipHoveredColumn,
+        chartTooltipColumnsNumber,
+      } = this.getProperties(
+        '_sortedProvidersIds',
+        '_stats',
+        'providersColors',
+        'providers',
+        'chartTooltipHoveredColumn',
+        'chartTooltipColumnsNumber'
+      );
+      const result = [];
+      _sortedProvidersIds.forEach(providerId => {
+        const providerStats = _stats[providerId];
+        const index = chartTooltipColumnsNumber - chartTooltipHoveredColumn - 1;
+        if (index < 0 || !providerStats[index]) {
+          return;
+        }
+        const provider =
+          _.find(providers, (provider) => provider.get('id') === providerId) || {};
+        const providerName = get(provider, 'name') || providerId;
+        result.push({
+          name: providerName,
+          valueNumber: providerStats[index],
+          value: bytesToString(providerStats[index], { format: 'bit' }) + 'ps',
+          boxStyle: htmlSafe('background-color: ' + providersColors[providerId]),
+        });
+      });
+      return result;
+    }
+  ),
+
+  /**
+   * @type {Ember.ComputedProperty<string>}
+   */
+  _tooltipSum: computed('_tooltipProviders', function () {
+    const bytes = _.sum(this.get('_tooltipProviders').map(p => p.valueNumber));
+    return bytesToString(bytes, { format: 'bit' }) + 'ps';
+  }),
   
   changeUpdaterUnit: observer(
     'updater',
@@ -706,5 +770,6 @@ export default Component.extend(ChartistValuesLine, {
    */
   _chartEventHandler(eventData) {
     this.addChartValuesLine(eventData);
-  }
+    this.addChartTooltip(eventData);
+  },
 });

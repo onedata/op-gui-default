@@ -15,7 +15,18 @@
           {{/one-icon}}
         </div>
       {{else}}
-        {{chartist-chart data=_chartData options=_chartOptions type="line"}}
+        {{#one-chartist data=_chartData options=_chartOptions type="line"}}
+          <div class="ct-tooltip">
+            <div class="tooltip-header">
+              {{_tooltipHeader}}
+            </div>
+            {{transfers/tooltip-providers-list
+              providers=_tooltipProviders
+              title=(t "components.transfers.throughputDistributionChart.output")
+              sum=_tooltipSum}}
+            <div class="ct-tooltip-arrow"></div>
+          </div>
+        {{/one-chartist}}
       {{/if}}
     {{/loading-container}}
   {{/if}}

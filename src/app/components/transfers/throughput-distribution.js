@@ -24,6 +24,7 @@ import $ from 'jquery';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 import computedPipe from 'ember-cli-onedata-common/utils/ember/computed-pipe';
 import ChartistValuesLine from 'op-worker-gui/mixins/components/chartist-values-line';
+import ChartistTooltip from 'op-worker-gui/mixins/components/chartist-tooltip';
 
 const {
   Component,
@@ -33,8 +34,7 @@ const {
   inject: {
     service,
   },
-  run,
-  String :{
+  String: {
     htmlSafe
   },
 } = Ember;
@@ -55,7 +55,7 @@ const subunit = {
   month: 'day',
 };
 
-export default Component.extend(ChartistValuesLine, {
+export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   classNames: ['transfers-throughput-distribution'],
   i18n: service(),
 
@@ -82,6 +82,12 @@ export default Component.extend(ChartistValuesLine, {
    * @type {Ember.ComputedProperty<Object>}
    */
   providersColors: undefined,
+
+  /**
+   * @override
+   * @type {string}
+   */
+  chartTooltipSelector: '.ct-tooltip',
   
   /**
    * Array of actual chart values.
@@ -526,49 +532,24 @@ export default Component.extend(ChartistValuesLine, {
   ),
 
   /**
-   * @type {boolean}
-   */
-  _chartCreated: false,
-
-  /**
-   * @type {Array<number>}
-   */
-  _pointsColumnXPosition: [],
-
-  /**
-   * @type {Array<number>}
-   */
-  _pointsColumnYPosition: [],
-
-  /**
-   * @type {boolean}
-   */
-  _tooltipVisible: false,
-
-  /**
-   * @type {number}
-   */
-  _hoveredPointsColumnIndex: -1,
-
-  /**
    * @type {Ember.ComputedProperty<string>}
    */
   _tooltipHeader: computed(
     '_statEndTime',
-    '_hoveredPointsColumnIndex',
+    'chartTooltipHoveredColumn',
     '_chartPointsXValues',
     function () {
       const {
         _statEndTime,
-        _hoveredPointsColumnIndex,
+        chartTooltipHoveredColumn,
         _chartPointsXValues,
       } = this.getProperties(
         '_statEndTime',
-        '_hoveredPointsColumnIndex',
+        'chartTooltipHoveredColumn',
         '_chartPointsXValues'
       );
       const xDiff = _chartPointsXValues.slice(0).reverse();
-      const index = _hoveredPointsColumnIndex;
+      const index = chartTooltipHoveredColumn;
       const startTime = this._formatStatTime(_statEndTime + xDiff[index]);
       const endTime = this._formatStatTime(_statEndTime + xDiff[index - 1]);
       if (index === 0 || startTime === endTime) {
@@ -587,7 +568,7 @@ export default Component.extend(ChartistValuesLine, {
     'providersColors',
     'providers',
     '_statsIn',
-    '_hoveredPointsColumnIndex',
+    'chartTooltipHoveredColumn',
     function () {
       const {
         _sortedInProvidersIds,
@@ -613,7 +594,7 @@ export default Component.extend(ChartistValuesLine, {
     'providersColors',
     'providers',
     '_statsOut',
-    '_hoveredPointsColumnIndex',
+    'chartTooltipHoveredColumn',
     function () {
       const {
         _sortedOutProvidersIds,
@@ -797,18 +778,18 @@ export default Component.extend(ChartistValuesLine, {
     const {
       providersColors,
       providers,
-      _hoveredPointsColumnIndex,
+      chartTooltipHoveredColumn,
       _pointsNumber,
     } = this.getProperties(
       'providersColors',
       'providers',
-      '_hoveredPointsColumnIndex',
+      'chartTooltipHoveredColumn',
       '_pointsNumber'
     );
     const result = [];
     providersIds.forEach(providerId => {
       const providerStats = stats[providerId];
-      const index = _pointsNumber - _hoveredPointsColumnIndex - 1;
+      const index = _pointsNumber - chartTooltipHoveredColumn - 1;
       if (index < 0 || !providerStats[index]) {
         return;
       }
@@ -832,38 +813,6 @@ export default Component.extend(ChartistValuesLine, {
   _generateTooltipItemsSum(items) {
     const bytes = _.sum(items.map(p => p.valueNumber));
     return bytesToString(bytes, { format: 'bit' }) + 'ps';
-  },
-
-  /**
-   * Resets all remembered data related to the chart svg
-   */
-  _resetRememberedChartState() {
-    this.setProperties({
-      _chartCreated: false,
-      _pointsColumnXPosition: [],
-      _pointsColumnYPosition: [],
-    });
-  },
-
-  /**
-   * Persists coordinates of drawed point
-   * @param {object} data chart event data
-   */
-  _rememberChartPointCoordinates(data) {
-    const {
-      _pointsColumnXPosition,
-      _pointsColumnYPosition,
-     } = this.getProperties('_pointsColumnXPosition', '_pointsColumnYPosition');
-    const pointNode = data.element.getNode();
-    const pointXCenter = (pointNode.x1.baseVal.value + pointNode.x2.baseVal.value) / 2;
-    const pointYCenter = (pointNode.y1.baseVal.value + pointNode.y2.baseVal.value) / 2;
-    if (!_pointsColumnXPosition[data.index]) {
-      _pointsColumnXPosition[data.index] = pointXCenter;
-    }
-    if (typeof _pointsColumnYPosition[data.index] !== 'number' ||
-      _pointsColumnYPosition[data.index] > pointYCenter) {
-      _pointsColumnYPosition[data.index] = pointYCenter;
-    }
   },
 
   /**
@@ -892,54 +841,7 @@ export default Component.extend(ChartistValuesLine, {
     const verticalGrid = this.$('.ct-grid.ct-vertical');
     $(verticalGrid.get(Math.floor(verticalGrid.length / 2))).addClass('x-axis-line');
   },
-
-  /**
-   * Identifies hovered values column using given event
-   * @param {MouseEvent} event Mouse move event
-   * @param {object} chart chart object
-   */
-  _identifyHoveredValuesColumn(event, chart) {
-    const _pointsColumnXPosition = this.get('_pointsColumnXPosition');
-    const chartContainer = $(chart.container);
-    const mouseX = event.pageX - chartContainer.offset().left;
-    if (mouseX < _pointsColumnXPosition[0] ||
-      mouseX > _pointsColumnXPosition[_pointsColumnXPosition.length - 1] ||
-      _pointsColumnXPosition.length === 0) {
-      this.set('_hoveredPointsColumnIndex', -1);
-    } else {
-      let targetIndex = 0;
-      let targetIndexDistance = Math.abs(mouseX - _pointsColumnXPosition[0]);
-      for (let i = 1; i < _pointsColumnXPosition.length; i++) {
-        const distance = Math.abs(mouseX - _pointsColumnXPosition[i]);
-        if (distance < targetIndexDistance) {
-          targetIndex = i;
-          targetIndexDistance = distance;
-        }
-      }
-      this.set('_hoveredPointsColumnIndex', targetIndex);
-    }
-  },
-
-  /**
-   * Attaches listeners, that are responsible for monitoring actual hovered
-   * values column
-   * @param {object} chart chart object
-   */
-  _attachValuesColumnHoverListeners(chart) {
-    $(chart.container).mousemove((event) => run(() => {
-      safeExec(this, () => {
-        this._identifyHoveredValuesColumn(event, chart);
-        this._updateChartHoverState();
-      });
-    }))
-    .mouseleave(() => run(() => {
-      safeExec(this, () => {
-        this.set('_hoveredPointsColumnIndex', -1);
-        this._updateChartHoverState();
-      });
-    }));
-  },
-
+  
   /**
    * Attaches all needed handlers to the chart
    * @param {object} param event data
@@ -947,63 +849,14 @@ export default Component.extend(ChartistValuesLine, {
   _chartEventHandler(eventData) {
     const {
       eventName,
-      data,
-      chart,
     } = eventData;
     this.addChartValuesLine(eventData);
+    this.addChartTooltip(eventData);
     safeExec(this, () => {
-      if ((eventName === 'draw' && this.get('_chartCreated')) ||
-        data.type === 'initial') {
-        this._resetRememberedChartState();
-      }
-      if (eventName === 'draw' && data.type === 'point') {
-          this._rememberChartPointCoordinates(data);
-      }
       if (eventName === 'created') {
         this._positionHalvesDescriptions();
         this._boldX0Axis();
-        this._attachValuesColumnHoverListeners(chart);
-        this._updateChartHoverState();
-        this.set('_chartCreated', true);
       }
     });
   },
-
-  /**
-   * Updates chart appearance on mouse event
-   */
-  _updateChartHoverState() {
-    this._showTooltipIfNeeded();
-  },
-
-  /**
-   * Shows/hides tooltip
-   */
-  _showTooltipIfNeeded() {
-    const tooltip = this.$('.ct-tooltip');
-    if (!tooltip.length) {
-      return;
-    }
-    const _hoveredPointsColumnIndex = this.get('_hoveredPointsColumnIndex');
-    if (_hoveredPointsColumnIndex !== -1) {
-      const {
-        _pointsColumnXPosition,
-        _pointsColumnYPosition,
-      } = this.getProperties('_pointsColumnXPosition', '_pointsColumnYPosition');
-      const chartContainer = this.$('.ct-chart');
-      const chartXCenter = chartContainer.width() / 2;
-      tooltip.css({
-        top: _pointsColumnYPosition[_hoveredPointsColumnIndex] + 'px',
-        left: _pointsColumnXPosition[_hoveredPointsColumnIndex] + 'px',
-      });
-      if (_pointsColumnXPosition[_hoveredPointsColumnIndex] < chartXCenter) {
-        tooltip.addClass('right').removeClass('left');
-      } else {
-        tooltip.addClass('left').removeClass('right');
-      }
-      tooltip.show();
-    } else {
-      tooltip.hide();
-    }
-  }
 });

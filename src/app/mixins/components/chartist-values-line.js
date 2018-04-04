@@ -3,7 +3,7 @@
  * 
  * To enable, addChartValuesLine must be called in chartist eventListener plugin.
  * 
- * @module utils/chartist/identify-hovered-values-column
+ * @module mixins/components/chartist-values-line
  * @author Michal Borzecki
  * @copyright (C) 2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.

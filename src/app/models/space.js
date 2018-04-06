@@ -43,5 +43,5 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
   transferHourStat: belongsTo('space-transfer-time-stat'),
   transferDayStat: belongsTo('space-transfer-time-stat'),
   transferMonthStat: belongsTo('space-transfer-time-stat'),
-  transferProviderMap: belongsTo('space-transfer-provider-map'),
+  transferLinkState: belongsTo('space-transfer-link-state'),
 });

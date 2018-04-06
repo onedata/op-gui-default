@@ -70,7 +70,7 @@ export default Component.extend({
   currentTransferList: computed.reads('space.currentTransferList'),
   completedTransferList: computed.reads('space.completedTransferList'),
   providerList: computed.reads('space.providerList'),
-  providersMap: computed.reads('space.transferProviderMap.mapping'),
+  providersMap: computed.reads('space.transferLinkState.activeLinks'),
   
   //#endregion
   

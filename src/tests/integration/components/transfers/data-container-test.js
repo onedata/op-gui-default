@@ -45,9 +45,9 @@ describe('Integration | Component | transfers/data container', function () {
           },
         },
       }),
-      transferProviderMap: ObjectProxy.create({
+      transferLinkState: ObjectProxy.create({
         content: Ember.Object.create({
-          mapping: {
+          activeLinks: {
             p2: ['p1'],
             p3: ['p1', 'p2'],
           },

@@ -315,7 +315,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
     '_statEndTime',
     '_expectedStatsNumber',
     function () {
-      const {
+      let {
         _timePeriod,
         _statEndTime,
         _expectedStatsNumber,
@@ -327,6 +327,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
       let x = 0;
       const xValues = [];
       xValues.push(x);
+      _statEndTime += 1;
       x = _statEndTime % _timePeriod === 0 ? -_timePeriod : -(_statEndTime % _timePeriod);
       for (let i = 1;;i++) {
         xValues.push(x);
@@ -539,7 +540,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
     'chartTooltipHoveredColumn',
     '_chartPointsXValues',
     function () {
-      const {
+      let {
         _statEndTime,
         chartTooltipHoveredColumn,
         _chartPointsXValues,
@@ -548,6 +549,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
         'chartTooltipHoveredColumn',
         '_chartPointsXValues'
       );
+      _statEndTime += 1;
       const xDiff = _chartPointsXValues.slice(0).reverse();
       const index = chartTooltipHoveredColumn;
       const startTime = this._formatStatTime(_statEndTime + xDiff[index]);

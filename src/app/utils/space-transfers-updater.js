@@ -404,11 +404,11 @@ export default EmberObject.extend({
    /**
    * Function invoked when providers transfer mapping should be updated by
    * polling timer
-   * @return {Promise<SpaceTransferProviderMap>}
+   * @return {Promise<SpaceTransferLinkState>}
    */
   fetchProviderMap() {
     this.set('mapIsUpdating', true);
-    return this.get('space').belongsTo(`transferProviderMap`).reload()
+    return this.get('space').belongsTo(`transferLinkState`).reload()
       .catch(error => safeExec(this, () => this.set('mapError', error)))
       .finally(() => safeExec(this, () => this.set('mapIsUpdating', false)));
   },

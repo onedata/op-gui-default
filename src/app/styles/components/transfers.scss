@@ -160,7 +160,7 @@
         transform: translateY(-50%) rotate(180deg);
       }
       &.top {
-        transform: translateX($chart-tooltip-arrow-size / 2 + 5px) translateY(-$arrow-top-position) translateY(-100%) translateY($arrow-top-position);
+        transform: translateX($chart-tooltip-arrow-size / 2 + 5px) translateY(-100%) translateY($arrow-top-position);
         .ct-tooltip-arrow {
           transform: translateY(50%) rotate(180deg);
         }

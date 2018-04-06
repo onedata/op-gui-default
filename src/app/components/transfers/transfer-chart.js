@@ -327,7 +327,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
       '_transferLastUpdateTime',
       '_expectedStatsNumber'
     );
-    return _transferLastUpdateTime - _timePeriod * _expectedStatsNumber;
+    return _transferLastUpdateTime - _timePeriod * _expectedStatsNumber + 1;
   }),
 
   /**
@@ -676,7 +676,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
       '_transferStartTime',
       '_expectedStatsNumber'
     );
-    let x = _transferLastUpdateTime - 0.5;
+    let x = _transferLastUpdateTime + 1;
     const scaledStats = [];
     statValues = statValues.filter(y => y !== null);
     for (let i = 0; i < statValues.length; i++) {

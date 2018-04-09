@@ -27,7 +27,6 @@ export default Component.extend(ClickOutside, {
     'open',
     'dropdown-menu-right',
     'dropdown-menu-list', 
-    'space-dropdown-menu', 
     'dropdown-menu-settings', 
     'migrate-popover'
   ],

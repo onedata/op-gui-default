@@ -1,19 +1,25 @@
 import Ember from 'ember';
 import SettingsDropMixin from 'op-worker-gui/mixins/components/settings-drop';
 
+const {
+  Component,
+  computed,
+  inject: { service },
+} = Ember;
+
 /**
- * Drop-right menu for root dir, cotnaining ia. data distribution etc.
+ * Drop-right menu for root dir, containing ia. data distribution etc.
  * Component does not have spaces manipulation logic - actions are sent to parent components or services.
  * @module components/root-dir-settings-drop
  * @author Jakub Liput
  * @copyright (C) 2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default Ember.Component.extend(SettingsDropMixin, {
+export default Component.extend(SettingsDropMixin, {
   classNames: ['root-dir-settings-drop'],
 
-  commonModals: Ember.inject.service(),
-  messageBox: Ember.inject.service(),
+  commonModals: service(),
+  messageBox: service(),
 
   dir: undefined,
   
@@ -28,7 +34,7 @@ export default Ember.Component.extend(SettingsDropMixin, {
     }
     ```
   */
-  menuItems: function() {
+  menuItems: computed(function() {
     let i18n = this.get('i18n');
     return [
       {
@@ -37,7 +43,7 @@ export default Ember.Component.extend(SettingsDropMixin, {
         action: 'dataDistribution'
       },
     ];
-  }.property(),
+  }),
 
   actions: {
     dataDistribution() {

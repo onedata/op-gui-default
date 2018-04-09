@@ -276,26 +276,13 @@
       margin: 0;
     }
   }
-  .migrate-popover {
-    // improve position for triangle for dropdown menus
-    &.dropdown-menu-settings.dropdown-menu-right:before {
-      top: 16px;
-    }
-    
-    width: 300px;
-    .menu-group-name {
-      margin-bottom: 10px;
-      padding-left: 12px;
-    }
-    .item-icon {
-      font-size: 28px !important;
-      vertical-align: middle;
-      .one-icon {
-        top: 2px;
-      }
-    }
+  .migrate-popover.dropdown-menu-settings {    
+    width: 350px;
     .item-label {
-      text-transform: initial;
+      text-transform: none;
+    }
+    .item-label.truncated-string {
+      max-width: 294px;
     }
   }
   .loader-container {

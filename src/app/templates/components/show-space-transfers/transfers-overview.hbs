@@ -16,42 +16,14 @@
     </div>
     
     <div class="col-xs-12 col-md-5 col-throughput-pie-chart">
-      <h2><span class="one-label">{{t "components.transfers.throughputDistribution"}}</span>
-        {{#if providerTransfers.length}}
-          {{#bs-button-group
-            value=transfersPieChartDirection
-            type="radio"
-            size="sm"
-            class="space-transfers-throughput-direction pull-right"
-          }}
-            {{#bs-button value="out"}}{{t "components.transfers.out"}}{{/bs-button}}
-            {{#bs-button value="in"}}{{t "components.transfers.in"}}{{/bs-button}}
-          {{/bs-button-group}}
-        {{/if}}
-      </h2>
+      <h2><span class="one-label">{{t "components.transfers.throughputDistribution.title"}}</span></h2>
       <div class="row loadable-row">
-        {{#if providerTransfers.length}}
-          {{#if someTransfersRemote}}
-            <p>
-              {{t "components.transfers.someTransfersRemote"}}
-            </p>
-          {{/if}}
+        {{#loading-container isLoading=(not providersLoaded)}}
           {{transfers/throughput-distribution
+            space=space
             providers=providers
-            providersColors=providersColors
-            providerTransfers=providerTransfers
-            transfersDirection=transfersPieChartDirection
-          }}
-        {{else if destinationProviderIds.length}}
-          <p>{{t "components.transfers.initializingTransfers"}}</p>
-        {{else}}
-          <p>{{t "components.transfers.noActiveTransfers"}}</p>
-        {{/if}}
-        {{#if throughputChartError}}
-          {{#error-inline}}
-            {{t "components.transfers.throughputChartError"}}
-          {{/error-inline}}
-        {{/if}}
+            providersColors=providersColors}}
+        {{/loading-container}}
       </div>
     </div>
   </div>

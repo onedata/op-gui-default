@@ -16,13 +16,57 @@
     }
   }
 
+  .ct-label.ct-vertical, .ct-label.ct-horizontal {
+    white-space: nowrap;
+  }
+
+  .ct-label.ct-horizontal {
+    display: block;
+    text-align: center;
+  }
+
   .transfers-throughput-distribution {
-    .chart-row {
-      max-width: 600px;
-      margin: 0 auto;
+    $-ct-chart-padding-top: 40px;
+    
+    position: relative;
+    .loadable-row {
+      min-height: 140px + $-ct-chart-padding-top;
     }
-    .zero-chart .ct-series {
-      opacity: 0.4;
+    .ct-chart {
+      margin-top: $-ct-chart-padding-top;
+      margin-bottom: 0;
+    }
+    .ct-grid.ct-vertical {
+      stroke: darken($onedata-light-gray, 9%);
+      &.x-axis-line {
+        stroke: black;
+      }
+    }
+    .x-axis-line {
+      stroke: black;
+    }
+    .ct-chart {
+      height: 350px;
+    }
+    .btn-group {
+      position: absolute;
+      top: $padding-small-vertical;
+      right: $padding-small-vertical;
+    }
+    .ct-label.ct-vertical {
+      margin-top: 0.5em;
+    }
+    .half-description {
+      display: none;
+      position: absolute;
+      left: 0;
+      text-transform: uppercase;
+      transform: translateX(-50%) translateY(-50%) rotate(-90deg) translateY(50%);
+      font-weight: bold;
+      text-align: center;
+      font-size: 70%;
+      line-height: 30px;
+      background-color: $onedata-light-gray;
     }
   }
 
@@ -45,6 +89,10 @@
       // height of chart + top-padding (TODO: parametrize height of chart?)
       min-height: 160px + $-ct-chart-padding-top;
     }
+    .waiting-for-stats {
+      @include absolute-align-middle-center();
+      text-align: center;
+    }
     .btn-group {
       position: absolute;
       top: $padding-small-vertical;
@@ -54,17 +102,8 @@
       }
     }
     .ct-chart {
-      padding-top: 40px;
+      margin-top: $-ct-chart-padding-top;
       margin-bottom: 0;
-    }
-    .ct-area {
-      fill-opacity: 0.5;
-    }
-    .ct-line {
-      stroke-width: 2px;
-    }
-    .ct-point {
-      stroke-width: 6px;
     }
     .ct-grid.ct-vertical {
       stroke: darken($onedata-light-gray, 9%);
@@ -75,14 +114,7 @@
       border-color: inherit;
       border-width: 5px;
     }
-    .ct-label.ct-vertical.ct-start, .ct-label.ct-horizontal.ct-end {
-      white-space: nowrap;
-    }
-    .ct-label.ct-horizontal.ct-end {
-      display: block;
-      text-align: center;
-    }
-    
+
     .row-main-chart > .resource-load-error{
       margin-top: 64px;
       margin-left: 5%;
@@ -90,27 +122,105 @@
     }
   }
 
+  .ct-tooltip {
+    $arrow-top-position: $chart-tooltip-arrow-size * 0.65;
+    position: absolute;
+    display: none;
+    transform: translateX(-100%) translateX(-$chart-tooltip-arrow-size / 2 - 5px) translateY(-$arrow-top-position);
+    padding: $chart-tooltip-padding;
+    background-color: white;
+    border: 1px solid $chart-border-color;
+    border-radius: $border-radius-small;
+    z-index: 2;
+    font-size: $chart-font-size-base;
+    white-space: nowrap;
+    width: 200px;
+    .ct-tooltip-arrow {
+      border: ($chart-tooltip-arrow-size / 2) solid transparent;
+      border-left-color: $chart-border-color;
+      height: $chart-tooltip-arrow-size;
+      position: absolute;
+      bottom: 0;
+      border-right-width: 0;
+      top: $arrow-top-position;
+      transform: translateY(-50%);
+      left: 100%;
+      &::after {
+        content: '';
+        position: absolute;
+        border: ($chart-tooltip-arrow-size / 2) solid transparent;
+        border-left-color: white;
+        border-right-width: 0;
+        height: $chart-tooltip-arrow-size - 4px;
+        margin-left: -$chart-tooltip-arrow-size / 2 - 1px;
+        margin-top: -($chart-tooltip-arrow-size / 2);
+      }
+    }
+    &.right {
+      transform: translateX($chart-tooltip-arrow-size / 2 + 5px) translateY(-$arrow-top-position);
+      .ct-tooltip-arrow {
+        left: initial;
+        right: 100%;
+        transform: translateY(-50%) rotate(180deg);
+      }
+      &.top {
+        transform: translateX($chart-tooltip-arrow-size / 2 + 5px) translateY(-100%) translateY($arrow-top-position);
+        .ct-tooltip-arrow {
+          transform: translateY(50%) rotate(180deg);
+        }
+      }
+    }
+    &.top {
+      transform: translateX(-100%) translateX(-$chart-tooltip-arrow-size / 2 - 5px) translateY(-100%) translateY($arrow-top-position);
+      .ct-tooltip-arrow {
+        top: initial;
+        bottom: $arrow-top-position;
+        transform: translateY(50%);
+      }
+    }
+    .tooltip-header {
+      font-weight: bold;
+    }
+    .providers-list-header {
+      position: relative;
+      margin-top: $padding-base-vertical;
+      margin-bottom: $padding-base-vertical;
+      padding-top: $padding-base-vertical;
+      border-top: 1px solid $chart-border-color;
+      font-weight: bold;
+      .throughput {
+        top: $padding-base-vertical;
+      }
+    }
+    .ct-legend li {
+      position: relative;
+      display: block;
+      padding: 0 65px 0 15px;
+      margin: 0;
+      .provider-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    .throughput {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+    .legend-square {
+      position: absolute;
+      top: 3px;
+      left: 0;
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: $border-radius-small;
+    }
+  }
+
   .one-collapsible-list-item-header.row {
     padding-left: $padding-large-horizontal;
     padding-right: 45px;;
-  }
-
-  .one-collapsible-list {
-    .btn-group {
-      left: 50%;
-      right: initial;
-      transform: translateX(-50%);
-    }
-    .chart-row {
-      padding-top: 120px;
-      margin-top: -100px;
-    }
-    .loadable-row {
-      overflow-x: auto;
-    }
-    svg {
-      min-width: 600px;
-    }
   }
 
   .item-icon-container {

@@ -1,0 +1,13 @@
+<div class="providers-list-header">
+  <div class="one-label">{{title}}</div>
+  <div class="throughput">{{sum}}</div>
+</div>
+<ul class="ct-legend">
+  {{#each providers as |provider|}}
+    <li>
+      <div class="legend-square" style={{provider.boxStyle}}></div>
+      <div class="provider-name">{{provider.name}}</div>
+      <div class="throughput">{{provider.value}}</div>
+    </li>
+  {{/each}}
+</ul>

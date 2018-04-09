@@ -11,7 +11,6 @@ import Ember from 'ember';
 import _ from 'lodash';
 
 import SpaceTransfersUpdater from 'op-worker-gui/utils/space-transfers-updater';
-import providerTransfers from 'op-worker-gui/utils/transfers/provider-transfers';
 import providerTransferConnections from 'op-worker-gui/utils/transfers/provider-transfer-connections';
 import mutateArray from 'ember-cli-onedata-common/utils/mutate-array';
 import generateColors from 'op-worker-gui/utils/generate-colors';
@@ -26,7 +25,6 @@ const {
   observer,
   isArray,
   get,
-  set,
   A,
   isEmpty,
   inject: { service },
@@ -195,27 +193,7 @@ export default Component.extend({
     
     return transfersUpdater;
   },
-  
-  /**
-   * Updates (adds/removes) ProviderTransfers in cache
-   * @param {Ember.Array<ProviderTransfer>} ptCache 
-   * @param {Ember.Array<Transfer>} currentTransfers 
-   */
-  _updateProviderTransfersCache(ptCache, currentTransfers) {
-    const ptNewList = providerTransfers(currentTransfers.toArray());
-    _.remove(ptCache, pt =>
-      !_.find(ptNewList, { src: get(pt, 'src'), dest: get(pt, 'dest') })
-    );
-    ptNewList.forEach(pt => {
-      const ptOldVer = _.find(ptCache, { src: get(pt, 'src'), dest: get(pt, 'dest') });
-      if (ptOldVer) {
-        set(ptOldVer, 'bytesPerSec', get(pt, 'bytesPerSec'));
-      } else {
-        ptCache.pushObject(pt);
-      }
-    });
-  },
-  
+    
   _scrollToFirstSelectedTransfer() {
     const selectedTransferIds = this.get('selectedTransferIds');
     
@@ -253,10 +231,7 @@ export default Component.extend({
   },
   
   _initializeDefaultValues() {
-    this.setProperties({
-      _ptcCache: A(),
-      _providerTransfersCache: A(),
-    });
+    this.set('_ptcCache', A());
   },
   
   observeScrollToSelectedTransfers: observer('allTablesLoaded', function () { 
@@ -265,21 +240,7 @@ export default Component.extend({
       this.set('_scrolledToSelectedTransfers', true);
     }
   }),
-  
-  /**
-   * True if at least one current transfer is controlled by remote provider
-   * so statistics can be slightly delayed.
-   * @type {Ember.ComputedProperty<boolean>}
-   */
-  someTransfersRemote: computed(
-    'currentTransfers.@each.{type,status}',
-    'providerId',
-    function getSomeTransfersRemote() {
-      const providerId = this.get('providerId');
-      return this.get('currentTransfers').toArray().some(t => !t.getIsLocal(providerId));
-    }
-  ),
-  
+    
   /**
    * Watches updater settings dependecies and changes its settings
    */
@@ -315,6 +276,7 @@ export default Component.extend({
   currentTransferList: computed.reads('space.currentTransferList'),
   completedTransferList: computed.reads('space.completedTransferList'),
   providerList: computed.reads('space.providerList'),
+  providersMap: computed.reads('space.transferLinkState.activeLinks'),
     
   /**
    * Collection of Transfer model for current
@@ -349,15 +311,7 @@ export default Component.extend({
         this.get('completedTransfersLoaded');
     }
   ),
-  
-  /**
-   * Holds current state of provider transfers array.
-   * Intended to be mutable - reference should stay the same for component life.
-   * Initialized to empty array on init.
-   * @type {Ember.Array<ProviderTransfer>}
-   */
-  _providerTransfersCache: null,
-  
+    
   /**
    * If true, this instance of data container already scrolled to selected transfers
    * @type {boolean}
@@ -365,42 +319,12 @@ export default Component.extend({
   _scrolledToSelectedTransfers: false,
   
   /**
-   * Each object is a one-direction transfer from one provider to another.
-   * NOTE: is empty Ember Array until currentTransfers loads.
-   * (async -> currentTransfers.[], default: A([]))
-   * 
-   * See `util:transfers/provider-transfers` for type def. and generation
-   * Mutable, array reference stays the same for component life.
-   * @type {Ember.ComputedProperty<Array<ProviderTransfer>|undefined>}
-   */
-  providerTransfers: computed(
-    'currentTransfersLoaded',
-    'currentTransfers.@each.bytesPerSec',
-    function getProviderTransfers() {
-      if (this.get('currentTransfersLoaded')) {
-        const {
-          _providerTransfersCache,
-          currentTransfers,
-        } = this.getProperties('_providerTransfersCache', 'currentTransfers');
-
-        this._updateProviderTransfersCache(
-          _providerTransfersCache,
-          currentTransfers
-        );
-      }
-
-      return this.get('_providerTransfersCache');
-    }
-  ),
-
-  /**
    * Cache for `providerTransferConnections`
    * @type {Ember.Array<ProviderTransferConnection>}
    */
   _ptcCache: undefined,
   
   /**
-   * (async -> providerTransfers)
    * Collection of connection between two providers (for map display)
    * Order in connection is random; each pair can occur once.
    * See `util:transfers/provider-transfer-connections`
@@ -408,15 +332,15 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<Array<ProviderTransferConnection|undefined>>}
    */
   providerTransferConnections: computed(
-    'providerTransfers',
+    'providersMap',
     '_ptcCache',
     function getProviderTransferConnections() {
-      const providerTransfers = this.get('providerTransfers');
+      const providersMap = this.get('providersMap');
       let _ptcCache = this.get('_ptcCache');
-      if (providerTransfers) {
+      if (providersMap) {
         mutateArray(
           _ptcCache,
-          providerTransferConnections(providerTransfers),
+          providerTransferConnections(providersMap),
           (x, y) => x[0] === y[0] && x[1] === y[1]
         );
       }
@@ -430,33 +354,26 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<Array<string>>}
    */
   destinationProviderIds: computed(
-    'currentTransfers.@each.destination',
+    'providersMap',
     function getDestinationProviderIds() {
-      const transfers = this.get('currentTransfers');
-      if (!isEmpty(transfers)) {
-        return _.uniq(transfers.map(t => get(t, 'destination'))); 
+      const providersMap = this.get('providersMap');
+      if (!isEmpty(providersMap)) {
+        return _.uniq(_.flatten(_.values(providersMap)));
       }
     }
   ),
   
   /**
-   * Creates an array of provider ids that are destination of transfers for space
+   * Creates an array of provider ids that are source of transfers for space
    * NOTE: returns new array every recomputation
    * @type {Ember.ComputedProperty<Array<string>>}
    */
   sourceProviderIds: computed(
-    'currentTransfers.@each.bytesPerSec',
+    'providersMap',
     function getSourceProviderIds() {
-      const transfers = this.get('currentTransfers');
-      if (!isEmpty(transfers)) {
-        return _.uniq(_.flatten(transfers
-          .map(t => {
-            if (t && get(t, 'bytesPerSec')) {
-              return Object.keys(get(t, 'bytesPerSec'));
-            } else {
-              return [];
-            }
-          })));
+      const providersMap = this.get('providersMap');
+      if (!isEmpty(providersMap)) {
+        return Object.keys(providersMap);
       }
     }
   ),
@@ -471,17 +388,6 @@ export default Component.extend({
       const providerIds = providers.mapBy('id').sort();
       const colors = generateColors(providerIds.length);
       return _.zipObject(providerIds, colors);
-    }
-  }),
-  
-  /**
-   * True if at least one current transfer's current stat cannot be loaded
-   * @type {boolean}
-   */
-  throughputChartError: computed('currentTransfers.@each.currentStatError', function () {
-    const currentTransfers = this.get('currentTransfers');
-    if (currentTransfers) {
-      return currentTransfers.toArray().some(t => !t || get(t, 'currentStatError'));
     }
   }),
   

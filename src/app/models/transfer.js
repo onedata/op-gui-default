@@ -116,7 +116,6 @@ export default Model.extend({
   
   status: computed.reads('currentStat.status'),
   dest: computed.reads('destination'),
-  bytesPerSec: computed.reads('currentStat.bytesPerSec'),
   userName: computed.reads('systemUser.name'),
   transferredBytes: computed.reads('currentStat.transferredBytes'),
   transferredFiles: computed.reads('currentStat.transferredFiles'),

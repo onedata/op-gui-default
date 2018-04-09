@@ -16,6 +16,7 @@
       )}}
         {{!-- FIXME: some of these variables will be removed after rebase --}}
         {{show-space-transfers/transfers-overview
+          space=space
           providers=providers
           providerTransfers=providerTransfers
           someTransfersRemote=someTransfersRemote
@@ -24,6 +25,7 @@
           destinationProviderIds=destinationProviderIds
           sourceProviderIds=sourceProviderIds
           providersColors=providersColors
+          providersLoaded=providersLoaded
         }}
       {{/loading-container}}
       

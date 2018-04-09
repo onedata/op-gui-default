@@ -53,3 +53,13 @@
   </div>
 {{/if}}
 
+{{!-- data distribution --}}
+
+{{modals/file-chunks
+  open=(or openedDataDistribution false)
+  closedAction=(action "closeDataDistribution")
+  modalId="file-chunks"
+  file=commonModals.modalParams.fileForChunks
+  currentProviderSupport=commonModals.modalParams.currentProviderSupport
+  space=commonModals.modalParams.space
+}}

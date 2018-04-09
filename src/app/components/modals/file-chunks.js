@@ -2,7 +2,7 @@
  * Shows distribution of files among providers
  * @module components/modals/file-chunks
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -43,7 +43,7 @@ export default Component.extend(PromiseLoadingMixin, {
 
   /**
    * @virtual
-   * @type {File}
+   * @type {function}
    */
   closedAction: () => {},
 
@@ -266,6 +266,18 @@ export default Component.extend(PromiseLoadingMixin, {
   }),
   
   /**
+   * Type of element that is presented in modal
+   * One of: directory, rootDirectory, file
+   * @type {Ember.ComputedProperty<string>}
+   */
+  fileType: computed('file.{isDir,parent}', function () {
+    return this.get('file.isDir') ?
+      (this.get('file.hasParent') ? 'directory' : 'rootDirectory')
+      :
+      'file';
+  }),
+  
+  /**
    * Enable/disable updaters when transfers count for current file changes
    * @type {Ember.Observer}
    */
@@ -400,7 +412,14 @@ export default Component.extend(PromiseLoadingMixin, {
   },
   
   //#endregion
-    
+  
+  init() {
+    this._super(...arguments);
+    if (this.get('open') == null) {
+      this.set('open', false);
+    }
+  },
+
   /**
    * @override
    * Clean polling updaters

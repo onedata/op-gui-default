@@ -1,20 +1,24 @@
 <ul>
   <li>
     <div id="tree-dir-{{rootDir.id}}"
-      class="secondary-sidebar-item root-item dir-item single-selectable onedata-red {{if (eq rootDir.id fileBrowser.dir.id) 'active' ''}}">
-      <div class="item-element item-click-area" {{action 'openDirInBrowser' rootDir}}>
+      class="secondary-sidebar-item root-item dir-item single-selectable onedata-red {{if (eq rootDir.id fileBrowser.dir.id) "active" ""}}">
+      <span class="item-element item-click-area" {{action "openDirInBrowser" rootDir}}>
         <span class="item-element item-icon">
           {{one-icon icon="folder-open" class="color-directory"}}
         </span>
         <span class="item-element item-label">
-          {{t 'components.dataFilesTree.rootDirectory'}}
+          {{t "components.dataFilesTree.rootDirectory"}}
         </span>
-      </div>
+      </span>
+      {{root-dir-settings-drop
+        dir=rootDir
+        dataDistribution="rootDataDistribution"
+      }}
     </div>
   </li>
   <li>
     {{!-- level == 2 because first level is root --}}
-    {{data-files-tree-list rootDir=rootDir openDirInBrowser='openDirInBrowser'
+    {{data-files-tree-list rootDir=rootDir openDirInBrowser="openDirInBrowser"
       level=2}}
   </li>
 </ul>

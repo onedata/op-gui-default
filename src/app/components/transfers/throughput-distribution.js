@@ -71,6 +71,12 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   providers: undefined,
 
   /**
+   * Possible values: onTheFly, jobs, all.
+   * @type {string}
+   */
+  transferType: 'all',
+
+  /**
    * One of `minute`, `hour`, `day`, `month`.
    * @type {string}
    */
@@ -127,16 +133,20 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   }),
   
   /**
-   * Proxy object that resolves with stats for specified time unit.
+   * Proxy object that resolves with stats for specified type and time unit.
    * @type {Ember.ComputedProperty<PromiseObject<SpaceTransferTimeStat>>}
    */
-  _timeStatForUnit: computed('space', 'timeUnit', function () {
+  _timeStatForUnit: computed('space', 'timeUnit', 'transferType', function () {
     const {
       space,
       timeUnit,
-    } = this.getProperties('space', 'timeUnit');
-    const unitProp = `transfer${_.capitalize(timeUnit)}Stat`;
-    return PromiseObject.create({ promise: get(space, unitProp) });
+      transferType,
+    } = this.getProperties('space', 'timeUnit', 'transferType');
+    const typeProp = `transfer${_.capitalize(transferType)}Stat`;
+    const unitProp = `${timeUnit}Stat`;
+    return PromiseObject.create({
+      promise: get(space, typeProp).then(typeStats => get(typeStats, unitProp))
+    });
   }),
 
   /**

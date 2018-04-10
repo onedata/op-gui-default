@@ -281,13 +281,13 @@ export default Component.extend({
   /**
    * Collection of Transfer model for current
    * (active, invalidating or scheduled) transfers
-   * @type {Ember.ComputedProperty<Ember.Array<Transfer>>}
+   * @type {Ember.ComputedProperty<ArraySlice<Transfer>>}
    */
   currentTransfers: undefined,
   
   /**
    * Collection of Transfer model for completed transfers
-   * @type {Ember.ComputedProperty<Ember.Array<Transfer>>}
+   * @type {Ember.ComputedProperty<ArraySlice<Transfer>>}
    */
   completedTransfers: undefined,
     
@@ -406,6 +406,10 @@ export default Component.extend({
     });
   }),
   
+  currentTransfersLoadingMore: false,
+  
+  completedTransfersLoadingMore: false,
+  
   //#endregion
   
   init() {
@@ -477,12 +481,13 @@ export default Component.extend({
     } = this.getProperties('activeTabId', 'openedTransfersSlice', 'transfersUpdater');
     /** @type {Array<string>} */
     const allTransferIds = this.get(`${activeTabId}TransferList.content`).hasMany('list').ids();
+    // TODO: optimize: add attr: data-transfer-id=transfer_id to not match regexp everytime
     /** @type {Array<string>} */
     const renderedTransferIds = items.map(i => i.id.match(/transfer-row-(.*)/)[1]);
     const firstId = renderedTransferIds[0];
     const lastId = renderedTransferIds[renderedTransferIds.length - 1];
     const startIndex = allTransferIds.indexOf(firstId);
-    const endIndex = allTransferIds.indexOf(lastId);
+    const endIndex = allTransferIds.indexOf(lastId, startIndex);
     
     const oldVisibleIds = openedTransfersSlice.mapBy('id');
     openedTransfersSlice.setProperties({ startIndex, endIndex });
@@ -498,6 +503,8 @@ export default Component.extend({
       }
     });
     
+    const isLoadingMore = get(openedTransfersSlice, 'lastObject') !== get(openedTransfersSlice, 'sourceArray.lastObject');    
+    this.set(`${activeTabId}TransfersLoadingMore`, isLoadingMore);
     
     // FIXME: debug code
     console.log(`visible: ${renderedTransferIds}`);

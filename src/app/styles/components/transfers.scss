@@ -343,11 +343,12 @@
 
 .transfers-overview {
   .row-active-transfers {
-    transition: top 0.5s ease-out;
+    transition: top 0.25s ease-out;
     padding-bottom: 50px;
     &.sticky {
-      z-index: 1;
+      z-index: 3;
       position: fixed;
+      padding-bottom: 0;
     }
   }
   
@@ -363,12 +364,14 @@
     background-color: $onedata-light-gray;
     line-height: 50px;
     transition: opacity 0.5s linear;
+    pointer-events: none;
   }
   
   .sticky {
-    .row-expand-handler {
+    .row-expand-handler {      
       opacity: 1;
       cursor: pointer;
+      pointer-events: all;
     }
   }
 }

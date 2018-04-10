@@ -64,6 +64,8 @@ export default Component.extend({
     if (this.get('stickyOverview')) {
       const height = this.$('.row-active-transfers').outerHeight();
       return htmlSafe(`margin-top: ${height}px;`);
+    } else {
+      return htmlSafe();
     }
   }),
 

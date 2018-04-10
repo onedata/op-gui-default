@@ -16,7 +16,7 @@
  *
  * @module components/common-modals
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -25,7 +25,6 @@ import Ember from 'ember';
 const {
   Component,
   inject: { service },
-  on,
 } = Ember;
 
 export default Component.extend({
@@ -35,10 +34,12 @@ export default Component.extend({
     Before opening modal, additional params may be required
     which can be used in specific modals
   */
-  modalParams: {},
+  modalParams: null,
 
-  registerInService: on('init', function() {
-    this.set('commonModals.component', this);
-  }),
+  actions: {
+    closeModal(type) {
+      this.get('commonModals').closeModal(type);
+    },
+  },
 
 });

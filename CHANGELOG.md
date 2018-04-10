@@ -7,6 +7,7 @@ CHANGELOG
 ### Latest changes
 
 * VFS-4232 Added line chart which shows providers transfer throughput.
+* VFS-4260 Added menu for managing space root dir data distribution
 * VFS-4157 Requesting completed transfers list with delay to be compatible with backend fixes
 * VFS-4223 Fixed long time of loading data distribution modal
 * VFS-4027 Added support for peta-, exa-, zetta- and yottabytes

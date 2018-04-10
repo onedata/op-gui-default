@@ -9,7 +9,7 @@ import filePermissions from './file-permissions';
  *
  * @module locales/en/translations
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default {
@@ -417,6 +417,7 @@ export default {
       fileChunksModal: {
         file: 'file',
         directory: 'directory',
+        rootDirectory: 'root directory',
         title: 'Data distribution',
         text: 'Management of data distribution for',
         fileIsEmpty: 'This file has no content.',
@@ -560,6 +561,11 @@ export default {
         output: 'Output',
         timeLastUpdate: 'Time (last update: {{lastUpdate}})',
         throughput: 'Throughput',
+      },
+    },
+    rootDirSettingsDrop: {
+      drop: {
+        dataDistribution: 'Data distribution',
       },
     },
   },

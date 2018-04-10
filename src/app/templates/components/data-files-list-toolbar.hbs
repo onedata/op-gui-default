@@ -114,17 +114,6 @@
 {{modals/file-permissions open=isEditingPermissions files=dir.selectedFiles
   filesType=dir.selectedFilesType}}
 
-{{!-- FILE CHUNKS --}}
-
-{{modals/file-chunks
-  open=isFileChunksModal
-  modalId="file-chunks"
-  closedAction=(action "chunksModalClosed")
-  file=fileForChunks
-  currentProviderSupport=currentProviderSupport
-  space=fileSystemTree.selectedSpace
-}}
-
 {{!-- NOT IMPLEMENTED FEATURE --}}
 
 {{#bs-modal open=isNotImplementedModal body=false footer=false

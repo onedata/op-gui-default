@@ -35,7 +35,8 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
   /** Collection of group permissions - effectively all rows in permissions table */
   groupList: belongsTo('space-group-list', { async: true }),
 
-  currentTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),  
+  scheduledTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
+  currentTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
   completedTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
   providerList: belongsTo('space-provider-list', { async: true, inverse: null }),
 

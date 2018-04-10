@@ -1,36 +1,54 @@
 {{#if _mobileMode}}
-  {{#if (eq _tableData.length 0)}}
+  {{!-- there can be a firstRowSpace row --}}
+  {{#if (lt _tableData.length 2)}}
     <p>{{_tableCustomMessages.noDataToShow}}</p>
   {{else}}
     {{#one-collapsible-list as |list|}}
       {{#each _tableData as |tableRowData|}}
-        {{#list.item as |listItem|}}
-          {{#listItem.header}}
-            {{transfers/live-stats-table/cell-file-name record=tableRowData}}
-          {{/listItem.header}}
-          {{#listItem.content}}
-            <div class="item-table">
-              <div class="item-table-content-cell">
-                {{#each _tableColumns as |column|}}
-                  <div class="row content-row">
-                    {{!-- using data processing similar to the one used by ember-models-table --}}
-                    <strong>{{column.title}}:</strong>
-                    {{#if column.component}}
-                      {{component column.component data=_tableData record=tableRowData column=column}}
-                    {{else}}
-                      <span class="one-label">{{get tableRowData column.propertyName}}</span>
-                    {{/if}}
-                  </div>
-                {{/each}}
-                {{#if listItem.isActive}}
-                  <div class="row content-row chart-row">
-                    {{transfers/live-stats-table/expanded-row record=tableRowData}}
-                  </div>
-                {{/if}}
+        {{#if tableRowData.firstRowSpace}}
+          {{transfers/live-stats-table/first-row-space
+            tagName="li"
+            visibleColumnsCount=1
+            firstRowListIndex=firstRowSpace.firstRowListIndex
+          }}
+        {{else}}
+          {{#list.item as |listItem|}}
+            {{#listItem.header class="transfer-item-header"}}
+              <div
+                class="transfer-row"
+                id="transfer-row-{{tableRowData.transferId}}"
+                data-transfer-id={{tableRowData.transferId}}
+                data-list-index={{tableRowData.listIndex}}
+              >
+                {{transfers/live-stats-table/cell-file-name record=tableRowData}}
               </div>
-            </div>
-          {{/listItem.content}}
-        {{/list.item}}
+            {{/listItem.header}}
+            {{#listItem.content}}
+              <div class="item-table">
+                <div class="item-table-content-cell">
+                  {{#each _tableColumns as |column|}}
+                    {{#unless column.isHidden}}
+                      <div class="row content-row">
+                        {{!-- using data processing similar to the one used by ember-models-table --}}
+                        <strong>{{column.title}}:</strong>
+                        {{#if column.component}}
+                          {{component column.component data=_tableData record=tableRowData column=column}}
+                        {{else}}
+                          <span class="one-label">{{get tableRowData column.propertyName}}</span>
+                        {{/if}}
+                      </div>
+                    {{/unless}}
+                  {{/each}}
+                  {{#if listItem.isActive}}
+                    <div class="row content-row chart-row">
+                      {{transfers/live-stats-table/expanded-row-template record=tableRowData}}
+                    </div>
+                  {{/if}}
+                </div>
+              </div>
+            {{/listItem.content}}
+          {{/list.item}}
+        {{/if}}
       {{/each}}
     {{/one-collapsible-list}}
   {{/if}}
@@ -46,10 +64,14 @@
     useFilteringByColumns=false
     showComponentFooter=false
     multipleColumnsSorting=false
-    multipleExpand=true
+    multipleExpand=_hasExpandableRows
     pageSize=1000000
     rowTemplate="components/transfers/live-stats-table/row-template"
-    expandedRowTemplate="components/transfers/live-stats-table/expanded-row-template"}}
+    expandedRowTemplate=(if _hasExpandableRows "components/transfers/live-stats-table/expanded-row-template" null)
+  }}
+  {{#if (lt _tableData.length 2)}}
+    <p class="table-empty-message">{{_tableCustomMessages.noDataToShow}}</p>
+  {{/if}}
 {{/if}}
 
 

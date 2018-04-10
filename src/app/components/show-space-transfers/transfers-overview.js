@@ -17,7 +17,6 @@ const {
   computed,
   observer,
   String: { htmlSafe },
-  run: { debounce, next },
 } = Ember;
 
 export default Component.extend({
@@ -61,9 +60,11 @@ export default Component.extend({
   transfersPieChartDirection: 'out',
   
   style: computed('stickyOverview', function getStyle() {
-    if (this.get('stickyOverview')) {
-      const height = this.$('.row-active-transfers').outerHeight();
-      return htmlSafe(`margin-top: ${height}px;`);
+    if (this.get('stickyOverview')) {      
+      const $rowActiveTransfers = this.$('.row-active-transfers');
+      const height = $rowActiveTransfers.outerHeight();
+      const width = $rowActiveTransfers.outerWidth();
+      return htmlSafe(`height: ${height}px; width: ${width}px;`);
     } else {
       return htmlSafe();
     }
@@ -91,9 +92,7 @@ export default Component.extend({
   
   observeOverviewExpanded: observer('overviewExpanded', function () {
     if (!this.get('overviewExpanded')) {
-      next(() => {
-        this.computeSticky();
-      });
+      this.computeSticky();
     }
   }),
 
@@ -102,7 +101,7 @@ export default Component.extend({
     this.initSticky($contentScroll);
     $contentScroll.on(
       this.eventName('scroll'),
-      () => debounce(() => safeExec(this, 'computeSticky'), 0)
+      () => safeExec(this, 'computeSticky')
     );
   },
 
@@ -128,13 +127,20 @@ export default Component.extend({
     const {
       initialHandlerTop,
       contentScrollTop,
-    } = this.getProperties('initialHandlerTop', 'contentScrollTop');
+      stickyOverview,
+    } = this.getProperties('initialHandlerTop', 'contentScrollTop', 'stickyOverview');
     const contentScroll = document.getElementById('content-scroll');
     const sticky = this.get('overviewExpanded') ?
       (contentScroll.scrollTop !== 0) :
       (initialHandlerTop - contentScrollTop <= contentScroll.scrollTop);
-    if (!sticky) {
+    if (!sticky && stickyOverview) {
+      // this.set('style', htmlSafe(''));
       this.set('overviewExpanded', false);
+    } else if (sticky && !stickyOverview) {
+      // const $rowActiveTransfers = this.$('.row-active-transfers');
+      // const height = $rowActiveTransfers.outerHeight();
+      // const width = $rowActiveTransfers.outerWidth();
+      // this.set('style', htmlSafe(`height: ${height}px; width: ${width}px;`));
     }
     this.set('stickyOverview', sticky);
   },

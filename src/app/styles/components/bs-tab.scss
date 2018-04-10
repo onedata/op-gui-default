@@ -7,42 +7,6 @@ $color-tab-inactive-font: $color-panel-graphite;
 $tab-border-width: 2px;
 $tab-border-style: $tab-border-width solid $color-tab-border;
 
-.xbs-tab {
-  .nav-tabs {
-    li, li.active {
-      > a {
-        &,
-        &:hover,
-        &:focus {
-          border-top: 4px solid transparent;
-        }
-      }
-    }
-    li.disabled {
-      cursor: not-allowed !important;
-      > a {
-        pointer-events: none;
-      }
-    }
-    li.active {
-      > a {
-        &,
-        &:hover,
-        &:focus {
-          border-top-color: $color-one-blue-gray;
-        }
-      }
-    }
-    .nav-link {
-      padding: $padding-large-vertical $padding-large-horizontal;
-      border-radius: $border-radius-small $border-radius-small 0 0;
-      font-weight: bold;
-      color: inherit;
-    }
-    
-  }
-}
-
 .bs-tab {
   .nav-tabs {
     border-bottom: $tab-border-style;

@@ -29,6 +29,11 @@
   </div>
   
   <div class="col-xs-12 row-expand-handler" {{action "toggleOverview"}}>
-    {{t (concat "components.transfers.transfersOverview." (if overviewExpanded "hide" "show"))}}
+    <span class="toggle-expand left {{if overviewExpanded "opened"}}">
+      {{one-icon class="toggle-icon" icon="arrow-down"}}
+    </span>
+    <span class="one-label">
+      {{t (concat "components.transfers.transfersOverview." (if overviewExpanded "hide" "show"))}}
+    </span>
   </div>
 </div>

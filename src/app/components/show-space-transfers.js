@@ -17,8 +17,6 @@ import generateColors from 'op-worker-gui/utils/generate-colors';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 import ArraySlice from 'ember-cli-onedata-common/utils/array-slice';
 
-const RE_TRANSFER_ROW_ID = /transfer-row-(.*)/;
-
 const {
   Component,
   computed,
@@ -30,6 +28,8 @@ const {
   inject: { service },
   run,
 } = Ember;
+
+const defaultActiveTabId = 'scheduled';
 
 // FIXME: refactor, to new file
 class ViewTester {
@@ -104,32 +104,26 @@ export default Component.extend({
    * @type {Space}
    */
   space: undefined,
-  
-  /**
-   * Name of transfer table column to sort by default (eg. path)
-   * @type {string|undefined}
-   */
-  sortBy: undefined,
-  
+    
   /**
    * Ids of transfers that should be expanded, "blinked" and scrolled to
    * on entering view
    * @type {Array<string>|undefined}
    */
   selectedTransferIds: undefined,
-    
+  
   //#endregion
   
   //#region Internal properties
-    
-  initialActiveTabId: 'current',
+      
+  listLocked: false,
   
-  activeTabId: computed.reads('initialActiveTabId'),
+  activeTabId: undefined,
   
   //#endregion
   
   //#region Computed properties
-  
+    
   /**
    * Alias for Id of this provider - used for checking if transfers can be fetched
    * @type {Ember.ComputedProperty<string>}
@@ -171,18 +165,24 @@ export default Component.extend({
       space,
       store,
       activeTabId,
+      transfersUpdater: oldTransfersUpdater,
     } = this.getProperties(
       '_transfersUpdaterEnabled',
       'space',
       'store',
       'activeTabId',
+      'transfersUpdater',
       // just enable observers
       'allTablesLoaded'
     );
     
+    if (oldTransfersUpdater) {
+      oldTransfersUpdater.destroy();
+    }
     const transfersUpdater = SpaceTransfersUpdater.create({
       store,
       isEnabled: _transfersUpdaterEnabled,
+      scheduledEnabled: activeTabId === 'scheduled',
       currentEnabled: activeTabId === 'current',
       completedEnabled: activeTabId === 'completed',
       space: space,
@@ -194,39 +194,46 @@ export default Component.extend({
     return transfersUpdater;
   },
     
+  /**
+   * Assume that transfer lists (ids) are loaded
+   * If one of selected transfer is found on the completed list - go to this list and scroll/expand
+   * Otherwise, serch on current, and next search on scheduled
+   */
   _scrollToFirstSelectedTransfer() {
     const selectedTransferIds = this.get('selectedTransferIds');
+    const includedInSelectedTransfers = (id) => {
+      return _.includes(selectedTransferIds, id);
+    };
     
-    const trs = this.$('tr.transfer-row').toArray();
-    for (let i = 0; i < trs.length; i++) {
-      const transferElement = trs[i];
-      const tid = transferElement.id.match(RE_TRANSFER_ROW_ID)[1];
-      if (_.includes(selectedTransferIds, tid)) {
-        // estimate height of top toolbar + height of the table header
-        // (it's better to present table header if possible)
-        let navHeight;
-        let thHeight;
-        try {
-          navHeight = parseInt(
-            window.getComputedStyle($('header')[0])
-              .getPropertyValue('height')
-          );
-          thHeight = parseInt(
-            window.getComputedStyle($('.transfers-live-stats-table thead')[0])
-              .getPropertyValue('height')
-          );
-        } catch (error) {
-          console.warn(
-            'component:transfers/data-container: an error occured when ' + 
-            'computing scrolling offset, falling back to default'
-          );
-          console.warn(error);
-          navHeight = 80;
-          thHeight = 52;
-        }
-        $('#content-scroll').scrollTop($(transferElement).offset().top - (navHeight + thHeight));
+    let selectedList;
+    let indexOnList;
+    for (const transferType of ['completed', 'current', 'scheduled']) {
+      const transferIds = this.get(transferType + 'TransferList.content').hasMany('list').ids();
+      const index = _.findIndex(transferIds, includedInSelectedTransfers);
+      if (index > -1) {
+        selectedList = transferType;
+        indexOnList = index;
         break;
+        }
       }
+    
+    if (selectedList) {
+      this.set('listLocked', true);
+      this.set('activeTabId', selectedList);
+      run.scheduleOnce('afterRender', this, function () {
+        this.get('openedTransfersSlice').setProperties({
+          startIndex: indexOnList,
+          endIndex: indexOnList,
+        });
+        run.next(() => {
+          const $tr = this.$(`tr.transfer-row[data-list-index=${indexOnList}]`);
+          // magic number... after render, tr jumps to top, currently don't know why
+          $('#content-scroll').scrollTop($tr.offset().top - 800);
+          run.next(() => {
+            this.set('listLocked', false);
+          });
+        });
+      });
     }
   },
   
@@ -234,8 +241,8 @@ export default Component.extend({
     this.set('_ptcCache', A());
   },
   
-  observeScrollToSelectedTransfers: observer('allTablesLoaded', function () { 
-    if (this.get('_scrolledToSelectedTransfers') === false && this.get('allTablesLoaded')) {
+  observeScrollToSelectedTransfers: observer('selectedTransferIds', 'allTablesLoaded', function () { 
+    if (this.get('allTablesLoaded') && this.get('_scrolledToSelectedTransfers') === false) {
       run.next(() => this._scrollToFirstSelectedTransfer());
       this.set('_scrolledToSelectedTransfers', true);
     }
@@ -273,11 +280,14 @@ export default Component.extend({
   
   _transfersUpdaterEnabled: computed.readOnly('transfersUpdaterEnabled'),
   
+  scheduledTransferList: computed.reads('space.scheduledTransferList'),
   currentTransferList: computed.reads('space.currentTransferList'),
   completedTransferList: computed.reads('space.completedTransferList'),
   providerList: computed.reads('space.providerList'),
   providersMap: computed.reads('space.transferLinkState.activeLinks'),
-    
+  
+  scheduledTransfers: undefined,
+  
   /**
    * Collection of Transfer model for current
    * (active, invalidating or scheduled) transfers
@@ -294,22 +304,19 @@ export default Component.extend({
   providersLoaded: computed.reads('providerList.queryList.isSettled'),
   providersError: computed.reads('providerList.queryList.reason'),
 
-  currentTransfersLoaded: computed.alias('currentTransferList.isLoaded'),
-
-  completedTransfersLoaded: computed.alias('completedTransferList.isLoaded'),
+  scheduledTransfersLoaded: computed.reads('scheduledTransferList.isLoaded'),
+  currentTransfersLoaded: computed.reads('currentTransferList.isLoaded'),
+  completedTransfersLoaded: computed.reads('completedTransferList.isLoaded'),
   
   /**
    * @type {Ember.ComputedProperty<boolean>}
    */
-  allTablesLoaded: computed(
+  allTablesLoaded: computed.and(
+    'isSupportedByCurrentProvider',
     'providersLoaded',
+    'scheduledTransfersLoaded',
     'currentTransfersLoaded',
-    'completedTransfersLoaded',
-    function () {
-      return this.get('providersLoaded') &&
-        this.get('currentTransfersLoaded'),
-        this.get('completedTransfersLoaded');
-    }
+    'completedTransfersLoaded'
   ),
     
   /**
@@ -401,21 +408,33 @@ export default Component.extend({
       transfersUpdater,
     } = this.getProperties('activeTabId', 'transfersUpdater');    
     transfersUpdater.setProperties({
+      scheduledEnabled: activeTabId === 'scheduled',
       currentEnabled: activeTabId === 'current',
       completedEnabled: activeTabId === 'completed',
     });
   }),
   
+  scheduledTransfersLoadingMore: false,
   currentTransfersLoadingMore: false,
-  
   completedTransfersLoadingMore: false,
   
   //#endregion
   
+  spaceChanged: observer('space', function observeSpaceChanged() {
+    this.reinitializeTransfers();
+  }),
+  
   init() {
     this._super(...arguments);
+    this.spaceChanged();
+  },
+  
+  reinitializeTransfers() {
+    if (!this.get('activeTabId')) {
+      this.set('activeTabId', defaultActiveTabId);
+    }
     const transfersUpdater = this._initTransfersData();
-    ['current', 'completed'].forEach(type => {
+    ['scheduled', 'current', 'completed'].forEach(type => {
       const listRecord = this.get(`${type}TransferList`);
       const slice = ArraySlice.create({
         sourceArray: get(listRecord, 'list.content'),
@@ -429,6 +448,13 @@ export default Component.extend({
         transfersUpdater.fetchSpecificRecords(visibleIds);
       });
     });
+    const listWatcher = this.get('listWatcher');
+    if (listWatcher) {
+      listWatcher.scrollHandler();
+    }
+    this.setProperties({
+      listLocked: false,
+    });
   },
   
   didInsertElement() {
@@ -437,7 +463,6 @@ export default Component.extend({
       '.transfer-row',
       items => safeExec(this, 'onTableScroll', items)
     );
-    run.later(() => listWatcher.scrollHandler(), 1000);
     this.set('listWatcher', listWatcher);
   },
   
@@ -450,24 +475,17 @@ export default Component.extend({
     }
   },
   
-  openedTransfersSlice: computed('activeTabId', function () {
+  openedTransfersSlice: computed(
+    'scheduledTransfers',
+    'currentTransfers',
+    'completedTransfers',
+    'activeTabId',
+    function () {
     /** @type {string} */
     const activeTabId = this.get('activeTabId');
     return this.get(`${activeTabId}Transfers`);
-  }),
-  
-  // forceTableTopChange: observer('openedTransfersSlice.[]', function () {
-  //   console.log('xdebug: starindexchange');
-  //   run.next(() => {
-  //     this.get('listWatcher').scrollHandler();
-  //   });
-  // }),
-  
-  obs1: observer('openedTransfersSlice', function () {
-    run.scheduleOnce('afterRender', () => {
-      this.get('listWatcher').scrollHandler();
-    });
-  }),
+    }
+  ),
   
   /**
    * 
@@ -478,36 +496,40 @@ export default Component.extend({
       activeTabId,
       openedTransfersSlice,
       transfersUpdater,
-    } = this.getProperties('activeTabId', 'openedTransfersSlice', 'transfersUpdater');
-    /** @type {Array<string>} */
-    const allTransferIds = this.get(`${activeTabId}TransferList.content`).hasMany('list').ids();
-    // TODO: optimize: add attr: data-transfer-id=transfer_id to not match regexp everytime
-    /** @type {Array<string>} */
-    const renderedTransferIds = items.map(i => i.id.match(/transfer-row-(.*)/)[1]);
-    const firstId = renderedTransferIds[0];
-    const lastId = renderedTransferIds[renderedTransferIds.length - 1];
-    const startIndex = allTransferIds.indexOf(firstId);
-    const endIndex = allTransferIds.indexOf(lastId, startIndex);
-    
-    const oldVisibleIds = openedTransfersSlice.mapBy('id');
-    openedTransfersSlice.setProperties({ startIndex, endIndex });
-    const newVisibleIds = openedTransfersSlice.mapBy('id');
-    transfersUpdater.set('visibleIds', newVisibleIds);
-    
-    transfersUpdater.fetchSpecificRecords(_.difference(newVisibleIds, oldVisibleIds));
-    
-    // FIXME: does not work
-    run.next(() => {
-      if (startIndex > 0 && get(openedTransfersSlice, 'firstObject.id') === firstId) {
-        this.get('listWatcher').scrollHandler();
-      }
-    });
-    
-    const isLoadingMore = get(openedTransfersSlice, 'lastObject') !== get(openedTransfersSlice, 'sourceArray.lastObject');    
-    this.set(`${activeTabId}TransfersLoadingMore`, isLoadingMore);
-    
-    // FIXME: debug code
-    console.log(`visible: ${renderedTransferIds}`);
-    console.log(`indexes: ${startIndex}..${endIndex}`);
+      listLocked,
+    } = this.getProperties('activeTabId', 'openedTransfersSlice', 'transfersUpdater', 'listLocked');
+    if (!listLocked) {
+      /** @type {Array<string>} */
+      const allTransferIds = this.get(`${activeTabId}TransferList.content`).hasMany('list').ids();
+      /** @type {Array<string>} */
+      const renderedTransferIds = items.map(i => i.getAttribute('data-transfer-id'));
+      const firstId = renderedTransferIds[0];
+      const lastId = renderedTransferIds[renderedTransferIds.length - 1];
+      const startIndex = allTransferIds.indexOf(firstId);
+      const endIndex = allTransferIds.indexOf(lastId, startIndex);
+
+      const oldVisibleIds = openedTransfersSlice.mapBy('id');
+      openedTransfersSlice.setProperties({ startIndex, endIndex });
+      const newVisibleIds = openedTransfersSlice.mapBy('id');
+      transfersUpdater.set('visibleIds', newVisibleIds);
+
+      transfersUpdater.fetchSpecificRecords(_.difference(newVisibleIds, oldVisibleIds));
+
+      run.next(() => {
+        if (startIndex > 0 && get(openedTransfersSlice, 'firstObject.id') === firstId) {
+          this.get('listWatcher').scrollHandler();
+        }
+      });
+
+      const isLoadingMore = (
+        get(openedTransfersSlice, 'lastObject') !==
+        get(openedTransfersSlice, 'sourceArray.lastObject')
+      );
+      this.set(`${activeTabId}TransfersLoadingMore`, isLoadingMore);
+
+      // FIXME: debug code
+      console.log(`visible: ${renderedTransferIds}`);
+      console.log(`indexes: ${startIndex}..${endIndex}`);
+    }
   },
 });

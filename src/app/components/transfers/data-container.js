@@ -27,8 +27,6 @@ import providerTransferConnections from 'op-worker-gui/utils/transfers/provider-
 import mutateArray from 'ember-cli-onedata-common/utils/mutate-array';
 import generateColors from 'op-worker-gui/utils/generate-colors';
 
-const RE_TRANSFER_ROW_ID = /transfer-row-(.*)/;
-
 export default Component.extend({
   classNames: ['transfers-data-container'],
   
@@ -269,7 +267,7 @@ export default Component.extend({
     const trs = this.$('tr.transfer-row').toArray();
     for (let i = 0; i < trs.length; i++) {
       const transferElement = trs[i];
-      const tid = transferElement.id.match(RE_TRANSFER_ROW_ID)[1];
+      const tid = transferElement.getAttribute('data-transfer-id');
       if (_.includes(selectedTransferIds, tid)) {
         // estimate height of top toolbar + height of the table header
         // (it's better to present table header if possible)

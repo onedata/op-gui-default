@@ -30,18 +30,26 @@
       {{/loading-container}}
       
       <div class="row row-transfers-tables">
-        {{!-- FIXME: temporary opening completed tab as default --}}
         {{#bs-tab
           class="bs-tab"
           fade=false
           customTabs=true
-          activeId=initialActiveTabId
+          activeId=activeTabId
           action=(action (mut activeTabId))
           as |activeTabId select|
         }}
           {{#bs-nav
             type="tabs"
           }}
+            {{#bs-nav-item
+              active=(eq activeTabId "scheduled")
+            }}
+              <a href="#scheduled"
+                class="nav-link"
+                role="tab" {{action select "scheduled"}}>
+                {{t "components.transfers.scheduledTransfers"}}
+              </a>
+            {{/bs-nav-item}}
             {{#bs-nav-item
               active=(eq activeTabId "current")
             }}
@@ -62,6 +70,37 @@
             {{/bs-nav-item}}
           {{/bs-nav}}
           <div class="tab-content">
+            {{#bs-tab-pane elementId="scheduled"}}
+              {{#if (eq activeTabId "scheduled")}}
+                <div class="row row-scheduled-transfers">
+                  <div class="col-xs-12 col-scheduled-transfers">
+                    <div class="row loadable-row">
+                      {{#loading-container isLoading=(or
+                          (not providersLoaded)
+                          (not scheduledTransfersLoaded)
+                        )
+                        class="loading-scheduled-table"
+                      }}
+                        {{transfers/live-stats-table
+                          transfers=scheduledTransfers
+                          transferType="scheduled"
+                          providers=providers
+                          providersColors=providersColors
+                          selectedTransferIds=selectedTransferIds
+                          movedTransfers=transfersUpdater.movedTransfers
+                          updaterId=transfersUpdater.updaterId
+                        }}
+                      {{/loading-container}}
+                    </div>
+                    {{#if scheduledTransfersLoadingMore}}
+                      <div class="spinner-container spinner-centered spinner-64">
+                        {{spin-spinner scale=0.4 lines=12 length=20 width=10}}
+                      </div>
+                    {{/if}}
+                  </div>
+                </div>
+              {{/if}}
+            {{/bs-tab-pane}}
             {{#bs-tab-pane elementId="current"}}
               {{#if (eq activeTabId "current")}}
                 <div class="row row-active-transfers-table">
@@ -75,11 +114,12 @@
                       }}
                         {{transfers/live-stats-table
                           transfers=currentTransfers
-                          transferType="active"
+                          transferType="current"
                           providers=providers
                           providersColors=providersColors
-                          sortBy=sortBy
                           selectedTransferIds=selectedTransferIds
+                          movedTransfers=transfersUpdater.movedTransfers
+                          updaterId=transfersUpdater.updaterId
                         }}
                       {{/loading-container}}
                     </div>
@@ -108,8 +148,9 @@
                           transferType="completed"
                           providers=providers
                           providersColors=providersColors
-                          sortBy=sortBy
                           selectedTransferIds=selectedTransferIds
+                          movedTransfers=transfersUpdater.movedTransfers
+                          updaterId=transfersUpdater.updaterId
                         }}
                       {{/loading-container}}
                     </div>

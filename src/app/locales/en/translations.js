@@ -503,10 +503,16 @@ export default {
     },
     transfers: {
       providersMapOfDist: 'Active transfers map',
+      scheduledTransfers: 'Scheduled transfers',
       activeTransfers: 'Active transfers',
       completedTransfers: 'History of transfers',
       noActiveTransfers: 'There are no active transfers',
       noCompletedTransfers: 'There are no past transfers',
+      noTransfers: {
+        scheduled: 'There are no scheduled transfers',
+        current: 'There are no active transfers',
+        completed: 'There are no past transfers',
+      },
       initializingTransfers: 'Initializing transfers...',
       notSupported: 'Cannot list transfers of selected space because it is not ' +
         'supported by current provider',
@@ -517,6 +523,7 @@ export default {
         path: 'File/directory',
         userName: 'Username',
         destination: 'Destination',
+        scheduledAt: 'Scheduled at',
         startedAt: 'Started at',
         finishedAt: 'Finished at',
         totalBytes: 'Transferred',

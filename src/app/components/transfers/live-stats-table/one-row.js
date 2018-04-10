@@ -5,35 +5,49 @@ import Ember from 'ember';
 const {
   Component,
   computed,
-  String: { htmlSafe },
 } = Ember;
 
-const rowHeight = 73;
-const paddingOffsetTop = 16;
+const emptyFun = () => {};
 
 export default Component.extend({
   tagName: '',
   
+  /**
+   * @virtual optional
+   * @type {function|undefined}
+   */
+  expandRow: undefined,
+  
+  /**
+   * @virtual optional
+   * @type {function|undefined}
+   */
+  collapseRow: undefined,
+  
   visibleColumnsCount: computed('processedColumns.length', function () {
     return this.get('processedColumns.length') - 1;
   }),
-  
-  tdStyle: computed('index', 'record.listIndex', function getTdStyle() {
-    if (this.get('index') === 0) {
-      return htmlSafe(
-        `padding-top: ${this.get('record.listIndex') * rowHeight + paddingOffsetTop}px;`
-      );
-    } else {
-      return htmlSafe();
+    
+  init() {
+    this._super(...arguments);
+    if (!this.get('expandRow')) {
+      this.set('expandRow', emptyFun);
     }
-  }),
+    if (!this.get('collapseRow')) {
+      this.set('collapseRow', emptyFun);
+    }
+  },
   
   actions: {
     expandRow() {
-      return this.get('expandRow')(...arguments);
+      /** @type {function|undefined} */
+      const expandRow = this.get('expandRow');
+      return expandRow ? expandRow(...arguments) : null;
     },
     collapseRow() {
-      return this.get('collapseRow')(...arguments);
+      /** @type {function} */
+      const collapseRow = this.get('collapseRow');
+      return collapseRow ? collapseRow(...arguments) : null;
     },
   }
 });

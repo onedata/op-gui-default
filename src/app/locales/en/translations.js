@@ -549,7 +549,7 @@ export default {
         time: 'Time',
         throughput: 'Throughput',
         output: 'Output',
-        waitingForTransferStart: 'Waiting for the the transfer to start...',
+        waitingForTransferStart: 'Waiting for the transfer to start...',
         waitingForStats: 'Gathering transfer statistics...',
         waitingForStatsTip: 'Statistics are delayed due to synchronization ' +
           'latency caused by data distribution.',

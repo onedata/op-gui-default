@@ -3,7 +3,7 @@
  * Beside toolbar buttons, contains a set of modals for toolbar actions.
  * @module components/data-files-list-toolbar
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -29,6 +29,7 @@ export default Ember.Component.extend({
   store: inject.service(),
   fileSystemTree: inject.service(),
   session: inject.service(),
+  commonModals: inject.service(),
 
   tagName: 'ul',
   classNames: ['data-files-list-toolbar', 'nav', 'navbar-nav', 'navbar-right', 'toolbar-group'],
@@ -300,15 +301,10 @@ export default Ember.Component.extend({
     },
 
     showChunks() {
-      this.setProperties({
-        isFileChunksModal: true,
+      this.get('commonModals').openModal('dataDistribution', {
         fileForChunks: this.get('dir.singleSelectedFile'),
-      });
-    },
-    
-    chunksModalClosed() {
-      this.setProperties({
-        fileForChunks: null,
+        currentProviderSupport: this.get('currentProviderSupport'),
+        space: this.get('fileSystemTree.selectedSpace'),
       });
     },
     

@@ -54,12 +54,12 @@ export default Ember.Mixin.create({
   /**
    * @type {Array<number>}
    */
-  _ctPointsColumnXPosition: [],
+  _ctPointsColumnXPosition: Object.freeze([]),
 
   /**
    * @type {Array<number>}
    */
-  _ctPointsColumnYPosition: [],
+  _ctPointsColumnYPosition: Object.freeze([]),
 
   /**
    * @type {number}
@@ -71,29 +71,35 @@ export default Ember.Mixin.create({
    * @param {object} eventData chartist event data
    */
   addChartTooltip(eventData) {
+    safeExec(this, '_ctEventHandler', eventData);
+  },
+
+  /**
+   * Event handler
+   * @param {object} eventData chartist event data
+   */
+  _ctEventHandler(eventData) {
     const {
       eventName,
       data,
       chart,
     } = eventData;
-    safeExec(this, () => {
-      if ((eventName === 'draw' && this.get('_ctChartCreated')) ||
-        data.type === 'initial') {
-          this.setProperties({
-            _ctChartCreated: false,
-            _ctPointsColumnXPosition: [],
-            _ctPointsColumnYPosition: [],
-          });
-      }
-      if (eventName === 'draw' && data.type === 'point') {
-        this._ctRememberChartPointCoordinates(data);
-      }
-      if (eventName === 'created') {
-        this._ctAttachValuesColumnHoverListeners(chart);
-        this._ctShowTooltipIfNeeded();
-        this.set('_ctChartCreated', true);
-      }
-    });
+    if ((eventName === 'draw' && this.get('_ctChartCreated')) ||
+      data.type === 'initial') {
+        this.setProperties({
+          _ctChartCreated: false,
+          _ctPointsColumnXPosition: [],
+          _ctPointsColumnYPosition: [],
+        });
+    }
+    if (eventName === 'draw' && data.type === 'point') {
+      this._ctRememberChartPointCoordinates(data);
+    }
+    if (eventName === 'created') {
+      this._ctAttachValuesColumnHoverListeners(chart);
+      this._ctShowTooltipIfNeeded();
+      this.set('_ctChartCreated', true);
+    }
   },
 
   /**

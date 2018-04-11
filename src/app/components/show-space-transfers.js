@@ -44,14 +44,6 @@ export default Component.extend({
    */
   selectedTransferIds: undefined,
   
-  /**
-   * What speed (input, output) should be presented per provider
-   * on throughput chart.
-   * One of: out, in
-   * @type {string}
-   */
-  transfersPieChartDirection: 'out',
-  
   //#region External properties
   
   /**

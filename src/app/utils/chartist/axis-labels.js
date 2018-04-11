@@ -3,7 +3,8 @@
  * 
  * Options:
  * - xLabel, yLabel - labels
- * - xLabelXOffset, xLabelYOffset, yLabelXOffset, yLabelYOffset - position 
+ * - xLabelXOffset, xLabelYOffset, yLabelXOffset, yLabelYOffset - position
+ * - yAlignment - 'left' (default) or 'right' - y axis label alignment
  * adjustments for x and y labels
  * 
  * Module imported from onedata-gui-common.
@@ -24,17 +25,25 @@ export default function (options) {
     xLabelYOffset: -20,
     yLabelXOffset: 20,
     yLabelYOffset: 20,
+    yAlignment: 'left',
   };
-  options = Chartist.extend({}, defaultOptions, options);
 
   return (chart) => {
     chart.on('created', function () {
+      options = Chartist.extend({}, defaultOptions, options);
+      const dataAxisLabels = chart.data.axisLabels;
+      if (dataAxisLabels) {
+        options.xLabel = dataAxisLabels.xLabel;
+        options.yLabel = dataAxisLabels.yLabel;
+      }
       let svgNode = $(chart.svg._node);
       let axisLabelsGroup = chart.svg.elem('g', {}, 'ct-axis-labels');
       axisLabelsGroup.elem('text', {
-        x: -svgNode.innerHeight() / 2 + options.yLabelYOffset,
-        y: options.yLabelXOffset,
-      }, 'ct-axis-y-label').text(options.yLabel);
+        x: (options.yAlignment === 'right' ? -1 : 1) *
+          (-svgNode.innerHeight() / 2 + options.yLabelYOffset),
+        y: options.yAlignment === 'right' ?
+          -svgNode.innerWidth() - options.yLabelXOffset : options.yLabelXOffset,
+      }, 'ct-axis-y-label ' + options.yAlignment).text(options.yLabel);
       axisLabelsGroup.elem('text', {
         x: svgNode.innerWidth() / 2 + options.xLabelXOffset,
         y: svgNode.innerHeight() + options.xLabelYOffset,

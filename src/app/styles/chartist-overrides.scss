@@ -30,6 +30,18 @@ $chart-border-color: $one-main-border-color;
       }
     }
   }
+  .ct-point {
+    stroke-width: 0px;
+    &.ct-point-active {
+      stroke-width: 8px;
+    }
+  }
+  .ct-line {
+    stroke-width: 1px;
+  }
+  .ct-area {
+    fill-opacity: 0.5;
+  }
   .ct-bar-sum {
     transform: translateY(-5px);
     font-size: $chart-font-size-base;
@@ -49,9 +61,19 @@ $chart-border-color: $one-main-border-color;
     .ct-axis-y-label {
       text-anchor: middle;
       transform: rotate(-90deg);
+      &.right {
+        transform: rotate(90deg);
+      }
     }
     .ct-axis-x-label {
       text-anchor: middle;
+    }
+  }
+  .ct-values-line {
+    stroke-width: 0px;
+    stroke: black;
+    &.ct-values-line-active {
+      stroke-width: 0.5px;
     }
   }
   .ct-legend {

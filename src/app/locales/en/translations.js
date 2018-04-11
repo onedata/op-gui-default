@@ -504,19 +504,15 @@ export default {
     transfers: {
       transfersFor: 'Transfer for',
       providersMapOfDist: 'Active transfers map',
-      throughputDistribution: 'Providers throughput',
       activeTransfers: 'Active transfers',
       completedTransfers: 'History of transfers',
       noActiveTransfers: 'There are no active transfers',
       noCompletedTransfers: 'There are no past transfers',
-      throughputChartError: 'Failed to load all the data for the chart',
       initializingTransfers: 'Initializing transfers...',
       notSupported: 'Cannot list transfers of selected space because it is not ' +
         'supported by current provider',
       in: 'Input',
       out: 'Output',
-      someTransfersRemote: 'At least one transfer is not controlled by the current ' +
-        'provider, thus current throughput statistics may be slightly inaccurate.',
       liveTableStats: {
         type: 'Type',
         path: 'File/directory',
@@ -552,6 +548,18 @@ export default {
         day: 'Day',
         month: 'Month',
         time: 'Time',
+        throughput: 'Throughput',
+        output: 'Output',
+        waitingForTransferStart: 'Waiting for the transfer to start...',
+        waitingForStats: 'Gathering transfer statistics...',
+        waitingForStatsTip: 'Statistics are delayed due to synchronization ' +
+          'latency caused by data distribution.',
+      },
+      throughputDistribution: {
+        title: 'Providers throughput',
+        input: 'Input',
+        output: 'Output',
+        timeLastUpdate: 'Time (last update: {{lastUpdate}})',
         throughput: 'Throughput',
       },
     },

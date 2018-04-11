@@ -33,6 +33,7 @@ const {
 const TRANSFER_COLLECTION_DELAY = 300;
 
 const DEFAULT_COMPLETED_TIME = 30 * 1000;
+const MAP_TIME = 5000;
 
 import Looper from 'ember-cli-onedata-common/utils/looper';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
@@ -91,6 +92,12 @@ export default EmberObject.extend({
   pollingTimeCompleted: DEFAULT_COMPLETED_TIME,
 
   /**
+   * Polling interval (ms) used for fetching transfers map
+   * @type {number}
+   */
+  pollingTimeMap: MAP_TIME,
+
+  /**
    * @type {boolean}
    */
   currentEnabled: true,
@@ -100,12 +107,21 @@ export default EmberObject.extend({
    */
   completedEnabled: true,
 
+  /**
+   * @type {boolean}
+   */
+  mapEnabled: true,
+
   _currentEnabled: computed('currentEnabled', 'isEnabled', function () {
     return this.get('isEnabled') && this.get('currentEnabled');
   }),
 
   _completedEnabled: computed('completedEnabled', 'isEnabled', function () {
     return this.get('isEnabled') && this.get('completedEnabled');
+  }),
+
+  _mapEnabled: computed('mapEnabled', 'isEnabled', function () {
+    return this.get('isEnabled') && this.get('mapEnabled');
   }),
 
   /**
@@ -123,11 +139,23 @@ export default EmberObject.extend({
   _completedWatcher: undefined,
 
   /**
+   * @type {Looper}
+   */
+  _mapWatcher: undefined,
+
+  /**
    * If true, currently fetching info about current transfers
    * Set by some interval watcher
    * @type {boolean}
    */
   currentIsUpdating: undefined,
+
+  /**
+   * If true, currently fetching info about providers transfer mapping
+   * Set by some interval watcher
+   * @type {boolean}
+   */
+  mapIsUpdating: undefined,
 
   /**
    * If true, currently fetching info about completed transfers
@@ -143,6 +171,12 @@ export default EmberObject.extend({
   currentError: null,
 
   /**
+   * Error object from fetching providers transfer mapping info
+   * @type {any} typically a request error object
+   */
+  mapError: null,
+
+  /**
    * Error object from fetching completed transfers info
    * @type {any} typically a request error object
    */
@@ -156,27 +190,20 @@ export default EmberObject.extend({
    */
   _toggleWatchersDelay: ENV.environment === 'test' ? 0 : 1000,
 
-  /**
-   * Interval [ms] used by `_currentWatcher`
-   * @type {number}
-   */
-  _currentInterval: computed.reads('_sharedInterval'),
-
-  _completedInterval: computed.reads('_sharedInterval'),
-
   init() {
     this._super(...arguments);
 
     this.setProperties({
       currentIsUpdating: false,
       completedIsUpdating: false,
+      mapIsUpdating: false,
     });
 
     this._createWatchers();
     this._toggleWatchers();
 
     // enable observers for properties
-    this.getProperties('_currentEnabled', '_completedEnabled');
+    this.getProperties('_currentEnabled', '_completedEnabled', '_mapEnabled');
 
     this.set('_completedIdsCache', []);
     this.set('_currentIdsCache', []);
@@ -187,7 +214,9 @@ export default EmberObject.extend({
   destroy() {
     try {
       _.each(
-        _.values(this.getProperties('_currentWatcher', '_completedWatcher')),
+        _.values(
+          this.getProperties('_currentWatcher', '_completedWatcher', '_mapWatcher')
+        ),
         watcher => watcher && watcher.destroy()
       );
     } finally {
@@ -211,8 +240,8 @@ export default EmberObject.extend({
       immediate: true,
     });
     _currentWatcher
-      .on('tick', () =>
-        safeExec(this, 'fetchCurrent')
+      .on('tick', () => 
+          safeExec(this, 'fetchCurrent')
       );
 
     const _completedWatcher = Looper.create({
@@ -222,18 +251,29 @@ export default EmberObject.extend({
       .on('tick', () =>
         safeExec(this, 'fetchCompleted')
       );
+    
+    const _mapWatcher = Looper.create({
+      immediate: true,
+    });
+    _mapWatcher
+      .on('tick', () =>
+        safeExec(this, 'fetchProviderMap')
+      );
 
     this.setProperties({
       _currentWatcher,
       _completedWatcher,
+      _mapWatcher,
     });
   },
 
   observeToggleWatchers: observer(
     '_currentEnabled',
     '_completedEnabled',
+    '_mapEnabled',
     'pollingTimeCurrent',
     'pollingTimeCompleted',
+    'pollingTimeMap',
     '_toggleWatchersDelay',
     function () {
       debounce(this, '_toggleWatchers', this.get('_toggleWatchersDelay'));
@@ -245,17 +285,23 @@ export default EmberObject.extend({
       const {
         _currentEnabled,
         _completedEnabled,
+        _mapEnabled,
         _currentWatcher,
         _completedWatcher,
+        _mapWatcher,
         pollingTimeCurrent,
         pollingTimeCompleted,
+        pollingTimeMap,
       } = this.getProperties(
         '_currentEnabled',
         '_completedEnabled',
+        '_mapEnabled',
         '_currentWatcher',
         '_completedWatcher',
+        '_mapWatcher',
         'pollingTimeCurrent',
-        'pollingTimeCompleted'
+        'pollingTimeCompleted',
+        'pollingTimeMap'
       );
 
       set(
@@ -267,6 +313,11 @@ export default EmberObject.extend({
         _completedWatcher,
         'interval',
         _completedEnabled ? pollingTimeCompleted : null
+      );
+      set(
+        _mapWatcher,
+        'interval',
+        _mapEnabled ? pollingTimeMap : null
       );
     });
   },
@@ -348,6 +399,18 @@ export default EmberObject.extend({
 
   computeCurrentPollingTime(transfersCount) {
     return TRANSFER_COLLECTION_DELAY * transfersCount + this.get('basePollingTime');
+  },
+
+   /**
+   * Function invoked when providers transfer mapping should be updated by
+   * polling timer
+   * @return {Promise<SpaceTransferLinkState>}
+   */
+  fetchProviderMap() {
+    this.set('mapIsUpdating', true);
+    return this.get('space').belongsTo(`transferLinkState`).reload()
+      .catch(error => safeExec(this, () => this.set('mapError', error)))
+      .finally(() => safeExec(this, () => this.set('mapIsUpdating', false)));
   },
   
   /**

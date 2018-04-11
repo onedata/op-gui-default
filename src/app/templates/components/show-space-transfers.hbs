@@ -42,46 +42,13 @@
             </div>
             
             <div class="col-xs-12 col-md-5 col-throughput-pie-chart">
-              <h2><span class="one-label">{{t "components.transfers.throughputDistribution"}}</span>
-                {{#if tData.providerTransfers.length}}
-                  {{#bs-button-group
-                    value=transfersPieChartDirection
-                    type="radio"
-                    size="sm"
-                    class="space-transfers-throughput-direction pull-right"
-                  }}
-                    {{#bs-button value="out"}}{{t "components.transfers.out"}}{{/bs-button}}
-                    {{#bs-button value="in"}}{{t "components.transfers.in"}}{{/bs-button}}
-                  {{/bs-button-group}}
-                {{/if}}
-              </h2>
+              <h2><span class="one-label">{{t "components.transfers.throughputDistribution.title"}}</span></h2>
               <div class="row loadable-row">
-                {{#loading-container isLoading=(or
-                  (not tData.providersLoaded)
-                  (not tData.currentTransfersLoaded)
-                )}}
-                  {{#if tData.providerTransfers.length}}
-                    {{#if tData.someTransfersRemote}}
-                      <p>
-                        {{t "components.transfers.someTransfersRemote"}}
-                      </p>
-                    {{/if}}
-                    {{transfers/throughput-distribution
-                      providers=tData.providers
-                      providersColors=tData.providersColors
-                      providerTransfers=tData.providerTransfers
-                      transfersDirection=transfersPieChartDirection
-                    }}
-                  {{else if tData.destinationProviderIds.length}}
-                    <p>{{t "components.transfers.initializingTransfers"}}</p>
-                  {{else}}
-                    <p>{{t "components.transfers.noActiveTransfers"}}</p>
-                  {{/if}}
-                  {{#if tData.throughputChartError}}
-                    {{#error-inline}}
-                      {{t "components.transfers.throughputChartError"}}
-                    {{/error-inline}}
-                  {{/if}}
+                {{#loading-container isLoading=(not tData.providersLoaded)}}
+                  {{transfers/throughput-distribution
+                    space=space
+                    providers=tData.providers
+                    providersColors=tData.providersColors}}
                 {{/loading-container}}
               </div>
             </div>

@@ -12,14 +12,16 @@
 import Ember from 'ember';
 import _ from 'lodash';
 import moment from 'moment';
-import tooltip from 'op-worker-gui/utils/chartist/tooltip';
 import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
 import axisLabels from 'op-worker-gui/utils/chartist/axis-labels';
 import stackedLineMask from 'op-worker-gui/utils/chartist/stacked-line-mask';
 import TransferTimeStatUpdater from 'op-worker-gui/utils/transfer-time-stat-updater';
 import customCss from 'op-worker-gui/utils/chartist/custom-css';
 import centerXLabels from 'op-worker-gui/utils/chartist/center-x-labels';
-import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object'; 
+import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
+import eventListener from 'op-worker-gui/utils/chartist/event-listener';
+import ChartistValuesLine from 'op-worker-gui/mixins/components/chartist-values-line';
+import ChartistTooltip from 'op-worker-gui/mixins/components/chartist-tooltip';
 
 const {
   Component,
@@ -30,13 +32,16 @@ const {
   inject: {
     service,
   },
+  String: {
+    htmlSafe
+  },
 } = Ember;
 
 /* global Chartist */
 
 const I18N_PREFIX = 'components.transfers.transferChart.';
 
-export default Component.extend({
+export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   classNames: ['transfers-transfer-chart'],
   i18n: service(),
   
@@ -65,6 +70,18 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<Object>}
    */
   providersColors: Object.freeze({}),
+
+  /**
+   * @override
+   * @type {string}
+   */
+  chartTooltipSelector: '.ct-tooltip',
+
+  /**
+   * @override
+   * @type {string}
+   */
+  chartTooltipVerticalAlign: 'top',
   
   /**
    * Array of actual chart values.
@@ -86,12 +103,32 @@ export default Component.extend({
    * @type {string}
    */
   _statsError: undefined,
+
+  /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  _transferIsScheduled: computed.equal('transfer.status', 'scheduled'),
   
   /**
    * True if data for chart is loaded
    * @type {boolean}
    */
-  _statsLoaded: computed.reads('_timeStatForUnit.isFulfilled'),
+  _statsLoaded: computed.and(
+    '_timeStatForUnit.isFulfilled',
+    'transfer.currentStat.isFulfilled'
+  ),
+
+  /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  _showUnitButtons: computed('_transferIsScheduled', '_statsLoaded', '_isWaitingForStats', function () {
+    const {
+      _transferIsScheduled,
+      _statsLoaded,
+      _isWaitingForStats,
+    } = this.getProperties('_transferIsScheduled', '_statsLoaded', '_isWaitingForStats');
+    return _statsLoaded && !_transferIsScheduled && !_isWaitingForStats;
+  }),
 
   /**
    * @type {Ember.ComputedProperty<string|null>}
@@ -138,6 +175,34 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<number>}
    */
   _transferStartTime: computed.reads('transfer.startTime'),
+
+  /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  _isWaitingForStats: computed(
+    '_statsLoaded',
+    'transfer.isCurrent',
+    '_transferLastUpdateTime',
+    '_transferStartTime',
+    function () {
+      const {
+        _statsLoaded,
+        transfer,
+        _transferLastUpdateTime,
+        _transferStartTime,
+      } = this.getProperties(
+        '_statsLoaded',
+        'transfer',
+        '_transferLastUpdateTime',
+        '_transferStartTime'
+      );
+      if (!_statsLoaded || !transfer.get('isCurrent')) {
+        return false;
+      } else {
+        return _transferLastUpdateTime - _transferStartTime < 30;
+      }
+    }
+  ),
 
   /**
    * Expected stats number (number of chart points).
@@ -189,10 +254,12 @@ export default Component.extend({
    */
   _statsNumberPerLabel: computed('timeUnit', function() {
     switch (this.get('timeUnit')) {
+      case 'month':
+        return 3;
       case 'day':
         return 4;
       case 'hour':
-        return 5;
+        return 6;
       default:
         return 2;
     }
@@ -260,7 +327,7 @@ export default Component.extend({
       '_transferLastUpdateTime',
       '_expectedStatsNumber'
     );
-    return _transferLastUpdateTime - _timePeriod * _expectedStatsNumber;
+    return _transferLastUpdateTime - _timePeriod * _expectedStatsNumber + 1;
   }),
 
   /**
@@ -289,18 +356,53 @@ export default Component.extend({
   }),
 
   /**
+   * Maximum stats sum in all time slots
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _chartYMax: computed('_stats', function () {
+    const _stats = this.get('_stats');
+    const arrays = _.values(_stats);
+    if (!arrays.length) {
+      return 0;
+    }
+    let maxSum = 0;
+    _.range(arrays[0].length).forEach(i => {
+      const sum = _.sum(arrays.map(ar => ar[i] || 0));
+      if (sum > maxSum) {
+        maxSum = sum;
+      }
+    });
+    return Math.max(maxSum, 8);
+  }),
+
+  /**
+   * Chart ticks for Y axis
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _chartYTicks: computed('_chartYMax', function () {
+    const _chartYMax = this.get('_chartYMax');
+    const numberOfTicks = 4;
+    const delta = _chartYMax / (numberOfTicks - 1);
+    return _.range(numberOfTicks).map(i => delta * i);
+  }),
+
+  /**
    * Chartist settings
    * @type {Object}
    */
-  _chartOptions: computed('_chartXTicks', function() {
+  _chartOptions: computed('_chartXTicks', '_chartYTicks', function() {
     const {
       i18n,
       _chartXTicks,
       _chartXLow,
+      _chartYMax,
+      _chartYTicks,
     } = this.getProperties(
       'i18n',
       '_chartXTicks',
-      '_chartXLow'
+      '_chartXLow',
+      '_chartYMax',
+      '_chartYTicks'
     );
     return {
       axisX: {
@@ -311,7 +413,11 @@ export default Component.extend({
         low: _chartXLow,
       },
       axisY: {
+        low: 0,
+        high: _chartYMax,
+        type: Chartist.FixedScaleAxis,
         labelInterpolationFnc: value => bytesToString(value, { format: 'bit' }) + 'ps',
+        ticks: _chartYTicks,
       },
       low: 0,
       showArea: true,
@@ -327,16 +433,14 @@ export default Component.extend({
           xLabel: i18n.t(I18N_PREFIX + 'time'),
           yLabel: i18n.t(I18N_PREFIX + 'throughput'),
         }),
-        tooltip({
-          chartType: 'line',
-          topOffset: -17,
-          rangeInTitle: true,
-        }),
         stackedLineMask(),
         customCss({
           filterBySeriesIndex: true,
         }),
         centerXLabels(),
+        eventListener({
+          eventHandler: (eventData) => this._chartEventHandler(eventData),
+        }),
       ],
     };
   }),
@@ -358,7 +462,6 @@ export default Component.extend({
         _chartValues,
         _sortedProvidersIds,
         providersColors,
-        providers,
         _expectedStatsNumber,
         _transferStartTime,
       } = this.getProperties(
@@ -366,7 +469,6 @@ export default Component.extend({
         '_chartValues',
         '_sortedProvidersIds',
         'providersColors',
-        'providers',
         '_expectedStatsNumber',
         '_transferStartTime'
       );
@@ -395,23 +497,6 @@ export default Component.extend({
               valuesSumArray.filter(({ x }) => x >= _transferStartTime)
             ));
         }
-        // creating tooltips
-        const tooltipElements = _.range(_expectedStatsNumber + 2).map((index) => {
-          return _sortedProvidersIds
-            .filter((providerId, providerIndex) => _statsValues[providerIndex].length > index)
-            .map((providerId, providerIndex) => {
-              const provider =
-                _.find(providers, (provider) => provider.get('id') === providerId) || {};
-              const providerName = get(provider, 'name') || providerId;
-              return {
-                name: providerName.length > 10 ?
-                  providerName.substring(0, 8) + '...' : providerName,
-                value: bytesToString(_statsValues[providerIndex][index].y, { format: 'bit' }) + 'ps',
-                className: 'ct-tooltip-entry',
-                cssString: 'border-color: ' + providersColors[providerId],
-              };
-            });
-        });
         // setting colors
         const customCss = _sortedProvidersIds.map((providerId) => {
           const color = providersColors[providerId];
@@ -429,16 +514,87 @@ export default Component.extend({
         });
         // creating chart data object
         return {
-          labels: this._getChartLabels(),
           series: _chartValues.map((providerValues) => ({
             data: providerValues,
-            tooltipElements,
           })),
           customCss,
         }; 
       }
     }
   ),
+
+  /**
+   * @type {Ember.ComputedProperty<string>}
+   */
+  _tooltipHeader: computed(
+    '_statsValues',
+    'chartTooltipHoveredColumn',
+    function () {
+      const chartTooltipHoveredColumn = this.get('chartTooltipHoveredColumn');
+      const chartLabels = this._getChartLabels();
+      const startTime = chartLabels[chartTooltipHoveredColumn];
+      const endTime = chartLabels[chartTooltipHoveredColumn - 1];
+      if (chartTooltipHoveredColumn === 0 || startTime === endTime) {
+        return startTime;
+      } else {
+        return endTime + ' - ' + startTime;
+      }
+    }
+  ),
+
+  /**
+   * @type {Ember.ComputedProperty<Array<object>>}
+   */
+  _tooltipProviders: computed(
+    '_sortedProvidersIds',
+    'providersColors',
+    'providers',
+    '_stats',
+    'chartTooltipHoveredColumn',
+    function () {
+      const {
+        _sortedProvidersIds,
+        _stats,
+        providersColors,
+        providers,
+        chartTooltipHoveredColumn,
+        chartTooltipColumnsNumber,
+      } = this.getProperties(
+        '_sortedProvidersIds',
+        '_stats',
+        'providersColors',
+        'providers',
+        'chartTooltipHoveredColumn',
+        'chartTooltipColumnsNumber'
+      );
+      const result = [];
+      _sortedProvidersIds.forEach(providerId => {
+        const providerStats = _stats[providerId];
+        const index = chartTooltipColumnsNumber - chartTooltipHoveredColumn - 1;
+        if (index < 0 || !providerStats[index]) {
+          return;
+        }
+        const provider =
+          _.find(providers, (provider) => provider.get('id') === providerId) || {};
+        const providerName = get(provider, 'name') || providerId;
+        result.push({
+          name: providerName,
+          valueNumber: providerStats[index],
+          value: bytesToString(providerStats[index], { format: 'bit' }) + 'ps',
+          boxStyle: htmlSafe('background-color: ' + providersColors[providerId]),
+        });
+      });
+      return result;
+    }
+  ),
+
+  /**
+   * @type {Ember.ComputedProperty<string>}
+   */
+  _tooltipSum: computed('_tooltipProviders', function () {
+    const bytes = _.sum(this.get('_tooltipProviders').map(p => p.valueNumber));
+    return bytesToString(bytes, { format: 'bit' }) + 'ps';
+  }),
   
   changeUpdaterUnit: observer(
     'updater',
@@ -520,7 +676,7 @@ export default Component.extend({
       '_transferStartTime',
       '_expectedStatsNumber'
     );
-    let x = _transferLastUpdateTime + 0.5;
+    let x = _transferLastUpdateTime + 1;
     const scaledStats = [];
     statValues = statValues.filter(y => y !== null);
     for (let i = 0; i < statValues.length; i++) {
@@ -566,7 +722,7 @@ export default Component.extend({
   _getExpectedStatsNumberForUnit(unit) {
     switch (unit) {
       case 'month':
-        return 15;
+        return 30;
       case 'day':
         return 24;
       case 'hour':
@@ -606,5 +762,14 @@ export default Component.extend({
       }
     });
     return prefferedUnit || 'month';
-  }
+  },
+
+  /**
+   * Attaches all needed handlers to the chart
+   * @param {object} param event data
+   */
+  _chartEventHandler(eventData) {
+    this.addChartValuesLine(eventData);
+    this.addChartTooltip(eventData);
+  },
 });

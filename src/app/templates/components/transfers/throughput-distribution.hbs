@@ -28,11 +28,6 @@
     {{/loading-container}}
   {{/if}}
 </div>
-{{#bs-button-group value=transferType type="radio" size="sm"}}
-  {{#bs-button value="all"}}{{t "components.transfers.throughputDistribution.all"}}{{/bs-button}}
-  {{#bs-button value="jobs"}}{{t "components.transfers.throughputDistribution.jobs"}}{{/bs-button}}
-  {{#bs-button value="onTheFly"}}{{t "components.transfers.throughputDistribution.onTheFly"}}{{/bs-button}}
-{{/bs-button-group}}
 {{#if (and (not statsError) _statsLoaded)}}
   {{#bs-button-group value=timeUnit type="radio" size="sm"}}
     {{#bs-button value="minute"}}{{t "components.transfers.transferChart.minute"}}{{/bs-button}}

@@ -7,6 +7,10 @@
         <div class="waiting-for-stats transfer-scheduled-info">
           {{t "components.transfers.transferChart.waitingForTransferStart"}}
         </div>
+      {{else if _noStatsForUnit}}
+        <div class="waiting-for-stats no-stats-for-unit-info">
+          {{t "components.transfers.transferChart.noStatsForUnit" timeUnit=timeUnit}}
+        </div>
       {{else if _isWaitingForStats}}
         <div class="waiting-for-stats stats-delay-info">
           {{t "components.transfers.transferChart.waitingForStats"}}

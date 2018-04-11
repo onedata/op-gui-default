@@ -40,8 +40,8 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
   completedTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
   providerList: belongsTo('space-provider-list', { async: true, inverse: null }),
 
-  transferOnTheFlyStat: belongsTo('space-transfer-stat'),
-  transferJobStat: belongsTo('space-transfer-stat'),
-  transferAllStat: belongsTo('space-transfer-stat'),
-  transferLinkState: belongsTo('space-transfer-link-state'),
+  transferOnTheFlyStat: belongsTo('space-transfer-stat', { async: true, inverse: null }),
+  transferJobStat: belongsTo('space-transfer-stat', { async: true, inverse: null }),
+  transferAllStat: belongsTo('space-transfer-stat', { async: true, inverse: null }),
+  transferLinkState: belongsTo('space-transfer-link-state', { async: true, inverse: null }),
 });

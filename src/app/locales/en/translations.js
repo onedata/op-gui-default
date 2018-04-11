@@ -505,6 +505,7 @@ export default {
       providersMapOfDist: 'Active transfers map',
       activeTransfers: 'Active transfers',
       completedTransfers: 'History of transfers',
+      onTheFlyTransfers: 'On-the-fly transfers',
       noActiveTransfers: 'There are no active transfers',
       noCompletedTransfers: 'There are no past transfers',
       initializingTransfers: 'Initializing transfers...',
@@ -550,6 +551,7 @@ export default {
         throughput: 'Throughput',
         output: 'Output',
         waitingForTransferStart: 'Waiting for the the transfer to start...',
+        noStatsForUnit: 'There are no transfer statistics for the last {{timeUnit}}.',
         waitingForStats: 'Gathering transfer statistics...',
         waitingForStatsTip: 'Statistics are delayed due to synchronization ' +
           'latency caused by data distribution.',

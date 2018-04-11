@@ -16,16 +16,21 @@ const {
   Component,
   computed,
   A,
+  get,
   inject: { service },
   observer,
   isEmpty,
   run,
+  RSVP: {
+    Promise,
+  },
 } = Ember;
 
 import SpaceTransfersUpdater from 'op-worker-gui/utils/space-transfers-updater';
 import providerTransferConnections from 'op-worker-gui/utils/transfers/provider-transfer-connections';
 import mutateArray from 'ember-cli-onedata-common/utils/mutate-array';
 import generateColors from 'op-worker-gui/utils/generate-colors';
+import PromiseArray from 'ember-cli-onedata-common/utils/ember/promise-array';
 
 const RE_TRANSFER_ROW_ID = /transfer-row-(.*)/;
 
@@ -69,6 +74,7 @@ export default Component.extend({
   
   currentTransferList: computed.reads('space.currentTransferList'),
   completedTransferList: computed.reads('space.completedTransferList'),
+  onTheFlyTransferList: computed.reads('space.onTheFlyTransferList'),
   providerList: computed.reads('space.providerList'),
   providersMap: computed.reads('space.transferLinkState.activeLinks'),
   
@@ -86,6 +92,12 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<Ember.Array<Transfer>>}
    */
   completedTransfers: computed.reads('completedTransferList.list.content'),
+
+  /**
+   * Collection of Transfer model for on the fly transfers
+   * @type {Ember.ComputedProperty<Ember.Array<Transfer>>}
+   */
+  onTheFlyTransfers: computed.reads('onTheFlyTransferList.list.content'),
 
   /**
    * List of providers that support this space
@@ -114,6 +126,64 @@ export default Component.extend({
       return this.get('completedTransferList.isLoaded') === true &&
         this.get('completedTransfers.isLoaded') === true;
     }
+  ),
+
+  onTheFlyTransfersLoaded: computed(
+    'onTheFlyTransferList.isLoaded',
+    'onTheFlyTransfers.isLoaded',
+    'onTheFlyTransfers.@each.isLoading',
+    function getCurrentTransfersLoaded() {
+      return this.get('onTheFlyTransferList.isLoaded') === true &&
+        this.get('onTheFlyTransfers.isLoaded') === true &&
+        this.get('onTheFlyTransfers').every(transfer => !transfer.get('isLoading'));
+    }
+  ),
+
+  onTheFlyProviders: computed('onTheFlyTransfersLoaded', 'providersLoaded', function () {
+    const {
+      space,
+      providersLoaded,
+      providers,
+      onTheFlyTransfers,
+      onTheFlyTransfersLoaded,
+      store,
+    } = this.getProperties(
+      'space',
+      'providersLoaded',
+      'providers',
+      'onTheFlyTransfers',
+      'onTheFlyTransfersLoaded',
+      'store'
+    );
+    let promise;
+    if (!providersLoaded || !onTheFlyTransfersLoaded) {
+      promise = Promise.resolve([]);
+    } else {
+      const providersIds =
+        onTheFlyTransfers.map(transfer => transfer.get('destination'));
+      const providersIdsToLoad =
+        _.difference(providersIds, providers.map(p => get(p, 'id')));
+      if (providersIdsToLoad.length) {
+        promise = Promise.all(providersIdsToLoad.map(providerId =>
+          store.queryRecord('system-provider', {
+            id: providerId,
+            context: {
+              od_space: get(space, 'id'),
+            },
+          })
+        )).then((loaded) => A(loaded.concat(providers)));
+      } else {
+        promise = Promise.resolve(A(providers));
+      }
+    }
+    return PromiseArray.create({
+      promise,
+    });
+  }),
+
+  onTheFlyTransfersProvidersLoaded: computed.and(
+    'onTheFlyTransfersLoaded',
+    'onTheFlyProviders.isFulfilled'
   ),
   
   /**
@@ -206,8 +276,11 @@ export default Component.extend({
     const providers = this.get('providers');
     if (providers) {
       const providerIds = providers.mapBy('id').sort();
-      const colors = generateColors(providerIds.length);
-      return _.zipObject(providerIds, colors);
+      const colors = generateColors(providerIds.length + 1);
+      return _.assign(
+        _.zipObject(providerIds, colors),
+        { 'unknown': colors[colors.length - 1] }
+      );
     }
   }),
   

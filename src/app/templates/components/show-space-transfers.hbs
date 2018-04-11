@@ -45,10 +45,35 @@
               <h2><span class="one-label">{{t "components.transfers.throughputDistribution.title"}}</span></h2>
               <div class="row loadable-row">
                 {{#loading-container isLoading=(not tData.providersLoaded)}}
-                  {{transfers/throughput-distribution
-                    space=space
-                    providers=tData.providers
-                    providersColors=tData.providersColors}}
+                  {{#bs-tab fade=false as |activeId select|}}
+                    {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.all") elementId="throughputDistributionAll"}}
+                      {{#if (eq activeId "throughputDistributionAll")}}
+                        {{transfers/throughput-distribution
+                          space=space
+                          providers=tData.providers
+                          providersColors=tData.providersColors
+                          transferType="all"}}
+                      {{/if}}
+                    {{/bs-tab-pane}}  
+                    {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.jobs") elementId="throughputDistributionJob"}}
+                      {{#if (eq activeId "throughputDistributionJob")}}
+                        {{transfers/throughput-distribution
+                          space=space
+                          providers=tData.providers
+                          providersColors=tData.providersColors
+                          transferType="job"}}
+                      {{/if}}
+                    {{/bs-tab-pane}}
+                    {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.onTheFly") elementId="throughputDistributionOnTheFly"}}
+                      {{#if (eq activeId "throughputDistributionOnTheFly")}}
+                        {{transfers/throughput-distribution
+                          space=space
+                          providers=tData.providers
+                          providersColors=tData.providersColors
+                          transferType="onTheFly"}}
+                      {{/if}}
+                    {{/bs-tab-pane}}
+                  {{/bs-tab}}
                 {{/loading-container}}
               </div>
             </div>
@@ -99,7 +124,23 @@
                 {{/loading-container}}
               </div>
             </div>
-          </div>        
+          </div>
+
+          <div class="row row-on-the-fly-transfers">
+            <div class="col-xs-12 col-on-the-fly-transfers">
+              <h2>{{t "components.transfers.onTheFlyTransfers"}}</h2>
+              <div class="row loadable-row">
+                {{#loading-container
+                  isLoading=(not tData.onTheFlyTransfersProvidersLoaded)
+                  class="loading-on-the-fly-list"}}
+                  {{transfers/on-the-fly-list
+                    transfers=tData.onTheFlyTransfers
+                    providers=tData.onTheFlyProviders.content
+                    providersColors=tData.providersColors}}
+                {{/loading-container}}
+              </div>
+            </div>
+          </div>            
         {{/transfers/data-container}}
       {{/loading-container}}
     </div>

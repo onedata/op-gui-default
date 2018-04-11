@@ -71,7 +71,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   providers: undefined,
 
   /**
-   * Possible values: onTheFly, jobs, all.
+   * Possible values: onTheFly, job, all.
    * @type {string}
    */
   transferType: 'all',
@@ -85,7 +85,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   /**
    * Colors used to color each providers' series
    * @virtual
-   * @type {Ember.ComputedProperty<Object>}
+   * @type {Object}
    */
   providersColors: undefined,
 
@@ -142,7 +142,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
       timeUnit,
       transferType,
     } = this.getProperties('space', 'timeUnit', 'transferType');
-    const typeProp = `transfer${_.capitalize(transferType)}Stat`;
+    const typeProp = `transfer${_.upperFirst(transferType)}Stat`;
     const unitProp = `${timeUnit}Stat`;
     return PromiseObject.create({
       promise: get(space, typeProp).then(typeStats => get(typeStats, unitProp))
@@ -511,7 +511,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
         }
         // setting colors
         const customCss = _sortedProvidersIds.map((providerId) => {
-          const color = providersColors[providerId];
+          const color = providersColors[providerId] || providersColors['unknown'];
           return _.times(_pointsNumber, _.constant({
             line: {
               stroke: color,
@@ -812,7 +812,10 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
         name: providerName,
         valueNumber: providerStats[index],
         value: bytesToString(providerStats[index], { format: 'bit' }) + 'ps',
-        boxStyle: htmlSafe('background-color: ' + providersColors[providerId]),
+        boxStyle: htmlSafe(
+          'background-color: ' +
+          providersColors[providerId] || providersColors['unknown']
+        ),
       });
     });
     return result;

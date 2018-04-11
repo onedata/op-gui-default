@@ -17,7 +17,7 @@ const {
 
 export default Model.extend({
   /**
-   * Id of Provider that is destination of this transfer
+   * Provider is that is a destination of this transfer
    */
   destination: attr('string'),
   

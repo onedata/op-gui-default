@@ -8,7 +8,6 @@
  */
 
 import Ember from 'ember';
-import _ from 'lodash';
 
 const {
   get,
@@ -37,7 +36,7 @@ export default Ember.Component.extend({
   providersColors: undefined,
 
   /**
-   * Objects that represents each list element - on the fly transfer
+   * Array of objects that represents each list element - on the fly transfer
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   listRecords: computed('transfers', 'providers', function () {
@@ -47,7 +46,7 @@ export default Ember.Component.extend({
     } = this.getProperties('transfers', 'providers');
     return transfers.map(transfer => {
       const provider =
-        _.find(providers, p => get(p, 'id') === get(transfer, 'destination'));
+        providers.filter(p => get(p, 'id') === get(transfer, 'destination'))[0];
       return {
         transfer,
         provider,

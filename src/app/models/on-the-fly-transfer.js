@@ -1,5 +1,5 @@
 /**
- * Automatic data transfer between providers.
+ * On-the-fly data transfer between providers.
  *
  * @module models/on-the-fly-transfer
  * @author Michal Borzecki
@@ -17,7 +17,7 @@ const {
 
 export default Model.extend({
   /**
-   * Provider is that is a destination of this transfer
+   * Provider id that is a destination of this transfer
    */
   destination: attr('string'),
   

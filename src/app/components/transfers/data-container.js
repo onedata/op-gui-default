@@ -157,7 +157,7 @@ export default Component.extend({
     );
     let promise;
     if (!providersLoaded || !onTheFlyTransfersLoaded) {
-      promise = Promise.resolve([]);
+      promise = Promise.resolve(A());
     } else {
       const providersIds =
         onTheFlyTransfers.map(transfer => transfer.get('destination'));

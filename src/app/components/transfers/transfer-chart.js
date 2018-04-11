@@ -527,6 +527,9 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
             .push(..._.cloneDeep(
               valuesSumArray.filter(({ x }) => x >= _transferStartTime)
             ));
+          if (valuesSumArray[_expectedStatsNumber + 1].x === 0) {
+            _chartValues[i].pop();
+          }
         }
         // setting colors
         const customCss = _sortedProvidersIds.map((providerId) => {
@@ -606,7 +609,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
           return;
         }
         const provider =
-          _.find(providers, (provider) => provider.get('id') === providerId) || {};
+          providers.filter((provider) => get(provider, 'id') === providerId)[0] || {};
         const providerName = get(provider, 'name') || providerId;
         result.push({
           name: providerName,

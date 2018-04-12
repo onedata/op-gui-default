@@ -51,6 +51,8 @@ export default Ember.Component.extend({
         transfer,
         provider,
       };
-    });
+    }).sort((a, b) =>
+      get(a.provider, 'name').localeCompare(get(b.provider, 'name'))
+    );
   }),
 });

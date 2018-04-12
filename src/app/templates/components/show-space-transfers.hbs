@@ -46,8 +46,8 @@
               <div class="row loadable-row">
                 {{#loading-container isLoading=(not tData.providersLoaded)}}
                   {{#bs-tab fade=false as |activeId select|}}
-                    {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.all") elementId="throughputDistributionAll"}}
-                      {{#if (eq activeId "throughputDistributionAll")}}
+                    {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.all") elementId="throughput-distribution-all"}}
+                      {{#if (eq activeId "throughput-distribution-all")}}
                         {{transfers/throughput-distribution
                           space=space
                           providers=tData.providers
@@ -55,8 +55,8 @@
                           transferType="all"}}
                       {{/if}}
                     {{/bs-tab-pane}}  
-                    {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.jobs") elementId="throughputDistributionJob"}}
-                      {{#if (eq activeId "throughputDistributionJob")}}
+                    {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.jobs") elementId="throughput-distribution-job"}}
+                      {{#if (eq activeId "throughput-distribution-job")}}
                         {{transfers/throughput-distribution
                           space=space
                           providers=tData.providers
@@ -64,8 +64,8 @@
                           transferType="job"}}
                       {{/if}}
                     {{/bs-tab-pane}}
-                    {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.onTheFly") elementId="throughputDistributionOnTheFly"}}
-                      {{#if (eq activeId "throughputDistributionOnTheFly")}}
+                    {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.onTheFly") elementId="throughput-distribution-on-the-fly"}}
+                      {{#if (eq activeId "throughput-distribution-on-the-fly")}}
                         {{transfers/throughput-distribution
                           space=space
                           providers=tData.providers

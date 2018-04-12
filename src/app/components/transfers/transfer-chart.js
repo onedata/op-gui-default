@@ -71,6 +71,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   prefferedUnit: undefined,
 
   /**
+   * Can by used by stateless transfers like on-the-fly
    * @type {boolean}
    */
   ignoreTransferState: false,
@@ -685,25 +686,26 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
     const isCurrent = get(transfer, 'isCurrent');
  
     console.log('transfer-chart: creating updater');
-    _timeStatForUnit.then(timeStat => {
-      this.set('_statsError', null);
-      if (!isCurrent) {
-        this.set('timeUnit', this._getPrefferedUnit());
-      }
-      const updater = TransferTimeStatUpdater.create({
-        isEnabled: ignoreTransferState ?
-          _updaterEnabled :
-          isCurrent && _updaterEnabled,
-        timeStat,
+    _timeStatForUnit
+      .then(timeStat => {
+        this.set('_statsError', null);
+        if (!isCurrent) {
+          this.set('timeUnit', this._getPrefferedUnit());
+        }
+        const updater = TransferTimeStatUpdater.create({
+          isEnabled: ignoreTransferState ?
+            _updaterEnabled :
+            isCurrent && _updaterEnabled,
+          timeStat,
+        });
+        if (!isCurrent) {
+          updater.fetch();
+        }
+        this.set('updater', updater);
+      })
+      .catch(error => {
+        this.set('_statsError', error);
       });
-      if (!isCurrent) {
-        updater.fetch();
-      }
-      this.set('updater', updater);
-    });
-    _timeStatForUnit.catch(error => {
-      this.set('_statsError', error);
-    });
   },
   
   /**

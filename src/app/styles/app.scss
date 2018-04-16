@@ -166,3 +166,6 @@ $screen-lg-min: $min-width-desktop-medium;
 @import 'components/spin-button-base';
 @import 'components/resource-load-error';
 @import 'components/error-inline';
+
+// additional styles for external components
+@import 'components/bs-tab';

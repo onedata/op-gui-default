@@ -45,7 +45,7 @@
               <h2><span class="one-label">{{t "components.transfers.throughputDistribution.title"}}</span></h2>
               <div class="row loadable-row">
                 {{#loading-container isLoading=(not tData.providersLoaded)}}
-                  {{#bs-tab fade=false as |activeId select|}}
+                  {{#bs-tab fade=false class="bs-tab" as |activeId select|}}
                     {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.all") elementId="throughput-distribution-all"}}
                       {{#if (eq activeId "throughput-distribution-all")}}
                         {{transfers/throughput-distribution

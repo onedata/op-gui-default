@@ -1,0 +1,58 @@
+$color-tab-border: $color-toolbar-separator;
+$color-tab-active-background: white;
+$color-tab-inactive-background: transparent;
+$color-tab-hover-background: $color-tab-border;
+$color-tab-font: inherit;
+$color-tab-inactive-font: $color-panel-graphite;
+$tab-border-width: 2px;
+$tab-border-style: $tab-border-width solid $color-tab-border;
+
+.bs-tab {
+  .nav-tabs {
+    border-bottom: $tab-border-style;
+    
+    > li > a {
+      border-width: $tab-border-width;
+      border-color: $color-tab-inactive-background;
+      border-bottom: none;
+      color: $color-tab-inactive-font;
+      line-height: 1.5;
+      border-radius: 0 0 0 0;
+      margin-bottom: -1px;
+    }
+    
+    > li.active {
+      > a {
+        &,
+        &:hover,
+        &:focus {
+          background-color: $color-tab-active-background;
+          border-width: $tab-border-width;
+          border-color: $color-tab-border;
+          border-bottom: none;
+          color: $color-tab-font;
+          cursor: default;
+        }
+      }
+    }
+  }
+    
+  .nav > li > a {
+    position: relative;
+    display: block;
+    padding: 10px 30px;
+    
+    &:focus,
+    &:hover {
+      text-decoration: none;
+      background-color: $color-tab-hover-background;
+    }
+  }
+}
+
+.tab-content {
+  padding: 20px;
+  border: $tab-border-style;
+  border-top: 0;
+  background-color: white;
+}

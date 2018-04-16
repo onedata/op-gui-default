@@ -528,7 +528,8 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
             .push(..._.cloneDeep(
               valuesSumArray.filter(({ x }) => x >= _transferStartTime)
             ));
-          if (valuesSumArray[_expectedStatsNumber + 1].x === 0) {
+          if (valuesSumArray[_expectedStatsNumber + 1].x === 0 &&
+            _chartValues[i][_expectedStatsNumber + 1]) {
             _chartValues[i].pop();
           }
         }
@@ -735,7 +736,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
       const newX = Math.max(
         x - timeDelta,
         _transferStartTime,
-        _transferLastUpdateTime - _timePeriod * _expectedStatsNumber
+        _transferLastUpdateTime - _timePeriod * _expectedStatsNumber + 1
       );
       if (newX === x) {
         break;

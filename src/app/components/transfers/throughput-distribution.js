@@ -440,6 +440,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
           centerXLabels(),
           axisLabels({
             xLabelYOffset: -10,
+            xLabelXOffset: -20,
             yAlignment: 'right',
             yLabelXOffset: -10,
             yLabelYOffset: 0,

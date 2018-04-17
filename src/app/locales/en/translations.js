@@ -566,6 +566,9 @@ export default {
         onTheFly: 'On-the-fly',
         all: 'All',
         jobs: 'Jobs',
+        providerSelector: {
+          allProviders: 'All providers',
+        },
       },
     },
     rootDirSettingsDrop: {

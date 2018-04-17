@@ -12,6 +12,10 @@
     }
   }
 
+  .nav-link {
+    cursor: pointer;
+  }
+
   .ct-label.ct-vertical, .ct-label.ct-horizontal {
     white-space: nowrap;
   }
@@ -22,7 +26,7 @@
   }
 
   .transfers-throughput-distribution {
-    $-ct-chart-padding-top: 40px;
+    $-ct-chart-padding-top: 20px;
     
     position: relative;
     .loadable-row {
@@ -45,9 +49,7 @@
       height: 350px;
     }
     .btn-group {
-      position: absolute;
-      top: $padding-small-vertical;
-      right: $padding-small-vertical;
+      float: right;
     }
     .ct-label.ct-vertical {
       margin-top: 0.5em;
@@ -63,6 +65,37 @@
       font-size: 70%;
       line-height: 30px;
       background-color: $onedata-light-gray;
+    }
+    .throughput-provider-selector {
+      display: inline-block;
+      max-width: 100%;
+      margin: 5px 0;
+      .dropdown {
+        display: inline-block;
+        max-width: 100%;
+      }
+      .dropdown-menu {
+        width: 300px;
+      }
+      .dropdown-toggle {
+        display: inline-block;
+        padding-right: 30px;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        .one-icon {
+          position: absolute;
+          top: 0;
+          right: 9px;
+          font-size: 140%;
+        }
+      }
+      li .item-label {
+        max-width: 250px;
+        text-transform: none;
+        white-space: nowrap;
+      }
     }
   }
 

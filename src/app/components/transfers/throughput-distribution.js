@@ -58,6 +58,7 @@ const subunit = {
 export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   classNames: ['transfers-throughput-distribution'],
   i18n: service(),
+  store: service(),
 
   /**
    * @type {Space}
@@ -69,6 +70,12 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
    * @type {Array<Provider>}
    */
   providers: undefined,
+
+  /**
+   * Id of provider, which stats should be visualized
+   * @type {string}
+   */
+  transferStatProviderId: null,
 
   /**
    * Possible values: onTheFly, job, all.
@@ -88,6 +95,13 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
    * @type {Object}
    */
   providersColors: undefined,
+
+  /**
+   * Selects stats provider
+   * @virtual
+   * @type {function}
+   */
+  selectTransferStatProvider: () => {},
 
   /**
    * @override
@@ -120,6 +134,19 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   _statsError: undefined,
   
   /**
+   * @type {Ember.ComputedProperty<object>}
+   */
+  _providersNames: computed('providers.@each.name', function () {
+    const providers = this.get('providers');
+    const names = {};
+    providers.forEach(provider => {
+      const id = get(provider, 'id');
+      names[id] = get(provider, 'name') || id;
+    });
+    return names;
+  }),
+  
+  /**
    * True if data for chart is loaded
    * @type {boolean}
    */
@@ -136,18 +163,41 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
    * Proxy object that resolves with stats for specified type and time unit.
    * @type {Ember.ComputedProperty<PromiseObject<SpaceTransferTimeStat>>}
    */
-  _timeStatForUnit: computed('space', 'timeUnit', 'transferType', function () {
-    const {
-      space,
-      timeUnit,
-      transferType,
-    } = this.getProperties('space', 'timeUnit', 'transferType');
-    const typeProp = `transfer${_.upperFirst(transferType)}Stat`;
-    const unitProp = `${timeUnit}Stat`;
-    return PromiseObject.create({
-      promise: get(space, typeProp).then(typeStats => get(typeStats, unitProp))
-    });
-  }),
+  _timeStatForUnit: computed(
+    'space',
+    'timeUnit',
+    'transferStatProviderId',
+    'transferType',
+    function () {
+      const {
+        space,
+        timeUnit,
+        transferType,
+        // transferStatProviderId,
+      } = this.getProperties(
+        'space',
+        'timeUnit',
+        'transferType',
+        'transferStatProviderId'
+      );
+      // uncomment to enable per-provider-stats fetch
+      // const transferProviderStat = get(space, 'transferProviderStat');
+      // const providerStats = transferStatProviderId &&
+      //   get(transferProviderStat, transferStatProviderId);
+      const unitProp = `${timeUnit}Stat`;
+      let promise;
+      // if (providerStats) {
+      //   const typeProp = `${transferType}Stat`;
+      //   promise = this.store
+      //     .findRecord('space-transfer-stat', get(providerStats, typeProp))
+      //     .then(typeStats => get(typeStats, unitProp))
+      // } else {
+        const typeProp = `transfer${_.upperFirst(transferType)}Stat`;
+        promise = get(space, typeProp).then(typeStats => get(typeStats, unitProp));
+      // }
+      return PromiseObject.create({ promise });
+    }
+  ),
 
   /**
    * @type {Ember.ComputedProperty<Object>}

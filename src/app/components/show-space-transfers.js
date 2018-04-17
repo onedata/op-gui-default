@@ -45,6 +45,17 @@ export default Component.extend({
   selectedTransferIds: undefined,
   
   //#region External properties
+
+  /**
+   * Id of provider selected in throughput chart.
+   * @type {string}
+   */
+  selectedTransferStatProviderId: null,
+
+  /**
+   * @type {string}
+   */
+  throughputTransferType: 'all',
   
   /**
    * Alias for Id of this provider - used for checking if transfers can be fetched
@@ -74,4 +85,13 @@ export default Component.extend({
       return null;
     }
   }),
+
+  actions: {
+    selectTransferStatProvider(providerId) {
+      this.set('selectedTransferStatProviderId', providerId);
+    },
+    selectThroughputTransferType(type) {
+      this.set('throughputTransferType', type);
+    }
+  },
 });

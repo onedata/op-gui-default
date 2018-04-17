@@ -1,3 +1,17 @@
+<div class="row chart-selectors">
+  {{transfers/throughput-distribution/provider-selector
+    providersNames=_providersNames
+    selectedProviderId=transferStatProviderId
+    selectProvider=selectTransferStatProvider}}
+  {{#if (and (not statsError) _statsLoaded)}}
+    {{#bs-button-group value=timeUnit type="radio" size="sm"}}
+      {{#bs-button value="minute"}}{{t "components.transfers.transferChart.minute"}}{{/bs-button}}
+      {{#bs-button value="hour"}}{{t "components.transfers.transferChart.hour"}}{{/bs-button}}
+      {{#bs-button value="day"}}{{t "components.transfers.transferChart.day"}}{{/bs-button}}
+      {{#bs-button value="month"}}{{t "components.transfers.transferChart.month"}}{{/bs-button}}
+    {{/bs-button-group}}
+  {{/if}}
+</div>
 <div class="row loadable-row row-main-chart">
   {{#if statsError}}
     {{resource-load-error reason=statsError}}
@@ -28,11 +42,3 @@
     {{/loading-container}}
   {{/if}}
 </div>
-{{#if (and (not statsError) _statsLoaded)}}
-  {{#bs-button-group value=timeUnit type="radio" size="sm"}}
-    {{#bs-button value="minute"}}{{t "components.transfers.transferChart.minute"}}{{/bs-button}}
-    {{#bs-button value="hour"}}{{t "components.transfers.transferChart.hour"}}{{/bs-button}}
-    {{#bs-button value="day"}}{{t "components.transfers.transferChart.day"}}{{/bs-button}}
-    {{#bs-button value="month"}}{{t "components.transfers.transferChart.month"}}{{/bs-button}}
-  {{/bs-button-group}}
-{{/if}}

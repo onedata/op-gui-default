@@ -14,6 +14,10 @@
             {{bs-tooltip placement="top" title=(t "components.transfers.transferChart.waitingForStatsTip")}}
           {{/one-icon}}
         </div>
+      {{else if (and _noStatsForUnit ignoreTransferState)}}
+        <div class="waiting-for-stats no-stats-for-unit-info">
+          {{t "components.transfers.transferChart.noStatsForUnit" timeUnit=timeUnit}}
+        </div>
       {{else}}
         {{#one-chartist data=_chartData options=_chartOptions type="line"}}
           <div class="ct-tooltip">

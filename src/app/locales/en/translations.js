@@ -506,6 +506,7 @@ export default {
       scheduledTransfers: 'Scheduled transfers',
       activeTransfers: 'Active transfers',
       completedTransfers: 'History of transfers',
+      onTheFlyTransfers: 'On-the-fly transfers',
       noActiveTransfers: 'There are no active transfers',
       noCompletedTransfers: 'There are no past transfers',
       noTransfers: {
@@ -556,7 +557,8 @@ export default {
         time: 'Time',
         throughput: 'Throughput',
         output: 'Output',
-        waitingForTransferStart: 'Waiting for the the transfer to start...',
+        waitingForTransferStart: 'Waiting for the transfer to start...',
+        noStatsForUnit: 'There are no transfer statistics for the last {{timeUnit}}.',
         waitingForStats: 'Gathering transfer statistics...',
         waitingForStatsTip: 'Statistics are delayed due to synchronization ' +
           'latency caused by data distribution.',
@@ -567,6 +569,9 @@ export default {
         output: 'Output',
         timeLastUpdate: 'Time (last update: {{lastUpdate}})',
         throughput: 'Throughput',
+        onTheFly: 'On-the-fly',
+        all: 'All',
+        jobs: 'Jobs',
       },
       transfersOverview: {
         hide: 'Hide transfers overview',

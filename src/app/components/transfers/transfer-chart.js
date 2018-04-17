@@ -65,6 +65,18 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   timeUnit: 'minute',
 
   /**
+   * Preffered init time unit
+   * @type {string}
+   */
+  prefferedUnit: undefined,
+
+  /**
+   * Can by used by stateless transfers like on-the-fly
+   * @type {boolean}
+   */
+  ignoreTransferState: false,
+
+  /**
    * Colors used to color each providers' series
    * @virtual
    * @type {Ember.ComputedProperty<Object>}
@@ -113,21 +125,28 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
    * True if data for chart is loaded
    * @type {boolean}
    */
-  _statsLoaded: computed.and(
+  _statsLoaded: computed(
     '_timeStatForUnit.isFulfilled',
-    'transfer.currentStat.isFulfilled'
+    'ignoreTransferState',
+    'transfer.currentStat.isFulfilled',
+    function () {
+      const result = this.get('_timeStatForUnit.isFulfilled');
+      if (this.get('ignoreTransferState')) {
+        return result;
+      }
+      return result && this.get('transfer.currentStat.isFulfilled');
+    }
   ),
 
   /**
    * @type {Ember.ComputedProperty<boolean>}
    */
-  _showUnitButtons: computed('_transferIsScheduled', '_statsLoaded', '_isWaitingForStats', function () {
+  _showUnitButtons: computed('_transferIsScheduled', '_isWaitingForStats', function () {
     const {
       _transferIsScheduled,
-      _statsLoaded,
       _isWaitingForStats,
     } = this.getProperties('_transferIsScheduled', '_statsLoaded', '_isWaitingForStats');
-    return _statsLoaded && !_transferIsScheduled && !_isWaitingForStats;
+    return !_transferIsScheduled && !_isWaitingForStats;
   }),
 
   /**
@@ -141,7 +160,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
    * Proxy object that resolves with stats for specified time unit.
    * @type {Ember.ComputedProperty<PromiseObject<TransferTimeStat>>}
    */
-  _timeStatForUnit: computed('timeUnit', function () {
+  _timeStatForUnit: computed('transfer', 'timeUnit', function () {
     const {
       transfer,
       timeUnit,
@@ -166,6 +185,17 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   _stats: computed.reads('_timeStatForUnit.stats'),
 
   /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  _noStatsForUnit: computed('_statsLoaded', '_stats', function () {
+    const {
+      _statsLoaded,
+      _stats,
+    } = this.getProperties('_statsLoaded', '_stats');
+    return _statsLoaded && Object.keys(_stats).length === 0;
+  }),
+
+  /**
    * Last update time (async -> _timeStatForUnit)
    * @type {Ember.ComputedProperty<Date>}
    */
@@ -174,7 +204,9 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   /**
    * @type {Ember.ComputedProperty<number>}
    */
-  _transferStartTime: computed.reads('transfer.startTime'),
+  _transferStartTime: computed('transfer.startTime', function () {
+    return this.get('transfer.startTime') || 0;
+  }),
 
   /**
    * @type {Ember.ComputedProperty<boolean>}
@@ -496,10 +528,14 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
             .push(..._.cloneDeep(
               valuesSumArray.filter(({ x }) => x >= _transferStartTime)
             ));
+          if (valuesSumArray[_expectedStatsNumber + 1].x === 0 &&
+            _chartValues[i][_expectedStatsNumber + 1]) {
+            _chartValues[i].pop();
+          }
         }
         // setting colors
         const customCss = _sortedProvidersIds.map((providerId) => {
-          const color = providersColors[providerId];
+          const color = providersColors[providerId] || providersColors['unknown'];
           return _.times(_expectedStatsNumber + 2, _.constant({
             line: {
               stroke: color,
@@ -575,13 +611,16 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
           return;
         }
         const provider =
-          _.find(providers, (provider) => provider.get('id') === providerId) || {};
+          providers.filter((provider) => get(provider, 'id') === providerId)[0] || {};
         const providerName = get(provider, 'name') || providerId;
         result.push({
           name: providerName,
           valueNumber: providerStats[index],
           value: bytesToString(providerStats[index], { format: 'bit' }) + 'ps',
-          boxStyle: htmlSafe('background-color: ' + providersColors[providerId]),
+          boxStyle: htmlSafe(
+            'background-color: ' +
+            providersColors[providerId] || providersColors['unknown']
+          ),
         });
       });
       return result;
@@ -634,28 +673,40 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   },
 
   _createTimeStatsUpdater() {
-    const transfer = this.get('transfer');
+    const {
+      transfer,
+      _timeStatForUnit,
+      ignoreTransferState,
+      _updaterEnabled
+    } = this.getProperties(
+      'transfer',
+      '_timeStatForUnit',
+      'ignoreTransferState',
+      '_updaterEnabled'
+    );
     const isCurrent = get(transfer, 'isCurrent');
-    const gettingStats = this.get('_timeStatForUnit');
  
     console.log('transfer-chart: creating updater');
-    gettingStats.then(timeStat => {
-      this.set('_statsError', null);
-      if (!isCurrent) {
-        this.set('timeUnit', this._getPrefferedUnit());
-      }
-      const updater = TransferTimeStatUpdater.create({
-        isEnabled: isCurrent && this.get('_updaterEnabled'),
-        timeStat,
+    _timeStatForUnit
+      .then(timeStat => {
+        this.set('_statsError', null);
+        if (!isCurrent) {
+          this.set('timeUnit', this._getPrefferedUnit());
+        }
+        const updater = TransferTimeStatUpdater.create({
+          isEnabled: ignoreTransferState ?
+            _updaterEnabled :
+            isCurrent && _updaterEnabled,
+          timeStat,
+        });
+        if (!isCurrent) {
+          updater.fetch();
+        }
+        this.set('updater', updater);
+      })
+      .catch(error => {
+        this.set('_statsError', error);
       });
-      if (!isCurrent) {
-        updater.fetch();
-      }
-      this.set('updater', updater);
-    });
-    gettingStats.catch(error => {
-      this.set('_statsError', error);
-    });
   },
   
   /**
@@ -685,7 +736,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
       const newX = Math.max(
         x - timeDelta,
         _transferStartTime,
-        _transferLastUpdateTime - _timePeriod * _expectedStatsNumber
+        _transferLastUpdateTime - _timePeriod * _expectedStatsNumber + 1
       );
       if (newX === x) {
         break;
@@ -746,12 +797,19 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
    * @returns {string}
    */
   _getPrefferedUnit() {
-    const {
+    let {
       _transferStartTime,
       _transferLastUpdateTime,
-    } = this.getProperties('_transferStartTime', '_transferLastUpdateTime');
+      prefferedUnit
+    } = this.getProperties(
+      '_transferStartTime',
+      '_transferLastUpdateTime',
+      'prefferedUnit'
+    );
+    if (prefferedUnit) {
+      return prefferedUnit;
+    }
     const transferTime = _transferLastUpdateTime - _transferStartTime;
-    let prefferedUnit;
     ['minute', 'hour', 'day'].forEach(unit => {
       if (!prefferedUnit) {
         const timeWindow = this._getTimePeriodForUnit(unit) *

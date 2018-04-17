@@ -34,7 +34,7 @@ const TRANSFER_COLLECTION_DELAY = 300;
 
 const DEFAULT_SCHEDULED_TIME = 10 * 1000;
 const DEFAULT_COMPLETED_TIME = 10 * 1000;
-const MAP_TIME = 5000;
+const MAP_TIME = 5100;
 
 import Looper from 'ember-cli-onedata-common/utils/looper';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';

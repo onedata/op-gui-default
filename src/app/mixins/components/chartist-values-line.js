@@ -26,7 +26,7 @@ export default Ember.Mixin.create({
   /**
    * @type {Array<number>}
    */
-  _cvlPointsColumnXPosition: [],
+  _cvlPointsColumnXPosition: Object.freeze([]),
 
   /**
    * @type {number}
@@ -38,29 +38,35 @@ export default Ember.Mixin.create({
    * @param {object} eventData chartist event data
    */
   addChartValuesLine(eventData) {
+    safeExec(this, '_cvlEventHandler', eventData);
+  },
+
+  /**
+   * Event handler
+   * @param {object} eventData chartist event data
+   */
+  _cvlEventHandler(eventData) {
     const {
       eventName,
       data,
       chart,
     } = eventData;
-    safeExec(this, () => {
-      if ((eventName === 'draw' && this.get('_cvlChartCreated')) ||
-        data.type === 'initial') {
-          this.setProperties({
-            _cvlChartCreated: false,
-            _cvlPointsColumnXPosition: [],
-          });
-      }
-      if (eventName === 'draw' && data.type === 'point') {
-        this._cvlRememberChartPointCoordinates(data);
-      }
-      if (eventName === 'created') {
-        this._cvlAddValuesLineToChart(chart);
-        this._cvlAttachValuesColumnHoverListeners(chart);
-        this._cvlShowValuesLineIfNeeded();
-        this.set('_cvlChartCreated', true);
-      }
-    });
+    if ((eventName === 'draw' && this.get('_cvlChartCreated')) ||
+      data.type === 'initial') {
+        this.setProperties({
+          _cvlChartCreated: false,
+          _cvlPointsColumnXPosition: [],
+        });
+    }
+    if (eventName === 'draw' && data.type === 'point') {
+      this._cvlRememberChartPointCoordinates(data);
+    }
+    if (eventName === 'created') {
+      this._cvlAddValuesLineToChart(chart);
+      this._cvlAttachValuesColumnHoverListeners(chart);
+      this._cvlShowValuesLineIfNeeded();
+      this.set('_cvlChartCreated', true);
+    }
   },
 
   /**
@@ -132,8 +138,8 @@ export default Ember.Mixin.create({
       line.addClass('ct-values-line-active');
       line.attr('x1', x);
       line.attr('x2', x);
-      this.$('.ct-series').toArray().forEach(group => {
-        const point = $(group).find('.ct-point').get(_hoveredPointsColumnIndex);
+      this.$('.ct-series').each(function () {
+        const point = $(this).find('.ct-point').get(_hoveredPointsColumnIndex);
         $(point).addClass('ct-point-active');
       });
     } else {

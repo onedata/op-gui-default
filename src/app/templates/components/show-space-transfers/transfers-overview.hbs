@@ -19,10 +19,36 @@
       <h2><span class="one-label">{{t "components.transfers.throughputDistribution.title"}}</span></h2>
       <div class="row loadable-row">
         {{#loading-container isLoading=(not providersLoaded)}}
-          {{transfers/throughput-distribution
-            space=space
-            providers=providers
-            providersColors=providersColors}}
+          {{#bs-tab fade=false class="bs-tab" as |activeId select|}}
+            {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.all") elementId="throughput-distribution-all" }}
+              {{#if (eq activeId "throughput-distribution-all")}}
+                {{transfers/throughput-distribution
+                          space=space
+                          providers=providers
+                          providersColors=providersColors
+                          transferType="all"}}
+              {{/if}}
+            {{/bs-tab-pane}}
+            {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.jobs") elementId="throughput-distribution-job" }}
+              {{#if (eq activeId "throughput-distribution-job")}}
+                {{transfers/throughput-distribution
+                          space=space
+                          providers=providers
+                          providersColors=providersColors
+                          transferType="job"}}
+              {{/if}}
+            {{/bs-tab-pane}}
+            {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.onTheFly") elementId="throughput-distribution-on-the-fly"
+              }}
+              {{#if (eq activeId "throughput-distribution-on-the-fly")}}
+                {{transfers/throughput-distribution
+                          space=space
+                          providers=providers
+                          providersColors=providersColors
+                          transferType="onTheFly"}}
+              {{/if}}
+            {{/bs-tab-pane}}
+          {{/bs-tab}}
         {{/loading-container}}
       </div>
     </div>

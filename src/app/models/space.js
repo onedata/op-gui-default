@@ -12,8 +12,8 @@ const {
  * that can be reached from "spaces" button in primary sidebar.
  *
  * @module models/space
- * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @author Jakub Liput, Michal Borzecki
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
@@ -38,11 +38,13 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
   scheduledTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
   currentTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
   completedTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
+  
+  onTheFlyTransferList: belongsTo('space-on-the-fly-transfer-list', { async: true, inverse: null }),
+  
   providerList: belongsTo('space-provider-list', { async: true, inverse: null }),
 
-  transferMinuteStat: belongsTo('space-transfer-time-stat'),
-  transferHourStat: belongsTo('space-transfer-time-stat'),
-  transferDayStat: belongsTo('space-transfer-time-stat'),
-  transferMonthStat: belongsTo('space-transfer-time-stat'),
-  transferLinkState: belongsTo('space-transfer-link-state'),
+  transferOnTheFlyStat: belongsTo('space-transfer-stat', { async: true, inverse: null }),
+  transferJobStat: belongsTo('space-transfer-stat', { async: true, inverse: null }),
+  transferAllStat: belongsTo('space-transfer-stat', { async: true, inverse: null }),
+  transferLinkState: belongsTo('space-transfer-link-state', { async: true, inverse: null }),
 });

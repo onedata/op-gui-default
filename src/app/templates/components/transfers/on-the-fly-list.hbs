@@ -1,0 +1,21 @@
+{{#one-collapsible-list as |list|}}
+  {{#each listRecords as |record|}}
+    {{#list.item as |listItem|}}
+      {{#listItem.header}}
+        {{record.provider.name}}
+      {{/listItem.header}}
+      {{#listItem.content}}
+        {{#if listItem.isActive}}
+          <div class="row content-row chart-row">
+            {{transfers/transfer-chart
+              transfer=record.transfer
+              providers=providers
+              providersColors=providersColors
+              ignoreTransferState=true
+              prefferedUnit="minute"}}
+          </div>
+        {{/if}}
+      {{/listItem.content}}
+    {{/list.item}}
+  {{/each}}
+{{/one-collapsible-list}}

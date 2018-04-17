@@ -25,7 +25,9 @@ describe('Integration | Component | transfers/transfer chart', function() {
         promise: Promise.resolve({
           timestamp: 1522745361,
           type: 'minute',
-          stats: {},
+          stats: {
+            'someproviderid': [],
+          },
         }),
       }),
       currentStat: PromiseObject.create({

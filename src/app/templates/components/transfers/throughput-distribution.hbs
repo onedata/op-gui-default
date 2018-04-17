@@ -36,8 +36,12 @@
           {{/if}}
           <div class="ct-tooltip-arrow"></div>
         </div>
-        <div class="input-half half-description">{{t "components.transfers.throughputDistribution.input"}}</div>
-        <div class="output-half half-description">{{t "components.transfers.throughputDistribution.output"}}</div>
+        <div class="input-half half-description">
+          {{t (concat "components.transfers.throughputDistribution." (if transferStatProviderId "receivedFrom" "input"))}}
+        </div>
+        <div class="output-half half-description">
+          {{t (concat "components.transfers.throughputDistribution." (if transferStatProviderId "sentTo" "output"))}}
+        </div>
       {{/one-chartist}}
     {{/loading-container}}
   {{/if}}

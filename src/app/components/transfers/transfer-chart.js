@@ -686,7 +686,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
     );
     const isCurrent = get(transfer, 'isCurrent');
  
-    console.log('transfer-chart: creating updater');
+    console.debug('transfer-chart: creating updater');
     _timeStatForUnit
       .then(timeStat => {
         this.set('_statsError', null);

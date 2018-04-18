@@ -260,7 +260,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, ForceReloadCollection
           this.groupActionMessage('info', 'joinSuccess', data.groupName);
         },
         (errorJson) => {
-          console.log(errorJson.message);
+          console.debug(errorJson.message);
           let message = this.get('i18n').t('components.groupsMenu.notify.joinFailed', {errorDetails: errorJson.message});
           this.get('notify').error(message);
         }
@@ -292,7 +292,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, ForceReloadCollection
             }
           },
           (error) => {
-            console.log(`Leave group ${groupName} failed ${error.message}`);
+            console.debug(`Leave group ${groupName} failed ${error.message}`);
             let message = this.get('i18n').t('components.groupsMenu.notify.leaveFailed', {
               name: groupName
             });
@@ -343,7 +343,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, ForceReloadCollection
             notify.info(message);
           },
           (error) => {
-            console.log(error.message);
+            console.debug(error.message);
             let message = i18n.t('components.groupsMenu.notify.joinSpaceFailed', {
               groupName: group.get('name'),
             });
@@ -392,7 +392,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, ForceReloadCollection
             notify.info(message);
           },
           (error) => {
-            console.log(error.message);
+            console.debug(error.message);
             let message = i18n.t('components.groupsMenu.notify.joinAsSubgroupFailed', {
               groupName: get(group, 'name'),
             });

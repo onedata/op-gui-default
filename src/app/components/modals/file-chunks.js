@@ -365,7 +365,7 @@ export default Component.extend(PromiseLoadingMixin, {
    * @returns {Promise<Array<FileDistribution>>}
    */
   fetchDistribution() {
-    console.log('component:modals/file-chunks: fetchDistribution');
+    console.debug('component:modals/file-chunks: fetchDistribution');
     const fileId = this.get('file.id');
     this.get('store').query('file-distribution', { file: fileId }).then(
       (fbs) => {
@@ -551,9 +551,8 @@ export default Component.extend(PromiseLoadingMixin, {
           this.observeTransfersCount();
           throw error;
         })
-        .then(( /* transfer */ ) => {
-          return transfersUpdater.fetchCurrent();
-        })
+        .then(() => transfersUpdater.fetchScheduled())
+        .then(() => transfersUpdater.fetchCurrent())
         .then(() => {
           return this._fastTransfersUpdater();
         })

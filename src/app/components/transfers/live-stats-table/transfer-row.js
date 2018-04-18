@@ -1,4 +1,11 @@
-// FIXME: jsdoc
+/**
+ * A table/list row representing single transfer
+ *
+ * @module components/transfers/live-stats-table/transfer-row
+ * @author Jakub Liput
+ * @copyright (C) 2018 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
 
 import Ember from 'ember';
 

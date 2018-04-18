@@ -28,6 +28,8 @@ export default Controller.extend({
    */
   queryParams: ['selected_transfers', 'list_tab'],
     
+  list_tab: 'on-the-fly',
+  
   /**
    * @type {Ember.ComputedProperty<Array<String>>}
    */
@@ -38,7 +40,7 @@ export default Controller.extend({
     }
   }),
   
-  listTab: computed.alias('list_tab'),
+  listTab: computed.reads('list_tab'),
     
   /**
    * Reset only some of the params
@@ -65,6 +67,9 @@ export default Controller.extend({
   },
 
   actions: {
+    changeListTab(listTab) {
+      this.set('list_tab', listTab);
+    },
     resetQueryParams() {
       this.resetQueryParams();
     },

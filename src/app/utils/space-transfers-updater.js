@@ -32,8 +32,8 @@ const {
  */
 const TRANSFER_COLLECTION_DELAY = 300;
 
-const DEFAULT_SCHEDULED_TIME = 10 * 1000;
-const DEFAULT_COMPLETED_TIME = 10 * 1000;
+const DEFAULT_SCHEDULED_TIME = 8 * 1000;
+const DEFAULT_COMPLETED_TIME = 16 * 1000;
 const MAP_TIME = 5100;
 
 import Looper from 'ember-cli-onedata-common/utils/looper';
@@ -415,7 +415,6 @@ export default EmberObject.extend({
    *    of updated current transfers
    */
   fetchCurrent(immediate = false) {
-    console.debug('FIXME: xdebug util:space-transfers-updater: fetchCurrent started');
     this.set('currentIsUpdating', true);
 
     const {
@@ -497,7 +496,6 @@ export default EmberObject.extend({
    */
   fetchCompleted() {
     if (this.get('completedIsUpdating') !== true) {
-      console.debug('FIXME: xdebug util:space-transfers-updater: fetchCompleted started');
       const space = this.get('space');
       
       this.set(`completedIsUpdating`, true);
@@ -511,16 +509,11 @@ export default EmberObject.extend({
   },
 
   /**
-   * FIXME: fetch periodically a list of scheduled transfers (current stats not needed to update)
-   * FIXME: remember about updating current stat when going to in progress tab
    * @returns {Promise<Array<Transfer>>}
    */
   fetchScheduled() {
     if (this.get('completedIsUpdating') !== true) {
-      console.debug('FIXME: xdebug util:space-transfers-updater: fetchScheduled started');
-      const {
-        space,
-      } = this.getProperties('space');
+      const space = this.get('space');
       
       this.set(`scheduledIsUpdating`, true);
 

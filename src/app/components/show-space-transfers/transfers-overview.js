@@ -14,9 +14,9 @@ import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 
 const {
   Component,
-  computed,
   observer,
   String: { htmlSafe },
+  run,
 } = Ember;
 
 export default Component.extend({
@@ -40,7 +40,7 @@ export default Component.extend({
   overviewExpanded: false,
 
   /**
-   * FIXME: doc
+   * Position of expand handler on overview component initialization
    * @type {number}
    */
   initialHandlerTop: undefined,
@@ -59,18 +59,25 @@ export default Component.extend({
    */
   transfersPieChartDirection: 'out',
   
-  style: computed('stickyOverview', function getStyle() {
+  _window: window,
+  
+  _mobileMode: false,
+  
+  changeStyle() {
+    let style;
     if (this.get('stickyOverview')) {      
       const $rowActiveTransfers = this.$('.row-active-transfers');
       const height = $rowActiveTransfers.outerHeight();
-      const width = $rowActiveTransfers.outerWidth();
-      return htmlSafe(`height: ${height}px; width: ${width}px;`);
+      const width = this.$().parents('.show-space-transfers').innerWidth();
+      style = htmlSafe(`height: ${height}px; width: ${width}px;`);
     } else {
-      return htmlSafe();
+      style = htmlSafe();
     }
-  }),
-
-  stickyOverviewStyle: computed('stickyOverview', 'overviewExpanded', function getStickyOverviewStyle() {
+    this.set('style', style);
+  },
+  
+  changeStickyOverviewStyle() {
+    let stickyOverviewStyle;
     if (this.get('stickyOverview')) {
       const {
         contentScrollTop,
@@ -80,20 +87,30 @@ export default Component.extend({
         'overviewExpanded'
       );
       const $rowOverview = this.$('.row-overview');
-      const top = overviewExpanded ? contentScrollTop : (contentScrollTop -
-        $rowOverview.height());
-      const left = $rowOverview.offset().left;
-      const right = window.innerWidth - (left + $rowOverview.width());
-      // FIXME: left and right should be recomputed on window size change
+      const top = (overviewExpanded ?
+        contentScrollTop :
+        contentScrollTop - $rowOverview.height()
+      );
+      const left = this.$().offset().left;
+      const right = window.innerWidth - (left + this.$().width());
       const style = `top: ${top}px; left: ${left}px; right: ${right}px;`;
-      return htmlSafe(style);
+      stickyOverviewStyle = htmlSafe(style);
     }
-  }),
+    this.set('stickyOverviewStyle', stickyOverviewStyle);
+  },
   
-  observeOverviewExpanded: observer('overviewExpanded', function () {
+  stickyOverviewChanged: observer('stickyOverview', function () {
+    this.changeStyle();
+    run.next(() => {
+      this.changeStickyOverviewStyle();
+    });
+  }),
+
+  overviewExpandedChanged: observer('overviewExpanded', function () {
     if (!this.get('overviewExpanded')) {
       this.computeSticky();
     }
+    this.changeStickyOverviewStyle();
   }),
 
   didInsertElement() {
@@ -103,12 +120,28 @@ export default Component.extend({
       this.eventName('scroll'),
       () => safeExec(this, 'computeSticky')
     );
+    $(window).on(
+      this.eventName('resize'),
+      () => safeExec(this, () => {
+        this.updateMobileMode();
+        this.computeSticky();
+        this.changeStyle();
+        this.changeStickyOverviewStyle();
+      })
+    );
   },
 
   willDestroyElement() {
     $('#content-scroll').off(this.eventName('scroll'));
+    $(window).off(this.eventName('resize'));
   },
 
+  init() {
+    this._super(...arguments);
+    // enable observers
+    this.getProperties('stickyOverview', 'overviewExpanded');
+  },
+  
   initSticky($contentScroll) {
     const $rowExpandHandler = this.$('.row-expand-handler');
     if ($rowExpandHandler) {
@@ -128,19 +161,24 @@ export default Component.extend({
       initialHandlerTop,
       contentScrollTop,
       stickyOverview,
-    } = this.getProperties('initialHandlerTop', 'contentScrollTop', 'stickyOverview');
-    const contentScroll = document.getElementById('content-scroll');
-    const sticky = this.get('overviewExpanded') ?
-      (contentScroll.scrollTop !== 0) :
-      (initialHandlerTop - contentScrollTop <= contentScroll.scrollTop);
+      _mobileMode,
+    } = this.getProperties(
+      'initialHandlerTop',
+      'contentScrollTop',
+      'stickyOverview',
+      '_mobileMode'
+    );
+    let sticky;
+    if (_mobileMode) {
+      sticky = false;
+    } else {
+      const contentScroll = document.getElementById('content-scroll');
+      sticky = this.get('overviewExpanded') ?
+        (contentScroll.scrollTop !== 0) :
+        (initialHandlerTop - contentScrollTop <= contentScroll.scrollTop);
+    }
     if (!sticky && stickyOverview) {
-      // this.set('style', htmlSafe(''));
       this.set('overviewExpanded', false);
-    } else if (sticky && !stickyOverview) {
-      // const $rowActiveTransfers = this.$('.row-active-transfers');
-      // const height = $rowActiveTransfers.outerHeight();
-      // const width = $rowActiveTransfers.outerWidth();
-      // this.set('style', htmlSafe(`height: ${height}px; width: ${width}px;`));
     }
     this.set('stickyOverview', sticky);
   },
@@ -154,6 +192,14 @@ export default Component.extend({
     return `${type}.${this.elementId}`;
   },
 
+  /**
+   * Window resize event handler.
+   * @type {Ember.ComputedProperty<Function>}
+   */
+  updateMobileMode() {
+      this.set('_mobileMode', this.get('_window.innerWidth') < 1261);
+  },
+  
   actions: {
     toggleOverview() {
       this.toggleProperty('overviewExpanded');

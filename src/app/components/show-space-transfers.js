@@ -17,6 +17,7 @@ import generateColors from 'op-worker-gui/utils/generate-colors';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 import ArraySlice from 'ember-cli-onedata-common/utils/array-slice';
 import PromiseArray from 'ember-cli-onedata-common/utils/ember/promise-array';
+import ListWatcher from 'op-worker-gui/utils/list-watcher';
 
 const {
   Component,
@@ -34,66 +35,6 @@ const {
 } = Ember;
 
 const defaultActiveTabId = 'on-the-fly';
-
-// FIXME: refactor, to new file
-class ViewTester {
-  /**
-   * @param {HTMLElement} container 
-   */
-  constructor($container) {
-    this.containerTop = $container.offset().top;
-    this.containerBottom = this.containerTop + $container[0].clientHeight;
-  }
-
-  /**
-   * @param {HTMLElement} elem
-   */
-  isInView(elem) {
-    const elemTop = $(elem).offset().top;
-    const elemBottom = elemTop + elem.offsetHeight;
-
-    return (elemTop <= this.containerBottom) && (elemBottom >= this.containerTop);
-  }
-}
-
-// FIXME: refactor, to new file
-class ListWatcher {
-  /**
-   * @param {jQuery} container 
-   * @param {string} itemsSelector 
-   * @param {function} callback
-   */
-  constructor($container, itemsSelector, callback) {
-    this.$container = $container;
-    this.itemsSelector = itemsSelector;
-    this.callback = callback;
-    this._scrollHandler = this.scrollHandler.bind(this);
-    this.viewTester = new ViewTester($container);
-
-    $container.on('scroll', this._scrollHandler);
-  }
-
-  scrollHandler() {
-    const items = this.$container.find(this.itemsSelector).toArray();
-    let visibleFragment = false;
-    const visibleElements = [];
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      const visible = this.viewTester.isInView(item);
-      if (visible) {
-        visibleElements.push(item);
-        visibleFragment = true;
-      } else if (visibleFragment) {
-        break;
-      }
-    }
-    this.callback(visibleElements);
-  }
-
-  destroy() {
-    this.$container.off('scroll', this._scrollHandler);
-  }
-}
 
 export default Component.extend({
   classNames: ['show-space-transfers', 'row'],
@@ -116,13 +57,19 @@ export default Component.extend({
    */
   selectedTransferIds: undefined,
   
+  /**
+   * @virtual
+   * @type {function}
+   */
+  changeListTab: undefined,
+  
   //#endregion
   
   //#region Internal properties
       
   listLocked: false,
   
-  activeTabId: undefined,
+  activeTabId: defaultActiveTabId,
   
   //#endregion
   
@@ -218,9 +165,9 @@ export default Component.extend({
         selectedList = transferType;
         indexOnList = index;
         break;
-        }
       }
-    
+    }
+
     if (selectedList) {
       this.set('listLocked', true);
       this.set('activeTabId', selectedList);
@@ -245,8 +192,8 @@ export default Component.extend({
     this.set('_ptcCache', A());
   },
   
-  observeScrollToSelectedTransfers: observer('selectedTransferIds', 'allTablesLoaded', function () { 
-    if (this.get('allTablesLoaded') && this.get('_scrolledToSelectedTransfers') === false) {
+  observeScrollToSelectedTransfers: observer('selectedTransferIds', 'allTablesLoaded', function () {
+    if (this.get('allTablesLoaded') && !this.get('_scrolledToSelectedTransfers')) {
       run.next(() => this._scrollToFirstSelectedTransfer());
       this.set('_scrolledToSelectedTransfers', true);
     }
@@ -475,7 +422,9 @@ export default Component.extend({
   
   //#endregion
   
-  //#region FIXME: Unclassified
+  tabChanged: observer('activeTabId', function observeTabChanged() {
+    this.get('changeListTab')(this.get('activeTabId'));
+  }),
   
   enableWatcherCollection: observer('activeTabId', function enableWatcherCollection() {
     const {
@@ -493,8 +442,6 @@ export default Component.extend({
   currentTransfersLoadingMore: false,
   completedTransfersLoadingMore: false,
   
-  //#endregion
-  
   spaceChanged: observer('space', function observeSpaceChanged() {
     this.reinitializeTransfers();
   }),
@@ -502,12 +449,10 @@ export default Component.extend({
   init() {
     this._super(...arguments);
     this.spaceChanged();
+    this.observeScrollToSelectedTransfers();
   },
   
   reinitializeTransfers() {
-    if (!this.get('activeTabId')) {
-      this.set('activeTabId', defaultActiveTabId);
-    }
     const transfersUpdater = this._initTransfersData();
     ['scheduled', 'current', 'completed'].forEach(type => {
       const listRecord = this.get(`${type}TransferList`);
@@ -601,10 +546,6 @@ export default Component.extend({
         get(openedTransfersSlice, 'sourceArray.lastObject')
       );
       this.set(`${activeTabId}TransfersLoadingMore`, isLoadingMore);
-
-      // FIXME: debug code
-      console.log(`visible: ${renderedTransferIds}`);
-      console.log(`indexes: ${startIndex}..${endIndex}`);
     }
   },
 });

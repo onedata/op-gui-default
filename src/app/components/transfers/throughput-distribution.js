@@ -657,7 +657,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   _createTimeStatsUpdater() {
     const gettingStats = this.get('_timeStatForUnit');
  
-    console.log('throughput-distribution: creating updater');
+    console.debug('throughput-distribution: creating updater');
     gettingStats.then(timeStat => {
       this.setProperties({
         _statsError: null,

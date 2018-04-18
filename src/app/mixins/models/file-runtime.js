@@ -102,8 +102,6 @@ export default Ember.Mixin.create({
 
   isVisible: computed('parent.isExpanded', function () {
     var visible = this.get('parent.isExpanded');
-    console.log('deselect(' + this.get('name') + '): ' +
-      (this.get('isSelected') && !visible));
     if (this.get('isSelected') && !visible) {
       this.set('isSelected', false);
     }

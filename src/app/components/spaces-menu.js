@@ -198,7 +198,7 @@ export default Ember.Component.extend(ForceReloadCollectionMixin, {
           this.spaceActionMessage('info', 'joinSuccess', data.spaceName);
         },
         (errorJson) => {
-          console.log(errorJson.message);
+          console.debug(errorJson.message);
           let message = this.get('i18n').t('components.spacesMenu.notify.joinFailed', {errorDetails: errorJson.message});
           this.get('notify').error(message);
         }

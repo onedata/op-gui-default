@@ -27,8 +27,4 @@ export default class ViewTester {
 
     return (elemTop <= this.containerBottom) && (elemBottom >= this.containerTop);
   }
-  
-  destroy() {
-    this.$container.off('scroll', this._scrollHandler);
-  }
 }

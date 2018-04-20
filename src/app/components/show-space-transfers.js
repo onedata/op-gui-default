@@ -3,7 +3,7 @@
  *
  * @module components/show-space-transfers
  * @author Jakub Liput
- * @copyright (C) 2017 ACK CYFRONET AGH
+ * @copyright (C) 2017-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -177,11 +177,15 @@ export default Component.extend({
           endIndex: indexOnList,
         });
         run.next(() => {
-          const $tr = this.$(`tr.transfer-row[data-list-index=${indexOnList}]`);
-          // magic number... after render, tr jumps to top, currently don't know why
-          $('#content-scroll').scrollTop($tr.offset().top - 800);
-          run.next(() => {
-            this.set('listLocked', false);
+          safeExec(this, function () {
+            const $tr = this.$(`tr.transfer-row[data-list-index=${indexOnList}]`);
+            // magic number... after render, tr jumps to top, currently don't know why
+            $('#content-scroll').scrollTop($tr.offset().top - 800);
+            run.next(() => {
+              safeExec(this, function () {
+                this.set('listLocked', false);
+              });
+            });
           });
         });
       });

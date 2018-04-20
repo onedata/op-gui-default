@@ -23,6 +23,7 @@ const {
   run,
   inject: { service },
   assert,
+  RSVP: { Promise },
 } = Ember;
 
 const SLOW_POLLING_TIME = 10 * 1000;
@@ -244,7 +245,8 @@ export default Component.extend(PromiseLoadingMixin, {
   workingTransfersDataLoaded: computed(
     'scheduledTransferList.isLoaded',
     'currentTransferList.isLoaded',
-    'workingTransfers.@each.isLoaded',
+    'scheduledTransferList.list.content.isLoaded',
+    'currentTransferList.list.content.isLoaded',
     function getCurrentTransfersDataLoaded() {
       return this.get('currentTransferList.isLoaded') === true &&
         this.get('scheduledTransferList.isLoaded') === true &&
@@ -257,8 +259,13 @@ export default Component.extend(PromiseLoadingMixin, {
    * @type {Ember.ComputedProperty<Array<Transfer>>}
    */
   fileTransfers: computed('workingTransfersDataLoaded', 'workingTransfers.[]', function () {
-    const workingTransfersDataLoaded = this.get('workingTransfersDataLoaded');
-    const workingTransfers = this.get('workingTransfers');
+    const {
+      workingTransfersDataLoaded,
+      workingTransfers,
+    } = this.getProperties(
+      'workingTransfersDataLoaded',
+      'workingTransfers'
+    );
     const fileId = this.get('file.id');
     if (workingTransfersDataLoaded && workingTransfers) {
       return workingTransfers.filter(t => t.belongsTo('file').id() === fileId);
@@ -457,8 +464,10 @@ export default Component.extend(PromiseLoadingMixin, {
   },
   
   forceUpdateTransfers(transfersUpdater) {
-    return transfersUpdater.fetchScheduled()
-      .then(() => transfersUpdater.fetchCurrent(true))
+    return Promise.all([
+        transfersUpdater.fetchScheduled(),
+        transfersUpdater.fetchCurrent(true)
+      ])
       .catch(error => {
         // TODO: i18n
         this.set('chunksModalError', 'Loading transfers data failed');

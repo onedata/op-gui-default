@@ -43,4 +43,8 @@ export default class ListWatcher {
     }
     this.callback(visibleElements);
   }
+  
+  destroy() {
+    this.$container.off('scroll', this._scrollHandler);
+  }
 }

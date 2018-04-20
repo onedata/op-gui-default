@@ -17,8 +17,6 @@ const {
   observer,
 } = Ember;
 
-// TODO: observe indexMargin changes to make arrayContentDidChange
-
 export default ArrayProxy.extend({
   startIndex: 0,
   endIndex: 0,
@@ -26,7 +24,6 @@ export default ArrayProxy.extend({
   sourceArray: computed.alias('content'),
   
   _startCache: undefined,
-  
   _endCache: undefined,
   
   _start: computed('startIndex', 'indexMargin', function () {
@@ -38,7 +35,7 @@ export default ArrayProxy.extend({
       'indexMargin'
     );
     const _start = Math.max(0, startIndex - indexMargin);
-
+    
     this.set('_startCache', _start);
     return _start;
   }),
@@ -56,7 +53,7 @@ export default ArrayProxy.extend({
     return Math.min(sourceLength, endIndex + indexMargin);
   }),
   
-  startIndexChanged: observer('startIndex', function startIndexChanged() {
+  _startChanged: observer('_start', function _startChanged() {
     const {
       _startCache,
       _start,
@@ -73,13 +70,13 @@ export default ArrayProxy.extend({
       } else {
         addAmt = _startCache - _start;
       }
-      this.arrayContentDidChange(_startCache, removeAmt, addAmt);
+      this.arrayContentDidChange(_start, removeAmt, addAmt);
     }
     
     this.set('_startCache', _start);
   }),
   
-  endIndexChanged: observer('endIndex', function endIndexChanged() {
+  _endChanged: observer('_end', function _endChanged() {
     const {
       _endCache,
       _end,
@@ -95,12 +92,12 @@ export default ArrayProxy.extend({
       } else {
         removeAmt = _endCache - _end;
       }
-      this.arrayContentDidChange(_endCache, removeAmt, addAmt);
+      this.arrayContentDidChange(_endCache - removeAmt, removeAmt, addAmt);
     }
     
     this.set('_endCache', _end);
   }),
-  
+    
   /**
    * @override 
    */
@@ -133,10 +130,7 @@ export default ArrayProxy.extend({
     return _end - _start;
   }),
 
-  /**
-   * @override
-   */
-  arrayContentWillChange(startIdx, removeAmt, addAmt) {
+  _arrayContentChange(startIdx, removeAmt, addAmt, fun) {
     const {
       _start,
       _end,
@@ -145,10 +139,10 @@ export default ArrayProxy.extend({
       '_end'
     );
     if (_start <= startIdx && startIdx <= _end) {
-      const sliceStartIdx = _start + startIdx;
-      const sliceRemoveAmt = Math.max(_end, sliceStartIdx + removeAmt) - sliceStartIdx;
-      const sliceAddAmt = Math.max(_end, sliceStartIdx + addAmt) - sliceStartIdx;
-      return this._super(sliceStartIdx, sliceRemoveAmt, sliceAddAmt);
+      const sliceStartIdx = startIdx - _start;
+      const sliceRemoveAmt = Math.min(_end, sliceStartIdx + removeAmt) - sliceStartIdx;
+      const sliceAddAmt = Math.min(_end, sliceStartIdx + addAmt) - sliceStartIdx;
+      return fun.bind(this)(sliceStartIdx, sliceRemoveAmt, sliceAddAmt);
     } else {
       return this;
     }
@@ -157,22 +151,15 @@ export default ArrayProxy.extend({
   /**
    * @override
    */
+  arrayContentWillChange(startIdx, removeAmt, addAmt) {
+    return this._arrayContentChange(startIdx, removeAmt, addAmt, this._super);
+  },
+  
+  /**
+   * @override
+   */
   arrayContentDidChange(startIdx, removeAmt, addAmt) {
-    const {
-      _start,
-      _end,
-    } = this.getProperties(
-      '_start',
-      '_end'
-    );
-    if (_start <= startIdx && startIdx <= _end) {
-      const sliceStartIdx = _start + startIdx;
-      const sliceRemoveAmt = Math.max(_end, sliceStartIdx + removeAmt) - sliceStartIdx;
-      const sliceAddAmt = Math.max(_end, sliceStartIdx + addAmt) - sliceStartIdx;
-      return this._super(sliceStartIdx, sliceRemoveAmt, sliceAddAmt);
-    } else {
-      return this;
-    }
+    return this._arrayContentChange(startIdx, removeAmt, addAmt, this._super);
   },
   
   _translateIndex(index) {
@@ -190,8 +177,8 @@ export default ArrayProxy.extend({
   init() {
     this._super(...arguments);
     // activate observers
-    this.getProperties('startIndex', 'endIndex');
-    this.startIndexChanged();
-    this.endIndexChanged();
+    this.getProperties('_start', '_end');
+    this._startChanged();
+    this._endChanged();
   },
 });

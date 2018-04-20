@@ -12,6 +12,15 @@ const {
   computed,
 } = Ember;
 
+const ArraySum = EmberObject.extend({
+  spy: undefined,
+  as: undefined,
+  sum: computed('as.[]', function () {
+    this.get('spy')();
+    return _.sum(this.get('as').toArray());
+  }),
+});
+
 describe('Unit | Utility | array slice', function() {
   it('exposes array containing slice of original array', function() {
     const sourceArray = A(_.range(0, 100));
@@ -174,7 +183,7 @@ describe('Unit | Utility | array slice', function() {
     });
   });
   
-  it('notifies about changes in array if changing the endIndex', function () {
+  it('notifies about changes in array if increasing the endIndex', function () {
     const sourceArray = A(_.concat(_.range(0, 10)));
     const startIndex = 0;
     const endIndex = 3;
@@ -188,25 +197,83 @@ describe('Unit | Utility | array slice', function() {
     
     const spy = sinon.spy();
     
-    const obj = EmberObject.extend({
+    const obj = ArraySum.create({
       as,
-      sum: computed('as.[]', function () {
-        spy();
-        return _.sum(this.get('as').toArray());
-      }),
-    }).create();
+      spy,
+    });
     
     expect(obj.get('sum')).to.equal(_.sum([0, 1, 2]));
     
     as.set('endIndex', 5);
     
     return wait().then(() => {
-      expect(obj.get('sum')).to.equal(_.sum(_.range(0, 5)));
+      const newSum = obj.get('sum');
       expect(spy).to.be.calledTwice;
+      expect(newSum).to.equal(_.sum(_.range(0, 5)));
     });
   });
   
-  it('notifies about changes in array if changing the startIndex', function () {
+  it('notifies about changes in array if decreasing the endIndex', function () {
+    const sourceArray = A(_.concat(_.range(0, 10)));
+    const startIndex = 0;
+    const endIndex = 5;
+    const indexMargin = 0;
+    const as = ArraySlice.create({
+      sourceArray,
+      startIndex,
+      endIndex,
+      indexMargin,
+    });
+    
+    const spy = sinon.spy();
+    
+    const obj = ArraySum.create({
+      as,
+      spy,
+    });
+    
+    expect(obj.get('sum')).to.equal(_.sum(_.range(0, 5)));
+    
+    as.set('endIndex', 3);
+    
+    return wait().then(() => {
+      const newSum = obj.get('sum');
+      expect(spy).to.be.calledTwice;
+      expect(newSum).to.equal(_.sum(_.range(0, 3)));
+    });
+  });
+  
+  it('notifies about changes in array if decreasing the startIndex', function () {
+    const sourceArray = A(_.concat(_.range(0, 10)));
+    const startIndex = 7;
+    const endIndex = 9;
+    const indexMargin = 0;
+    const as = ArraySlice.create({
+      sourceArray,
+      startIndex,
+      endIndex,
+      indexMargin,
+    });
+    
+    const spy = sinon.spy();
+    
+    const obj = ArraySum.create({
+      as,
+      spy,
+    });
+    
+    expect(obj.get('sum')).to.equal(_.sum(_.range(7, 9)));
+    
+    as.set('startIndex', 5);
+    
+    return wait().then(() => {
+      const newSum = obj.get('sum');
+      expect(spy).to.be.calledTwice;
+      expect(newSum).to.equal(_.sum(_.range(5, 9)));
+    });
+  });
+  
+  it('notifies about changes in array if increasing the startIndex', function () {
     const sourceArray = A(_.concat(_.range(0, 10)));
     const startIndex = 7;
     const endIndex = 10;
@@ -220,21 +287,51 @@ describe('Unit | Utility | array slice', function() {
     
     const spy = sinon.spy();
     
-    const obj = EmberObject.extend({
+    const obj = ArraySum.create({
       as,
-      sum: computed('as.[]', function () {
-        spy();
-        return _.sum(this.get('as').toArray());
-      }),
-    }).create();
+      spy,
+    });
     
     expect(obj.get('sum')).to.equal(_.sum(_.range(7, 10)));
     
-    as.set('startIndex', 5);
+    as.set('startIndex', 8);
     
     return wait().then(() => {
-      expect(obj.get('sum')).to.equal(_.sum(_.range(5, 10)));
+      const newSum = obj.get('sum');
       expect(spy).to.be.calledTwice;
+      expect(newSum).to.equal(_.sum(_.range(8, 10)));
+    });
+  });
+  
+  it('notifies about changes in array if changing the indexMargin', function () {
+    const sourceArray = A(_.concat(_.range(0, 100)));
+    const startIndex = 20;
+    const endIndex = 25;
+    const indexMargin = 10;
+    const as = ArraySlice.create({
+      sourceArray,
+      startIndex,
+      endIndex,
+      indexMargin,
+    });
+    
+    const spy = sinon.spy();
+    
+    const obj = ArraySum.create({
+      as,
+      spy,
+    });
+    
+    expect(obj.get('sum'), '10..35').to.equal(_.sum(_.range(10, 35)));
+    
+    as.set('indexMargin', 5);
+    
+    return wait().then(() => {
+      const newSum = obj.get('sum');
+      return wait().then(() => {
+        expect(spy).to.be.calledTwice;
+        expect(newSum, '15..30').to.equal(_.sum(_.range(15, 30)));
+      });
     });
   });
 });

@@ -50,15 +50,7 @@ export default Component.extend({
   destinationProviderIds: undefined,
   sourceProviderIds: undefined,
   providersColors: undefined,
-  
-  /**
-   * What speed (input, output) should be presented per provider
-   * on throughput chart.
-   * One of: out, in
-   * @type {string}
-   */
-  transfersPieChartDirection: 'out',
-  
+    
   _window: window,
   
   _mobileMode: false,
@@ -113,6 +105,12 @@ export default Component.extend({
     this.changeStickyOverviewStyle();
   }),
 
+  init() {
+    this._super(...arguments);
+    // enable observers
+    this.getProperties('stickyOverview', 'overviewExpanded');
+  },
+  
   didInsertElement() {
     const $contentScroll = $('#content-scroll');
     this.initSticky($contentScroll);
@@ -134,12 +132,6 @@ export default Component.extend({
   willDestroyElement() {
     $('#content-scroll').off(this.eventName('scroll'));
     $(window).off(this.eventName('resize'));
-  },
-
-  init() {
-    this._super(...arguments);
-    // enable observers
-    this.getProperties('stickyOverview', 'overviewExpanded');
   },
   
   initSticky($contentScroll) {

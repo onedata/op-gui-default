@@ -515,9 +515,9 @@ export default EmberObject.extend({
     if (this.get('completedIsUpdating') !== true) {
       const space = this.get('space');
       
-      this.set(`scheduledIsUpdating`, true);
+      this.set('scheduledIsUpdating', true);
 
-      return space.belongsTo(`scheduledTransferList`).reload()
+      return space.belongsTo('scheduledTransferList').reload()
         .then(freshTransferList =>
           this._updateMovedTransfers(freshTransferList, '_scheduledIdsCache')
         )

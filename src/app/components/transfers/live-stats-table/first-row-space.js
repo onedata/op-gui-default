@@ -1,3 +1,13 @@
+/**
+ * A first pseudo-row of transfers table/list that adds spacing for upper
+ * transfers items, that are currently not rendered
+ *
+ * @module components/transfers/live-stats-table/first-row-space
+ * @author Jakub Liput
+ * @copyright (C) 2018 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 
 const {
@@ -19,7 +29,7 @@ export default Component.extend({
    * @virtual
    * @type {number}
    */
-  processedCoumnsCount: undefined,
+  processedColumnsCount: undefined,
   
   visibleColumnsCount: computed('processedColumnsCount', function () {
     return this.get('processedColumnsCount') - 1;
@@ -42,6 +52,10 @@ export default Component.extend({
     $('#content-scroll').on('scroll.firstRowSpace', () => this.updateSpinner());
   },
 
+  willDestroyElement() {
+    $('#content-scroll').off('.firstRowSpace');
+  },
+  
   updateSpinner() {
     const $row = this.$();
     const rowStart = $row.offset().top;
@@ -62,9 +76,5 @@ export default Component.extend({
     } else {
       this.set('middleStickyVisible', false);
     }
-  },
-
-  willDestroyElement() {
-    $('#content-scroll').off('.firstRowSpace');
   },
 });

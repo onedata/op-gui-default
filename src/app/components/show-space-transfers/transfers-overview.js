@@ -16,7 +16,6 @@ const {
   Component,
   observer,
   String: { htmlSafe },
-  run,
 } = Ember;
 
 export default Component.extend({
@@ -93,9 +92,7 @@ export default Component.extend({
   
   stickyOverviewChanged: observer('stickyOverview', function () {
     this.changeStyle();
-    run.next(() => {
-      this.changeStickyOverviewStyle();
-    });
+    this.changeStickyOverviewStyle();
   }),
 
   overviewExpandedChanged: observer('overviewExpanded', function () {
@@ -195,6 +192,13 @@ export default Component.extend({
   actions: {
     toggleOverview() {
       this.toggleProperty('overviewExpanded');
+    },
+
+    // TODO: this not prevents bad focus when 
+    stickyFocused() {
+      if (!this.get('stickyOverview')) {
+        this.$()[0].setAttribute('tabindex', 0);
+      }
     },
   },
 });

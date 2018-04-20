@@ -355,6 +355,9 @@
 }
 
 .transfers-overview {
+  &:focus {
+    outline: none;
+  }
   .row-active-transfers {
     transition: top 0.25s ease-out;
     padding-bottom: 50px;

@@ -1,4 +1,14 @@
-.transfers-data-container {
+.show-space-transfers {
+  $-table-padding: 8px;
+  
+  tr.transfer-row, .transfer-item-header {
+    height: 73px;
+  }
+  
+  .transfer-item-header .cell-file-name {
+    margin-top: 8px;
+  }
+  
   // TODO: this seems to be generic for new style in content views
   h1, h2 {
     font-size: 100%;
@@ -219,13 +229,6 @@
     padding-right: 45px;;
   }
 
-  .item-icon-container {
-    display: inline-block;
-    font-size: 170%;
-    vertical-align: top;
-    line-height: 0;
-  }
-
   .content-row {
     border-bottom: 1px solid $one-main-border-color;
     padding: $padding-large-vertical 0;
@@ -263,17 +266,10 @@
       white-space: nowrap;
     }
     th, td {
-      padding: 16px 8px;
+      padding: 2 * $-table-padding $-table-padding;
       text-align: center;
       &:first-child {
         text-align: left;
-      }
-    }
-    th.table-header {
-      // TODO: this is a HACK to style two last columns with icons
-      // because ember-models-table v1 don't assign classes on headers
-      &.col-icon, &:nth-last-of-type(1), &:nth-last-of-type(2) {
-        width: 70px;
       }
     }
 
@@ -293,6 +289,23 @@
       }
     }
   }
+  
+  .transfers-table.scheduled tr.data-row:hover {
+    background-color: initial;
+    cursor: initial;
+  }
+  
+  // TODO: HACK for scheduled table, which does not have status column
+  .transfers-table th.table-header:nth-last-of-type(1) {
+    width: 70px;
+  }
+  .transfers-table:not(.scheduled) th.table-header:nth-last-of-type(2) {
+    width: 70px;
+  }
+  .transfers-table.scheduled th.table-header:nth-last-of-type(2) {
+    width: auto;
+  }
+  
   .cell-file-name {
     text-overflow: ellipsis;
     overflow: hidden;
@@ -334,5 +347,72 @@
     &.scheduled {
       color: $onedata-graphite;
     }
+  }
+  
+  .table-empty-message {
+    padding-left: $-table-padding;
+  }
+}
+
+.transfers-overview {
+  &:focus {
+    outline: none;
+  }
+  .row-active-transfers {
+    transition: top 0.25s ease-out;
+    padding-bottom: 50px;
+    &.sticky {
+      z-index: 3;
+      position: fixed;
+      padding-bottom: 0;
+    }
+  }
+  
+  .row-overview {
+    background-color: $color-main-background;
+  }
+  
+  .row-expand-handler {
+    opacity: 0;
+    display: block;
+    padding-left: 22px;
+    padding-right: 22px;
+    background-color: $onedata-light-gray;
+    line-height: 50px;
+    transition: opacity 0.5s linear;
+    pointer-events: none;
+  }
+  
+  .sticky {
+    .row-expand-handler {      
+      opacity: 1;
+      cursor: pointer;
+      pointer-events: all;
+    }
+  }
+ 
+}
+
+.middle-sticky {
+  position: fixed;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.1s linear;
+  &.middle-sticky-hide {
+    opacity: 0;
+  }
+}
+
+.show-space-transfers .transfers-table tr.first-row-space {
+  width: 100%;
+  td {
+    padding: 0;
+    width: 100%;
+  }
+}
+
+tr.transfer-row:nth-of-type(2) {
+  td {
+    border-top: none;
   }
 }

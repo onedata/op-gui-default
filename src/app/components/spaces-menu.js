@@ -4,7 +4,7 @@
  *
  * @module components/spaces-menu
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
 */
 
@@ -198,7 +198,7 @@ export default Ember.Component.extend(ForceReloadCollectionMixin, {
           this.spaceActionMessage('info', 'joinSuccess', data.spaceName);
         },
         (errorJson) => {
-          console.log(errorJson.message);
+          console.debug(errorJson.message);
           let message = this.get('i18n').t('components.spacesMenu.notify.joinFailed', {errorDetails: errorJson.message});
           this.get('notify').error(message);
         }

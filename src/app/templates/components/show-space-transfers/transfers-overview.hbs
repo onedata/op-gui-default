@@ -1,0 +1,65 @@
+<div class="row row-active-transfers {{if stickyOverview "sticky"}}" style={{stickyOverviewStyle}} onclick={{action "stickyFocused"}}>
+  <div class="row row-overview">
+    <div class="col-xs-12 col-md-7 col-providers-map map-column">
+      <h2>
+        {{t "components.transfers.providersMapOfDist"}}
+      </h2>
+      <div class="row loadable-row">
+        {{transfers/providers-map
+          providers=providers
+          providerTransferConnections=providerTransferConnections
+          destinationProviderIds=destinationProviderIds
+          sourceProviderIds=sourceProviderIds
+          providersColors=providersColors
+        }}
+      </div>
+    </div>
+    
+    <div class="col-xs-12 col-md-5 col-throughput-pie-chart">
+      <h2><span class="one-label">{{t "components.transfers.throughputDistribution.title"}}</span></h2>
+      <div class="row loadable-row">
+        {{#loading-container isLoading=(not providersLoaded)}}
+          {{#bs-tab fade=false class="bs-tab" as |activeId select|}}
+            {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.all") elementId="throughput-distribution-all" }}
+              {{#if (eq activeId "throughput-distribution-all")}}
+                {{transfers/throughput-distribution
+                          space=space
+                          providers=providers
+                          providersColors=providersColors
+                          transferType="all"}}
+              {{/if}}
+            {{/bs-tab-pane}}
+            {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.jobs") elementId="throughput-distribution-job" }}
+              {{#if (eq activeId "throughput-distribution-job")}}
+                {{transfers/throughput-distribution
+                          space=space
+                          providers=providers
+                          providersColors=providersColors
+                          transferType="job"}}
+              {{/if}}
+            {{/bs-tab-pane}}
+            {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.onTheFly") elementId="throughput-distribution-on-the-fly"
+              }}
+              {{#if (eq activeId "throughput-distribution-on-the-fly")}}
+                {{transfers/throughput-distribution
+                          space=space
+                          providers=providers
+                          providersColors=providersColors
+                          transferType="onTheFly"}}
+              {{/if}}
+            {{/bs-tab-pane}}
+          {{/bs-tab}}
+        {{/loading-container}}
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-xs-12 row-expand-handler" {{action "toggleOverview"}}>
+    <span class="toggle-expand left {{if overviewExpanded "opened"}}">
+      {{one-icon class="toggle-icon" icon="arrow-down"}}
+    </span>
+    <span class="one-label">
+      {{t (concat "components.transfers.transfersOverview." (if overviewExpanded "hide" "show"))}}
+    </span>
+  </div>
+</div>

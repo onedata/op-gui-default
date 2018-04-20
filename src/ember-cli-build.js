@@ -5,6 +5,9 @@ var fs = require('fs');
 
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
+    'ember-math-helpers': {
+      only: ['mult', 'add', 'sub'],
+    },
     sassOptions: {
       includePaths: [
         'app/styles',

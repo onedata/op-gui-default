@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-4239 Infinite scroll for transfers lists.
 * VFS-4305 Added charts for on-the-fly transfers.
 * VFS-4232 Added line chart which shows providers transfer throughput.
 * VFS-4260 Added menu for managing space root dir data distribution

@@ -870,3 +870,29 @@ h1.content-header {
   font-size: 100%;
   font-weight: bold;
 }
+
+.toggle-expand {
+  .toggle-icon {
+    display: block;
+    font-size: 1.7em;
+    font-weight: bold;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%) rotate(0deg);
+  }
+
+  &.left {
+    padding-right: 40px;
+    .toggle-icon {
+      left: 20px;
+      right: initial;
+    }
+  }
+  
+  &.opened {
+    .toggle-icon {
+      transform: translateY(-50%) rotate(180deg);
+    }
+  }
+}

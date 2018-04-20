@@ -49,4 +49,20 @@
     margin-bottom: -3px;
     margin-right: 1.2em;
   }
+  
+  .item-icon-container {
+    $-item-icon-size: 2em;
+    
+    display: inline-block;
+    .item-icon {
+      font-size: $-item-icon-size;
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    + .one-label {
+      padding-left: $-item-icon-size;
+    }
+  }
 }

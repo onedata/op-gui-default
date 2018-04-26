@@ -83,6 +83,14 @@ export default DS.RESTAdapter.extend({
   onErrorCallback: null,
   onCloseCallback: null,
 
+  shouldBackgroundReloadRecord() {
+    return false;
+  },
+  
+  shouldReloadRecord() {
+    return false;
+  },
+  
   //
   /**
    * Map of promises that will be resolved when response for message with

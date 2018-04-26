@@ -3,7 +3,7 @@
  * transfers menu option.
  * @module controllers/transfers/show
  * @author Jakub Liput
- * @copyright (C) 2017 ACK CYFRONET AGH
+ * @copyright (C) 2017-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -21,15 +21,15 @@ export default Controller.extend({
   
   /**
    * Query parameters used for onedata.transfers.show route:
-   * - `sort_by` (string) - key of transfers table column to sort by default
-   *    on entering the view; see `live-stats-table` component for column names;
-   *    eg. "path" to sort by file path
    * - `selected_transfers` (string) - list of transfers ids separated by `,`
    *    that will be automatically opened, blink and be scrolled to on entering
    *    the view; eg. "transferid1,transferid2"
+   * - `list_tab` (string) - id of transfers table list to open
    */
-  queryParams: ['sort_by', 'selected_transfers'],
+  queryParams: ['selected_transfers', 'list_tab'],
     
+  list_tab: 'on-the-fly',
+  
   /**
    * @type {Ember.ComputedProperty<Array<String>>}
    */
@@ -40,11 +40,13 @@ export default Controller.extend({
     }
   }),
   
-  sortBy: computed.reads('sort_by'),
-  
+  listTab: computed.reads('list_tab'),
+    
+  /**
+   * Reset only some of the params
+   */
   resetQueryParams() {
     this.setProperties({
-      sort_by: undefined,
       selected_transfers: undefined,
     });
   },
@@ -65,6 +67,9 @@ export default Controller.extend({
   },
 
   actions: {
+    changeListTab(listTab) {
+      this.set('list_tab', listTab);
+    },
     resetQueryParams() {
       this.resetQueryParams();
     },

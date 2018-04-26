@@ -3,7 +3,7 @@
  * 
  * @module components/transfers/transfer-chart
  * @author Michal Borzecki
- * @copyright (C) 2017 ACK CYFRONET AGH
+ * @copyright (C) 2017-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -686,7 +686,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
     );
     const isCurrent = get(transfer, 'isCurrent');
  
-    console.log('transfer-chart: creating updater');
+    console.debug('transfer-chart: creating updater');
     _timeStatForUnit
       .then(timeStat => {
         this.set('_statsError', null);

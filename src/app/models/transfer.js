@@ -59,6 +59,11 @@ export default Model.extend({
   /**
    * UNIX timestamp seconds format
    */
+  scheduleTime: attr('number'),
+  
+  /**
+   * UNIX timestamp seconds format
+   */
   startTime: attr('number'),
   
   /**

@@ -16,7 +16,8 @@
         </div>
       {{else if (and _noStatsForUnit ignoreTransferState)}}
         <div class="waiting-for-stats no-stats-for-unit-info">
-          {{t "components.transfers.transferChart.noStatsForUnit" timeUnit=timeUnit}}
+          <div class="chart-placeholder-image"></div>
+          <span class="one-label">{{t "components.transfers.transferChart.noStatsForUnit" timeUnit=timeUnit}}</span>
         </div>
       {{else}}
         {{#one-chartist data=_chartData options=_chartOptions type="line"}}

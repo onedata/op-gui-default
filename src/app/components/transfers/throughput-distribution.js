@@ -262,6 +262,17 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
   }),
 
   /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  _noStatsForUnit: computed('_statsLoaded', '_sortedProvidersIds', function () {
+    const {
+      _statsLoaded,
+      _sortedProvidersIds,
+    } = this.getProperties('_statsLoaded', '_sortedProvidersIds');
+    return _statsLoaded && _sortedProvidersIds.length === 0;
+  }),
+
+  /**
    * Chart time period
    * @type {Ember.ComputedProperty<number>}
    */

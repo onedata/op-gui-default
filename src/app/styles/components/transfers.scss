@@ -36,11 +36,12 @@
   }
 
   .transfers-throughput-distribution {
+    $-ct-chart-height: 350px;
     $-ct-chart-padding-top: 20px;
     
     position: relative;
     .loadable-row {
-      min-height: 140px + $-ct-chart-padding-top;
+      height: $-ct-chart-height + $-ct-chart-padding-top;
     }
     .ct-chart {
       margin-top: $-ct-chart-padding-top;
@@ -56,7 +57,7 @@
       stroke: black;
     }
     .ct-chart {
-      height: 350px;
+      height: $-ct-chart-height;
     }
     .btn-group {
       float: right;
@@ -120,6 +121,28 @@
     }
   }
 
+  .waiting-for-stats {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    .one-label {
+      @include absolute-align-middle-center();
+    }
+  }
+
+  .chart-placeholder-image {
+    width: 80%;
+    max-width: 430px;
+    height: 95px;
+    margin: 0 auto $padding-large-vertical auto;
+    background-image: url("/assets/images/chart-placeholder.svg");
+    background-position-x: center;
+    opacity: 0.15;
+  }
+
   .transfers-transfer-chart {
     $-ct-chart-padding-top: 40px;
     
@@ -127,10 +150,6 @@
     .loadable-row {
       // height of chart + top-padding (TODO: parametrize height of chart?)
       min-height: 160px + $-ct-chart-padding-top;
-    }
-    .waiting-for-stats {
-      @include absolute-align-middle-center();
-      text-align: center;
     }
     .btn-group {
       position: absolute;

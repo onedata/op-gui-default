@@ -20,7 +20,7 @@ const I18N_PREFIX =
   'components.transfers.throughputDistribution.providerSelector.';
 
 export default Ember.Component.extend({
-  classNames: ['throughput-provider-selector'],
+  classNames: ['throughput-provider-selector', 'dropdown', 'settings-dropdown'],
 
   i18n: service(),
 

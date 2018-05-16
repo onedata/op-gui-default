@@ -22,10 +22,6 @@
     }
   }
 
-  .nav-link {
-    cursor: pointer;
-  }
-
   .ct-label.ct-vertical, .ct-label.ct-horizontal {
     white-space: nowrap;
   }
@@ -81,24 +77,24 @@
       display: inline-block;
       max-width: 100%;
       margin: 5px 0;
-      .dropdown {
-        display: inline-block;
-        max-width: 100%;
-      }
       .dropdown-menu {
         width: 300px;
+        right: initial;
+        &:before {
+          right: initial;
+        }
       }
       .dropdown-toggle {
         display: inline-block;
-        padding-right: 30px;
+        padding-left: 25px;
         max-width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        .one-icon {
+        .dropdown-trigger-arrow {
           position: absolute;
           top: 0;
-          right: 9px;
+          left: -2px;
           font-size: 140%;
         }
       }
@@ -122,9 +118,7 @@
   }
 
   .waiting-for-stats {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    @include vertical-align-middle();
     width: 100%;
     text-align: center;
     font-weight: bold;

@@ -1,29 +1,27 @@
-<div class="dropdown settings-dropdown">
-  <div href="#" class="dropdown-toggle" data-toggle="dropdown"
-    role="button" aria-haspopup="true" aria-expanded="false">
-    <span class="one-label">{{selectedProviderName}}</span>
-    <span class="item-element item-icon transparent-not-hovered settings-icon">
-      {{one-icon icon="arrow-down"}}
+<div href="#" class="dropdown-toggle" data-toggle="dropdown"
+  role="button" aria-haspopup="true" aria-expanded="false">
+  <span class="item-element item-icon transparent-not-hovered settings-icon">
+    {{one-icon icon="arrow-down" class="dropdown-trigger-arrow"}}
+  </span>
+  <span class="one-label">{{selectedProviderName}}</span>
+</div>
+<ul class="dropdown-menu dropdown-menu-down dropdown-menu-settings dropdown-menu-list">
+  <li {{action selectProvider null}} class="clickable">
+    <span class="item-icon">
+      {{one-icon icon="provider"}}
     </span>
-  </div>
-  <ul class="dropdown-menu dropdown-menu-settings dropdown-menu-list">
-    <li {{action selectProvider null}} class="clickable">
+    <span class="item-label">
+      {{t "components.transfers.throughputDistribution.providerSelector.allProviders"}}
+    </span>
+  </li>
+  {{#each-in providersNames as |providerId providerName|}}
+    <li {{action selectProvider providerId}} class="clickable">
       <span class="item-icon">
         {{one-icon icon="provider"}}
       </span>
-      <span class="item-label">
-        {{t "components.transfers.throughputDistribution.providerSelector.allProviders"}}
-      </span>
+      {{#truncated-string class="item-label" tooltipPlacement="right"}}
+        {{providerName}}
+      {{/truncated-string}}
     </li>
-    {{#each-in providersNames as |providerId providerName|}}
-      <li {{action selectProvider providerId}} class="clickable">
-        <span class="item-icon">
-          {{one-icon icon="provider"}}
-        </span>
-        {{#truncated-string class="item-label" tooltipPlacement="right"}}
-          {{providerName}}
-        {{/truncated-string}}
-      </li>
-    {{/each-in}}
-  </ul>
-</div>
+  {{/each-in}}
+</ul>

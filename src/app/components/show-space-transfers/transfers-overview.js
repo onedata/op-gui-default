@@ -201,14 +201,6 @@ export default Component.extend({
   },
   
   actions: {
-    selectTransferStatProvider(providerId) {
-      this.set('selectedTransferStatProviderId', providerId);
-    },
-    
-    selectThroughputTransferType(type) {
-      this.set('throughputTransferType', type);
-    },
-
     toggleOverview() {
       this.toggleProperty('overviewExpanded');
     },

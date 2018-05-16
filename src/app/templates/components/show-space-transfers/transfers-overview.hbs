@@ -28,17 +28,17 @@
               type="tabs"
             }}
               {{#bs-nav-item active=(eq throughputTransferType "all")}}
-                <a class="nav-link" role="tab" {{action "selectThroughputTransferType" "all"}}>
+                <a class="nav-link" role="tab" {{action (mut throughputTransferType) "all"}}>
                   {{t "components.transfers.throughputDistribution.all"}}
                 </a>
               {{/bs-nav-item}}
               {{#bs-nav-item active=(eq throughputTransferType "job")}}
-                <a class="nav-link" role="tab" {{action "selectThroughputTransferType" "job"}}>
+                <a class="nav-link" role="tab" {{action (mut throughputTransferType) "job"}}>
                   {{t "components.transfers.throughputDistribution.jobs"}}
                 </a>
               {{/bs-nav-item}}
               {{#bs-nav-item active=(eq throughputTransferType "onTheFly")}}
-                <a class="nav-link" role="tab" {{action "selectThroughputTransferType" "onTheFly"}}>
+                <a class="nav-link" role="tab" {{action (mut throughputTransferType) "onTheFly"}}>
                   {{t "components.transfers.throughputDistribution.onTheFly"}}
                 </a>
               {{/bs-nav-item}}
@@ -50,7 +50,7 @@
                   providers=providers
                   providersColors=providersColors
                   transferStatProviderId=selectedTransferStatProviderId
-                  selectTransferStatProvider=(action "selectTransferStatProvider")
+                  selectTransferStatProvider=(action (mut selectedTransferStatProviderId))
                   transferType=throughputTransferType}}
               {{/bs-tab-pane}}
             </div>

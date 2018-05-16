@@ -170,31 +170,33 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
     'transferType',
     function () {
       const {
+        store,
         space,
         timeUnit,
         transferType,
-        // transferStatProviderId,
+        transferStatProviderId,
       } = this.getProperties(
+        'store',
         'space',
         'timeUnit',
         'transferType',
         'transferStatProviderId'
       );
-      // uncomment to enable per-provider-stats fetch
-      // const transferProviderStat = get(space, 'transferProviderStat');
-      // const providerStats = transferStatProviderId &&
-      //   get(transferProviderStat, transferStatProviderId);
+
+      const transferProviderStat = get(space, 'transferProviderStat');
+      const providerStats = transferStatProviderId &&
+        get(transferProviderStat, transferStatProviderId);
       const unitProp = `${timeUnit}Stat`;
       let promise;
-      // if (providerStats) {
-      //   const typeProp = `${transferType}Stat`;
-      //   promise = this.store
-      //     .findRecord('space-transfer-stat', get(providerStats, typeProp))
-      //     .then(typeStats => get(typeStats, unitProp))
-      // } else {
+      if (providerStats) {
+        const typeProp = `${transferType}Stat`;
+        promise = store
+          .findRecord('space-transfer-stat', get(providerStats, typeProp))
+          .then(typeStats => get(typeStats, unitProp));
+      } else {
         const typeProp = `transfer${_.upperFirst(transferType)}Stat`;
         promise = get(space, typeProp).then(typeStats => get(typeStats, unitProp));
-      // }
+      }
       return PromiseObject.create({ promise });
     }
   ),

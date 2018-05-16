@@ -43,6 +43,17 @@ export default Component.extend({
    * @type {number}
    */
   initialHandlerTop: undefined,
+
+  /**
+   * Id of provider selected in throughput chart.
+   * @type {string}
+   */
+  selectedTransferStatProviderId: null,
+
+  /**
+   * @type {string}
+   */
+  throughputTransferType: 'all',
   
   providers: undefined,
   providerTransferConnections: undefined,

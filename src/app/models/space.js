@@ -47,4 +47,23 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
   transferJobStat: belongsTo('space-transfer-stat', { async: true, inverse: null }),
   transferAllStat: belongsTo('space-transfer-stat', { async: true, inverse: null }),
   transferLinkState: belongsTo('space-transfer-link-state', { async: true, inverse: null }),
+
+  /**
+   * On-the-fly, job and all transfer stats for each provider.
+   * It is an object in format:
+   * ``
+   * {
+   *   provider1Id: {
+   *       onTheFlyStat: id_of_space-transfer-stat,
+   *       jobStat: id_of_space-transfer-stat,
+   *       allStat: id_of_space-transfer-stat,
+   *   },
+   *   provider2Id: {
+   *       ...like above...
+   *   },
+   *   ...
+   * }
+   * ``
+   */
+  transferProviderStat: attr('object'),
 });

@@ -44,7 +44,7 @@
   {{/if}}
 </tr>
 {{#if (exists-in expandedRowIndexes record.transferIndex)}}
-  <tr class="expand-row {{concat "expand-" record.transferIndex}} {{if (exists-in selectedItems record) "selected-expand"}}" {{action "clickOnRow" index record on="click"}}>
+  <tr class="expand-row {{concat "expand-" record.transferIndex}} {{if (exists-in selectedItems record) "selected-expand"}}">
     <td colspan={{visibleColumnsCount}}>
       {{partial expandedRowTemplate}}
     </td>

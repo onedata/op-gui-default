@@ -32,11 +32,12 @@
   }
 
   .transfers-throughput-distribution {
-    $-ct-chart-padding-top: 40px;
+    $-ct-chart-height: 350px;
+    $-ct-chart-padding-top: 20px;
     
     position: relative;
     .loadable-row {
-      min-height: 140px + $-ct-chart-padding-top;
+      height: $-ct-chart-height + $-ct-chart-padding-top;
     }
     .ct-chart {
       margin-top: $-ct-chart-padding-top;
@@ -52,12 +53,10 @@
       stroke: black;
     }
     .ct-chart {
-      height: 350px;
+      height: $-ct-chart-height;
     }
     .btn-group {
-      position: absolute;
-      top: $padding-small-vertical;
-      right: $padding-small-vertical;
+      float: right;
     }
     .ct-label.ct-vertical {
       margin-top: 0.5em;
@@ -74,6 +73,37 @@
       line-height: 30px;
       background-color: $onedata-light-gray;
     }
+    .throughput-provider-selector {
+      display: inline-block;
+      max-width: 100%;
+      margin: 5px 0;
+      .dropdown-menu {
+        width: 300px;
+        right: initial;
+        &:before {
+          right: initial;
+        }
+      }
+      .dropdown-toggle {
+        display: inline-block;
+        padding-left: 25px;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        .dropdown-trigger-arrow {
+          position: absolute;
+          top: 0;
+          left: -2px;
+          font-size: 140%;
+        }
+      }
+      li .item-label {
+        max-width: 250px;
+        text-transform: none;
+        white-space: nowrap;
+      }
+    }
   }
 
   .map-column {
@@ -87,6 +117,26 @@
     }
   }
 
+  .waiting-for-stats {
+    @include vertical-align-middle();
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    .one-label {
+      @include absolute-align-middle-center();
+    }
+  }
+
+  .chart-placeholder-image {
+    width: 80%;
+    max-width: 430px;
+    height: 95px;
+    margin: 0 auto $padding-large-vertical auto;
+    background-image: url("/assets/images/chart-placeholder.svg");
+    background-position-x: center;
+    opacity: 0.15;
+  }
+
   .transfers-transfer-chart {
     $-ct-chart-padding-top: 40px;
     
@@ -94,10 +144,6 @@
     .loadable-row {
       // height of chart + top-padding (TODO: parametrize height of chart?)
       min-height: 160px + $-ct-chart-padding-top;
-    }
-    .waiting-for-stats {
-      @include absolute-align-middle-center();
-      text-align: center;
     }
     .btn-group {
       position: absolute;

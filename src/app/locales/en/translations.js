@@ -558,7 +558,7 @@ export default {
         throughput: 'Throughput',
         output: 'Output',
         waitingForTransferStart: 'Waiting for the transfer to start...',
-        noStatsForUnit: 'There are no transfer statistics for the last {{timeUnit}}.',
+        noStatsForUnit: 'No activity in the last {{timeUnit}}.',
         waitingForStats: 'Gathering transfer statistics...',
         waitingForStatsTip: 'Statistics are delayed due to synchronization ' +
           'latency caused by data distribution.',
@@ -567,11 +567,16 @@ export default {
         title: 'Providers throughput',
         input: 'Input',
         output: 'Output',
+        receivedFrom: 'Received from',
+        sentTo: 'Sent to',
         timeLastUpdate: 'Time (last update: {{lastUpdate}})',
         throughput: 'Throughput',
         onTheFly: 'On-the-fly',
         all: 'All',
         jobs: 'Jobs',
+        providerSelector: {
+          allProviders: 'All providers',
+        },
       },
       transfersOverview: {
         hide: 'Hide transfers overview',

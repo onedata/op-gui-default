@@ -1,38 +1,55 @@
+<div class="row chart-selectors">
+  {{transfers/throughput-distribution/provider-selector
+    providersNames=_providersNames
+    selectedProviderId=transferStatProviderId
+    selectProvider=selectTransferStatProvider}}
+  {{#if (and (not statsError) _statsLoaded)}}
+    {{#bs-button-group value=timeUnit type="radio" size="sm"}}
+      {{#bs-button value="minute"}}{{t "components.transfers.transferChart.minute"}}{{/bs-button}}
+      {{#bs-button value="hour"}}{{t "components.transfers.transferChart.hour"}}{{/bs-button}}
+      {{#bs-button value="day"}}{{t "components.transfers.transferChart.day"}}{{/bs-button}}
+      {{#bs-button value="month"}}{{t "components.transfers.transferChart.month"}}{{/bs-button}}
+    {{/bs-button-group}}
+  {{/if}}
+</div>
 <div class="row loadable-row row-main-chart">
   {{#if statsError}}
     {{resource-load-error reason=statsError}}
   {{else}}
     {{#loading-container isLoading=(not _statsLoaded)}}
-      {{#one-chartist data=_chartData options=_chartOptions type="line"}}
-        <div class="ct-tooltip">
-          <div class="tooltip-header">
-            {{_tooltipHeader}}
-          </div>
-          {{#if _tooltipInProviders.length}}
-            {{transfers/tooltip-providers-list
-              providers=_tooltipInProviders
-              title=(t "components.transfers.throughputDistribution.input")
-              sum=_tooltipInSum}}
-          {{/if}}
-          {{#if _tooltipOutProviders.length}}
-            {{transfers/tooltip-providers-list
-              providers=_tooltipOutProviders
-              title=(t "components.transfers.throughputDistribution.output")
-              sum=_tooltipOutSum}}
-          {{/if}}
-          <div class="ct-tooltip-arrow"></div>
+      {{#if _noStatsForUnit}}
+        <div class="waiting-for-stats no-stats-for-unit-info">
+          <div class="chart-placeholder-image"></div>
+          <span class="one-label">{{t "components.transfers.transferChart.noStatsForUnit" timeUnit=timeUnit}}</span>
         </div>
-        <div class="input-half half-description">{{t "components.transfers.throughputDistribution.input"}}</div>
-        <div class="output-half half-description">{{t "components.transfers.throughputDistribution.output"}}</div>
-      {{/one-chartist}}
+      {{else}}
+        {{#one-chartist data=_chartData options=_chartOptions type="line"}}
+          <div class="ct-tooltip">
+            <div class="tooltip-header">
+              {{_tooltipHeader}}
+            </div>
+            {{#if _tooltipInProviders.length}}
+              {{transfers/tooltip-providers-list
+                providers=_tooltipInProviders
+                title=(t (concat "components.transfers.throughputDistribution." (if transferStatProviderId "receivedFrom" "input")))
+                sum=_tooltipInSum}}
+            {{/if}}
+            {{#if _tooltipOutProviders.length}}
+              {{transfers/tooltip-providers-list
+                providers=_tooltipOutProviders
+                title=(t (concat "components.transfers.throughputDistribution." (if transferStatProviderId "sentTo" "output")))
+                sum=_tooltipOutSum}}
+            {{/if}}
+            <div class="ct-tooltip-arrow"></div>
+          </div>
+          <div class="input-half half-description">
+            {{t (concat "components.transfers.throughputDistribution." (if transferStatProviderId "receivedFrom" "input"))}}
+          </div>
+          <div class="output-half half-description">
+            {{t (concat "components.transfers.throughputDistribution." (if transferStatProviderId "sentTo" "output"))}}
+          </div>
+        {{/one-chartist}}
+      {{/if}}
     {{/loading-container}}
   {{/if}}
 </div>
-{{#if (and (not statsError) _statsLoaded)}}
-  {{#bs-button-group value=timeUnit type="radio" size="sm"}}
-    {{#bs-button value="minute"}}{{t "components.transfers.transferChart.minute"}}{{/bs-button}}
-    {{#bs-button value="hour"}}{{t "components.transfers.transferChart.hour"}}{{/bs-button}}
-    {{#bs-button value="day"}}{{t "components.transfers.transferChart.day"}}{{/bs-button}}
-    {{#bs-button value="month"}}{{t "components.transfers.transferChart.month"}}{{/bs-button}}
-  {{/bs-button-group}}
-{{/if}}

@@ -19,35 +19,41 @@
       <h2><span class="one-label">{{t "components.transfers.throughputDistribution.title"}}</span></h2>
       <div class="row loadable-row">
         {{#loading-container isLoading=(not providersLoaded)}}
-          {{#bs-tab fade=false class="bs-tab" as |activeId select|}}
-            {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.all") elementId="throughput-distribution-all" }}
-              {{#if (eq activeId "throughput-distribution-all")}}
+          {{#bs-tab
+            fade=false
+            class="bs-tab"
+            customTabs=true
+            activeId="throughput-chart-tab"}}
+            {{#bs-nav
+              type="tabs"
+            }}
+              {{#bs-nav-item active=(eq throughputTransferType "all")}}
+                <a class="nav-link" role="tab" {{action (mut throughputTransferType) "all"}}>
+                  {{t "components.transfers.throughputDistribution.all"}}
+                </a>
+              {{/bs-nav-item}}
+              {{#bs-nav-item active=(eq throughputTransferType "job")}}
+                <a class="nav-link" role="tab" {{action (mut throughputTransferType) "job"}}>
+                  {{t "components.transfers.throughputDistribution.jobs"}}
+                </a>
+              {{/bs-nav-item}}
+              {{#bs-nav-item active=(eq throughputTransferType "onTheFly")}}
+                <a class="nav-link" role="tab" {{action (mut throughputTransferType) "onTheFly"}}>
+                  {{t "components.transfers.throughputDistribution.onTheFly"}}
+                </a>
+              {{/bs-nav-item}}
+            {{/bs-nav}}
+            <div class="tab-content">
+              {{#bs-tab-pane elementId="throughput-chart-tab"}}
                 {{transfers/throughput-distribution
-                          space=space
-                          providers=providers
-                          providersColors=providersColors
-                          transferType="all"}}
-              {{/if}}
-            {{/bs-tab-pane}}
-            {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.jobs") elementId="throughput-distribution-job" }}
-              {{#if (eq activeId "throughput-distribution-job")}}
-                {{transfers/throughput-distribution
-                          space=space
-                          providers=providers
-                          providersColors=providersColors
-                          transferType="job"}}
-              {{/if}}
-            {{/bs-tab-pane}}
-            {{#bs-tab-pane title=(t "components.transfers.throughputDistribution.onTheFly") elementId="throughput-distribution-on-the-fly"
-              }}
-              {{#if (eq activeId "throughput-distribution-on-the-fly")}}
-                {{transfers/throughput-distribution
-                          space=space
-                          providers=providers
-                          providersColors=providersColors
-                          transferType="onTheFly"}}
-              {{/if}}
-            {{/bs-tab-pane}}
+                  space=space
+                  providers=providers
+                  providersColors=providersColors
+                  transferStatProviderId=selectedTransferStatProviderId
+                  selectTransferStatProvider=(action (mut selectedTransferStatProviderId))
+                  transferType=throughputTransferType}}
+              {{/bs-tab-pane}}
+            </div>
           {{/bs-tab}}
         {{/loading-container}}
       </div>

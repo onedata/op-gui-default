@@ -59,6 +59,9 @@ $screen-lg-min: $min-width-desktop-medium;
   margin-left: 0px;
   margin-right: 0px;
 }
+.nav-link {
+  cursor: pointer;
+}
 
 @import 'colors-common';
 @import 'onedata-common';

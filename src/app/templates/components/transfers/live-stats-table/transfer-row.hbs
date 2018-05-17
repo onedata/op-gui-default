@@ -18,11 +18,7 @@
   {{else}}
     {{#each processedColumns as |column|}}
       {{#if column.isVisible}}
-        <td class="{{if record.initSelect "animated very-slow notice-blink"}} {{column.className}}"
-        {{action (if (and (not record.isLoading) (not column.notClickable))
-            (if (exists-in _expandedRowIndexes record.transferIndex) "collapseRow" "expandRow")
-            (if (exists-in _expandedRowIndexes record.transferIndex) "expandRow" "collapseRow")
-          ) record.transferIndex}}>
+        <td class="{{if record.initSelect "animated very-slow notice-blink"}} {{column.className}}">
           {{#if column.routeName}}
             {{#link-to column.routeName record.id}}
               {{#if column.propertyName}}

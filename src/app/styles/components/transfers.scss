@@ -378,14 +378,14 @@
   .col-icon {
     .cell-icon {
       display: block;
+      position: relative;
+      top: -4px;
     }
   }
   .cell-icon {
     font-size: 2em;
     line-height: 0;
     vertical-align: middle;
-    line-height: 0;
-    // regular states
     &.completed,
     &.invalidating {
       color: $color-one-mint;
@@ -409,9 +409,6 @@
       @extend .infinite;
       @extend .hinge;
       @extend .pulse-red-transparent;
-    }
-    .one-icon {
-      line-height: 0;
     }
   }
   .transfer-actions-cell {

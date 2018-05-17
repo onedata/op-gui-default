@@ -291,7 +291,6 @@ export default Component.extend({
         id: 'actions',
         component: 'transfers/live-stats-table/cell-actions',
         className: 'transfer-actions-cell',
-        headerClassName: 'transfer-actions-cell',
       },
     ];
     allColumns.forEach(column => column.disableSorting = true);

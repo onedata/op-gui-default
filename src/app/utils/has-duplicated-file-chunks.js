@@ -7,28 +7,37 @@
  * @copyright (C) 2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  * 
+ * @param {number} fileSize
  * @param {Array<number>} subjectChunks chunks which are going to be checked
  * @param {Array<Array<number>>} compareChunksArray array of chunks that is
  * a source of possible chunk duplication
+ * @param {boolean} [onlyFullCoverage=true] if true, then funtion will return true
+ * only if all chunks in compareChunksArray coverage whole the file
  * @returns {boolean}
  */
-export default function hasDuplicatedFileChunks(subjectChunks, compareChunksArray) {
+export default function hasDuplicatedFileChunks(fileSize, subjectChunks, compareChunksArray, onlyFullCoverage = true) {
   const compareChunksSum = sumChunks(compareChunksArray);
-  
-  let sumSearchIndex = 0;
-  for (let i = 0; i < subjectChunks.length; i += 2) {
-    const chunkStart = subjectChunks[i];
-    const chunkEnd = subjectChunks[i + 1];
-    while (compareChunksSum.length > sumSearchIndex &&
-      compareChunksSum[sumSearchIndex + 1] < chunkStart) {
-      sumSearchIndex += 2;
+
+  if (onlyFullCoverage) {
+    return compareChunksSum.length === 2 &&
+      compareChunksSum[0] === 0 &&
+      compareChunksSum[1] === fileSize;
+  } else {
+    let sumSearchIndex = 0;
+    for (let i = 0; i < subjectChunks.length; i += 2) {
+      const chunkStart = subjectChunks[i];
+      const chunkEnd = subjectChunks[i + 1];
+      while (compareChunksSum.length > sumSearchIndex &&
+        compareChunksSum[sumSearchIndex + 1] < chunkStart) {
+        sumSearchIndex += 2;
+      }
+      if (compareChunksSum.length > sumSearchIndex &&
+        compareChunksSum[sumSearchIndex] <= chunkEnd) {
+        return true;
+      }
     }
-    if (compareChunksSum.length > sumSearchIndex &&
-      compareChunksSum[sumSearchIndex] <= chunkEnd) {
-      return true;
-    }
+    return false;
   }
-  return false;
 }
 
 /**

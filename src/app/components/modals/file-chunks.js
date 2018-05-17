@@ -180,10 +180,12 @@ export default Component.extend(PromiseLoadingMixin, {
    * @type {Ember.ComputedProperty<Object>}
    */
   isInvalidationPossible: computed(
-    'fileDistributionsSorted.@each.blocks',
-    'fileDistributionsSorted.@each.neverSynchronized',
+    'fileDistributionsSorted.@each.{blocks,neverSynchronized}',
     function () {
-      const fileDistributionsSorted = this.get('fileDistributionsSorted');
+      const {
+        fileDistributionsSorted,
+        file,
+      } = this.getProperties('fileDistributionsSorted', 'file');
       if (fileDistributionsSorted) {
         const fileChunksArray = fileDistributionsSorted
           .map(fd => !get(fd, 'neverSynchronized') ? get(fd, 'blocks') : []);
@@ -191,6 +193,7 @@ export default Component.extend(PromiseLoadingMixin, {
         fileChunksArray.forEach((chunks, index) => {
           const providerId = get(fileDistributionsSorted[index], 'provider');
           invalidationPossible[providerId] = hasDuplicatedFileChunks(
+            file.get('size'),
             chunks,
             fileChunksArray.filter(fc => fc !== chunks)
           );
@@ -635,9 +638,15 @@ export default Component.extend(PromiseLoadingMixin, {
     },
 
     startInvalidation(source) {
-      const file = this.get('file');
-      const transfersUpdater = this.get('transfersUpdater');
-      const providerInvalidationsInvoked = this.get('providerInvalidationsInvoked');
+      const {
+        file,
+        transfersUpdater,
+        providerInvalidationsInvoked
+      } = this.getProperties(
+        'file',
+        'transfersUpdater',
+        'providerInvalidationsInvoked'
+      );
       providerInvalidationsInvoked.pushObject(source);
       const transfer = this.get('store')
         .createRecord('transfer', {

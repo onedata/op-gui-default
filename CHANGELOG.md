@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-3945 Added data invalidation functionality.
 * VFS-4355 Added summarized transfer charts per provider.
 * VFS-4239 Infinite scroll for transfers lists.
 * VFS-4305 Added charts for on-the-fly transfers.

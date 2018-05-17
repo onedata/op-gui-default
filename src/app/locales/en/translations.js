@@ -442,17 +442,22 @@ export default {
         providerRow: {
           replication: 'replication',
           migration: 'migration',
+          invalidation: 'invalidation',
           migrationStart: 'Migrate the data to other provider...',
           replicationStart: 'Replicate the data to selected provider',
+          invalidationStart: 'Invalidate redundant data blocks on this provider',
           disabledSingleProvider: 'is available only with two or more supporting providers',
           disabledProxyProvider: 'Visit a supporting provider in order to schedule',
           disabledMigrationIsEmpty: 'Cannot schedule migration as there are no file blocks on this provider',
           disabledMigrationInProgress: 'The data is currently migrated from selected provider',
           disabledReplicationIsComplete: 'Cannot schedule replication as all file block are already on this provider',
           disabledReplicationInProgress: 'The data is currently replicated to selected provider',
-          disabledInProgress: 'Migration/replication unavailable as there are transfers in progress.',
+          disabledInProgress: 'Operation is unavailable as there are transfers in progress on this provider',
+          disabledInvalidationNoBlocks: 'Invalidation is not possible unless all data blocks on this provider are redundant',
+          disabledInvalidationInProgress: 'The data is currently invalidated in selected provider',
           disabledMigrationUnknown: 'The data cannot be migrated from selected provider now',
           disabledReplicationUnknown: 'The data cannot be replicated into selected provider now',
+          disabledInvalidationUnknown: 'The data cannot be invalidated in selected provider now',
         },
         migratePopover: {
           migrateItem: {
@@ -547,6 +552,10 @@ export default {
           replication: 'Replication',
           migration: 'Migration',
           invalidation: 'Invalidation',
+        },
+        cellTotalFiles: {
+          invalidated: 'invalidated',
+          transferred: 'transferred',
         },
       },
       transferChart: {

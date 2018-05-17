@@ -66,10 +66,13 @@
                         fileDistribution=fd
                         transferDisabledReason=transferDisabledReason
                         file=file
+                        hasBlocksToInvalidate=(get isInvalidationPossible fd.provider)
                         openMigrationOptions=(action "openMigrationOptions")
                         startReplication=(action "startReplication")
+                        startInvalidation=(action "startInvalidation")
                         fileTransfers=fileTransfers
                         migrationInvoked=(contains fd.provider providerMigrationsInvoked)
+                        invalidationInvoked=(contains fd.provider providerInvalidationsInvoked)
                       }}
                     {{/each}}
                   </tbody>

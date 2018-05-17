@@ -5,7 +5,7 @@
  *
  * @module components/transfers/live-stats-table
  * @author Michal Borzecki, Jakub Liput
- * @copyright (C) 2017 ACK CYFRONET AGH
+ * @copyright (C) 2017-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -256,7 +256,7 @@ export default Component.extend({
         id: 'totalFiles',
         propertyName: 'totalFiles',
         title: i18n.t(I18N_PREFIX + 'totalFiles'),
-        component: 'transfers/live-stats-table/cell-errorable',
+        component: 'transfers/live-stats-table/cell-total-files',
       },
       {
         id: 'type',

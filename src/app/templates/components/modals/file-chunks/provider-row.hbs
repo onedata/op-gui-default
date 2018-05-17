@@ -7,16 +7,22 @@
   <div class="btn-group">
     {{!-- TODO: a partial loading state only for these buttons
       can be done to render distribution first --}}
+    <a class={{concat replicateButtonClasses " btn-replicate"}}
+      {{action "startReplication" file providerId}}>
+      {{#one-icon icon="replicate"}}
+        {{bs-tooltip placement="top" title=replicateButtonTooltip}}
+      {{/one-icon}}
+    </a>
     <a class={{concat migrateButtonClasses " btn-migrate"}}
       {{action "openMigrationOptions" file providerId}}>
       {{#one-icon icon="migrate"}}
         {{bs-tooltip placement="top" title=migrateButtonTooltip}}
       {{/one-icon}}
     </a>
-    <a class={{concat replicateButtonClasses " btn-replicate"}}
-      {{action "startReplication" file providerId}}>
-      {{#one-icon icon="replicate"}}
-        {{bs-tooltip placement="top" title=replicateButtonTooltip}}
+    <a class={{concat invalidateButtonClasses " btn-invalidate"}}
+      {{action "startInvalidation" file providerId}}>
+      {{#one-icon icon="invalidate"}}
+        {{bs-tooltip placement="top" title=invalidateButtonTooltip}}
       {{/one-icon}}
     </a>
   </div>

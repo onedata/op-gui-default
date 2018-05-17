@@ -69,7 +69,8 @@ export default EmberObject.extend({
   scheduledAtComparable: computed.reads('transfer.scheduleTime'),
   startedAtComparable: computed.reads('transfer.startTime'),
   finishedAtComparable: computed.reads('transfer.finishTime'),
-  totalFiles: computed.reads('transfer.transferredFiles'),
+  transferredFiles: computed.reads('transfer.transferredFiles'),
+  invalidatedFiles: computed.reads('transfer.invalidatedFiles'),
   status: computed.reads('transfer.status'),
   currentStatError: computed.reads('transfer.currentStatError'),
   type: computed.reads('transfer.type'),
@@ -99,8 +100,12 @@ export default EmberObject.extend({
   }),
   
   destination: computed('providers.@each.name', 'transfer.destination', function () {
-    let destination = this.get('destinationUnknownText');
     const destinationId = this.get('transfer.destination');
+    // invalidation transfer
+    if (!destinationId) {
+      return '-';
+    }
+    let destination = this.get('destinationUnknownText');
     const destProvider = destination ? _.find(this.get('providers'), provider => 
       get(provider, 'id') === destinationId
     ) : null;

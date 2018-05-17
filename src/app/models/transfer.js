@@ -2,8 +2,8 @@
  * Data transfer from multiple sources to single provider
  *
  * @module models/transfer
- * @author Jakub Liput
- * @copyright (C) 2017 ACK CYFRONET AGH
+ * @author Jakub Liput, Michal Borzecki
+ * @copyright (C) 2017-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -124,6 +124,7 @@ export default Model.extend({
   userName: computed.reads('systemUser.name'),
   transferredBytes: computed.reads('currentStat.transferredBytes'),
   transferredFiles: computed.reads('currentStat.transferredFiles'),
+  invalidatedFiles: computed.reads('currentStat.invalidatedFiles'),
   
   currentStatError: computed('currentStat.{isSettled,content}', function () {
     return this.get('currentStat.isSettled') && this.get('currentStat.content') == null;

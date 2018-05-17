@@ -1,7 +1,7 @@
 /**
  * Shows distribution of files among providers
  * @module components/modals/file-chunks
- * @author Jakub Liput
+ * @author Jakub Liput, Michal Borzecki
  * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
@@ -11,6 +11,7 @@ import PromiseLoadingMixin from 'ember-cli-onedata-common/mixins/promise-loading
 import SpaceTransfersUpdater from 'op-worker-gui/utils/space-transfers-updater';
 import Looper from 'ember-cli-onedata-common/utils/looper';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
+import hasDuplicatedFileChunks from 'op-worker-gui/utils/has-duplicated-file-chunks';
 
 import _ from 'lodash';
 
@@ -105,6 +106,12 @@ export default Component.extend(PromiseLoadingMixin, {
    * @type {Ember.Array<string>}
    */
   providerMigrationsInvoked: undefined,
+
+  /**
+   * List of provider ids for which invalidation was invoked, but not yet started
+   * @type {Ember.Array<string>}
+   */
+  providerInvalidationsInvoked: undefined,
   
   fileBlocksSorting: ['getProvider.name'],
   
@@ -168,6 +175,32 @@ export default Component.extend(PromiseLoadingMixin, {
   ),
 
   /**
+   * Returns mapping: providerId -> boolean value. Value is true if there are
+   * some blocks available for invalidation.
+   * @type {Ember.ComputedProperty<Object>}
+   */
+  isInvalidationPossible: computed(
+    'fileDistributionsSorted.@each.blocks',
+    'fileDistributionsSorted.@each.neverSynchronized',
+    function () {
+      const fileDistributionsSorted = this.get('fileDistributionsSorted');
+      if (fileDistributionsSorted) {
+        const fileChunksArray = fileDistributionsSorted
+          .map(fd => !get(fd, 'neverSynchronized') ? get(fd, 'blocks') : []);
+        const invalidationPossible = {};
+        fileChunksArray.forEach((chunks, index) => {
+          const providerId = get(fileDistributionsSorted[index], 'provider');
+          invalidationPossible[providerId] = hasDuplicatedFileChunks(
+            chunks,
+            fileChunksArray.filter(fc => fc !== chunks)
+          );
+        });
+        return invalidationPossible;
+      }
+    }
+  ),
+
+  /**
    * @type {Ember.ComputedProperty<string>}
    */
   modalSize: computed('file.isDir', function () {
@@ -223,6 +256,7 @@ export default Component.extend(PromiseLoadingMixin, {
     'workingTransfersDataLoaded',
     'scheduledTransferList.list.content.[]',
     'currentTransferList.list.content.[]',
+    'transfersUpdater.{scheduledIsUpdating,currentIsUpdating}',
     'lastTransfer',
     function () {
       if (this.get('workingTransfersDataLoaded')) {
@@ -486,7 +520,8 @@ export default Component.extend(PromiseLoadingMixin, {
      */
     open() {
       this.set('providerMigrationsInvoked', A([]));
-      
+      this.set('providerInvalidationsInvoked', A([]));
+
       const transfersUpdater = this._initTransfersUpdater();
       this.set('transfersLoading', true);
       this.forceUpdateTransfers(transfersUpdater);
@@ -510,6 +545,7 @@ export default Component.extend(PromiseLoadingMixin, {
         chunksModalError: null,
         migrationSource: null,
         providerMigrationsInvoked: undefined,
+        providerInvalidationsInvoked: undefined,
       });
       this.closedAction();
     },
@@ -596,6 +632,33 @@ export default Component.extend(PromiseLoadingMixin, {
           return this.forceUpdateTransfers(transfersUpdater);
         })
         .then(() => this._fastTransfersUpdater());
+    },
+
+    startInvalidation(source) {
+      const file = this.get('file');
+      const transfersUpdater = this.get('transfersUpdater');
+      const providerInvalidationsInvoked = this.get('providerInvalidationsInvoked');
+      providerInvalidationsInvoked.pushObject(source);
+      const transfer = this.get('store')
+        .createRecord('transfer', {
+          file,
+          migration: true,
+          migrationSource: source,
+        });
+      return transfer.save()
+        .catch(error => {
+          transfer.deleteRecord();
+          this.set('chunksModalError', 'Failed to start file invalidation: ' + error.message);
+          this.observeTransfersCount();
+          throw error;
+        })
+        .then(transfer => {
+          this.set('lastTransfer', transfer);
+          return this.forceUpdateTransfers(transfersUpdater);
+        })
+        .finally(() => {
+          providerInvalidationsInvoked.removeObject(source);
+        });
     },
   },
 

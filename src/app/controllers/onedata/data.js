@@ -16,13 +16,14 @@ const {
  * 
  * @module controllers/onedata/data
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Controller.extend({
   i18n: service(),
   fileBrowser: service(),
   commonLoader: service(),
+  commonModals: service(),
 
   spaces: alias('model'),
 
@@ -50,4 +51,16 @@ export default Ember.Controller.extend({
       });
     }
   }),
+  
+  /**
+   * Should data distribution modal be opened?
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  openedDataDistribution: computed.reads('commonModals.openedDataDistribution'),
+  
+  actions: {
+    closeDataDistribution() {
+      this.get('commonModals').closeModal('dataDistribution');
+    },
+  },
 });

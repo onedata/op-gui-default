@@ -276,20 +276,13 @@
       margin: 0;
     }
   }
-  .migrate-popover {
-    .menu-group-name {
-      margin-bottom: 10px;
-      padding-left: 12px;
-    }
-    .item-icon {
-      font-size: 28px !important;
-      vertical-align: middle;
-      .one-icon {
-        top: 2px;
-      }
-    }
+  .migrate-popover.dropdown-menu-settings {    
+    width: 350px;
     .item-label {
-      text-transform: initial;
+      text-transform: none;
+    }
+    .item-label.truncated-string {
+      max-width: 294px;
     }
   }
   .loader-container {
@@ -490,5 +483,16 @@
 .file-tool {
   &:hover {
     color: $onedata-red;
+  }
+}
+
+.data-files-tree {
+  .dir-item.root-item {
+    position: relative;
+  } 
+  .root-dir-settings-drop {
+    position: absolute;
+    right: 8px;
+    top: 2px;
   }
 }

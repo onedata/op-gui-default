@@ -4,7 +4,7 @@
  * Lists Spaces for user, every space has a transfers view for this space.
  * @module routes/onedata/transfers
  * @author Jakub Liput
- * @copyright (C) 2017 ACK CYFRONET AGH
+ * @copyright (C) 2017-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -20,9 +20,16 @@ export default Route.extend(userCollectionModel('spaces', { nonEmpty: true }), {
   mainRouteName: 'transfers',
   
   secondaryMenu: service(),
+  commonModals: service(),
   
   beforeModel() {
     this._super(...arguments);
-    this.get('secondaryMenu').clear();
+    this.set('secondaryMenu.component', null);
+  },
+  
+  afterModel() {
+    // force close data distribution modal,
+    // because we can go from data view to distribution view via that modal
+    this.get('commonModals').closeModal('dataDistribution');
   },
 });

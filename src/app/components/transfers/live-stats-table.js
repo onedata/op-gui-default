@@ -10,9 +10,7 @@
  */
 
 import Ember from 'ember';
-import moment from 'moment';
-import bytesToString from 'ember-cli-onedata-common/utils/bytes-to-string';
-import mutateArray from 'ember-cli-onedata-common/utils/mutate-array';
+import TransferTableRecord from 'op-worker-gui/utils/transfer-table-record';
 import _ from 'lodash';
 
 const {
@@ -23,17 +21,22 @@ const {
   },
   get,
   set,
-  getProperties,
   A,
   Object: EmberObject,
 } = Ember;
 
-const START_END_TIME_FORMAT = 'D MMM YYYY H:mm:ss';
 const COMMON_I18N_PREFIX = 'components.transfers.';
 const I18N_PREFIX = COMMON_I18N_PREFIX + 'liveTableStats.';
 
+const tableExcludedColumns = {
+  scheduled: ['startedAt', 'finishedAt', 'totalBytes', 'totalFiles', 'status'],
+  current: ['scheduledAt', 'finishedAt'],
+  completed: ['scheduledAt'],
+};
+
 export default Component.extend({
   classNames: ['transfers-live-stats-table', 'transfers-table'],
+  classNameBindings: ['transferType'],
 
   i18n: service(),
   notify: service(),
@@ -68,11 +71,11 @@ export default Component.extend({
   cancelTransfer: undefined,
   
   /**
-   * Type of transfers. May be `active` or `completed`
+   * Type of transfers. May be `scheduled`, `current` or `completed`
    * @public
    * @type {string}
    */
-  transferType: 'active',
+  transferType: 'current',
 
   /**
    * Which transfers should be presented as selected on table render
@@ -81,15 +84,6 @@ export default Component.extend({
    */
   selectedTransferIds: undefined,
   
-  /**
-   * Global mapping: transferId -> integer index
-   * @type {Object}
-   */
-  _transferIdToIndexMap: {
-    nextTransferIndex: 0,
-    mapping: {},
-  },
-
   /**
    * If true, component is rendered in mobile mode.
    * @type {boolean}
@@ -126,8 +120,7 @@ export default Component.extend({
    * @type {Ember.Object}
    */
   _tableCustomMessages: computed('transferType', function () {
-    const messageId = (this.get('transferType') === 'active') ?
-      'noActiveTransfers' : 'noCompletedTransfers';
+    const messageId = `noTransfers.${this.get('transferType')}`;
     return EmberObject.create({
       noDataToShow: this.get('i18n').t(COMMON_I18N_PREFIX + messageId),
     });
@@ -138,49 +131,82 @@ export default Component.extend({
    */
   _tableDataCache: null,
   
-  // TODO: this causes n*n invoking this computed property, but transferTableData
-  // function is invoked only few times, maybe to refactor, but it's a hard piece of code...
-  /**
-   * Transfers converted to format used by table.
-   * @type {Ember.ComputedProperty<Array<Object>>}
-   */
+  
   _tableData: computed(
-    'transfers.@each.{tableDataIsLoaded,status,finishTime,fileType,transferredBytes,transferredFiles,currentStatError}',
+    'transfers.[]',
+    'transfers.{startIndex,endIndex}',
     'providers',
     'providersColors',
     'selectedTransferIds.[]',
+    '_rowActions',
     function () {
-      const _tableDataCache = this.get('_tableDataCache');
       const {
         transfers,
         providers,
         providersColors,
-        i18n,
         selectedTransferIds,
-      } = this.getProperties('transfers', 'providers', 'providersColors', 'i18n', 'selectedTransferIds');
+        _tableDataCache,
+        firstRowSpace,
+        movedTransfers,
+        updaterId,
+        _rowActions,
+      } = this.getProperties(
+        'transfers',
+        'providers',
+        'providersColors',
+        'selectedTransferIds',
+        '_tableDataCache',
+        'firstRowSpace',
+        'movedTransfers',
+        'updaterId',
+        '_rowActions'
+      );
       
       if (transfers && providers) {
-        const newTableData = transfers.map((transfer) => transferTableData(
-          this._getIndexForTransfer(transfer),
-          transfer,
-          providers,
-          providersColors,
-          i18n,
-          selectedTransferIds,
-          this.get('_cancelTransfer')
-        ));
-        mutateArray(
+        const cachedTransfers = _tableDataCache.mapBy('transfer');
+        _.pullAllWith(
           _tableDataCache,
-          newTableData,
-          (a, b) => get(a, 'transferId') === get(b, 'transferId'),
-          false
+          _.difference(
+            cachedTransfers,
+            transfers.toArray()
+          ),
+          (cached, transfer) => {
+            const ct = get(cached, 'transfer');
+            return cached && transfer && ct === transfer;
+          }
         );
+        transfers.forEach(transfer => {
+          if (!_.includes(cachedTransfers, transfer)) {
+            const transferId = get(transfer, 'id');
+            // force load record
+            if (!get(transfer, 'isLoaded') && !get(transfer, 'isLoading')) {
+              transfer.store.findRecord('transfer', transferId);
+            } else if (movedTransfers.has(transferId)) {
+              transfer.reload().then(transfer => {
+                transfer.belongsTo('currentStat').reload();
+              });
+            }
+            _tableDataCache.push(TransferTableRecord.create({
+              selectedTransferIds,
+              transfer,
+              transfers,
+              providers,
+              providersColors,
+              updaterId,
+              actions: _rowActions,
+            }));
+          }
+        });
+        _tableDataCache.sort((a, b) => get(a, 'listIndex') - get(b, 'listIndex'));
+        const topRecord = _.minBy(_tableDataCache.slice(1), tc => get(tc, 'listIndex'));
+        set(
+          firstRowSpace,
+          'firstRowListIndex',
+          topRecord && get(topRecord, 'listIndex')
+        );
+        _tableDataCache.arrayContentDidChange();
       }
       
-      _tableDataCache.sort((a, b) => 
-        get(b, 'startedAtComparable') - get(a, 'startedAtComparable')
-      );
-
       return _tableDataCache;
     }
   ),
@@ -189,97 +215,87 @@ export default Component.extend({
    * Table columns definition.
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  _tableColumns: computed('transferType', '_mobileMode', 'sortBy', function () {
+  _tableColumns: computed('transferType', '_mobileMode', function () {
     const {
       i18n,
       transferType,
       _mobileMode,
-      sortBy,
-    } = this.getProperties('i18n', 'transferType', '_mobileMode', 'sortBy');
-    const onlyCompletedColumns = ['finishedAt'];
-    const onlyActiveColumns = ['actions'];
-    const isTransferActive = (transferType === 'active');
+    } = this.getProperties('i18n', 'transferType', '_mobileMode');
+    const excludedColumns = tableExcludedColumns[transferType];
         
     // field `id` is custom and is used only to check which column should be 
     // filtered out for active/completed table version
-    const allColumns = [{
-      id: 'path',
-      propertyName: 'path',
-      title: i18n.t(I18N_PREFIX + 'path'),
-      component: _mobileMode ?
-        undefined : 'transfers/live-stats-table/cell-file-name',
-      sortPrecedence: sortBy === 'path' ? 2 : undefined,
-      sortDirection: sortBy === 'path' ? 'desc' : undefined,
-    }, {
-      id: 'userName',
-      propertyName: 'userName',
-      title: i18n.t(I18N_PREFIX + 'userName'),
-      component: _mobileMode ?
-        undefined : 'transfers/live-stats-table/cell-truncated',
-      sortPrecedence: sortBy === 'userName' ? 2 : undefined,
-      sortDirection: sortBy === 'userName' ? 'desc' : undefined,
-    }, {
-      id: 'destination',
-      propertyName: 'destination',
-      title: i18n.t(I18N_PREFIX + 'destination'),
-      component: _mobileMode ?
-        undefined : 'transfers/live-stats-table/cell-truncated',
-      sortPrecedence: sortBy === 'destination' ? 2 : undefined,
-      sortDirection: sortBy === 'destination' ? 'desc' : undefined,
-    }, {
-      id: 'startedAt',
-      propertyName: 'startedAtReadable',
-      sortedBy: 'startedAtComparable',
-      sortPrecedence: isTransferActive ? 1 : undefined,
-      sortDirection: isTransferActive ? 'desc' : undefined,
-      title: i18n.t(I18N_PREFIX + 'startedAt'),
-    }, {
-      id: 'finishedAt',
-      propertyName: 'finishedAtReadable',
-      sortedBy: 'finishedAtComparable',
-      sortPrecedence: isTransferActive ? undefined : 1,
-      sortDirection: isTransferActive ? undefined : 'desc',
-      title: i18n.t(I18N_PREFIX + 'finishedAt'),
-    }, {
-      id: 'totalBytes',
-      propertyName: 'totalBytesReadable',
-      sortedBy: 'totalBytes',
-      title: i18n.t(I18N_PREFIX + 'totalBytes'),
-      component: 'transfers/live-stats-table/cell-errorable',
-      sortPrecedence: sortBy === 'totalBytes' ? 2 : undefined,
-      sortDirection: sortBy === 'totalBytes' ? 'desc' : undefined,
-    }, {
-      id: 'totalFiles',
-      propertyName: 'totalFiles',
-      title: i18n.t(I18N_PREFIX + 'totalFiles'),
-      component: 'transfers/live-stats-table/cell-errorable',
-      sortPrecedence: sortBy === 'totalFiles' ? 2 : undefined,
-      sortDirection: sortBy === 'totalFiles' ? 'desc' : undefined,
-    }, {
-      id: 'status',
-      propertyName: 'status',
-      title: i18n.t(I18N_PREFIX + 'status'),
-      component: 'transfers/live-stats-table/cell-status',
-      sortPrecedence: sortBy === 'status' ? 2 : undefined,
-      sortDirection: sortBy === 'status' ? 'desc' : undefined,
-    }, {
-      id: 'actions',
-      component: 'transfers/live-stats-table/cell-actions',
-      className: 'transfer-actions-cell',
-      notClickable: true,
-      headerClassName: 'transfer-actions-cell',
-      disableSorting: true,
-      disableMobile: true,
-    }];
-    if (isTransferActive) {
-      return allColumns.filter((column) => 
-        onlyCompletedColumns.indexOf(column.id) === -1
-      );
-    } else {
-      return allColumns.filter((column) => 
-        onlyActiveColumns.indexOf(column.id) === -1
-      );
-    }
+    const allColumns = [
+      {
+        id: 'listIndex',
+        propertyName: 'listIndex',
+        isHidden: true,
+        sortDirection: 'asc',
+        sortPrecedence: 1,
+      },
+      {
+        id: 'path',
+        propertyName: 'path',
+        title: i18n.t(I18N_PREFIX + 'path'),
+        component: _mobileMode ?
+          undefined : 'transfers/live-stats-table/cell-file-name',
+      }, {
+        id: 'userName',
+        propertyName: 'userName',
+        title: i18n.t(I18N_PREFIX + 'userName'),
+        component: _mobileMode ?
+          undefined : 'transfers/live-stats-table/cell-truncated',
+      }, {
+        id: 'destination',
+        propertyName: 'destination',
+        title: i18n.t(I18N_PREFIX + 'destination'),
+        component: _mobileMode ?
+          undefined : 'transfers/live-stats-table/cell-truncated',
+      }, {
+        id: 'scheduledAt',
+        propertyName: 'scheduledAtReadable',
+        title: i18n.t(I18N_PREFIX + 'scheduledAt'),
+      }, {
+        id: 'startedAt',
+        propertyName: 'startedAtReadable',
+        title: i18n.t(I18N_PREFIX + 'startedAt'),
+      }, {
+        id: 'finishedAt',
+        propertyName: 'finishedAtReadable',
+        title: i18n.t(I18N_PREFIX + 'finishedAt'),
+      }, {
+        id: 'totalBytes',
+        propertyName: 'totalBytesReadable',
+        title: i18n.t(I18N_PREFIX + 'totalBytes'),
+        component: 'transfers/live-stats-table/cell-errorable',
+      }, {
+        id: 'totalFiles',
+        propertyName: 'totalFiles',
+        title: i18n.t(I18N_PREFIX + 'totalFiles'),
+        component: 'transfers/live-stats-table/cell-errorable',
+      },
+      {
+        id: 'type',
+        propertyName: 'type',
+        className: 'col-icon',
+        title: i18n.t(I18N_PREFIX + 'type'),
+        component: _mobileMode ? undefined : 'transfers/live-stats-table/cell-type',
+      },
+      {
+        id: 'status',
+        propertyName: 'status',
+        className: 'col-icon',
+        title: i18n.t(I18N_PREFIX + 'status'),
+        component: 'transfers/live-stats-table/cell-status',
+      }, {
+        id: 'actions',
+        component: 'transfers/live-stats-table/cell-actions',
+        className: 'transfer-actions-cell',
+        headerClassName: 'transfer-actions-cell',
+      },
+    ];
+    allColumns.forEach(column => column.disableSorting = true);
+    return _.differenceWith(allColumns, excludedColumns, (col, eid) => col.id === eid);
   }),
 
   /**
@@ -292,6 +308,28 @@ export default Component.extend({
     };
   }),
   
+  _hasExpandableRows: computed('transferType', function getExpandableRows() {
+    const transferType = this.get('transferType');
+    return transferType !== 'scheduled';
+  }),
+
+  /**
+   * @type {Ember.ComputedProperty<Array<Object>>}
+   */
+  _rowActions: computed('_cancelTransfer', function () {
+    return [
+      {
+        id: 'cancelTransfer',
+        action: this.get('cancelTransfer'),
+      },
+    ];
+  }),
+  
+  /**
+   * @type {EmberObject}
+   */
+  firstRowSpace: undefined,
+  
   init() {
     this._super(...arguments);
 
@@ -300,7 +338,15 @@ export default Component.extend({
       _window,
     } = this.getProperties('_resizeEventHandler', '_window');
     
-    this.set('_tableDataCache', A());
+    const firstRowSpace = this.set(
+      'firstRowSpace',
+      EmberObject.create({ firstRowSpace: true, listIndex: -1 })
+    );
+    
+    this.set(
+      '_tableDataCache', 
+      A([firstRowSpace])
+    );
 
     _resizeEventHandler();
     _window.addEventListener('resize', _resizeEventHandler);
@@ -345,106 +391,4 @@ export default Component.extend({
         });
     };
   }),
-  
-  /**
-   * Returns unique number id for transfer
-   * @param {Transfer} transfer
-   * @returns {number}
-   */
-  _getIndexForTransfer(transfer) {
-    const _transferIdToIndexMap = this.get('_transferIdToIndexMap');
-    const transferId = get(transfer, 'id');
-    if (_transferIdToIndexMap.mapping[transferId] === undefined) {
-      _transferIdToIndexMap.mapping[transferId] = _transferIdToIndexMap.nextTransferIndex++;
-    }
-    return _transferIdToIndexMap.mapping[transferId];
-  }
 });
-
-/**
- * Create data object for live stats table row with transfer data
- * @param {Transfer} transfer 
- * @param {Array<Provider>} providers 
- * @param {Object} providersColors 
- * @param {Ember.Service} i18n i18n service instance (`t` method)
- * @param {Array<string>|undefined} selectedTransferIds
- * @param {Function} cancelTransfer a function to invoke to cancel transfer
- *    `cancelTransfer(transferId)`
- */
-function transferTableData(transferIndex, transfer, providers, providersColors, i18n, selectedTransferIds, cancelTransfer) {
-  // searching for destination
-  let destination = i18n.t(I18N_PREFIX + 'destinationUnknown');
-  const destProvider = _.find(providers, (provider) => 
-    get(provider, 'id') === get(transfer, 'destination')
-  );
-  if (destProvider) {
-    destination = get(destProvider, 'name');
-  }
-  
-  const {
-    id: transferId,
-    path,
-    fileType,
-    startTime: startTimestamp,
-    finishTime: finishTimestamp,
-    currentStat,
-    userName,
-    status,
-    tableDataIsLoaded,
-    currentStatError,
-  } = getProperties(
-    transfer,
-    'id',
-    'path',
-    'fileType',
-    'startTime',
-    'finishTime',
-    'currentStat',
-    'userName',
-    'status',
-    'tableDataIsLoaded',
-    'currentStatError'
-  );
-  const startMoment = moment.unix(startTimestamp);
-  const finishMoment = moment.unix(finishTimestamp);
-  const {
-    transferredBytes,
-    transferredFiles
-  } = getProperties(currentStat, 'transferredBytes', 'transferredFiles');
-  
-  const startedAtReadable = startMoment && startMoment.format(START_END_TIME_FORMAT);
-  const finishedAtReadable = finishMoment && finishMoment.format(START_END_TIME_FORMAT);
-  const totalBytesReadable = bytesToString(transferredBytes);
-  const isLoading = (tableDataIsLoaded === false);
-  const initSelect = _.includes(selectedTransferIds, transferId);
-  
-  const actions = [
-    {
-      id: 'cancelTransfer',
-      action: cancelTransfer,
-    },
-  ];
-  return EmberObject.create({
-    transfer,
-    transferIndex,
-    transferId,
-    providers,
-    providersColors,
-    path,
-    fileType,
-    destination,
-    userName,
-    startedAtComparable: startTimestamp,
-    startedAtReadable,
-    finishedAtComparable: finishTimestamp,
-    finishedAtReadable,
-    totalBytes: transferredBytes,
-    totalBytesReadable,
-    totalFiles: transferredFiles,
-    status,
-    isLoading,
-    currentStatError,
-    initSelect,
-    actions,
-  });
-}

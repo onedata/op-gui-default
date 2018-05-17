@@ -19,7 +19,7 @@ const {
  * 
  * @module mixins/models/file-runtime
  * @author Jakub Liput
- * @copyright (C) 2017 ACK CYFRONET AGH
+ * @copyright (C) 2017-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Mixin.create({
@@ -102,8 +102,6 @@ export default Ember.Mixin.create({
 
   isVisible: computed('parent.isExpanded', function () {
     var visible = this.get('parent.isExpanded');
-    console.log('deselect(' + this.get('name') + '): ' +
-      (this.get('isSelected') && !visible));
     if (this.get('isSelected') && !visible) {
       this.set('isSelected', false);
     }

@@ -17,7 +17,7 @@ const {
 
 export default Component.extend({
   tagName: 'span',
-  classNames: ['cell-status'],
+  classNames: ['cell-icon', 'cell-status'],
   classNameBindings: ['_status'],
   i18n: service(),
   
@@ -63,7 +63,7 @@ export default Component.extend({
       case 'failed':
         return 'checkbox-filled-x';
       case 'active':
-      case 'finalizing':
+      case 'invalidating':
         return 'update';
       case 'scheduled':
         return 'time';

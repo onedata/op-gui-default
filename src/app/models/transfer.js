@@ -59,6 +59,11 @@ export default Model.extend({
   /**
    * UNIX timestamp seconds format
    */
+  scheduleTime: attr('number'),
+  
+  /**
+   * UNIX timestamp seconds format
+   */
   startTime: attr('number'),
   
   /**
@@ -116,7 +121,6 @@ export default Model.extend({
   
   status: computed.reads('currentStat.status'),
   dest: computed.reads('destination'),
-  bytesPerSec: computed.reads('currentStat.bytesPerSec'),
   userName: computed.reads('systemUser.name'),
   transferredBytes: computed.reads('currentStat.transferredBytes'),
   transferredFiles: computed.reads('currentStat.transferredFiles'),
@@ -127,6 +131,30 @@ export default Model.extend({
   
   isCurrent: computed.reads('isOngoing'),
   
+  /**
+   * @type {string}
+   * One of: migration, invalidation, replication
+   */
+  type: computed('migration', 'destination', function getType() {
+    if (this.get('migration')) {
+      return this.get('destination') ? 'migration' : 'invalidation';
+    } else {
+      return 'replication';
+    }
+  }),
+  
+  /**
+   * True if statistics of this provider are stored on the currently opened provider
+   * @param {string} providerId ID of current provider
+   * @returns {boolean}
+   */
+  getIsLocal(providerId) {
+    const type = this.get('type');
+    const property = (type === 'replication' || type === 'migration' && this.get('status') === 'invalidating') ?
+      'destination' : 'migrationSource';
+    return this.get(property) === providerId;
+  },
+
   //#region Runtime properties
   
   /**

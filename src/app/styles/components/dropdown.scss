@@ -132,18 +132,37 @@ $dropdown-bg: #2B3037;
     width: 220px;
     border-radius: 0px !important;
 
+    // improve position for triangle for dropdown menus
+    &.dropdown-menu-right {
+      margin-top: 6px;
+      &:before {
+        top: 11px;
+      }
+    }
+        
     li {
       color: white;
       padding: 4px 6px;
       border-radius: 0px !important;
+      line-height: 18px;
 
       .item-icon {
-          font-size: 30px !important;
+        display: table-cell;
+        min-width: 32px;
+        width: 32px;
+        max-width: 32px;
+        vertical-align: middle;
+        text-align: center;
+        font-size: 30px !important;
       }
 
       .item-label {
+        display: table-cell;
+        padding-left: 1em;
         font-size: 9pt !important;
         text-transform: uppercase;
+        vertical-align: middle;
+        font-size: $secondary-sidebar-font-size;
       }
 
       &.menu-group-name {

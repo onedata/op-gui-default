@@ -16,6 +16,22 @@ export default Ember.Component.extend({
   store: inject.service(),
   fileSystemTree: inject.service(),
 
+  /**
+   * @virtual
+   * Invoke this function to inform upper component about start editing
+   * of ACL (ACE items will not be marked as not created after switching)
+   * @type {Function}
+   */
+  startEdit: undefined,
+  
+  /**
+   * @public
+   * If true, ACE items will not be marked as not created after switching
+   * permissions type
+   * @type {boolean}
+   */
+  isEditing: false,
+  
   init() {
     this._super();
     this.set('modal.aclComponent', this);
@@ -28,7 +44,7 @@ export default Ember.Component.extend({
         'error',
         this.get('i18n').t('components.filePermissions.acl.errorCannotLoadACL')
       );
-    } else {
+    } else if (this.get('isEditing')) {
       acl.forEach(ace => ace.set('isCreatedItem', false));
     }
   },

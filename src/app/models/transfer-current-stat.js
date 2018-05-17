@@ -18,13 +18,12 @@ export default Model.extend({
   timestamp: attr('number'),
   transferredBytes: attr('number'),
   transferredFiles: attr('number'),
-  bytesPerSec: attr('object'),
   
   /**
    * One of:
    * - scheduled
    * - active
-   * - finalizing
+   * - invalidating
    * - skipped
    * - completed
    * - cancelled

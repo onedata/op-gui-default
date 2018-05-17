@@ -1,9 +1,16 @@
 <tr
   id="transfer-row-{{record.transferId}}"
-  class="transfer-row data-row {{if (exists-in _selectedItems record) "selected-row"}} {{if (exists-in _expandedRowIndexes record.transferIndex) "expanded-row"}}">
+  data-transfer-id={{record.transferId}}
+  data-list-index={{record.listIndex}}
+  class="transfer-row data-row {{if (exists-in selectedItems record) "selected-row"}} {{if (exists-in expandedRowIndexes record.transferIndex) "expanded-row"}}"
+  {{action (if (not record.isLoading)
+    (if (exists-in expandedRowIndexes record.transferIndex) "collapseRow" "expandRow")
+    "collapseRow"
+  ) record.transferIndex bubbles=false}}>
   {{!-- not using loading-container because we are in tr --}}
   {{#if record.isLoading}}
-    <td colspan={{processedColumns.length}}>
+    {{!-- subtract hidden list index column --}}
+    <td colspan={{visibleColumnsCount}}>
       <div class="row loadable-row xs">
         {{spin-spinner-block sizeClass="xs" class="absolute-middle-centered"}}
       </div>
@@ -29,7 +36,7 @@
               {{partial column.template}}
             {{else}}
               {{#if column.component}}
-                {{component column.component data=data record=record column=column table=this}}
+                {{component column.component data=data record=record column=column table=table}}
               {{else}}
                 {{get record column.propertyName}}
               {{/if}}
@@ -40,9 +47,9 @@
     {{/each}}
   {{/if}}
 </tr>
-{{#if (exists-in _expandedRowIndexes record.transferIndex)}}
-  <tr class="expand-row {{concat "expand-" record.transferIndex}} {{if (exists-in _selectedItems record) "selected-expand"}}" {{action "clickOnRow" index record on="click"}}>
-    <td colspan="{{visibleProcessedColumns.length}}">
+{{#if (exists-in expandedRowIndexes record.transferIndex)}}
+  <tr class="expand-row {{concat "expand-" record.transferIndex}} {{if (exists-in selectedItems record) "selected-expand"}}">
+    <td colspan={{visibleColumnsCount}}>
       {{partial expandedRowTemplate}}
     </td>
   </tr>
@@ -51,3 +58,4 @@
 {{#if record.initSelect}}
   {{test-callback tagName="" callback=(action "expandRow" record.transferIndex)}}
 {{/if}}
+

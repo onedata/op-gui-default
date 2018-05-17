@@ -1,11 +1,9 @@
-{{#truncated-string}}
-  <span class="item-icon">
-    {{one-icon icon="provider"}}
-  </span>
-  <span class="item-label">
-    {{providerName}}
-    {{#if disabled}}
-      ({{t 'components.dataFilesListToolbar.fileChunksModal.migratePopover.migrateItem.busy'}})
-    {{/if}}
-  </span>
+<div class="item-icon">
+  {{one-icon icon="provider"}}
+</div>
+{{#truncated-string class="item-label" tooltipPlacement="right"}}
+  {{providerName}}
+  {{#if disabled}}
+    ({{t "components.dataFilesListToolbar.fileChunksModal.migratePopover.migrateItem.busy"}})
+  {{/if}}
 {{/truncated-string}}

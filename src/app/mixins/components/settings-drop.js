@@ -9,11 +9,11 @@ const {
  * Common functions for settings-drop components (space-settings-drop, group-settings-drop, etc.)
  * @module mixins/components/settings-drop
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Mixin.create({
-  classNames: ['item-element', 'item-icon'],
+  classNames: ['item-element', 'item-icon', 'settings-drop'],
 
   // TODO: deregister event from sidebar on willDestroyElement
   // maybe use: this.on('willDestroyElement', () => { sidebar.off(...) } ) etc.

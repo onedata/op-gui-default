@@ -54,14 +54,13 @@ $screen-sm-min: $min-width-tablet;
 $screen-md-min: $min-width-desktop-small;
 $screen-lg-min: $min-width-desktop-medium;
 
-$collapse-transition-time: .2s;
-$height-collapse-transition: max-height $collapse-transition-time linear;
-$collapse-transition: $height-collapse-transition, padding $collapse-transition-time linear, opacity $collapse-transition-time linear;
-
 @import "bootstrap";
 .row {
   margin-left: 0px;
   margin-right: 0px;
+}
+.nav-link {
+  cursor: pointer;
 }
 
 @import 'colors-common';
@@ -149,7 +148,7 @@ $collapse-transition: $height-collapse-transition, padding $collapse-transition-
 @import 'components/metadata-panel';
 @import 'components/share-info-head';
 @import 'components/file-breadcrumbs';
-@import "components/ember-power-select";
+@import 'components/ember-power-select';
 @import 'components/one-atlas';
 @import 'components/provider-place';
 @import 'components/one-pie-chart';
@@ -171,3 +170,6 @@ $collapse-transition: $height-collapse-transition, padding $collapse-transition-
 @import 'components/resource-load-error';
 @import 'components/error-inline';
 @import 'components/dots-menu';
+
+// additional styles for external components
+@import 'components/bs-tab';

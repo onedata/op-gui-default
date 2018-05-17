@@ -12,8 +12,8 @@ const {
  * that can be reached from "spaces" button in primary sidebar.
  *
  * @module models/space
- * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @author Jakub Liput, Michal Borzecki
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
@@ -35,7 +35,35 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
   /** Collection of group permissions - effectively all rows in permissions table */
   groupList: belongsTo('space-group-list', { async: true }),
 
-  currentTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),  
+  scheduledTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
+  currentTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
   completedTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
+  
+  onTheFlyTransferList: belongsTo('space-on-the-fly-transfer-list', { async: true, inverse: null }),
+  
   providerList: belongsTo('space-provider-list', { async: true, inverse: null }),
+
+  transferOnTheFlyStat: belongsTo('space-transfer-stat', { async: true, inverse: null }),
+  transferJobStat: belongsTo('space-transfer-stat', { async: true, inverse: null }),
+  transferAllStat: belongsTo('space-transfer-stat', { async: true, inverse: null }),
+  transferLinkState: belongsTo('space-transfer-link-state', { async: true, inverse: null }),
+
+  /**
+   * On-the-fly, job and all transfer stats for each provider.
+   * It is an object in format:
+   * ``
+   * {
+   *   provider1Id: {
+   *       onTheFlyStat: id_of_space-transfer-stat,
+   *       jobStat: id_of_space-transfer-stat,
+   *       allStat: id_of_space-transfer-stat,
+   *   },
+   *   provider2Id: {
+   *       ...like above...
+   *   },
+   *   ...
+   * }
+   * ``
+   */
+  transferProviderStat: attr('object'),
 });

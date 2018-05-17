@@ -9,7 +9,7 @@ import filePermissions from './file-permissions';
  *
  * @module locales/en/translations
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default {
@@ -417,6 +417,7 @@ export default {
       fileChunksModal: {
         file: 'file',
         directory: 'directory',
+        rootDirectory: 'root directory',
         title: 'Data distribution',
         text: 'Management of data distribution for',
         fileIsEmpty: 'This file has no content.',
@@ -501,29 +502,35 @@ export default {
       publish: 'Publish',
     },
     transfers: {
-      transfersFor: 'Transfer for',
       providersMapOfDist: 'Active transfers map',
-      throughputDistribution: 'Providers throughput',
+      scheduledTransfers: 'Scheduled transfers',
       activeTransfers: 'Active transfers',
       completedTransfers: 'History of transfers',
+      onTheFlyTransfers: 'On-the-fly transfers',
       noActiveTransfers: 'There are no active transfers',
       noCompletedTransfers: 'There are no past transfers',
-      throughputChartError: 'Failed to load all the data for the chart',
+      noTransfers: {
+        scheduled: 'There are no scheduled transfers',
+        current: 'There are no active transfers',
+        completed: 'There are no past transfers',
+      },
       initializingTransfers: 'Initializing transfers...',
       notSupported: 'Cannot list transfers of selected space because it is not ' +
         'supported by current provider',
       in: 'Input',
       out: 'Output',
       liveTableStats: {
+        type: 'Type',
         path: 'File/directory',
         userName: 'Username',
         destination: 'Destination',
+        scheduledAt: 'Scheduled at',
         startedAt: 'Started at',
         finishedAt: 'Finished at',
         totalBytes: 'Transferred',
         totalFiles: 'Total files',
         status: 'Status',
-        destinationUnknown: 'Unknown',
+        destinationUnknown: '-',
         cancelFailure: 'Cannot cancel the transfer',
         cellActions: {
           cancelTransfer: 'Cancel transfer',
@@ -538,8 +545,13 @@ export default {
           failed: 'Failed',
           active: 'Active',
           scheduled: 'Scheduled',
-          finalizing: 'Finalizing',
           cancelling: 'Cancelling...',
+          invalidating: 'Invalidating',
+        },
+        cellType: {
+          replication: 'Replication',
+          migration: 'Migration',
+          invalidation: 'Invalidation',
         },
       },
       transferChart: {
@@ -549,6 +561,36 @@ export default {
         month: 'Month',
         time: 'Time',
         throughput: 'Throughput',
+        output: 'Output',
+        waitingForTransferStart: 'Waiting for the transfer to start...',
+        noStatsForUnit: 'No activity in the last {{timeUnit}}.',
+        waitingForStats: 'Gathering transfer statistics...',
+        waitingForStatsTip: 'Statistics are delayed due to synchronization ' +
+          'latency caused by data distribution.',
+      },
+      throughputDistribution: {
+        title: 'Providers throughput',
+        input: 'Input',
+        output: 'Output',
+        receivedFrom: 'Received from',
+        sentTo: 'Sent to',
+        timeLastUpdate: 'Time (last update: {{lastUpdate}})',
+        throughput: 'Throughput',
+        onTheFly: 'On-the-fly',
+        all: 'All',
+        jobs: 'Jobs',
+        providerSelector: {
+          allProviders: 'All providers',
+        },
+      },
+      transfersOverview: {
+        hide: 'Hide transfers overview',
+        show: 'Show transfers overview',
+      },
+    },
+    rootDirSettingsDrop: {
+      drop: {
+        dataDistribution: 'Data distribution',
       },
     },
   },

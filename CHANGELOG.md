@@ -7,6 +7,27 @@ CHANGELOG
 ### Latest changes
 
 * VFS-3878 Added transfers cancelling action
+* VFS-4355 Added summarized transfer charts per provider.
+* VFS-4239 Infinite scroll for transfers lists.
+* VFS-4305 Added charts for on-the-fly transfers.
+* VFS-4232 Added line chart which shows providers transfer throughput.
+* VFS-4260 Added menu for managing space root dir data distribution
+* VFS-4157 Requesting completed transfers list with delay to be compatible with backend fixes
+* VFS-4223 Fixed long time of loading data distribution modal
+* VFS-4027 Added support for peta-, exa-, zetta- and yottabytes
+* VFS-4206 Changed speed units on transfers view to Xbits/s
+* VFS-4012 Info about remote statistics on transfers view; fixed transfer row sort issues
+* VFS-4154 Dynamically adjust polling interval of transfers data; fixed transfer chart loading
+* VFS-4088 Fixed incorrect ordering and stacking of transfer chart series
+* VFS-4068 Fixed incorrect icons positioning in transfers table
+* VFS-4062 Remember opened space when switching between data-spaces-transfers views; fixes in data-space sidebar
+* VFS-4059 Fixed provider icon scaling in transfers view
+* VFS-4002 Showing transfer type (replication/migration/invalidation) in transfers table
+* VFS-4000 Fixed fetching wrong transfer statistics for chosen timespan
+* VFS-3956 Fixed provider name tooltip rendering in migrate menu of data distribution modal
+* VFS-3595 Fixed locking ACL edit when switching between ACL and POSIX in permissions modal
+* VFS-3591 Fixed infinite loading of metadata panel when failed to fetch metadata for file
+* VFS-3210 Fixed displaying long text in basic file metadata keys and values
 * VFS-3880 Various improvements in transfers management and statistics display
 * VFS-3752 Added transfers tab; added replication and migration options from data distribution
 * VFS-3710 Using binary prefix units for displaying sizes (MiB, GiB, etc.)

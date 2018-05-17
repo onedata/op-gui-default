@@ -5,4 +5,9 @@
     {{yield}}
   </div>
 {{/unless}}
-{{bs-tooltip autoPlacement=true placement="top" title=tooltipText triggerEvents="" visible=(and tooltipEnabled showTooltip)}}
+{{bs-tooltip
+  autoPlacement=true
+  placement=tooltipPlacement
+  title=tooltipText
+  triggerEvents=""
+  visible=(and tooltipEnabled showTooltip)}}

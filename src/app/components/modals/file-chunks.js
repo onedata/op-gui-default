@@ -2,7 +2,7 @@
  * Shows distribution of files among providers
  * @module components/modals/file-chunks
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -23,10 +23,11 @@ const {
   run,
   inject: { service },
   assert,
+  RSVP: { Promise },
 } = Ember;
 
 const SLOW_POLLING_TIME = 10 * 1000;
-const FAST_POLLING_TIME = 2 * 1000;
+const FAST_POLLING_TIME = 4 * 1000;
 
 export default Component.extend(PromiseLoadingMixin, {
   classNames: ['file-chunks', 'file-chunks-modal'],
@@ -43,7 +44,7 @@ export default Component.extend(PromiseLoadingMixin, {
 
   /**
    * @virtual
-   * @type {File}
+   * @type {function}
    */
   closedAction: () => {},
 
@@ -211,36 +212,63 @@ export default Component.extend(PromiseLoadingMixin, {
    * @type {SpaceTransferList}
    */
   currentTransferList: computed.reads('space.currentTransferList'),
+  
+  scheduledTransferList: computed.reads('space.scheduledTransferList'),
 
   /**
    * Array of current transfers
    * @type {Array<Transfer>} with isLoaded Ember property
    */
-  currentTransfers: computed.reads('currentTransferList.list.content'),
+  workingTransfers: computed(
+    'workingTransfersDataLoaded',
+    'scheduledTransferList.list.content.[]',
+    'currentTransferList.list.content.[]',
+    'lastTransfer',
+    function () {
+      if (this.get('workingTransfersDataLoaded')) {
+        const scheduled = this.get('scheduledTransferList.list.content');
+        const current = this.get('currentTransferList.list.content');
+        const lastTransfer = this.get('lastTransfer');
+        if (scheduled && current) {
+          this.set('lastTransfer', null);
+          return (lastTransfer ? [lastTransfer] : []).concat(scheduled.toArray(), current.toArray());
+        }
+      }
+    }
+  ),
 
   /**
    * True if each transfer is ready to be inserted into table, _but_ without
    * async dynamic data like transferred bytes or status
    * @type {Ember.ComputedProperty<boolean>}
    */
-  currentTransfersDataLoaded: computed(
+  workingTransfersDataLoaded: computed(
+    'scheduledTransferList.isLoaded',
     'currentTransferList.isLoaded',
-    'currentTransfers.@each.isLoaded',
+    'scheduledTransferList.list.content.isLoaded',
+    'currentTransferList.list.content.isLoaded',
     function getCurrentTransfersDataLoaded() {
       return this.get('currentTransferList.isLoaded') === true &&
-        this.get('currentTransfers').every(t => get(t, 'isLoaded') === true);
+        this.get('scheduledTransferList.isLoaded') === true &&
+        this.get('currentTransferList.list.content.isLoaded') === true &&
+        this.get('scheduledTransferList.list.content.isLoaded') === true;
     }
   ),
 
   /**
    * @type {Ember.ComputedProperty<Array<Transfer>>}
    */
-  fileTransfers: computed('currentTransfersDataLoaded', 'currentTransfers.[]', function () {
-    const currentTransfersDataLoaded = this.get('currentTransfersDataLoaded');
-    const currentTransfers = this.get('currentTransfers');
+  fileTransfers: computed('workingTransfersDataLoaded', 'workingTransfers.[]', function () {
+    const {
+      workingTransfersDataLoaded,
+      workingTransfers,
+    } = this.getProperties(
+      'workingTransfersDataLoaded',
+      'workingTransfers'
+    );
     const fileId = this.get('file.id');
-    if (currentTransfersDataLoaded && currentTransfers) {
-      return currentTransfers.filter(t => t.belongsTo('file').id() === fileId);
+    if (workingTransfersDataLoaded && workingTransfers) {
+      return workingTransfers.filter(t => t.belongsTo('file').id() === fileId);
     }
   }),
   
@@ -263,6 +291,18 @@ export default Component.extend(PromiseLoadingMixin, {
     if (fileTransfers) {
       return fileTransfers.map(t => get(t, 'migrationSource')).filter(s => s);
     }
+  }),
+  
+  /**
+   * Type of element that is presented in modal
+   * One of: directory, rootDirectory, file
+   * @type {Ember.ComputedProperty<string>}
+   */
+  fileType: computed('file.{isDir,parent}', function () {
+    return this.get('file.isDir') ?
+      (this.get('file.hasParent') ? 'directory' : 'rootDirectory')
+      :
+      'file';
   }),
   
   /**
@@ -293,25 +333,25 @@ export default Component.extend(PromiseLoadingMixin, {
       store,
       space,
       isEnabled: true,
+      scheduledEnabled: true,
       currentEnabled: true,
       completedEnabled: false,
-      pollingTimeCurrent: SLOW_POLLING_TIME,
     }));
   },
 
   _fastTransfersUpdater() {
     const transfersUpdater = this.get('transfersUpdater');
     if (transfersUpdater &&
-      transfersUpdater.get('pollingTimeCurrent') !== FAST_POLLING_TIME) {
-      transfersUpdater.set('pollingTimeCurrent', FAST_POLLING_TIME);
+      transfersUpdater.get('basePollingTime') !== FAST_POLLING_TIME) {
+      transfersUpdater.set('basePollingTime', FAST_POLLING_TIME);
     }
   },
 
   _slowTransfersUpdater() {
     const transfersUpdater = this.get('transfersUpdater');
     if (transfersUpdater &&
-      transfersUpdater.get('pollingTimeCurrent') !== SLOW_POLLING_TIME) {
-      transfersUpdater.set('pollingTimeCurrent', SLOW_POLLING_TIME);
+      transfersUpdater.get('basePollingTime') !== SLOW_POLLING_TIME) {
+      transfersUpdater.set('basePollingTime', SLOW_POLLING_TIME);
     }
   },
   
@@ -332,7 +372,7 @@ export default Component.extend(PromiseLoadingMixin, {
    * @returns {Promise<Array<FileDistribution>>}
    */
   fetchDistribution() {
-    console.log('component:modals/file-chunks: fetchDistribution');
+    console.debug('component:modals/file-chunks: fetchDistribution');
     const fileId = this.get('file.id');
     this.get('store').query('file-distribution', { file: fileId }).then(
       (fbs) => {
@@ -401,7 +441,14 @@ export default Component.extend(PromiseLoadingMixin, {
   },
   
   //#endregion
-    
+  
+  init() {
+    this._super(...arguments);
+    if (this.get('open') == null) {
+      this.set('open', false);
+    }
+  },
+
   /**
    * @override
    * Clean polling updaters
@@ -416,6 +463,21 @@ export default Component.extend(PromiseLoadingMixin, {
     }
   },
   
+  forceUpdateTransfers(transfersUpdater) {
+    return Promise.all([
+        transfersUpdater.fetchScheduled(),
+        transfersUpdater.fetchCurrent(true)
+      ])
+      .catch(error => {
+        // TODO: i18n
+        this.set('chunksModalError', 'Loading transfers data failed');
+        throw error;
+      })
+      .finally(() => {
+        this.set('transfersLoading', false);
+      });
+  },
+  
   actions: {
     /**
      * File chunks modal component is placed all the time,
@@ -427,15 +489,7 @@ export default Component.extend(PromiseLoadingMixin, {
       
       const transfersUpdater = this._initTransfersUpdater();
       this.set('transfersLoading', true);
-      transfersUpdater.fetchCurrent()
-        .catch(error => {
-          // TODO: i18n
-          this.set('chunksModalError', 'Loading transfers data failed');
-          throw error;
-        })
-        .finally(() => {
-          this.set('transfersLoading', false);
-        });
+      this.forceUpdateTransfers(transfersUpdater);
 
       this._initDistributionUpdater();
       this.fetchDistribution();
@@ -506,9 +560,8 @@ export default Component.extend(PromiseLoadingMixin, {
           this.observeTransfersCount();
           throw error;
         })
-        .then(( /* transfer */ ) => {
-          return transfersUpdater.fetchCurrent();
-        })
+        .then(() => transfersUpdater.fetchScheduled())
+        .then(() => transfersUpdater.fetchCurrent())
         .then(() => {
           return this._fastTransfersUpdater();
         })
@@ -538,12 +591,11 @@ export default Component.extend(PromiseLoadingMixin, {
           this.observeTransfersCount();
           throw error;
         })
-        .then(( /* transfer */ ) => {
-          return transfersUpdater.fetchCurrent();
+        .then(transfer => {
+          this.set('lastTransfer', transfer);
+          return this.forceUpdateTransfers(transfersUpdater);
         })
-        .then(() => {
-          return this._fastTransfersUpdater();
-        });
+        .then(() => this._fastTransfersUpdater());
     },
   },
 

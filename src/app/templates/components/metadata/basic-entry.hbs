@@ -1,10 +1,12 @@
 <th>
-  {{key}}
+  {{#truncated-string class="basic-metadata-key-truncate"}}
+    {{key}}
+  {{/truncated-string}}
 </th>
 <td>
-  {{value}}
+  {{textarea value=_stringValue class="form-control basic-value" readonly=true}}
 </td>
-<td class="basic-entry-button-cell table-space-fill">
+<td class="basic-entry-button-cell">
   {{#unless readOnly}}
   <div class="basic-entry-button" {{action "remove"}}>
     {{one-icon icon='close'}}

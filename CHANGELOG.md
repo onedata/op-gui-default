@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-4453 Fixed incorrect total files counter in transfers table
 * VFS-3945 Added data invalidation functionality.
 * VFS-4355 Added summarized transfer charts per provider.
 * VFS-4239 Infinite scroll for transfers lists.

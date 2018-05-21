@@ -394,7 +394,9 @@
       color: $onedata-graphite;
     }
   }
-  
+  .cell-total-files {
+    display: inline-block;
+  }
   .table-empty-message {
     padding-left: $-table-padding;
   }

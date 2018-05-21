@@ -26,9 +26,9 @@ export default Ember.Component.extend({
   i18n: service(),
 
   /**
-   * @type {Ember.ComptuedProperty<number>}
+   * @type {Ember.ComputedProperty<number>}
    */
-  totalFiles: computed('record.{transferredFiled,invalidatedFiles}', function () {
+  totalFiles: computed('record.{transferredFiles,invalidatedFiles}', function () {
     const {
       transferredFiles,
       invalidatedFiles,
@@ -37,9 +37,9 @@ export default Ember.Component.extend({
   }),
 
   /**
-   * @type {Ember.ComptuedProperty<string>}
+   * @type {Ember.ComputedProperty<string>}
    */
-  tooltipTitle: computed('record.{transferredFiled,invalidatedFiles}', function () {
+  tooltipTitle: computed('record.{transferredFiles,invalidatedFiles}', function () {
     const {
       transferredFiles,
       invalidatedFiles,

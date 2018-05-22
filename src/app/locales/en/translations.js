@@ -531,9 +531,13 @@ export default {
         totalFiles: 'Total files',
         status: 'Status',
         destinationUnknown: '-',
-        cancelFailure: 'Cannot cancel the transfer',
+        cancelFailure: 'Error occurred during transfer cancellation.',
+        rerunFailure: 'Error occurred during transfer rerun.',
+        rerunStarting: 'Rerunning transfer...',
+        rerunSuccess: 'Rerun transfer may be found in "Scheduled transfers" tab.',
         cellActions: {
           cancelTransfer: 'Cancel transfer',
+          rerunTransfer: 'Rerun transfer',
         },
         cellFileName: {
           deleted: 'deleted',

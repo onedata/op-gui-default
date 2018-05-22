@@ -2,11 +2,11 @@
 
 @font-face {
   font-family: 'oneicons';
-  src:  url('#{$icomoon-font-path}/oneicons.eot?x0lvhm');
-  src:  url('#{$icomoon-font-path}/oneicons.eot?x0lvhm#iefix') format('embedded-opentype'),
-    url('#{$icomoon-font-path}/oneicons.ttf?x0lvhm') format('truetype'),
-    url('#{$icomoon-font-path}/oneicons.woff?x0lvhm') format('woff'),
-    url('#{$icomoon-font-path}/oneicons.svg?x0lvhm#oneicons') format('svg');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?l2d0vh');
+  src:  url('#{$icomoon-font-path}/oneicons.eot?l2d0vh#iefix') format('embedded-opentype'),
+    url('#{$icomoon-font-path}/oneicons.ttf?l2d0vh') format('truetype'),
+    url('#{$icomoon-font-path}/oneicons.woff?l2d0vh') format('woff'),
+    url('#{$icomoon-font-path}/oneicons.svg?l2d0vh#oneicons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -26,554 +26,563 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@function unicode($str) {
+  @return unquote("\"") + $str + unquote("\"");
+}
+
 .oneicon-add-filled {
   &:before {
-    content: $oneicon-add-filled;
+    content: unicode($oneicon-add-filled); 
   }
 }
 .oneicon-add {
   &:before {
-    content: $oneicon-add;
+    content: unicode($oneicon-add); 
   }
 }
 .oneicon-arrow-down {
   &:before {
-    content: $oneicon-arrow-down;
+    content: unicode($oneicon-arrow-down); 
   }
 }
 .oneicon-arrow-right-filled {
   &:before {
-    content: $oneicon-arrow-right-filled;
+    content: unicode($oneicon-arrow-right-filled); 
   }
 }
 .oneicon-arrow-right {
   &:before {
-    content: $oneicon-arrow-right;
+    content: unicode($oneicon-arrow-right); 
   }
 }
 .oneicon-arrow-up {
   &:before {
-    content: $oneicon-arrow-up;
+    content: unicode($oneicon-arrow-up); 
   }
 }
 .oneicon-ban-left-thin {
   &:before {
-    content: $oneicon-ban-left-thin;
+    content: unicode($oneicon-ban-left-thin); 
   }
 }
 .oneicon-ban-left {
   &:before {
-    content: $oneicon-ban-left;
+    content: unicode($oneicon-ban-left); 
   }
 }
 .oneicon-cancelled {
   &:before {
-    content: $oneicon-cancelled;
+    content: unicode($oneicon-cancelled); 
   }
 }
 .oneicon-checkbox-check {
   &:before {
-    content: $oneicon-checkbox-check;
+    content: unicode($oneicon-checkbox-check); 
   }
 }
 .oneicon-checkbox-empty {
   &:before {
-    content: $oneicon-checkbox-empty;
+    content: unicode($oneicon-checkbox-empty); 
   }
 }
 .oneicon-checkbox-filled-x {
   &:before {
-    content: $oneicon-checkbox-filled-x;
+    content: unicode($oneicon-checkbox-filled-x); 
   }
 }
 .oneicon-checkbox-filled {
   &:before {
-    content: $oneicon-checkbox-filled;
+    content: unicode($oneicon-checkbox-filled); 
   }
 }
 .oneicon-checkbox-option {
   &:before {
-    content: $oneicon-checkbox-option;
+    content: unicode($oneicon-checkbox-option); 
   }
 }
 .oneicon-checkbox-x {
   &:before {
-    content: $oneicon-checkbox-x;
+    content: unicode($oneicon-checkbox-x); 
   }
 }
 .oneicon-checkbox {
   &:before {
-    content: $oneicon-checkbox;
+    content: unicode($oneicon-checkbox); 
   }
 }
 .oneicon-clipboard-copy {
   &:before {
-    content: $oneicon-clipboard-copy;
+    content: unicode($oneicon-clipboard-copy); 
   }
 }
 .oneicon-close {
   &:before {
-    content: $oneicon-close;
+    content: unicode($oneicon-close); 
   }
 }
 .oneicon-collection-create {
   &:before {
-    content: $oneicon-collection-create;
+    content: unicode($oneicon-collection-create); 
   }
 }
 .oneicon-copy {
   &:before {
-    content: $oneicon-copy;
+    content: unicode($oneicon-copy); 
   }
 }
 .oneicon-cut {
   &:before {
-    content: $oneicon-cut;
+    content: unicode($oneicon-cut); 
   }
 }
 .oneicon-file-deleted {
   &:before {
-    content: $oneicon-file-deleted;
+    content: unicode($oneicon-file-deleted); 
   }
 }
 .oneicon-file {
   &:before {
-    content: $oneicon-file;
+    content: unicode($oneicon-file); 
   }
 }
 .oneicon-folder-deleted {
   &:before {
-    content: $oneicon-folder-deleted;
+    content: unicode($oneicon-folder-deleted); 
   }
 }
 .oneicon-folder-new {
   &:before {
-    content: $oneicon-folder-new;
+    content: unicode($oneicon-folder-new); 
   }
 }
 .oneicon-folder-open {
   &:before {
-    content: $oneicon-folder-open;
+    content: unicode($oneicon-folder-open); 
   }
 }
 .oneicon-folder-share {
   &:before {
-    content: $oneicon-folder-share;
+    content: unicode($oneicon-folder-share); 
   }
 }
 .oneicon-folder {
   &:before {
-    content: $oneicon-folder;
+    content: unicode($oneicon-folder); 
   }
 }
 .oneicon-group-add {
   &:before {
-    content: $oneicon-group-add;
+    content: unicode($oneicon-group-add); 
   }
 }
 .oneicon-group-invite {
   &:before {
-    content: $oneicon-group-invite;
+    content: unicode($oneicon-group-invite); 
   }
 }
 .oneicon-group-leave-group {
   &:before {
-    content: $oneicon-group-leave-group;
+    content: unicode($oneicon-group-leave-group); 
   }
 }
 .oneicon-group {
   &:before {
-    content: $oneicon-group;
+    content: unicode($oneicon-group); 
   }
 }
 .oneicon-groups {
   &:before {
-    content: $oneicon-groups;
+    content: unicode($oneicon-groups); 
   }
 }
 .oneicon-home-outline {
   &:before {
-    content: $oneicon-home-outline;
+    content: unicode($oneicon-home-outline); 
   }
 }
 .oneicon-home {
   &:before {
-    content: $oneicon-home;
+    content: unicode($oneicon-home); 
   }
 }
 .oneicon-in-progress {
   &:before {
-    content: $oneicon-in-progress;
+    content: unicode($oneicon-in-progress); 
   }
 }
 .oneicon-inbox {
   &:before {
-    content: $oneicon-inbox;
+    content: unicode($oneicon-inbox); 
   }
 }
 .oneicon-invalidate {
   &:before {
-    content: $oneicon-invalidate;
+    content: unicode($oneicon-invalidate); 
   }
 }
 .oneicon-join {
   &:before {
-    content: $oneicon-join;
+    content: unicode($oneicon-join); 
   }
 }
 .oneicon-key {
   &:before {
-    content: $oneicon-key;
+    content: unicode($oneicon-key); 
   }
 }
 .oneicon-leave-space {
   &:before {
-    content: $oneicon-leave-space;
+    content: unicode($oneicon-leave-space); 
   }
 }
 .oneicon-lock {
   &:before {
-    content: $oneicon-lock;
+    content: unicode($oneicon-lock); 
   }
 }
 .oneicon-menu-clusters {
   &:before {
-    content: $oneicon-menu-clusters;
+    content: unicode($oneicon-menu-clusters); 
   }
 }
 .oneicon-menu-collection {
   &:before {
-    content: $oneicon-menu-collection;
+    content: unicode($oneicon-menu-collection); 
   }
 }
 .oneicon-menu-data {
   &:before {
-    content: $oneicon-menu-data;
+    content: unicode($oneicon-menu-data); 
   }
 }
 .oneicon-menu-groups {
   &:before {
-    content: $oneicon-menu-groups;
+    content: unicode($oneicon-menu-groups); 
   }
 }
 .oneicon-menu-links {
   &:before {
-    content: $oneicon-menu-links;
+    content: unicode($oneicon-menu-links); 
   }
 }
 .oneicon-menu-providers {
   &:before {
-    content: $oneicon-menu-providers;
+    content: unicode($oneicon-menu-providers); 
   }
 }
 .oneicon-menu-recent {
   &:before {
-    content: $oneicon-menu-recent;
+    content: unicode($oneicon-menu-recent); 
   }
 }
 .oneicon-menu-shared {
   &:before {
-    content: $oneicon-menu-shared;
+    content: unicode($oneicon-menu-shared); 
   }
 }
 .oneicon-menu-token {
   &:before {
-    content: $oneicon-menu-token;
+    content: unicode($oneicon-menu-token); 
   }
 }
 .oneicon-menu-transfers {
   &:before {
-    content: $oneicon-menu-transfers;
+    content: unicode($oneicon-menu-transfers); 
   }
 }
 .oneicon-menu-trash {
   &:before {
-    content: $oneicon-menu-trash;
+    content: unicode($oneicon-menu-trash); 
   }
 }
 .oneicon-metadata {
   &:before {
-    content: $oneicon-metadata;
+    content: unicode($oneicon-metadata); 
   }
 }
 .oneicon-migrate {
   &:before {
-    content: $oneicon-migrate;
+    content: unicode($oneicon-migrate); 
   }
 }
 .oneicon-move-down {
   &:before {
-    content: $oneicon-move-down;
+    content: unicode($oneicon-move-down); 
   }
 }
 .oneicon-move-up {
   &:before {
-    content: $oneicon-move-up;
+    content: unicode($oneicon-move-up); 
   }
 }
 .oneicon-node {
   &:before {
-    content: $oneicon-node;
+    content: unicode($oneicon-node); 
   }
 }
 .oneicon-password-change {
   &:before {
-    content: $oneicon-password-change;
+    content: unicode($oneicon-password-change); 
   }
 }
 .oneicon-provider-add {
   &:before {
-    content: $oneicon-provider-add;
+    content: unicode($oneicon-provider-add); 
   }
 }
 .oneicon-provider-default {
   &:before {
-    content: $oneicon-provider-default;
+    content: unicode($oneicon-provider-default); 
   }
 }
 .oneicon-provider-home {
   &:before {
-    content: $oneicon-provider-home;
+    content: unicode($oneicon-provider-home); 
   }
 }
 .oneicon-provider-remove {
   &:before {
-    content: $oneicon-provider-remove;
+    content: unicode($oneicon-provider-remove); 
   }
 }
 .oneicon-provider-sync {
   &:before {
-    content: $oneicon-provider-sync;
+    content: unicode($oneicon-provider-sync); 
   }
 }
 .oneicon-provider {
   &:before {
-    content: $oneicon-provider;
+    content: unicode($oneicon-provider); 
   }
 }
 .oneicon-providers-outline {
   &:before {
-    content: $oneicon-providers-outline;
+    content: unicode($oneicon-providers-outline); 
   }
 }
 .oneicon-remove {
   &:before {
-    content: $oneicon-remove;
+    content: unicode($oneicon-remove); 
   }
 }
 .oneicon-rename {
   &:before {
-    content: $oneicon-rename;
+    content: unicode($oneicon-rename); 
   }
 }
 .oneicon-replicate {
   &:before {
-    content: $oneicon-replicate;
+    content: unicode($oneicon-replicate); 
+  }
+}
+.oneicon-rerun {
+  &:before {
+    content: unicode($oneicon-rerun); 
   }
 }
 .oneicon-search {
   &:before {
-    content: $oneicon-search;
+    content: unicode($oneicon-search); 
   }
 }
 .oneicon-settings {
   &:before {
-    content: $oneicon-settings;
+    content: unicode($oneicon-settings); 
   }
 }
 .oneicon-share-collection {
   &:before {
-    content: $oneicon-share-collection;
+    content: unicode($oneicon-share-collection); 
   }
 }
 .oneicon-share {
   &:before {
-    content: $oneicon-share;
+    content: unicode($oneicon-share); 
   }
 }
 .oneicon-sign-error {
   &:before {
-    content: $oneicon-sign-error;
+    content: unicode($oneicon-sign-error); 
   }
 }
 .oneicon-sign-info {
   &:before {
-    content: $oneicon-sign-info;
+    content: unicode($oneicon-sign-info); 
   }
 }
 .oneicon-sign-question {
   &:before {
-    content: $oneicon-sign-question;
+    content: unicode($oneicon-sign-question); 
   }
 }
 .oneicon-sign-warning {
   &:before {
-    content: $oneicon-sign-warning;
+    content: unicode($oneicon-sign-warning); 
   }
 }
 .oneicon-skipped {
   &:before {
-    content: $oneicon-skipped;
+    content: unicode($oneicon-skipped); 
   }
 }
 .oneicon-social-dropbox {
   &:before {
-    content: $oneicon-social-dropbox;
+    content: unicode($oneicon-social-dropbox); 
   }
 }
 .oneicon-social-egi {
   &:before {
-    content: $oneicon-social-egi;
+    content: unicode($oneicon-social-egi); 
   }
 }
 .oneicon-social-facebook {
   &:before {
-    content: $oneicon-social-facebook;
+    content: unicode($oneicon-social-facebook); 
   }
 }
 .oneicon-social-github {
   &:before {
-    content: $oneicon-social-github;
+    content: unicode($oneicon-social-github); 
   }
 }
 .oneicon-social-google {
   &:before {
-    content: $oneicon-social-google;
+    content: unicode($oneicon-social-google); 
   }
 }
 .oneicon-social-indigo {
   &:before {
-    content: $oneicon-social-indigo;
+    content: unicode($oneicon-social-indigo); 
   }
 }
 .oneicon-social-plgrid {
   &:before {
-    content: $oneicon-social-plgrid;
+    content: unicode($oneicon-social-plgrid); 
   }
 }
 .oneicon-social-rhea {
   &:before {
-    content: $oneicon-social-rhea;
+    content: unicode($oneicon-social-rhea); 
   }
 }
 .oneicon-space-add {
   &:before {
-    content: $oneicon-space-add;
+    content: unicode($oneicon-space-add); 
   }
 }
 .oneicon-space-default {
   &:before {
-    content: $oneicon-space-default;
+    content: unicode($oneicon-space-default); 
   }
 }
 .oneicon-space-empty {
   &:before {
-    content: $oneicon-space-empty;
+    content: unicode($oneicon-space-empty); 
   }
 }
 .oneicon-space-error {
   &:before {
-    content: $oneicon-space-error;
+    content: unicode($oneicon-space-error); 
   }
 }
 .oneicon-space-home {
   &:before {
-    content: $oneicon-space-home;
+    content: unicode($oneicon-space-home); 
   }
 }
 .oneicon-space-import-provider {
   &:before {
-    content: $oneicon-space-import-provider;
+    content: unicode($oneicon-space-import-provider); 
   }
 }
 .oneicon-space-import {
   &:before {
-    content: $oneicon-space-import;
+    content: unicode($oneicon-space-import); 
   }
 }
 .oneicon-space-join {
   &:before {
-    content: $oneicon-space-join;
+    content: unicode($oneicon-space-join); 
   }
 }
 .oneicon-space-reload {
   &:before {
-    content: $oneicon-space-reload;
+    content: unicode($oneicon-space-reload); 
   }
 }
 .oneicon-space {
   &:before {
-    content: $oneicon-space;
+    content: unicode($oneicon-space); 
   }
 }
 .oneicon-star-empty {
   &:before {
-    content: $oneicon-star-empty;
+    content: unicode($oneicon-star-empty); 
   }
 }
 .oneicon-star {
   &:before {
-    content: $oneicon-star;
+    content: unicode($oneicon-star); 
   }
 }
 .oneicon-support {
   &:before {
-    content: $oneicon-support;
+    content: unicode($oneicon-support); 
   }
 }
 .oneicon-time {
   &:before {
-    content: $oneicon-time;
+    content: unicode($oneicon-time); 
   }
 }
 .oneicon-tokens {
   &:before {
-    content: $oneicon-tokens;
+    content: unicode($oneicon-tokens); 
   }
 }
 .oneicon-transfer {
   &:before {
-    content: $oneicon-transfer;
+    content: unicode($oneicon-transfer); 
   }
 }
 .oneicon-unknown {
   &:before {
-    content: $oneicon-unknown;
+    content: unicode($oneicon-unknown); 
   }
 }
 .oneicon-update {
   &:before {
-    content: $oneicon-update;
+    content: unicode($oneicon-update); 
   }
 }
 .oneicon-upload {
   &:before {
-    content: $oneicon-upload;
+    content: unicode($oneicon-upload); 
   }
 }
 .oneicon-user-add {
   &:before {
-    content: $oneicon-user-add;
+    content: unicode($oneicon-user-add); 
   }
 }
 .oneicon-user-profile {
   &:before {
-    content: $oneicon-user-profile;
+    content: unicode($oneicon-user-profile); 
   }
 }
 .oneicon-user {
   &:before {
-    content: $oneicon-user;
+    content: unicode($oneicon-user); 
   }
 }
 .oneicon-view-grid {
   &:before {
-    content: $oneicon-view-grid;
+    content: unicode($oneicon-view-grid); 
   }
 }
 .oneicon-view-list {
   &:before {
-    content: $oneicon-view-list;
+    content: unicode($oneicon-view-list); 
   }
 }
 

@@ -47,9 +47,10 @@ export default Component.extend({
    */
   action: () => {},
   
-  click() {
+  click(event) {
     if (!this.get('disabled')) {
       this.get('action')();
     }
+    event.stopPropagation();
   },
 });

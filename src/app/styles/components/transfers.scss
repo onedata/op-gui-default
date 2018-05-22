@@ -268,16 +268,50 @@
       height: 10px;
       border-radius: $border-radius-small;
     }
+  }
+
+  .cell-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+
+    .action-message {
+      $-left-border-style: 5px solid;
+      position: absolute;
+      bottom: -15px;
+      right: 12px;
+      padding: 2px $padding-base-horizontal;
+      background-color: $onedata-light-gray;
+      white-space: nowrap;
+      font-size: 80%;
+
+      &.success {
+        border-left: $-left-border-style $color-one-mint;
+      }
+      &.failure {
+        border-left: $-left-border-style $color-one-red;
+      }
+      &.warning {
+        border-left: $-left-border-style $color-one-yellow;
+      }
+    }
+  }
+
+  .one-collapsible-list-item {
+    position: relative;
     .cell-actions {
       position: absolute;
-      top: 8px;
+      top: 18px;
       right: 8px;
+      .action-message {
+        display: none;
+      }
     }
   }
 
   .one-collapsible-list-item-header.row {
     padding-left: $padding-large-horizontal;
-    padding-right: 45px;;
+    padding-right: 45px;
   }
 
   .content-row {
@@ -304,7 +338,7 @@
         cursor: pointer;
       }
       &.expanded-row {
-        background-color: darken($onedata-light-gray, 5%);
+        background-color: darken($onedata-light-gray, 4%);
         &:hover {
           background-color: darken($onedata-light-gray, 9%);
         }

@@ -13,7 +13,7 @@
           }}
         {{else}}
           {{#list.item as |listItem|}}
-            {{#listItem.header disableToggleIcon=(eq transferType "active") class="transfer-item-header"}}
+            {{#listItem.header disableToggleIcon=tableRowData.actions.length class="transfer-item-header"}}
               <div
                 class="transfer-row"
                 id="transfer-row-{{tableRowData.transferId}}"
@@ -23,7 +23,7 @@
                 {{transfers/live-stats-table/cell-file-name record=tableRowData}}
               </div>
             {{/listItem.header}}
-            {{#if (eq transferType "active")}}
+            {{#if tableRowData.actions.length}}
               {{transfers/live-stats-table/cell-actions record=tableRowData}}
             {{/if}}
             {{#listItem.content}}

@@ -563,5 +563,14 @@ export default Component.extend({
     cancelTransfer(transferId) {
       return this.get('oneproviderServer').cancelTransfer(transferId);
     },
+
+    /**
+     * Rerun transfer procedure
+     * @param {string} transferId
+     * @returns {Promise<undefined|any>}
+     */
+    rerunTransfer(transferId) {
+      return this.get('oneproviderServer').rerunTransfer(transferId);
+    },
   },
 });

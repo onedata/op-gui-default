@@ -406,4 +406,18 @@ export default Ember.Service.extend({
       transferId,
     });
   },
+
+  /**
+   * Reruns the transfer
+   * 
+   * @param {string} transferId 
+   * @returns {RSVP.Promise} A backend operation completion,
+   * ``resolve()`` when rerunning procedure has started successfully
+   * ``reject(object: error)`` on failure
+   */
+  rerunTransfer(transferId) {
+    return this.get('server').privateRPC('rerunTransfer', {
+      transferId,
+    });
+  },
 });

@@ -2,3 +2,8 @@
   menuActions=menuActions
   scrollableParentSelector="#content-scroll"
 }}
+{{#if message}}
+  <div class="action-message {{messageType}}">
+    {{message}}
+  </div>
+{{/if}}

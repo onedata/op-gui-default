@@ -21,6 +21,7 @@ const {
   },
   get,
   set,
+  setProperties,
   A,
   Object: EmberObject,
 } = Ember;
@@ -29,7 +30,7 @@ const COMMON_I18N_PREFIX = 'components.transfers.';
 const I18N_PREFIX = COMMON_I18N_PREFIX + 'liveTableStats.';
 
 const tableExcludedColumns = {
-  scheduled: ['startedAt', 'finishedAt', 'totalBytes', 'totalFiles', 'status'],
+  scheduled: ['startedAt', 'finishedAt', 'totalBytes', 'totalFiles'],
   current: ['scheduledAt', 'finishedAt'],
   completed: ['scheduledAt'],
 };
@@ -69,6 +70,16 @@ export default Component.extend({
    *    started successfully
    */
   cancelTransfer: undefined,
+
+  /**
+   * @virtual
+   * @type {Function}
+   * External implementation of rerunTransfer that should actually invoke
+   * a procedure
+   * @returns {Promise<undefined|any>} promise should resolve when rerunning has
+   *    started successfully
+   */
+  rerunTransfer: undefined,
   
   /**
    * Type of transfers. May be `scheduled`, `current` or `completed`
@@ -287,12 +298,15 @@ export default Component.extend({
         className: 'col-icon',
         title: i18n.t(I18N_PREFIX + 'status'),
         component: 'transfers/live-stats-table/cell-status',
-      }, {
+      },
+    ];
+    if (!_mobileMode) {
+      allColumns.push({
         id: 'actions',
         component: 'transfers/live-stats-table/cell-actions',
         className: 'transfer-actions-cell',
-      },
-    ];
+      });
+    }
     allColumns.forEach(column => column.disableSorting = true);
     return _.differenceWith(allColumns, excludedColumns, (col, eid) => col.id === eid);
   }),
@@ -313,15 +327,96 @@ export default Component.extend({
   }),
 
   /**
+   * Internal cancel of transfer which knows which row (table record) invoked
+   * the procedure, so it can modify row (record) state.
+   * @param {object} record instance of model-table record for which the transfer
+   *    has been canceled
+   */
+  _cancelTransfer: computed('cancelTransfer', function () {
+    const cancelTransfer = this.get('cancelTransfer');
+    return cancelTransfer ? (record) => {
+      const {
+        notify,
+        i18n,
+      } = this.getProperties('notify', 'i18n');
+      set(record, 'transfer.isCancelling', true);
+      cancelTransfer(get(record, 'transfer.id'))
+        .catch(error => {
+          notify.error(i18n.t(I18N_PREFIX + 'cancelFailure'));
+          throw error;
+        })
+        .then(() => {
+          return record.transfer.reload();
+        })
+        .finally(() => {
+          set(record, 'transfer.isCancelling', false);
+        });
+    } : undefined;
+  }),
+  
+  /**
+   * Internal rerun of transfer which knows which row (table record) invoked
+   * the procedure, so it can modify row (record) state.
+   * @param {object} record instance of model-table record for which the transfer
+   *    has been rerun
+   */
+  _rerunTransfer: computed('rerunTransfer', function () {
+    const rerunTransfer = this.get('rerunTransfer');
+    return rerunTransfer ? (record) => {
+      const {
+        notify,
+        i18n,
+      } = this.getProperties('notify', 'i18n');
+      setProperties(record, {
+        actionMessage: i18n.t(I18N_PREFIX + 'rerunStarting'),
+        actionMessageType: 'warning',
+        isRerunning: true,
+      });
+      rerunTransfer(get(record, 'transfer.id'))
+        .catch(error => {
+          setProperties(record, {
+            actionMessage: i18n.t(I18N_PREFIX + 'rerunFailure'),
+            actionMessageType: 'failure',
+          });
+          notify.error(i18n.t(I18N_PREFIX + 'rerunFailure'));
+          throw error;
+        })
+        .then(() => {
+          setProperties(record, {
+            actionMessage: i18n.t(I18N_PREFIX + 'rerunSuccess'),
+            actionMessageType: 'success',
+          });
+          notify.success(i18n.t(I18N_PREFIX + 'rerunSuccess'));
+          return record.transfer.reload();
+        })
+        .finally(() => {
+          record.set('isRerunning', false);
+        });
+    } : undefined;
+  }),
+
+  /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  _rowActions: computed('_cancelTransfer', function () {
-    return [
-      {
+  _rowActions: computed('_cancelTransfer', '_rerunTransfer', function () {
+    const {
+      _cancelTransfer,
+      _rerunTransfer,
+    } = this.getProperties('_cancelTransfer', '_rerunTransfer');
+    const actions = [];
+    if (_cancelTransfer) {
+      actions.push({
         id: 'cancelTransfer',
-        action: this.get('cancelTransfer'),
-      },
-    ];
+        action: _cancelTransfer,
+      });
+    }
+    if (_rerunTransfer) {
+      actions.push({
+        id: 'rerunTransfer',
+        action: _rerunTransfer,
+      });
+    }
+    return actions;
   }),
   
   /**
@@ -362,32 +457,4 @@ export default Component.extend({
       this._super(...arguments);
     }
   },
-
-  /**
-   * Internal cancel of transfer which knows which row (table record) invoked
-   * the procedure, so it can modify row (record) state.
-   * @param {object} record instance of model-table record for which the transfer
-   *    has been canceled
-   */
-  _cancelTransfer: computed('cancelTransfer', function () {
-    const cancelTransfer = this.get('cancelTransfer');
-    return (record) => {
-      const {
-        notify,
-        i18n,
-      } = this.getProperties('notify', 'i18n');
-      set(record, 'transfer.isCancelling', true);
-      cancelTransfer(record.transferId)
-        .catch(error => {
-          notify.error(i18n.t(I18N_PREFIX + 'cancelFailure'));
-          throw error;
-        })
-        .then(() => {
-          return record.transfer.reload();
-        })
-        .finally(() => {
-          set(record, 'transfer.isCancelling', false);
-        });
-    };
-  }),
 });

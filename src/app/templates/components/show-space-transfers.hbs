@@ -24,7 +24,6 @@
           sourceProviderIds=sourceProviderIds
           providersColors=providersColors
           providersLoaded=providersLoaded
-          cancelTransfer=(action "cancelTransfer")
         }}
       {{/loading-container}}
       
@@ -117,6 +116,7 @@
                           selectedTransferIds=selectedTransferIds
                           movedTransfers=transfersUpdater.movedTransfers
                           updaterId=(concat transfersUpdater.updaterId "-scheduled")
+                          cancelTransfer=(action "cancelTransfer")
                         }}
                       {{/loading-container}}
                     </div>
@@ -146,6 +146,7 @@
                           selectedTransferIds=selectedTransferIds
                           movedTransfers=transfersUpdater.movedTransfers
                           updaterId=(concat transfersUpdater.updaterId "-current")
+                          cancelTransfer=(action "cancelTransfer")
                         }}
                       {{/loading-container}}
                     </div>
@@ -175,6 +176,7 @@
                           selectedTransferIds=selectedTransferIds
                           movedTransfers=transfersUpdater.movedTransfers
                           updaterId=(concat transfersUpdater.updaterId "-completed")
+                          rerunTransfer=(action "rerunTransfer")
                         }}
                       {{/loading-container}}
                     </div>

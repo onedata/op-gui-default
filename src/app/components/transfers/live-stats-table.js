@@ -16,8 +16,12 @@ import _ from 'lodash';
 const {
   Component,
   computed,
+  observer,
   inject: {
     service,
+  },
+  run: {
+    scheduleOnce,
   },
   get,
   set,
@@ -59,6 +63,12 @@ export default Component.extend({
   notifyLoaded: () => {},
   
   /**
+   * @virtual 
+   * @type {Function}
+   */
+  notifyTransferListChanged: () => {},
+  
+  /**
    * Type of transfers. May be `scheduled`, `current` or `completed`
    * @public
    * @type {string}
@@ -71,6 +81,11 @@ export default Component.extend({
    * @type {Array<string>|undefined} array of transfer ids
    */
   selectedTransferIds: undefined,
+      
+  /**
+   * @type {EmberObject}
+   */
+  firstRowSpace: undefined,
   
   /**
    * If true, component is rendered in mobile mode.
@@ -119,7 +134,6 @@ export default Component.extend({
    */
   _tableDataCache: null,
   
-  
   _tableData: computed(
     'transfers.[]',
     'transfers.{startIndex,endIndex}',
@@ -148,7 +162,9 @@ export default Component.extend({
       );
       
       if (transfers && providers) {
+        let arrayChanged = false;
         const cachedTransfers = _tableDataCache.mapBy('transfer');
+        const initialCacheLength = get(_tableDataCache, 'length');
         _.pullAllWith(
           _tableDataCache,
           _.difference(
@@ -160,6 +176,10 @@ export default Component.extend({
             return cached && transfer && ct === transfer;
           }
         );
+        if (get(_tableDataCache, 'length') !== initialCacheLength) {
+          arrayChanged = true;
+        }
+        
         transfers.forEach(transfer => {
           if (!_.includes(cachedTransfers, transfer)) {
             const transferId = get(transfer, 'id');
@@ -179,6 +199,7 @@ export default Component.extend({
               providersColors,
               updaterId,
             }));
+            arrayChanged = true;
           }
         });
         _tableDataCache.sort((a, b) => get(a, 'listIndex') - get(b, 'listIndex'));
@@ -188,7 +209,9 @@ export default Component.extend({
           'firstRowListIndex',
           topRecord && get(topRecord, 'listIndex')
         );
-        _tableDataCache.arrayContentDidChange();
+        if (arrayChanged) {
+          _tableDataCache.arrayContentDidChange();
+        }
       }
       
       return _tableDataCache;
@@ -291,11 +314,16 @@ export default Component.extend({
     const transferType = this.get('transferType');
     return transferType !== 'scheduled';
   }),
-  
-  /**
-   * @type {EmberObject}
-   */
-  firstRowSpace: undefined,
+    
+  transferListChanged: observer('_tableDataCache.[]', function() {
+    scheduleOnce(
+      'afterRender',
+      this,
+      'notifyTransferListChanged',
+      this.get('transferType')
+    );
+
+  }),
   
   init() {
     this._super(...arguments);

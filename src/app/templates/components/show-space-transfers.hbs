@@ -116,6 +116,7 @@
                           selectedTransferIds=selectedTransferIds
                           movedTransfers=transfersUpdater.movedTransfers
                           updaterId=(concat transfersUpdater.updaterId "-scheduled")
+                          notifyTransferListChanged=(action "transferListChanged")
                         }}
                       {{/loading-container}}
                     </div>
@@ -145,6 +146,7 @@
                           selectedTransferIds=selectedTransferIds
                           movedTransfers=transfersUpdater.movedTransfers
                           updaterId=(concat transfersUpdater.updaterId "-current")
+                          notifyTransferListChanged=(action "transferListChanged")
                         }}
                       {{/loading-container}}
                     </div>
@@ -174,6 +176,7 @@
                           selectedTransferIds=selectedTransferIds
                           movedTransfers=transfersUpdater.movedTransfers
                           updaterId=(concat transfersUpdater.updaterId "-completed")
+                          notifyTransferListChanged=(action "transferListChanged")
                         }}
                       {{/loading-container}}
                     </div>

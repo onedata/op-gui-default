@@ -1,11 +1,94 @@
 import DS from 'ember-data';
-
+import Ember from 'ember';
 import isDefaultMixinFactory from 'ember-cli-onedata-common/mixin-factories/models/is-default';
+import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
+import ReplacingChunksArray from 'ember-cli-onedata-common/utils/replacing-chunks-array';
 
 const {
   attr,
-  belongsTo
+  belongsTo,
 } = DS;
+
+const {
+  computed,
+  Object: EmberObject,
+  RSVP: { Promise },
+  inject: { service },
+  get,
+} = Ember;
+
+class FakeListHasMany {
+  /**
+   * @param {SliceArray} list 
+   * @param {Ember.Array} list.sourceArray
+   */
+  constructor(list) {
+    this.sourceArray = list.get('sourceArray');
+  }
+  ids() {
+    return this.sourceArray.mapBy('id').toArray();
+  }
+}
+
+const FakeListRecord = EmberObject.extend({
+  /**
+   * @virtual 
+   * @type {ReplacingChunksArray}
+   */
+  initChunksArray: undefined,
+  
+  /**
+   * @type {FakeListHasMany}
+   */
+  _listHasMany: undefined,
+  
+  list: computed(function () {
+    const _chunksArray = this.get('_chunksArray');
+    return PromiseObject.create({ promise: Promise.resolve(_chunksArray) });
+  }),
+  
+  chunksArray: computed.reads('_chunksArray'),
+  
+  hasMany(relation) {
+    if (relation === 'list') {
+      return this.get('_listHasMany');
+    } else {
+      throw new Error('FakeListRecord: hasMany for non-"list" relation is not implemented');
+    }
+  },
+  
+  reload() {
+    return this.get('_chunksArray')
+      .reload(...arguments)
+      .then(() => this);  
+  },
+  
+  init() {
+    this._super(...arguments);
+    const _chunksArray = this.set('_chunksArray', this.get('initChunksArray'));
+    this.set('_listHasMany', new FakeListHasMany(_chunksArray));
+  },
+});
+
+const FakeListRecordRelation = PromiseObject.extend({
+  isLoading: computed.reads('isPending'),
+  isLoaded: computed.not('isLoading'),
+  reload() {
+    return this.get('_fakeListRecord').reload(...arguments);
+  },
+  init() {
+    this._super(...arguments);
+    const _fakeListRecord = this.set('_fakeListRecord', FakeListRecord.create({
+      initChunksArray: this.get('initChunksArray'),
+    }));
+    // FIXME: promise for initial load
+    this.set(
+      'promise',
+      get(_fakeListRecord, 'chunksArray.initialLoad')
+        .then(() => _fakeListRecord)
+    );
+  },
+});
 
 /**
  * A configuration of a space - entry point for all options
@@ -17,6 +100,8 @@ const {
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
+  oneproviderServer: service(),
+  
   /** User specified name of space that will be exposed in GUI */
   name: attr('string'),
 
@@ -34,10 +119,6 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
 
   /** Collection of group permissions - effectively all rows in permissions table */
   groupList: belongsTo('space-group-list', { async: true }),
-
-  scheduledTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
-  currentTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
-  completedTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
   
   onTheFlyTransferList: belongsTo('space-on-the-fly-transfer-list', { async: true, inverse: null }),
   
@@ -66,4 +147,43 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
    * ``
    */
   transferProviderStat: attr('object'),
+    
+  init() {
+    this._createTransferLists();
+  },
+  
+  _createTransferLists() {
+    ['scheduled', 'current', 'completed'].forEach(type => {
+      const chunksArray = ReplacingChunksArray.create({
+        fetch: (...args) => this.fetchTransfers(type, ...args),
+        startIndex: 0,
+        endIndex: 50,
+        indexMargin: 10,
+      });
+      this.set(`${type}TransferList`, FakeListRecordRelation.create({
+        initChunksArray: chunksArray,
+      }));
+    });
+  },
+  
+  /**
+   * Fetch partial list of space transfer records
+   * @param {string} type one of: scheduled, current, completed
+   * @returns {Promise<object>} promise of RPC request with transfers list
+   */
+  fetchTransfers(type, startFromIndex, size, offset) {
+    const {
+      oneproviderServer,
+      store,
+    } = this.getProperties('oneproviderServer', 'store');
+    return oneproviderServer.getSpaceTransfers(
+      this.get('id'),
+      type,
+      startFromIndex,
+      size,
+      offset
+    ).then(({ list }) =>
+      Promise.all(list.map(id => store.findRecord('transfer', id)))
+    );
+  },
 });

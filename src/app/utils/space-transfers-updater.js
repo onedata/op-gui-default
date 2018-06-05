@@ -293,8 +293,9 @@ export default EmberObject.extend({
    * Updates `_currentTransfersCount` property
    */
   countCurrentTransfers() {
-    const newCount = this.get('space.currentTransferList.content').hasMany('list').ids()
-      .length;
+    const listRecord = this.get('space.currentTransferList.content');
+    const newCount = listRecord ?
+      this.get('space.currentTransferList.content').hasMany('list').ids().length : 0;
     if (newCount !== this.get('_currentTransfersCount')) {
       this.set('_currentTransfersCount', newCount);
     }

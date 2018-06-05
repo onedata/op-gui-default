@@ -557,7 +557,7 @@ export default Component.extend({
         if (startIndex > 0 && get(openedTransfersChunksArray, 'firstObject.id') === firstId) {
           this.get('listWatcher').scrollHandler();
         } else {
-          this.set('_isTransfersTableBegin', startIndex === 0);
+          this.set('_isTransfersTableBegin', startIndex <= 0);
         }
       });
 

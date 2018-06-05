@@ -131,8 +131,19 @@ export default EmberObject.extend({
           .then(() => transfer.belongsTo('currentStat').reload())
           .finally(() => set(transfer, 'isReloading', false));
       }
-    } else if (!get(transfer, 'isLoading')) {
-      transfer.store.findRecord('transfer', get(transfer, 'id'));
+    } else if (get(transfer, 'isLoading')) {
+      // VFS-4487 quick fix for inconsistent transfer ids
+      // thus it can show some warnings/errors, but it's a temporary solution
+      // TODO: remove this code when proper fix on backend will be made
+      transfer.on('didLoad', () => {
+        transfer.belongsTo('currentStat').reload();
+      });
+    } else {
+      transfer.store.findRecord('transfer', get(transfer, 'id'))
+        // VFS-4487 quick fix for inconsistent transfer ids
+        // thus it can show some warnings/errors, but it's a temporary solution
+        // TODO: remove this code when proper fix on backend will be made
+        .then(t => t.belongsTo('currentStat').reload());
     }
   },
 });

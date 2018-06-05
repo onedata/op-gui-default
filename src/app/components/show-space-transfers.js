@@ -74,12 +74,10 @@ export default Component.extend({
   
   activeTabId: defaultActiveTabId,
   
-  _navTabsTransfersTop: 0,
-  
   /**
    * @type {boolean}
    */
-  _stickyTransfersTable: undefined,
+  _isTransfersTableBegin: undefined,
   
   //#endregion
   
@@ -118,8 +116,8 @@ export default Component.extend({
       
   //#region Feature: transfers data container
   
-  activeListUpdaterId: computed('activeTabId', '_stickyTransfersTable', function () {
-    if (!this.get('_stickyTransfersTable')) {
+  activeListUpdaterId: computed('activeTabId', '_isTransfersTableBegin', function () {
+    if (this.get('_isTransfersTableBegin')) {
       return this.get('activeTabId');
     }
   }),
@@ -505,13 +503,6 @@ export default Component.extend({
       items => safeExec(this, 'onTableScroll', items)
     );
     this.set('listWatcher', listWatcher);
-    
-    // FIXME: tmp sticky top
-    this.set(
-      '_navTabsTransfersTop',
-      130
-      // document.getElementsByClassName('row-expand-handler')[0].offsetHeight
-    );
   },
   
   willDestroyElement() {
@@ -561,10 +552,12 @@ export default Component.extend({
       transfersUpdater.set('visibleIds', newVisibleIds);
 
       transfersUpdater.fetchSpecificRecords(_.difference(newVisibleIds, oldVisibleIds));
-
+      
       next(() => {
         if (startIndex > 0 && get(openedTransfersChunksArray, 'firstObject.id') === firstId) {
           this.get('listWatcher').scrollHandler();
+        } else {
+          this.set('_isTransfersTableBegin', startIndex === 0);
         }
       });
 

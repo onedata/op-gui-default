@@ -53,7 +53,7 @@
     {{/one-collapsible-list}}
   {{/if}}
 {{else}}
-  {{one-models-table
+  {{models-table
     data=_tableData
     columns=_tableColumns
     customIcons=_tableCustomIcons
@@ -68,8 +68,6 @@
     pageSize=1000000
     rowTemplate="components/transfers/live-stats-table/row-template"
     expandedRowTemplate=(if _hasExpandableRows "components/transfers/live-stats-table/expanded-row-template" null)
-    stickyOffsetTop=_stickyTableHeaderOffset
-    stickyHeaderChanged=(action "stickyHeaderChanged")
   }}
   {{#if (lt _tableData.length 2)}}
     <p class="table-empty-message">{{_tableCustomMessages.noDataToShow}}</p>

@@ -36,52 +36,47 @@
           action=(action (mut activeTabId))
           as |activeTabId select|
         }}
-          {{#sticky-element 
-            top=_navTabsTransfersTop
-            class="nav-tabs-transfers-sticky"
+          {{#bs-nav
+            type="tabs"
+            class="nav-tabs-transfers"
           }}
-            {{#bs-nav
-              type="tabs"
-              class="nav-tabs-transfers"
+            {{#bs-nav-item
+              active=(eq activeTabId "on-the-fly")
             }}
-              {{#bs-nav-item
-                active=(eq activeTabId "on-the-fly")
-              }}
-                <a href="#on-the-fly"
-                  class="nav-link"
-                  role="tab" {{action select "on-the-fly"}}>
-                  {{t "components.transfers.onTheFlyTransfers"}}
-                </a>
-              {{/bs-nav-item}}
-              {{#bs-nav-item
-                active=(eq activeTabId "scheduled")
-              }}
-                <a href="#scheduled"
-                  class="nav-link"
-                  role="tab" {{action select "scheduled"}}>
-                  {{t "components.transfers.scheduledTransfers"}}
-                </a>
-              {{/bs-nav-item}}
-              {{#bs-nav-item
-                active=(eq activeTabId "current")
-              }}
-                <a href="#current"
-                  class="nav-link"
-                  role="tab" {{action select "current"}}>
-                  {{t "components.transfers.activeTransfers"}}
-                </a>
-              {{/bs-nav-item}}
-              {{#bs-nav-item
-                active=(eq activeTabId "completed")
-              }}
-                <a href="#completed"
-                  class="nav-link"
-                  role="tab" {{action select "completed"}}>
-                  {{t "components.transfers.completedTransfers"}}
-                </a>
-              {{/bs-nav-item}}
-            {{/bs-nav}}
-          {{/sticky-element}}
+              <a href="#on-the-fly"
+                class="nav-link"
+                role="tab" {{action select "on-the-fly"}}>
+                {{t "components.transfers.onTheFlyTransfers"}}
+              </a>
+            {{/bs-nav-item}}
+            {{#bs-nav-item
+              active=(eq activeTabId "scheduled")
+            }}
+              <a href="#scheduled"
+                class="nav-link"
+                role="tab" {{action select "scheduled"}}>
+                {{t "components.transfers.scheduledTransfers"}}
+              </a>
+            {{/bs-nav-item}}
+            {{#bs-nav-item
+              active=(eq activeTabId "current")
+            }}
+              <a href="#current"
+                class="nav-link"
+                role="tab" {{action select "current"}}>
+                {{t "components.transfers.activeTransfers"}}
+              </a>
+            {{/bs-nav-item}}
+            {{#bs-nav-item
+              active=(eq activeTabId "completed")
+            }}
+              <a href="#completed"
+                class="nav-link"
+                role="tab" {{action select "completed"}}>
+                {{t "components.transfers.completedTransfers"}}
+              </a>
+            {{/bs-nav-item}}
+          {{/bs-nav}}
           <div class="tab-content tab-content-transfers-list">
             {{#bs-tab-pane elementId="on-the-fly" }}
               {{#if (eq activeTabId "on-the-fly")}}
@@ -123,7 +118,6 @@
                           movedTransfers=transfersUpdater.movedTransfers
                           updaterId=(concat transfersUpdater.updaterId "-scheduled")
                           notifyTransferListChanged=(action "transferListChanged")
-                          stickyTableChanged=(action (mut _stickyTransfersTable))
                         }}
                       {{/loading-container}}
                     </div>
@@ -154,7 +148,6 @@
                           movedTransfers=transfersUpdater.movedTransfers
                           updaterId=(concat transfersUpdater.updaterId "-current")
                           notifyTransferListChanged=(action "transferListChanged")
-                          stickyTableChanged=(action (mut _stickyTransfersTable))
                         }}
                       {{/loading-container}}
                     </div>
@@ -185,7 +178,6 @@
                           movedTransfers=transfersUpdater.movedTransfers
                           updaterId=(concat transfersUpdater.updaterId "-completed")
                           notifyTransferListChanged=(action "transferListChanged")
-                          stickyTableChanged=(action (mut _stickyTransfersTable))
                         }}
                       {{/loading-container}}
                     </div>

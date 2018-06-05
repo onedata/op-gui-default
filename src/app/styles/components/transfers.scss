@@ -468,26 +468,3 @@ $color-tab-content-background: white !default;
     width: 100%;
   }
 }
-
-.nav-tabs-transfers-sticky .sticky-element {
-  z-index: 4;
-}
-.nav-tabs-transfers {
-  background-color: $color-main-background;  
-}
-// .tab-content.tab-content-transfers-list {
-  // padding-top: 0;
-// }
-.transfers-table thead {
-  // FIXME: not working for head
-  // padding-top: 20px;
-  background-color: $color-tab-content-background;
-}
-thead.tableFloatingHeaderOriginal::before {
-  content: " ";
-  height: $bs-tab-padding;
-  background: $color-tab-content-background;
-  width: 100%;
-  top: -$bs-tab-padding;
-  position: absolute;
-}

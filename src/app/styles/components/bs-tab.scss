@@ -4,10 +4,9 @@ $color-tab-inactive-background: transparent;
 $color-tab-hover-background: $color-tab-border;
 $color-tab-font: inherit;
 $color-tab-inactive-font: $color-panel-graphite;
-$color-tab-content-background: white !default;
 $tab-border-width: 2px;
 $tab-border-style: $tab-border-width solid $color-tab-border;
-$bs-tab-padding: 20px !default;
+$bs-tab-padding: 20px;
 
 .bs-tab {
   .nav-tabs {

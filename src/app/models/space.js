@@ -1,8 +1,10 @@
 import DS from 'ember-data';
 import Ember from 'ember';
 import isDefaultMixinFactory from 'ember-cli-onedata-common/mixin-factories/models/is-default';
-import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
 import ReplacingChunksArray from 'ember-cli-onedata-common/utils/replacing-chunks-array';
+
+import FakeListRecordRelation from 'op-worker-gui/utils/fake-list-record-relation';
+
 
 const {
   attr,
@@ -11,92 +13,9 @@ const {
 
 const {
   computed,
-  Object: EmberObject,
   RSVP: { Promise },
   inject: { service },
-  get,
 } = Ember;
-
-/**
- * Abstraction layer that mocks HasMany relationship using some SliceArray
- */
-class FakeListHasMany {
-  /**
-   * @param {Ember.Array} sourceArray
-   */
-  constructor(sourceArray) {
-    this.sourceArray = sourceArray;
-  }
-  ids() {
-    return this.sourceArray.mapBy('id').toArray();
-  }
-}
-
-/**
- * Ember Class for using some ReplacingChunksArray as a record containing list
- * property
- */
-const FakeListRecord = EmberObject.extend({
-  /**
-   * @virtual 
-   * @type {ReplacingChunksArray}
-   */
-  initChunksArray: undefined,
-  
-  /**
-   * @type {FakeListHasMany}
-   */
-  _listHasMany: undefined,
-  
-  list: computed(function () {
-    const _chunksArray = this.get('_chunksArray');
-    return PromiseObject.create({ promise: Promise.resolve(_chunksArray) });
-  }),
-  
-  chunksArray: computed.reads('_chunksArray'),
-  
-  hasMany(relation) {
-    if (relation === 'list') {
-      return this.get('_listHasMany');
-    } else {
-      throw new Error('FakeListRecord: hasMany for non-"list" relation is not implemented');
-    }
-  },
-  
-  reload() {
-    return this.get('_chunksArray')
-      .reload(...arguments)
-      .then(() => this);  
-  },
-  
-  init() {
-    this._super(...arguments);
-    const _chunksArray = this.set('_chunksArray', this.get('initChunksArray'));
-    this.set(
-      '_listHasMany',
-      new FakeListHasMany(get(_chunksArray, 'sourceArray'))
-    );
-  },
-});
-
-const FakeListRecordRelation = PromiseObject.extend({
-  isLoading: computed.reads('isPending'),
-  isLoaded: computed.not('isLoading'),
-  reload() {
-    return this.get('_fakeListRecord').reload(...arguments);
-  },
-  init() {
-    this._super(...arguments);
-    const _fakeListRecord = this.set('_fakeListRecord', FakeListRecord.create({
-      initChunksArray: this.get('initChunksArray'),
-    }));
-    this.set(
-      'promise',
-      get(_fakeListRecord, 'chunksArray.initialLoad')
-        .then(() => _fakeListRecord)
-    );
-  },
-});
 
 /**
  * A configuration of a space - entry point for all options

@@ -1,3 +1,13 @@
+/**
+ * Array that fetches additional chunks of data if requesting indexes
+ * that are not currently loaded
+ *
+ * @module utils/replacing-chunks-array
+ * @author Jakub Liput
+ * @copyright (C) 2018 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 import ArraySlice from 'ember-cli-onedata-common/utils/array-slice';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
@@ -38,13 +48,13 @@ export default ArraySlice.extend({
     return this.get('chunkSize') / 2;
   }),
   
-  // FIXME: remember to set this to false if needed
+  // TODO: implement better start change handling
   /**
    * @type {boolean}
    */
   _startReached: true,
   
-  // FIXME: remember to set this to false if needed
+  // TODO: implement better end change handling
   /**
    * @type {boolean}
    */
@@ -98,6 +108,7 @@ export default ArraySlice.extend({
         if (!_endReached && _end + loadMoreThreshold >= get(sourceArray, 'length')) {
           this.fetchNext();
         }
+        console.log('source len: ' + get(sourceArray, 'length'));
       }
     }),
 
@@ -119,7 +130,9 @@ export default ArraySlice.extend({
           safeExec(this, 'set', '_startReached', true);
         }
         array = _.difference(array, sourceArray);
-        sourceArray.unshiftObjects(array);
+        sourceArray.unshift(...array);
+        sourceArray.sortBy('listIndex');
+        sourceArray.arrayContentDidChange();
       }).finally(() => safeExec(this, 'set', '_fetchPrevLock', false));
     }
   },
@@ -140,7 +153,9 @@ export default ArraySlice.extend({
           safeExec(this, 'set', '_endReached', true);
         }
         array = _.difference(array, sourceArray);
-        sourceArray.pushObjects(array);
+        sourceArray.push(...array);
+        sourceArray.sortBy('listIndex');
+        sourceArray.arrayContentDidChange();
       }).finally(() => safeExec(this, 'set', '_fetchNextLock', false));
     }
   },
@@ -179,6 +194,10 @@ export default ArraySlice.extend({
       size,
       0
     ).then(updatedRecordsArray => {
+      safeExec(this, 'setProperties', {
+        _startReached: true,
+        _endReached: false,
+      });
       sourceArray.clear();
       sourceArray.pushObjects(updatedRecordsArray);
       return this;

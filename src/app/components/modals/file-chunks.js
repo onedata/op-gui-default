@@ -8,7 +8,6 @@
 
 import Ember from 'ember';
 import PromiseLoadingMixin from 'ember-cli-onedata-common/mixins/promise-loading';
-import SpaceTransfersUpdater from 'op-worker-gui/utils/space-transfers-updater';
 import Looper from 'ember-cli-onedata-common/utils/looper';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 import hasDuplicatedFileChunks from 'op-worker-gui/utils/has-duplicated-file-chunks';
@@ -34,6 +33,7 @@ export default Component.extend(PromiseLoadingMixin, {
   classNames: ['file-chunks', 'file-chunks-modal'],
   
   store: service(),
+  oneproviderServer: service(),
 
   //#region External properties
   
@@ -88,12 +88,7 @@ export default Component.extend(PromiseLoadingMixin, {
    * @type {Provider}
    */
   migrationSource: undefined,
-
-  /**
-   * @type {SpaceTransfersUpdater}
-   */
-  transfersUpdater: undefined,
-
+  
   /**
    * If true, first time loading data of transfers after modal open.
    * Changed in open action.
@@ -114,6 +109,11 @@ export default Component.extend(PromiseLoadingMixin, {
   providerInvalidationsInvoked: undefined,
   
   fileBlocksSorting: ['getProvider.name'],
+  
+  /**
+   * @type {Looper}
+   */
+  _fileTransfersWatcher: undefined,
   
   //#endregion
   
@@ -244,53 +244,17 @@ export default Component.extend(PromiseLoadingMixin, {
   isFileEmpty: computed.equal('file.size', 0),
 
   /**
-   * Record with current transfer records list 
-   * @type {SpaceTransferList}
-   */
-  currentTransferList: computed.reads('space.currentTransferList'),
-  
-  scheduledTransferList: computed.reads('space.scheduledTransferList'),
-
-  /**
    * Array of current transfers
    * @type {Array<Transfer>} with isLoaded Ember property
    */
-  workingTransfers: computed(
-    'workingTransfersDataLoaded',
-    'scheduledTransferList.list.content.[]',
-    'currentTransferList.list.content.[]',
-    'transfersUpdater.{scheduledIsUpdating,currentIsUpdating}',
-    'lastTransfer',
-    function () {
-      if (this.get('workingTransfersDataLoaded')) {
-        const scheduled = this.get('scheduledTransferList.list.content');
-        const current = this.get('currentTransferList.list.content');
-        const lastTransfer = this.get('lastTransfer');
-        if (scheduled && current) {
-          this.set('lastTransfer', null);
-          return (lastTransfer ? [lastTransfer] : []).concat(scheduled.toArray(), current.toArray());
-        }
-      }
-    }
-  ),
+  workingTransfers: undefined,
 
   /**
    * True if each transfer is ready to be inserted into table, _but_ without
    * async dynamic data like transferred bytes or status
    * @type {Ember.ComputedProperty<boolean>}
    */
-  workingTransfersDataLoaded: computed(
-    'scheduledTransferList.isLoaded',
-    'currentTransferList.isLoaded',
-    'scheduledTransferList.list.content.isLoaded',
-    'currentTransferList.list.content.isLoaded',
-    function getCurrentTransfersDataLoaded() {
-      return this.get('currentTransferList.isLoaded') === true &&
-        this.get('scheduledTransferList.isLoaded') === true &&
-        this.get('currentTransferList.list.content.isLoaded') === true &&
-        this.get('scheduledTransferList.list.content.isLoaded') === true;
-    }
-  ),
+  workingTransfersDataLoaded: true,
 
   /**
    * @type {Ember.ComputedProperty<Array<Transfer>>}
@@ -350,10 +314,10 @@ export default Component.extend(PromiseLoadingMixin, {
     const fileTransfers = this.get('fileTransfers');
     if (fileTransfers) {
       if (get(fileTransfers, 'length') === 0) {
-        this._slowTransfersUpdater();
+        this._slowTransfersWatcher();
         this._slowDistributionUpdater();
       } else {
-        this._fastTransfersUpdater();
+        this._fastTransfersWatcher();
         this._fastDistributionUpdater();
       }
     }
@@ -361,42 +325,38 @@ export default Component.extend(PromiseLoadingMixin, {
 
   //#region Transfers polling methods
   
-  _initTransfersUpdater() {
-    const {
-      store,
-      space,
-    } = this.getProperties('store', 'space');
-    return this.set('transfersUpdater', SpaceTransfersUpdater.create({
-      store,
-      space,
-      isEnabled: true,
-      scheduledEnabled: true,
-      currentEnabled: true,
-      completedEnabled: false,
-    }));
+  _initTransfersWatcher() {
+    const _fileTransfersWatcher = Looper.create({
+      immediate: true,
+      interval: SLOW_POLLING_TIME,
+    });
+    this.set('_fileTransfersWatcher', _fileTransfersWatcher);
+    _fileTransfersWatcher.on('tick', () => {
+      safeExec(this, '_updateFileTransfers');
+    });
   },
 
-  _fastTransfersUpdater() {
-    const transfersUpdater = this.get('transfersUpdater');
-    if (transfersUpdater &&
-      transfersUpdater.get('basePollingTime') !== FAST_POLLING_TIME) {
-      transfersUpdater.set('basePollingTime', FAST_POLLING_TIME);
+  _fastTransfersWatcher() {
+    const _fileTransfersWatcher = this.get('_fileTransfersWatcher');
+    if (_fileTransfersWatcher &&
+      _fileTransfersWatcher.get('interval') !== FAST_POLLING_TIME) {
+        _fileTransfersWatcher.set('interval', FAST_POLLING_TIME);
     }
   },
 
-  _slowTransfersUpdater() {
-    const transfersUpdater = this.get('transfersUpdater');
-    if (transfersUpdater &&
-      transfersUpdater.get('basePollingTime') !== SLOW_POLLING_TIME) {
-      transfersUpdater.set('basePollingTime', SLOW_POLLING_TIME);
+  _slowTransfersWatcher() {
+    const _fileTransfersWatcher = this.get('_fileTransfersWatcher');
+    if (_fileTransfersWatcher &&
+      _fileTransfersWatcher.get('interval') !== SLOW_POLLING_TIME) {
+        _fileTransfersWatcher.set('interval', SLOW_POLLING_TIME);
     }
   },
   
-  _destroyTransfersUpdater() {
-    const transfersUpdater = this.get('transfersUpdater');
-    if (transfersUpdater) {
-      transfersUpdater.destroy();
-      this.set('transfersUpdater', null);
+  _destroyTransfersWatcher() {
+    const _fileTransfersWatcher = this.get('_fileTransfersWatcher');
+    if (_fileTransfersWatcher) {
+      _fileTransfersWatcher.destroy();
+      this.set('_fileTransfersWatcher', null);
     }
     
   },
@@ -460,11 +420,11 @@ export default Component.extend(PromiseLoadingMixin, {
 
   _slowDistributionUpdater() {
     const isDir = this.get('file.isDir');
-    const distributionUpdater = this.get('distributionUpdater');
+    const _fileTransfersWatcher = this.get('distributionUpdater');
     if (!isDir) {
-      if (distributionUpdater &&
-        distributionUpdater.get('interval') !== SLOW_POLLING_TIME) {
-        distributionUpdater.set('interval', SLOW_POLLING_TIME);
+      if (_fileTransfersWatcher &&
+        _fileTransfersWatcher.get('interval') !== SLOW_POLLING_TIME) {
+        _fileTransfersWatcher.set('interval', SLOW_POLLING_TIME);
       }
     }
   },
@@ -493,18 +453,15 @@ export default Component.extend(PromiseLoadingMixin, {
   willDestroyElement() {
     try {
       // ensure updaters are destroyed (if destroying component without close)
-      this._destroyTransfersUpdater();
+      this._destroyTransfersWatcher();
       this._destroyDistributionUpdater();
     } finally {
       this._super(...arguments);
     }
   },
   
-  forceUpdateTransfers(transfersUpdater) {
-    return Promise.all([
-        transfersUpdater.fetchScheduled(),
-        transfersUpdater.fetchCurrent(true)
-      ])
+  forceUpdateTransfers() {
+    return this._updateFileTransfers()
       .catch(error => {
         // TODO: i18n
         this.set('chunksModalError', 'Loading transfers data failed');
@@ -513,6 +470,24 @@ export default Component.extend(PromiseLoadingMixin, {
       .finally(() => {
         this.set('transfersLoading', false);
       });
+  },
+  
+  /**
+   * Update all transfer current stats for file transfers
+   * @returns {Promise<Array<TransferCurrentStat>>}
+   */
+  _updateFileTransfers() {
+    const {
+      store,
+      oneproviderServer,
+    } = this.getProperties('store', 'oneproviderServer');
+    return oneproviderServer
+      .getOngoingTransfersForFile(this.get('file.id'))
+      .then(({ list }) =>
+        Promise.all(list.map(transferId => store.findRecord('transfer', transferId)))
+      )
+      .then(transfers => safeExec(this, 'set', 'workingTransfers', transfers))
+      .then(transfers => transfers.map(transfer => transfer.belongsTo('currentStat').reload()));
   },
   
   actions: {
@@ -525,9 +500,9 @@ export default Component.extend(PromiseLoadingMixin, {
       this.set('providerMigrationsInvoked', A([]));
       this.set('providerInvalidationsInvoked', A([]));
 
-      const transfersUpdater = this._initTransfersUpdater();
+      this._initTransfersWatcher();
       this.set('transfersLoading', true);
-      this.forceUpdateTransfers(transfersUpdater);
+      this.forceUpdateTransfers();
 
       this._initDistributionUpdater();
       this.fetchDistribution();
@@ -540,7 +515,7 @@ export default Component.extend(PromiseLoadingMixin, {
      */
     closed() {
       this._destroyDistributionUpdater();
-      this._destroyTransfersUpdater();
+      this._destroyTransfersWatcher();
       
       this.setProperties({
         file: null,
@@ -581,7 +556,6 @@ export default Component.extend(PromiseLoadingMixin, {
      */
     startMigration(file, source, destination) {
       this.set('migrationSource', null);
-      const transfersUpdater = this.get('transfersUpdater');
       const providerMigrationsInvoked = this.get('providerMigrationsInvoked');
       providerMigrationsInvoked.pushObject(source);
       const transfer = this.get('store')
@@ -599,10 +573,9 @@ export default Component.extend(PromiseLoadingMixin, {
           this.observeTransfersCount();
           throw error;
         })
-        .then(() => transfersUpdater.fetchScheduled())
-        .then(() => transfersUpdater.fetchCurrent())
+        .then(() => this.forceUpdateTransfers())
         .then(() => {
-          return this._fastTransfersUpdater();
+          return this._fastTransfersWatcher();
         })
         .finally(() => {
           providerMigrationsInvoked.removeObject(source);
@@ -616,7 +589,6 @@ export default Component.extend(PromiseLoadingMixin, {
      */
     startReplication(destination) {
       const file = this.get('file');
-      const transfersUpdater = this.get('transfersUpdater');
       const transfer = this.get('store')
         .createRecord('transfer', {
           file,
@@ -632,19 +604,17 @@ export default Component.extend(PromiseLoadingMixin, {
         })
         .then(transfer => {
           this.set('lastTransfer', transfer);
-          return this.forceUpdateTransfers(transfersUpdater);
+          return this.forceUpdateTransfers();
         })
-        .then(() => this._fastTransfersUpdater());
+        .then(() => this._fastTransfersWatcher());
     },
 
     startInvalidation(source) {
       const {
         file,
-        transfersUpdater,
         providerInvalidationsInvoked
       } = this.getProperties(
         'file',
-        'transfersUpdater',
         'providerInvalidationsInvoked'
       );
       providerInvalidationsInvoked.pushObject(source);
@@ -663,7 +633,7 @@ export default Component.extend(PromiseLoadingMixin, {
         })
         .then(transfer => {
           this.set('lastTransfer', transfer);
-          return this.forceUpdateTransfers(transfersUpdater);
+          return this.forceUpdateTransfers();
         })
         .finally(() => {
           providerInvalidationsInvoked.removeObject(source);

@@ -6,6 +6,7 @@ $color-tab-font: inherit;
 $color-tab-inactive-font: $color-panel-graphite;
 $tab-border-width: 2px;
 $tab-border-style: $tab-border-width solid $color-tab-border;
+$bs-tab-padding: 20px;
 
 .bs-tab {
   .nav-tabs {
@@ -51,8 +52,8 @@ $tab-border-style: $tab-border-width solid $color-tab-border;
 }
 
 .tab-content {
-  padding: 20px;
+  padding: $bs-tab-padding;
   border: $tab-border-style;
   border-top: 0;
-  background-color: white;
+  background-color: $color-tab-content-background;
 }

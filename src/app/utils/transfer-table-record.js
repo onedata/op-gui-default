@@ -128,7 +128,10 @@ export default EmberObject.extend({
           }
         );
         transfer.reload()
-          .then(() => transfer.belongsTo('currentStat').reload())
+          .then(() =>
+            get(transfer, 'currentStat.content.isLoading') ?
+              null : transfer.belongsTo('currentStat').reload()
+          )
           .finally(() => set(transfer, 'isReloading', false));
       }
     } else if (get(transfer, 'isLoading')) {

@@ -38,6 +38,7 @@
         }}
           {{#bs-nav
             type="tabs"
+            class="nav-tabs-transfers"
           }}
             {{#bs-nav-item
               active=(eq activeTabId "on-the-fly")
@@ -76,7 +77,7 @@
               </a>
             {{/bs-nav-item}}
           {{/bs-nav}}
-          <div class="tab-content">
+          <div class="tab-content tab-content-transfers-list">
             {{#bs-tab-pane elementId="on-the-fly" }}
               {{#if (eq activeTabId "on-the-fly")}}
                 <div class="row row-on-the-fly-transfers">

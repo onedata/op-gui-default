@@ -1,11 +1,21 @@
 import DS from 'ember-data';
-
+import Ember from 'ember';
 import isDefaultMixinFactory from 'ember-cli-onedata-common/mixin-factories/models/is-default';
+import ReplacingChunksArray from 'ember-cli-onedata-common/utils/replacing-chunks-array';
+
+import FakeListRecordRelation from 'op-worker-gui/utils/fake-list-record-relation';
+
 
 const {
   attr,
-  belongsTo
+  belongsTo,
 } = DS;
+
+const {
+  computed,
+  RSVP: { Promise },
+  inject: { service },
+} = Ember;
 
 /**
  * A configuration of a space - entry point for all options
@@ -17,6 +27,8 @@ const {
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
+  oneproviderServer: service(),
+  
   /** User specified name of space that will be exposed in GUI */
   name: attr('string'),
 
@@ -34,10 +46,6 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
 
   /** Collection of group permissions - effectively all rows in permissions table */
   groupList: belongsTo('space-group-list', { async: true }),
-
-  scheduledTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
-  currentTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
-  completedTransferList: belongsTo('space-transfer-list', { async: true, inverse: null }),
   
   onTheFlyTransferList: belongsTo('space-on-the-fly-transfer-list', { async: true, inverse: null }),
   
@@ -66,4 +74,55 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
    * ``
    */
   transferProviderStat: attr('object'),
+  
+  /**
+   * @type {Ember.ComputedProperty<FakeListRecordRelation>}
+   */
+  scheduledTransferList: computedTransfersList('scheduled'),
+  
+  /**
+   * @type {Ember.ComputedProperty<FakeListRecordRelation>}
+   */
+  currentTransferList: computedTransfersList('current'),
+  
+  /**
+   * @type {Ember.ComputedProperty<FakeListRecordRelation>}
+   */
+  completedTransferList: computedTransfersList('completed'),
+    
+  /**
+   * Fetch partial list of space transfer records
+   * @param {string} type one of: scheduled, current, completed
+   * @returns {Promise<object>} promise of RPC request with transfers list
+   */
+  fetchTransfers(type, startFromIndex, size, offset) {
+    const {
+      oneproviderServer,
+      store,
+    } = this.getProperties('oneproviderServer', 'store');
+    return oneproviderServer.getSpaceTransfers(
+      this.get('id'),
+      type,
+      startFromIndex,
+      size,
+      offset
+    ).then(({ list }) =>
+      Promise.all(list.map(id => store.findRecord('transfer', id)))
+    );
+  },
 });
+
+/**
+ * @param {string} type one of: scheduled, current, completed
+ */
+function computedTransfersList(type) {
+  return computed(function() {
+    const initChunksArray = ReplacingChunksArray.create({
+      fetch: (...args) => this.fetchTransfers(type, ...args),
+      startIndex: 0,
+      endIndex: 50,
+      indexMargin: 10,
+    });
+    return FakeListRecordRelation.create({ initChunksArray });
+  });
+}

@@ -310,6 +310,7 @@
     }
     th {
       white-space: nowrap;
+      background-color: $color-tab-content-background;
     }
     th, td {
       padding: 2 * $-table-padding $-table-padding;
@@ -410,7 +411,7 @@
     transition: top 0.25s ease-out;
     padding-bottom: 50px;
     &.sticky {
-      z-index: 3;
+      z-index: 5;
       position: fixed;
       padding-bottom: 0;
     }
@@ -439,6 +440,12 @@
     }
   }
  
+  
+  tr.transfer-row:nth-of-type(2) {
+    td {
+      border-top: none;
+    }
+  }
 }
 
 .middle-sticky {
@@ -456,11 +463,5 @@
   td {
     padding: 0;
     width: 100%;
-  }
-}
-
-tr.transfer-row:nth-of-type(2) {
-  td {
-    border-top: none;
   }
 }

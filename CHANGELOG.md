@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-4391 More efficient infinite scroll for transfers list and file transfer status 
 * VFS-4487 Fixed not updating completed transfer stats
 * VFS-4387 Fixed not updating current transfers stats if user not scrolled view
 * VFS-4453 Fixed incorrect total files counter in transfers table

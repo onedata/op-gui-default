@@ -25,7 +25,7 @@ const {
 const finishedStatus = [
   'completed',
   'skipped',
-  'canceled',
+  'cancelled',
   'failed',
 ];
 
@@ -168,25 +168,27 @@ export default Model.extend({
    * Helper property for `isCancelling` computed property.
    * @type {boolean}
    */
-  _isCanceling: false,
+  _isCancelling: false,
   
   /**
-   * If true, user has invoked transfer cancellation but the transfer
-   * has no set its state to "cancelled" yet
+   * If true, user has invoked transfer cancellation
    * @type {boolean}
    */
-  isCancelling: computed('_isCanceling', 'status', {
+  isCancelling: computed('_isCancelling', 'status', {
     get() {
       const {
         status,
         _isCancelling,
       } = this.getProperties('_isCancelling', 'status');
       // if transfer is finished, then cancelling is not possible
-      return _isCancelling && finishedStatus.indexOf(status) === -1;
+      return status === 'aborting' ||
+        (_isCancelling && finishedStatus.indexOf(status) === -1);
     },
     set(key, value) {
-      this.set('_isCanceling', value);
-      return value && finishedStatus.indexOf(this.get('status')) === -1;
+      const status = this.get('status');
+      this.set('_isCancelling', value);
+      return status === 'aborting' ||
+        (value && finishedStatus.indexOf(this.get('status')) === -1);
     },
   }),
   

@@ -41,7 +41,7 @@ export default Component.extend({
   
   _status: computed('transferStatus', 'isCancelling', function () {
     if (this.get('isCancelling')) {
-      return 'cancelling';
+      return 'aborting';
     } else {
       return this.get('transferStatus');
     }
@@ -57,7 +57,7 @@ export default Component.extend({
         return 'checkbox-filled';
       case 'skipped':
         return 'skipped';
-      case 'cancelling':
+      case 'aborting':
       case 'cancelled':
         return 'cancelled';
       case 'failed':

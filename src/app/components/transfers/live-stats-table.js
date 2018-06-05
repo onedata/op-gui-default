@@ -347,9 +347,6 @@ export default Component.extend({
         })
         .then(() => {
           return record.transfer.reload();
-        })
-        .finally(() => {
-          set(record, 'transfer.isCancelling', false);
         });
     } : undefined;
   }),

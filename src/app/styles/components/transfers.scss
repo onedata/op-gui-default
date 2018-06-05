@@ -438,7 +438,7 @@
       color: $onedata-graphite;
     }
     // action pending states (frontend)
-    &.cancelling {
+    &.aborting {
       @extend .animated;
       @extend .infinite;
       @extend .hinge;

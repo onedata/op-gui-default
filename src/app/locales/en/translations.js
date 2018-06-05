@@ -549,7 +549,7 @@ export default {
           failed: 'Failed',
           active: 'Active',
           scheduled: 'Scheduled',
-          cancelling: 'Cancelling...',
+          aborting: 'Aborting...',
           invalidating: 'Invalidating',
         },
         cellType: {

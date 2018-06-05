@@ -17,19 +17,25 @@ const {
   get,
 } = Ember;
 
+/**
+ * Abstraction layer that mocks HasMany relationship using some SliceArray
+ */
 class FakeListHasMany {
   /**
-   * @param {SliceArray} list 
-   * @param {Ember.Array} list.sourceArray
+   * @param {Ember.Array} sourceArray
    */
-  constructor(list) {
-    this.sourceArray = list.get('sourceArray');
+  constructor(sourceArray) {
+    this.sourceArray = sourceArray;
   }
   ids() {
     return this.sourceArray.mapBy('id').toArray();
   }
 }
 
+/**
+ * Ember Class for using some ReplacingChunksArray as a record containing list
+ * property
+ */
 const FakeListRecord = EmberObject.extend({
   /**
    * @virtual 
@@ -66,7 +72,10 @@ const FakeListRecord = EmberObject.extend({
   init() {
     this._super(...arguments);
     const _chunksArray = this.set('_chunksArray', this.get('initChunksArray'));
-    this.set('_listHasMany', new FakeListHasMany(_chunksArray));
+    this.set(
+      '_listHasMany',
+      new FakeListHasMany(get(_chunksArray, 'sourceArray'))
+    );
   },
 });
 
@@ -146,25 +155,22 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
    * ``
    */
   transferProviderStat: attr('object'),
+  
+  /**
+   * @type {Ember.ComputedProperty<FakeListRecordRelation>}
+   */
+  scheduledTransferList: computedTransfersList('scheduled'),
+  
+  /**
+   * @type {Ember.ComputedProperty<FakeListRecordRelation>}
+   */
+  currentTransferList: computedTransfersList('current'),
+  
+  /**
+   * @type {Ember.ComputedProperty<FakeListRecordRelation>}
+   */
+  completedTransferList: computedTransfersList('completed'),
     
-  init() {
-    this._createTransferLists();
-  },
-  
-  _createTransferLists() {
-    ['scheduled', 'current', 'completed'].forEach(type => {
-      const chunksArray = ReplacingChunksArray.create({
-        fetch: (...args) => this.fetchTransfers(type, ...args),
-        startIndex: 0,
-        endIndex: 50,
-        indexMargin: 10,
-      });
-      this.set(`${type}TransferList`, FakeListRecordRelation.create({
-        initChunksArray: chunksArray,
-      }));
-    });
-  },
-  
   /**
    * Fetch partial list of space transfer records
    * @param {string} type one of: scheduled, current, completed
@@ -186,3 +192,18 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
     );
   },
 });
+
+/**
+ * @param {string} type one of: scheduled, current, completed
+ */
+function computedTransfersList(type) {
+  return computed(function() {
+    const initChunksArray = ReplacingChunksArray.create({
+      fetch: (...args) => this.fetchTransfers(type, ...args),
+      startIndex: 0,
+      endIndex: 50,
+      indexMargin: 10,
+    });
+    return FakeListRecordRelation.create({ initChunksArray });
+  });
+}

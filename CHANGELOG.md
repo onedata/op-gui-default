@@ -6,7 +6,11 @@ CHANGELOG
 
 ### Latest changes
 
-* VFS-3878 Added transfers cancelling action
+* VFS-4242 Added transfers cancelling and rerunning actions
+* VFS-4487 Fixed not updating completed transfer stats
+* VFS-4387 Fixed not updating current transfers stats if user not scrolled view
+* VFS-4453 Fixed incorrect total files counter in transfers table
+* VFS-3945 Added data invalidation functionality.
 * VFS-4355 Added summarized transfer charts per provider.
 * VFS-4239 Infinite scroll for transfers lists.
 * VFS-4305 Added charts for on-the-fly transfers.

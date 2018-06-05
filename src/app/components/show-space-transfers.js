@@ -483,7 +483,7 @@ export default Component.extend({
   },
   
   didInsertElement() {
-    const listWatcher = new ListWatcher(
+    const listWatcher = new ListWatcher(  
       $('#content-scroll'),
       '.transfer-row',
       items => safeExec(this, 'onTableScroll', items)
@@ -571,6 +571,10 @@ export default Component.extend({
      */
     rerunTransfer(transferId) {
       return this.get('oneproviderServer').rerunTransfer(transferId);
+    },
+    
+    transferListChanged(/* type */) {
+      this.get('listWatcher').scrollHandler();
     },
   },
 });

@@ -454,7 +454,9 @@
       right: 8px;
     }
   }
-  
+  .cell-total-files {
+    display: inline-block;
+  }
   .table-empty-message {
     padding-left: $-table-padding;
   }

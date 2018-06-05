@@ -3,8 +3,8 @@
  * on single provider.
  *
  * @module components/modals/file-chunks/provider-row
- * @author Jakub Liput
- * @copyright (C) 2017 ACK CYFRONET AGH
+ * @author Jakub Liput, Michal Borzecki
+ * @copyright (C) 2017-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -40,7 +40,7 @@ export default Component.extend({
    * One of: "single-provider", "proxy-provider", null
    * @type {string|null}
    */
-  transfeDisabledReason: null,
+  transferDisabledReason: null,
 
   /**
    * @virtual
@@ -60,6 +60,13 @@ export default Component.extend({
    * @returns {Promise<Transfer>}
    */
   startReplication: () => {},
+
+  /**
+   * @virtual
+   * @type {Function}
+   * @returns {Promise<Transfer>}
+   */
+  startInvalidation: () => {},
 
   /**
    * @virtual
@@ -102,10 +109,20 @@ export default Component.extend({
   replicationInvoked: false,
 
   /**
+   * True if invalidation has been started by user but request is not completed yet
+   * @type {boolean}
+   */
+  invalidationInvoked: false,
+
+  /**
    * True if transfers options should be inactive (not-clickable)
    * @type {Ember.ComputedProperty<boolean>}
    */
-  transferLocked: computed.or('migrationInProgress', 'replicationInProgress'),
+  transferLocked: computed.or(
+    'migrationInProgress',
+    'replicationInProgress',
+    'invalidationInProgress'
+  ),
 
   replicationInProgress: computed('transferType', 'replicationInvoked', function () {
     return this.get('transferType') === 'replication-destination' ||
@@ -171,6 +188,53 @@ export default Component.extend({
   ),
 
   /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  invalidationInProgress: computed(
+    'transferType',
+    'invalidationInvoked',
+    function () {
+      return this.get('transferType') === 'invalidation' ||
+        this.get('invalidationInvoked');
+    }
+  ),
+
+  /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  invalidationEnabled: computed(
+    'neverSynchronized',
+    'isEmpty',
+    'transferEnabled',
+    'transferLocked',
+    'file.isDir',
+    'hasBlocksToInvalidate',
+    function () {
+      const {
+        neverSynchronized,
+        isEmpty,
+        transferLocked,
+        transferEnabled,
+        file,
+        hasBlocksToInvalidate,
+      } = this.getProperties(
+        'neverSynchronized',
+        'isEmpty',
+        'transferLocked',
+        'transferEnabled',
+        'file',
+        'hasBlocksToInvalidate'
+      );
+
+      return transferEnabled &&
+        (get(file, 'isDir') ?
+          true :
+          (!neverSynchronized && !isEmpty && hasBlocksToInvalidate)
+        ) && !transferLocked;
+    }
+  ),
+
+  /**
    * Css classes for 'migrate' button
    * @type {Ember.ComputedProperty<string>}
    */
@@ -220,6 +284,34 @@ export default Component.extend({
       if (replicationInProgress) {
         classes += 'disabled ' + pendingActionAnimation;
       } else if (!replicationEnabled) {
+        classes += 'disabled';
+      }
+      return classes;
+    }
+  ),
+
+  /**
+   * Css classes for 'invalidate' button
+   * @type {Ember.ComputedProperty<string>}
+   */
+  invalidateButtonClasses: computed(
+    'pendingActionAnimation',
+    'invalidationInProgress',
+    'invalidationEnabled',
+    function () {
+      let classes = 'action-icon toolbar-icon ';
+      const {
+        pendingActionAnimation,
+        invalidationInProgress,
+        invalidationEnabled,
+      } = this.getProperties(
+        'pendingActionAnimation',
+        'invalidationInProgress',
+        'invalidationEnabled'
+      );
+      if (invalidationInProgress) {
+        classes += 'disabled ' + pendingActionAnimation;
+      } else if (!invalidationEnabled) {
         classes += 'disabled';
       }
       return classes;
@@ -289,6 +381,41 @@ export default Component.extend({
       } else {
         return this._t('disabledReplicationUnknown');
       }
+    }
+  ),
+  
+  /**
+   * Tooltip text for 'invalidate' button
+   * @type {Ember.ComputedProperty<string>}
+   */
+  invalidateButtonTooltip: computed('invalidationInProgress', 'invalidationEnabled',
+    function () {
+      const {
+        invalidationInProgress,
+        invalidationEnabled,
+        transferDisabledReason,
+        hasBlocksToInvalidate,
+      } = this.getProperties(
+        'invalidationInProgress',
+        'invalidationEnabled',
+        'transferDisabledReason',
+        'hasBlocksToInvalidate'
+      );
+
+      if (invalidationInProgress === true) {
+        return this._t('disabledInvalidationInProgress');
+      } else if (invalidationEnabled) {
+        return this._t('invalidationStart');
+      } else if (transferDisabledReason === 'single-provider') {
+        return capitalize(this._t('invalidation').toString()) + ' ' +
+          this._t('disabledSingleProvider');
+      } else if (transferDisabledReason === 'proxy-provider') {
+        return `${this._t('disabledProxyProvider')} ${this._t('invalidation')}`;
+      } else if (hasBlocksToInvalidate === false) {
+        return this._t('disabledInvalidationNoBlocks');
+      } else {
+        return this._t('disabledInvalidationUnknown');
+      }
     }),
 
   /**
@@ -337,6 +464,7 @@ export default Component.extend({
   transfersCount: computed.reads('fileProviderTransfers.length'),
 
   /**
+   * - If it's invalidation: 'invalidation'
    * - If it's migration source: 'migration-source'
    * - If it's only a replication destination: 'replication-destination'
    * - If it's none of the above: 'unknown' (should not occur)
@@ -353,7 +481,8 @@ export default Component.extend({
         if (fileProviderTransfers.some(t =>
           get(t, 'migration') && get(t, 'migrationSource') === providerId)
         ) {
-          return 'migration-source';
+          return fileProviderTransfers.some(t => !get(t, 'destination')) ?
+            'invalidation' : 'migration-source';
         } else if (fileProviderTransfers.some(t =>
           get(t, 'destination') === providerId)
         ) {
@@ -400,5 +529,14 @@ export default Component.extend({
           .finally(() => this.set('replicationInvoked', false));
       }
     },
+    startInvalidation() {
+      const {
+        invalidationEnabled,
+        providerId,
+      } = this.getProperties('invalidationEnabled', 'providerId');
+      if (invalidationEnabled) {
+        return this.startInvalidation(providerId);
+      }
+    }
   },
 });

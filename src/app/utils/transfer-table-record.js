@@ -69,7 +69,8 @@ export default EmberObject.extend({
   scheduledAtComparable: computed.reads('transfer.scheduleTime'),
   startedAtComparable: computed.reads('transfer.startTime'),
   finishedAtComparable: computed.reads('transfer.finishTime'),
-  totalFiles: computed.reads('transfer.transferredFiles'),
+  transferredFiles: computed.reads('transfer.transferredFiles'),
+  invalidatedFiles: computed.reads('transfer.invalidatedFiles'),
   status: computed.reads('transfer.status'),
   currentStatError: computed.reads('transfer.currentStatError'),
   type: computed.reads('transfer.type'),
@@ -99,8 +100,12 @@ export default EmberObject.extend({
   }),
   
   destination: computed('providers.@each.name', 'transfer.destination', function () {
-    let destination = this.get('destinationUnknownText');
     const destinationId = this.get('transfer.destination');
+    // invalidation transfer
+    if (!destinationId) {
+      return '-';
+    }
+    let destination = this.get('destinationUnknownText');
     const destProvider = destination ? _.find(this.get('providers'), provider => 
       get(provider, 'id') === destinationId
     ) : null;
@@ -126,8 +131,19 @@ export default EmberObject.extend({
           .then(() => transfer.belongsTo('currentStat').reload())
           .finally(() => set(transfer, 'isReloading', false));
       }
-    } else if (!get(transfer, 'isLoading')) {
-      transfer.store.findRecord('transfer', get(transfer, 'id'));
+    } else if (get(transfer, 'isLoading')) {
+      // VFS-4487 quick fix for inconsistent transfer ids
+      // thus it can show some warnings/errors, but it's a temporary solution
+      // TODO: remove this code when proper fix on backend will be made
+      transfer.on('didLoad', () => {
+        transfer.belongsTo('currentStat').reload();
+      });
+    } else {
+      transfer.store.findRecord('transfer', get(transfer, 'id'))
+        // VFS-4487 quick fix for inconsistent transfer ids
+        // thus it can show some warnings/errors, but it's a temporary solution
+        // TODO: remove this code when proper fix on backend will be made
+        .then(t => t.belongsTo('currentStat').reload());
     }
   },
 });

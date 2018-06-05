@@ -2,8 +2,8 @@
  * Part of transfer data that is updated frequently
  * 
  * @module models/transfer-current-stat
- * @author Jakub Liput
- * @copyright (C) 2017 ACK CYFRONET AGH
+ * @author Jakub Liput, Michal Borzecki
+ * @copyright (C) 2017-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -18,6 +18,7 @@ export default Model.extend({
   timestamp: attr('number'),
   transferredBytes: attr('number'),
   transferredFiles: attr('number'),
+  invalidatedFiles: attr('number'),
   
   /**
    * One of:

@@ -108,7 +108,6 @@ export default ArraySlice.extend({
         if (!_endReached && _end + loadMoreThreshold >= get(sourceArray, 'length')) {
           this.fetchNext();
         }
-        console.log('source len: ' + get(sourceArray, 'length'));
       }
     }),
 

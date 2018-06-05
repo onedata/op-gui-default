@@ -81,7 +81,6 @@ const FakeListRecordRelation = PromiseObject.extend({
     const _fakeListRecord = this.set('_fakeListRecord', FakeListRecord.create({
       initChunksArray: this.get('initChunksArray'),
     }));
-    // FIXME: promise for initial load
     this.set(
       'promise',
       get(_fakeListRecord, 'chunksArray.initialLoad')

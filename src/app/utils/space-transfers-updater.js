@@ -532,7 +532,6 @@ export default EmberObject.extend({
    * Get front of completed transfers list
    * @returns {Promise<Array<Transfer>>} transfers that was added to completed list
    */
-  // FIXME: this should use RPC fetch list
   fetchCompleted() {
     if (this.get('completedIsUpdating') !== true) {
       const space = this.get('space');

@@ -39,9 +39,34 @@ export default ArraySlice.extend({
   }),
   
   // FIXME: remember to set this to false if needed
+  /**
+   * @type {boolean}
+   */
   _startReached: true,
+  
   // FIXME: remember to set this to false if needed
+  /**
+   * @type {boolean}
+   */
   _endReached: false,
+  
+  /**
+   * Prevents infinite recursion when fetching new data
+   * @type {boolean}
+   */
+  _fetchNextLock: false,
+  
+  /**
+   * Prevents infinite recursion when fetching new data
+   * @type {boolean}
+   */
+  _fetchPrevLock: false,
+  
+  /**
+   * Prevents infinite observers recursion when modifying array content
+   * @type {boolean}
+   */
+  _arrayLocked: false,
   
   startEndChanged: observer(
     '_start',
@@ -80,7 +105,6 @@ export default ArraySlice.extend({
   fetchPrev() {
     if (!this.get('_fetchPrevLock')) {
       this.set('_fetchPrevLock', true);
-      // FIXME: safe method exec
       /** @type {Ember.ArrayProxy} */
       const sourceArray = this.get('sourceArray');
       /** @type {number} */
@@ -92,18 +116,17 @@ export default ArraySlice.extend({
         -chunkSize
       ).then(array => {
         if (get(array, 'length') < chunkSize) {
-          this.set('_startReached', true);
+          safeExec(this, 'set', '_startReached', true);
         }
         array = _.difference(array, sourceArray);
         sourceArray.unshiftObjects(array);
-      }).finally(() => this.set('_fetchPrevLock', false));
+      }).finally(() => safeExec(this, 'set', '_fetchPrevLock', false));
     }
   },
   
   fetchNext() {
     if (!this.get('_fetchNextLock')) {
       this.set('_fetchNextLock', true);
-      // FIXME: safe method exec
       /** @type {Ember.ArrayProxy} */
       const sourceArray = this.get('sourceArray');
       /** @type {number} */
@@ -114,11 +137,11 @@ export default ArraySlice.extend({
         0
       ).then(array => {
         if (get(array, 'length') < chunkSize) {
-          this.set('_endReached', true);
+          safeExec(this, 'set', '_endReached', true);
         }
         array = _.difference(array, sourceArray);
         sourceArray.pushObjects(array);
-      }).finally(() => this.set('_fetchNextLock', false));
+      }).finally(() => safeExec(this, 'set', '_fetchNextLock', false));
     }
   },
   

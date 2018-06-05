@@ -318,10 +318,7 @@ export default Component.extend({
    */
   _resizeEventHandler: computed(function () {
     return () => {
-      const _mobileMode = this.set('_mobileMode', this.get('_window.innerWidth') < 1200);
-      if (!_mobileMode) {
-        this.updateStickyOffset();
-      }
+      this.set('_mobileMode', this.get('_window.innerWidth') < 1200);
     };
   }),
   
@@ -357,8 +354,6 @@ export default Component.extend({
       '_tableDataCache', 
       A([firstRowSpace])
     );
-
-    this.set('_stickyTableHeaderOffset', this.getStickyTableHeaderOffset());
     
     _resizeEventHandler();
     _window.addEventListener('resize', _resizeEventHandler);
@@ -376,18 +371,6 @@ export default Component.extend({
     }
   },
     
-  getStickyTableHeaderOffset() {
-    return document.getElementsByClassName('row-expand-handler')[0].offsetHeight +
-      document.getElementsByClassName('nav-tabs-transfers')[0].offsetHeight +
-      parseFloat($('.tab-content').eq(1).css('padding-bottom'));
-  },
-  
-  updateStickyOffset() {
-    scheduleOnce('afterRender', () => {
-      this.set('_stickyTableHeaderOffset', this.getStickyTableHeaderOffset());
-    });
-  },
-  
   actions: {
     stickyHeaderChanged(state) {
       this.get('stickyTableChanged')(state);

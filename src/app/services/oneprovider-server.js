@@ -414,4 +414,17 @@ export default Ember.Service.extend({
       size: size,
     });
    },
+   
+  /**
+   * @param {String} fileId
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - `resolve(object: data)` when successfully fetched the list
+   *  - `data.list: Array<string>` - list of transfer IDs for the file
+   * - `reject(object: error)` on failure
+   */
+   getOngoingTransfersForFile(fileId) {
+    return this.get('server').privateRPC('getOngoingTransfersForFile', {
+      fileId,
+    });
+   },
 });

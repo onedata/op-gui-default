@@ -19,6 +19,7 @@
 import Ember from 'ember';
 import ClickOutside from 'ember-click-outside/mixins/click-outside';
 import bindFloater from 'ember-cli-onedata-common/utils/bind-floater';
+import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 import layout from '../templates/components/dots-menu';
 
 const {
@@ -142,7 +143,7 @@ export default Component.extend(ClickOutside, {
   },
   
   clickOutside() {
-    this.set('isOpened', false);
+    safeExec(this, 'set', 'isOpened', false);
   },
 
   actions: {

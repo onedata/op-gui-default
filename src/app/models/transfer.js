@@ -30,6 +30,8 @@ const finishedStatuses = [
 ];
 
 export default Model.extend({
+  index: attr('string'),
+  
   /**
    * Id of Provider that is destination of this transfer
    */

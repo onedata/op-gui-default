@@ -53,6 +53,7 @@ export default Component.extend({
   transfers: undefined,
 
   /**
+   *
    * @virtual
    * @type {Array<Provider>}
    */
@@ -91,6 +92,12 @@ export default Component.extend({
   notifyTransferListChanged: () => {},
   
   /**
+   * @virtual 
+   * @type {Function} (boolean) => undefined
+   */
+  stickyTableChanged: () => {},
+  
+  /**
    * Type of transfers. May be `scheduled`, `current` or `completed`
    * @public
    * @type {string}
@@ -121,6 +128,11 @@ export default Component.extend({
    */
   _window: window,
 
+  /**
+   * @type {number}
+   */
+  _stickyTableHeaderOffset: 0,
+  
   /**
    * Custom icons for ember-models-table addon.
    * @type {Ember.Object}
@@ -465,11 +477,11 @@ export default Component.extend({
       '_tableDataCache', 
       A([firstRowSpace])
     );
-
+    
     _resizeEventHandler();
     _window.addEventListener('resize', _resizeEventHandler);
   },
-
+  
   willDestroyElement() {
     try {
       let {
@@ -480,5 +492,11 @@ export default Component.extend({
     } finally {
       this._super(...arguments);
     }
+  },
+    
+  actions: {
+    stickyHeaderChanged(state) {
+      this.get('stickyTableChanged')(state);
+    },
   },
 });

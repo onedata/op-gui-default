@@ -420,4 +420,38 @@ export default Ember.Service.extend({
       transferId,
     });
   },
+     
+  /**
+   * @param {String} spaceId
+   * @param {String} type one of: scheduled, current, completed
+   * @param {String} startFromIndex
+   * @param {number} offset
+   * @param {number} size
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - `resolve(object: data)` when successfully fetched the list
+   *  - `data.list: Array<string>` - list of transfer IDs
+   * - `reject(object: error)` on failure
+   */
+  getSpaceTransfers(spaceId, type, startFromIndex = '', size = 0, offset = 0) {
+    return this.get('server').privateRPC('getSpaceTransfers', {
+      spaceId,
+      type,
+      startFromIndex: startFromIndex,
+      offset: offset,
+      size: size,
+    });
+  },
+   
+  /**
+   * @param {String} fileId
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - `resolve(object: data)` when successfully fetched the list
+   *  - `data.list: Array<string>` - list of transfer IDs for the file
+   * - `reject(object: error)` on failure
+   */
+   getOngoingTransfersForFile(fileId) {
+    return this.get('server').privateRPC('getOngoingTransfersForFile', {
+      fileId,
+    });
+  },
 });

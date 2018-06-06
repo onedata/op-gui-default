@@ -36,6 +36,8 @@ const DEFAULT_SCHEDULED_TIME = 8 * 1000;
 const DEFAULT_COMPLETED_TIME = 16 * 1000;
 const MAP_TIME = 5100;
 
+const minItemsCount = 50;
+
 import Looper from 'ember-cli-onedata-common/utils/looper';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 
@@ -123,6 +125,11 @@ export default EmberObject.extend({
   /**
    * @type {boolean}
    */
+  currentStatEnabled: true,
+  
+  /**
+   * @type {boolean}
+   */
   completedEnabled: true,
 
   /**
@@ -138,6 +145,10 @@ export default EmberObject.extend({
     return this.get('isEnabled') && this.get('currentEnabled');
   }),
 
+  _currentStatEnabled: computed('currentStatEnabled', 'isEnabled', function () {
+    return this.get('isEnabled') && this.get('currentStatEnabled');
+  }),
+  
   _completedEnabled: computed('completedEnabled', 'isEnabled', function () {
     return this.get('isEnabled') && this.get('completedEnabled');
   }),
@@ -162,6 +173,12 @@ export default EmberObject.extend({
    */
   _currentWatcher: undefined,
 
+  /**
+   * Update visible current transfers current stats
+   * @type {Looper}
+   */
+  _currentStatWatcher: undefined,
+  
   /**
    * @type {Looper}
    */
@@ -240,6 +257,7 @@ export default EmberObject.extend({
     this.getProperties(
       '_scheduledEnabled',
       '_currentEnabled',
+      '_currentStatEnabled',
       '_completedEnabled',
       '_mapEnabled'
     );
@@ -256,7 +274,13 @@ export default EmberObject.extend({
     try {
       _.each(
         _.values(
-          this.getProperties('_scheduledWatcher', '_currentWatcher', '_completedWatcher', '_mapWatcher')
+          this.getProperties(
+            '_scheduledWatcher',
+            '_currentWatcher',
+            '_currentStatWatcher',
+            '_completedWatcher',
+            '_mapWatcher'
+          )
         ),
         watcher => watcher && watcher.destroy()
       );
@@ -269,8 +293,9 @@ export default EmberObject.extend({
    * Updates `_currentTransfersCount` property
    */
   countCurrentTransfers() {
-    const newCount = this.get('space.currentTransferList.content').hasMany('list').ids()
-      .length;
+    const listRecord = this.get('space.currentTransferList.content');
+    const newCount = listRecord ?
+      this.get('space.currentTransferList.content').hasMany('list').ids().length : 0;
     if (newCount !== this.get('_currentTransfersCount')) {
       this.set('_currentTransfersCount', newCount);
     }
@@ -295,6 +320,14 @@ export default EmberObject.extend({
       .on('tick', () => 
         safeExec(this, 'fetchCurrent')
       );
+      
+    const _currentStatWatcher = Looper.create({
+      immediate: true,
+    });
+    _currentStatWatcher
+      .on('tick', () => 
+        safeExec(this, 'updateCurrent')
+      );
 
     const _completedWatcher = Looper.create({
       immediate: true,
@@ -315,6 +348,7 @@ export default EmberObject.extend({
     this.setProperties({
       _scheduledWatcher,
       _currentWatcher,
+      _currentStatWatcher,
       _completedWatcher,
       _mapWatcher,
     });
@@ -340,10 +374,12 @@ export default EmberObject.extend({
       const {
         _scheduledEnabled,
         _currentEnabled,
+        _currentStatEnabled,
         _completedEnabled,
         _mapEnabled,
         _scheduledWatcher,
         _currentWatcher,
+        _currentStatWatcher,
         _completedWatcher,
         _mapWatcher,
         pollingTimeScheduled,
@@ -353,10 +389,12 @@ export default EmberObject.extend({
       } = this.getProperties(
         '_scheduledEnabled',
         '_currentEnabled',
+        '_currentStatEnabled',
         '_completedEnabled',
         '_mapEnabled',
         '_scheduledWatcher',
         '_currentWatcher',
+        '_currentStatWatcher',
         '_completedWatcher',
         '_mapWatcher',
         'pollingTimeScheduled',
@@ -384,6 +422,11 @@ export default EmberObject.extend({
         _mapWatcher,
         'interval',
         _mapEnabled ? pollingTimeMap : null
+      );
+      set(
+        _currentStatWatcher,
+        'interval',
+        _currentStatEnabled ? pollingTimeCurrent : null
       );
     });
   },
@@ -414,23 +457,23 @@ export default EmberObject.extend({
    * @return {Promise<Array<TransferCurrentStat>>} resolves with current stats
    *    of updated current transfers
    */
-  fetchCurrent(immediate = false) {
+  fetchCurrent() {
     this.set('currentIsUpdating', true);
 
     const {
       space,
-      visibleIds,
-    } = this.getProperties('space', 'visibleIds');
+    } = this.getProperties('space');
     
-    return space.belongsTo(`currentTransferList`).reload()
-      .then(freshTransferList => safeExec(this, () => {
-        this.countCurrentTransfers();
-        this._updateMovedTransfers(freshTransferList, '_currentIdsCache');
-        return freshTransferList;
-      }))
-      .then(() => this.fetchSpecificRecords(visibleIds, false))
-      // does not need to update transfer record as for active transfers it
-      // changes only status from scheduled to active (we do not present it)
+    return get(space, 'currentTransferList').reload({
+      head: true,
+      minSize: minItemsCount,
+    })
+      .catch(error => safeExec(this, () => this.set('currentError', error)))
+      .finally(() => safeExec(this, () => this.set('currentIsUpdating', false)));
+  },
+
+  updateCurrent(immediate = false) {
+    return this.fetchSpecificRecords(this.get('visibleIds'), false)
       .then(list => safeExec(this, () => {
         const transfersCount = get(list, 'length');
         if (immediate) {
@@ -449,12 +492,9 @@ export default EmberObject.extend({
               )
             ));
         }
-        
-      }))
-      .catch(error => safeExec(this, () => this.set('currentError', error)))
-      .finally(() => safeExec(this, () => this.set('currentIsUpdating', false)));
+    }));
   },
-
+  
   _reloadTransferCurrentStat(transfer, index, transfersCount) {
     const pollingTimeCurrent = this.get('pollingTimeCurrent');
     const delay = (pollingTimeCurrent * index) / transfersCount;
@@ -490,8 +530,7 @@ export default EmberObject.extend({
   },
   
   /**
-   * Should be invoked when:
-   * - array of current transfers changes
+   * Get front of completed transfers list
    * @returns {Promise<Array<Transfer>>} transfers that was added to completed list
    */
   fetchCompleted() {
@@ -500,7 +539,10 @@ export default EmberObject.extend({
       
       this.set(`completedIsUpdating`, true);
 
-      return space.belongsTo(`completedTransferList`).reload()
+      return get(space, 'completedTransferList').reload({
+        head: true,
+        minSize: minItemsCount,
+      })
         .catch(error => safeExec(this, () => this.set(`completedError`, error)))
         .finally(() => safeExec(this, () => this.set(`completedIsUpdating`, false)));
     } else {
@@ -517,37 +559,14 @@ export default EmberObject.extend({
       
       this.set('scheduledIsUpdating', true);
 
-      return space.belongsTo('scheduledTransferList').reload()
-        .then(freshTransferList =>
-          this._updateMovedTransfers(freshTransferList, '_scheduledIdsCache')
-        )
+      return get(space, 'scheduledTransferList').reload({
+        head: true,
+        minSize: minItemsCount,
+      })
         .catch(error => safeExec(this, () => this.set(`scheduledError`, error)))
         .finally(() => safeExec(this, () => this.set(`scheduledIsUpdating`, false)));
     } else {
       console.debug('util:space-transfers-updater: fetchScheduled skipped');
     }
-  },
-  
-  /**
-   * Updates `movedTransfers` property using fresh list of transfers and cached
-   * list
-   * @param {Model.SpaceTransferList} freshTransferList
-   * @param {string} cachedTransfersProperty name of property holding array
-   *    of previously fetched transfer of given type
-   *    (the property should hold `Array<Model.Transfer>` value)
-   */
-  _updateMovedTransfers(freshTransferList, cachedTransfersProperty) {    
-    /** @type {Array<model/Transfer>} */
-    const cachedTransfers = this.get(cachedTransfersProperty);
-    /** @type {Array<model/Transfer>} */
-    const movedTransfers = this.get('movedTransfers');
-    const ids = freshTransferList.hasMany('list').ids();
-    const removedIds = _.difference(
-      cachedTransfers,
-      ids
-    );
-    removedIds.forEach(id => movedTransfers.add(id));
-    this.set(cachedTransfersProperty, ids);
-  },
-  
+  },  
 });

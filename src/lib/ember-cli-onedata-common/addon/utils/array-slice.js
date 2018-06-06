@@ -21,10 +21,18 @@ export default ArrayProxy.extend({
   startIndex: 0,
   endIndex: 0,
   indexMargin: 0,
-  sourceArray: computed.alias('content'),
   
   _startCache: undefined,
   _endCache: undefined,
+  
+  sourceArray: computed.alias('content'),
+  
+  /**
+   * @type {Ember.ComputedProperty<number>}
+   */
+  maxLength: computed('startIndex', 'endIndex', function getMaxLength() {
+    return this.get('endIndex') - this.get('startIndex');
+  }),
   
   _start: computed('startIndex', 'indexMargin', function () {
     const {
@@ -97,7 +105,7 @@ export default ArrayProxy.extend({
     
     this.set('_endCache', _end);
   }),
-    
+  
   /**
    * @override 
    */

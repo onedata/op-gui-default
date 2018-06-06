@@ -554,7 +554,7 @@ export default {
           failed: 'Failed',
           active: 'Active',
           scheduled: 'Scheduled',
-          aborting: 'Aborting...',
+          aborting: 'Aborting',
           invalidating: 'Invalidating',
         },
         cellType: {

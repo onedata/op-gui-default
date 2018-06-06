@@ -64,7 +64,6 @@ export default Component.extend({
    */
   notifyLoaded: () => {},
   
-  // TODO: using undefined, because _we want_ to see error when this is not injected
   /**
    * @virtual
    * @type {Function}

@@ -39,6 +39,9 @@ export default Component.extend({
    */
   isCancelling: computed.reads('record.transfer.isCancelling'),
   
+  /**
+   * @type {Ember.ComputedProperty<string>}
+   */
   _status: computed('transferStatus', 'isCancelling', function () {
     if (this.get('isCancelling')) {
       return 'aborting';

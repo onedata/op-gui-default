@@ -22,7 +22,7 @@ const {
   computed,
 } = Ember;
 
-const finishedStatus = [
+const finishedStatuses = [
   'completed',
   'skipped',
   'cancelled',
@@ -183,13 +183,13 @@ export default Model.extend({
       } = this.getProperties('_isCancelling', 'status');
       // if transfer is finished, then cancelling is not possible
       return status === 'aborting' ||
-        (_isCancelling && finishedStatus.indexOf(status) === -1);
+        (_isCancelling && finishedStatuses.indexOf(status) === -1);
     },
     set(key, value) {
       const status = this.get('status');
       this.set('_isCancelling', value);
       return status === 'aborting' ||
-        (value && finishedStatus.indexOf(this.get('status')) === -1);
+        (value && finishedStatuses.indexOf(this.get('status')) === -1);
     },
   }),
   

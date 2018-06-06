@@ -431,7 +431,7 @@
     &.cancelled {
       color: $color-one-red;
     }
-    &.active {
+    &.active, &.enqueued {
       color: $color-one-yellow;
     }
     &.scheduled {

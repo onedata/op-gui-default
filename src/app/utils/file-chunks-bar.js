@@ -2,10 +2,12 @@
  * A class to draw a file chunks bar using HTML5 canvas.
  * NOTE: a fill color is defined here, but background color of canvas is defined in CSS.
  * @module utils/file-chunks-bar
- * @author Łukasz Opioła
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @author Łukasz Opioła, Michal Borzecki
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
+
+import _ from 'lodash';
 
 var canvasWidth = 320;
 var canvasHeight = 20;
@@ -32,17 +34,27 @@ FileChunksBar.prototype.draw = function (data) {
   this.context.clearRect(0, 0, canvasWidth, canvasHeight);
   var fileSize = data.file_size;
   var chunks = data.chunks;
+  var pixelsFill = _.times(canvasWidth, _.constant(0));
+  var bytesPerPixel = fileSize / canvasWidth;
   for (var i = 0; i < chunks.length; i += 2) {
-      this.drawBlock(chunks[i], chunks[i + 1], fileSize);
+    var chunkStart = chunks[i];
+    var chunkEnd = chunks[i + 1];
+    var startPixel = Math.floor((chunkStart / fileSize) * canvasWidth);
+    var endPixel = Math.floor((chunkEnd / fileSize) * canvasWidth);
+    for (var pixel = startPixel; pixel <= endPixel; pixel++) {
+      var lowerBound = Math.max(chunkStart, (pixel / canvasWidth) * fileSize);
+      var upperBound = Math.min(chunkEnd, ((pixel + 1) / canvasWidth) * fileSize);
+      var fillDelta = upperBound - lowerBound;
+      pixelsFill[pixel] += fillDelta;
+    }
   }
+  pixelsFill.forEach((value, i) => this.drawPixelColumn(i, value / bytesPerPixel));
 };
-FileChunksBar.prototype.drawBlock = function (start, end, fileSize) {
-  if (start !== end) {
-    this.context.fillStyle = this.fillColor;
-    var rectStart = canvasWidth * start / fileSize;
-    var rectEnd = canvasWidth * end / fileSize;
-    this.context.fillRect(rectStart, 0, rectEnd - rectStart, canvasHeight);
-  }
+
+FileChunksBar.prototype.drawPixelColumn = function (column, opacity) {
+  this.context.globalAlpha = opacity;
+  this.context.fillStyle = this.fillColor;
+  this.context.fillRect(column, 0, 1, canvasHeight);
 };
 
 export default FileChunksBar;

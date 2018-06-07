@@ -12,6 +12,11 @@
   {{else}}
     <canvas id="file-chunks-{{file.id}}"
       class="file-chunks {{if isLoading 'loading'}} {{if isRenderFailed 'error'}} {{if isRendered 'rendered'}}"></canvas>
+    {{#unless (eq chunksPercent undefined)}}
+      <div class="blocks-percent-indicator">
+        {{chunksPercent}}%
+      </div>
+    {{/unless}}
     <div class="file-size">
       <div class="start">
         0

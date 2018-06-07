@@ -37,11 +37,13 @@ FileChunksBar.prototype.draw = function (data) {
   var pixelsFill = _.times(canvasWidth, _.constant(0));
   var bytesPerPixel = fileSize / canvasWidth;
   for (var i = 0; i < chunks.length; i += 2) {
-    var startPixel = Math.floor((chunks[i] / fileSize) * canvasWidth);
-    var endPixel = Math.floor((chunks[i + 1] / fileSize) * canvasWidth);
+    var chunkStart = chunks[i];
+    var chunkEnd = chunks[i + 1];
+    var startPixel = Math.floor((chunkStart / fileSize) * canvasWidth);
+    var endPixel = Math.floor((chunkEnd / fileSize) * canvasWidth);
     for (var pixel = startPixel; pixel <= endPixel; pixel++) {
-      var lowerBound = Math.max(chunks[i], (pixel / canvasWidth) * fileSize);
-      var upperBound = Math.min(chunks[i + 1], ((pixel + 1) / canvasWidth) * fileSize);
+      var lowerBound = Math.max(chunkStart, (pixel / canvasWidth) * fileSize);
+      var upperBound = Math.min(chunkEnd, ((pixel + 1) / canvasWidth) * fileSize);
       var fillDelta = upperBound - lowerBound;
       pixelsFill[pixel] += fillDelta;
     }

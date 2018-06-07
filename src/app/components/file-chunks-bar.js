@@ -37,12 +37,8 @@ export default Ember.Component.extend({
    * @type {Ember.ComputedProperty<number>}
    */
   chunksPercent: computed('file.size', 'fileBlocks.blocks', function () {
-    const {
-      file,
-      fileBlocks,
-    } = this.getProperties('file', 'fileBlocks');
-    const size = get(file, 'size');
-    const blocks = get(fileBlocks, 'blocks');
+    const size = this.get('file.size');
+    const blocks = this.get('fileBlocks.blocks');
     if (size && blocks) {
       let sum = 0;
       for (let i = 0; i < blocks.length; i += 2) {

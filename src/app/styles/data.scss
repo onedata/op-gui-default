@@ -317,6 +317,7 @@
   // NOTE: should be synchronized with utils/file-chunks-bar.js
   $file-chunks-width: 320px;
   $file-chunks-height: 20px;
+  $file-chunks-font-size: 0.8em;
   .file-chunks {
     position: relative;
         
@@ -328,7 +329,7 @@
 
     background-color: #F2F2F2;
     
-    font-size: 0.8em;
+    font-size: $file-chunks-font-size;
     line-height: $file-chunks-height;
     text-align: center;
     
@@ -380,7 +381,16 @@
     // using something like width of canvas-based file chunks-bar
     width: 337px;
     .file-chunks-bar {
+      position: relative;
       float: right;
+    }
+    .blocks-percent-indicator {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      line-height: $file-chunks-height;
+      font-size: $file-chunks-font-size;
+      text-align: center;
     }
   }
   .transfer-btns {

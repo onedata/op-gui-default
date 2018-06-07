@@ -5,6 +5,7 @@ const {
   run,
   observer,
   get,
+  computed,
 } = Ember;
 
 /**
@@ -31,6 +32,23 @@ export default Ember.Component.extend({
   isRendered: false,
   isRenderFailed: false,
   isLoading: false,
+
+  /**
+   * @type {Ember.ComputedProperty<number>}
+   */
+  chunksPercent: computed('file.size', 'fileBlocks.blocks', function () {
+    const size = this.get('file.size');
+    const blocks = this.get('fileBlocks.blocks');
+    if (size && blocks) {
+      let sum = 0;
+      for (let i = 0; i < blocks.length; i += 2) {
+        sum += blocks[i + 1] - blocks[i];
+      }
+      return Math.floor(sum / size * 1000) / 10;
+    } else {
+      return undefined;
+    }
+  }),
 
   // should use new everytime?
   redrawCanvas: observer('$canvas', 'file.size', 'fileBlocks.blocks', function() {

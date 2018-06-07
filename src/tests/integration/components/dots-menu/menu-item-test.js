@@ -25,7 +25,7 @@ describe('Integration | Component | dots menu/menu item', function() {
       .to.contain('some title');
   });
   
-  it('invoked passed action on click', function(done) {
+  it('invoked passed action on click', function() {
     const spy = sinon.spy();
     this.on('testAction', spy);
     
@@ -38,13 +38,12 @@ describe('Integration | Component | dots menu/menu item', function() {
     const $menuItem = this.$('li.dots-menu-item');
     $menuItem.click();
     
-    wait().then(() => {
+    return wait().then(() => {
       expect(spy).to.be.calledOnce;
-      done();
     });
   });
   
-  it('renders as disabled and cannot be clicked if disabled', function(done) {
+  it('renders as disabled and cannot be clicked if disabled', function() {
     const spy = sinon.spy();
     this.on('testAction', spy);
     
@@ -59,9 +58,8 @@ describe('Integration | Component | dots menu/menu item', function() {
     expect($menuItem).to.have.class('disabled');
     $menuItem.click();
     
-    wait().then(() => {
+    return wait().then(() => {
       expect(spy).to.not.be.called;
-      done();
     });
   });
 });

@@ -11,6 +11,7 @@
 
 import Ember from 'ember';
 import TransferTableRecord from 'op-worker-gui/utils/transfer-table-record';
+import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 import _ from 'lodash';
 
 const {
@@ -373,10 +374,19 @@ export default Component.extend({
         notify,
         i18n,
       } = this.getProperties('notify', 'i18n');
+      setProperties(record, {
+        actionMessage: undefined,
+        actionMessageType: undefined,
+      });
       set(record, 'transfer.isCancelling', true);
       cancelTransfer(get(record, 'transfer.id'))
         .catch(error => {
           notify.error(i18n.t(I18N_PREFIX + 'cancelFailure'));
+          safeExec(record, () => setProperties(record, {
+            actionMessage: i18n.t(I18N_PREFIX + 'cancelFailure'),
+            actionMessageType: 'failure',
+          }));
+          safeExec(get(record, 'transfer'), 'set', 'isCancelling', false);
           throw error;
         })
         .then(() => {

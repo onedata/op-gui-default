@@ -412,7 +412,8 @@ export default Ember.Service.extend({
    * 
    * @param {string} transferId 
    * @returns {RSVP.Promise} A backend operation completion,
-   * ``resolve()`` when rerunning procedure has started successfully
+   * ``resolve(transferId: string)`` when rerunning procedure has started
+   *   successfully. Passes id of the newly created transfer
    * ``reject(object: error)`` on failure
    */
   rerunTransfer(transferId) {

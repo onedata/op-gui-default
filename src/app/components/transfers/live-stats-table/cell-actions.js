@@ -11,6 +11,7 @@ import Ember from 'ember';
 
 const {
   Component,
+  get,
   inject: { service },
   computed,
   Object: EmberObject,
@@ -100,7 +101,7 @@ export default Component.extend({
       case 'cancelTransfer':
         return isCancelling;
       case 'rerunTransfer':
-        return transferFilesDeleted || record.get('isRerunning');
+        return transferFilesDeleted || get(record, 'isRerunning');
     }
   }
 });

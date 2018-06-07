@@ -721,18 +721,14 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
     const gettingStats = this.get('_timeStatForUnit');
  
     console.debug('throughput-distribution: creating updater');
-    gettingStats.then(timeStat => {
-      this.setProperties({
-        _statsError: null,
-        updater: TransferTimeStatUpdater.create({
-          isEnabled: this.get('_updaterEnabled'),
-          timeStat,
-        }),
-      });
-    });
-    gettingStats.catch(error => {
-      this.set('_statsError', error);
-    });
+    gettingStats.then(timeStat => safeExec(this, 'setProperties', {
+      _statsError: null,
+      updater: TransferTimeStatUpdater.create({
+        isEnabled: this.get('_updaterEnabled'),
+        timeStat,
+      }),
+    }));
+    gettingStats.catch(error => safeExec(this, 'set', '_statsError', error));
   },
   
   /**

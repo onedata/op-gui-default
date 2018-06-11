@@ -175,27 +175,46 @@ export default Component.extend(PromiseLoadingMixin, {
   ),
 
   /**
+   * Set with providerIds of providers, which have a working invalidation
+   * transfer for file.
+   * @type {Ember.ComputedProperty<Set<string>>}
+   */
+  providersIdsWithInvalidation: computed('fileTransfers.[]', function () {
+    const fileTransfers = this.get('fileTransfers');
+    const providers = new Set();
+    if (fileTransfers) {
+      fileTransfers.forEach(transfer => {
+        if (get(transfer, 'type') === 'invalidation') {
+          providers.add(get(transfer, 'migrationSource'));
+        }
+      });
+    }
+    return providers;
+  }),
+
+  /**
    * Returns mapping: providerId -> boolean value. Value is true if there are
    * some blocks available for invalidation.
    * @type {Ember.ComputedProperty<Object>}
    */
   isInvalidationPossible: computed(
     'fileDistributionsSorted.@each.{blocks,neverSynchronized}',
-    'fileTransfers.[]',
+    'providersIdsWithInvalidation',
     function () {
       const {
         fileDistributionsSorted,
         file,
-        fileTransfers,
-      } = this.getProperties('fileDistributionsSorted', 'file', 'fileTransfers');
-      if (fileDistributionsSorted && fileTransfers) {
+        providersIdsWithInvalidation,
+      } = this.getProperties(
+        'fileDistributionsSorted',
+        'file',
+        'providersIdsWithInvalidation'
+      );
+      if (fileDistributionsSorted) {
         const fileChunksArray = fileDistributionsSorted.map(fd => ({
           providerId: get(fd, 'provider'),
           blocks: !get(fd, 'neverSynchronized') ? get(fd, 'blocks') : [],
         }));
-        const providersWithInvalidation = fileTransfers.filter(transfer => 
-          get(transfer, 'type') === 'invalidation'
-        ).map(transfer => get(transfer, 'migrationSource'));
         const invalidationPossible = {};
         fileChunksArray.forEach(chunks => {
           const providerId = get(chunks, 'providerId');
@@ -204,7 +223,7 @@ export default Component.extend(PromiseLoadingMixin, {
             get(chunks, 'blocks'),
             fileChunksArray.filter(fc =>
               fc !== chunks &&
-              providersWithInvalidation.indexOf(get(fc, 'providerId')) === -1
+              !providersIdsWithInvalidation.has(get(fc, 'providerId'))
             ).map(fc => get(fc, 'blocks'))
           );
         });

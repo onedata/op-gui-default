@@ -175,27 +175,56 @@ export default Component.extend(PromiseLoadingMixin, {
   ),
 
   /**
+   * Set with providerIds of providers, which have a working invalidation
+   * transfer for file.
+   * @type {Ember.ComputedProperty<Set<string>>}
+   */
+  providersIdsWithInvalidation: computed('fileTransfers.[]', function () {
+    const fileTransfers = this.get('fileTransfers');
+    const providers = new Set();
+    if (fileTransfers) {
+      fileTransfers.forEach(transfer => {
+        if (get(transfer, 'type') === 'invalidation') {
+          providers.add(get(transfer, 'migrationSource'));
+        }
+      });
+    }
+    return providers;
+  }),
+
+  /**
    * Returns mapping: providerId -> boolean value. Value is true if there are
    * some blocks available for invalidation.
    * @type {Ember.ComputedProperty<Object>}
    */
   isInvalidationPossible: computed(
     'fileDistributionsSorted.@each.{blocks,neverSynchronized}',
+    'providersIdsWithInvalidation',
     function () {
       const {
         fileDistributionsSorted,
         file,
-      } = this.getProperties('fileDistributionsSorted', 'file');
+        providersIdsWithInvalidation,
+      } = this.getProperties(
+        'fileDistributionsSorted',
+        'file',
+        'providersIdsWithInvalidation'
+      );
       if (fileDistributionsSorted) {
-        const fileChunksArray = fileDistributionsSorted
-          .map(fd => !get(fd, 'neverSynchronized') ? get(fd, 'blocks') : []);
+        const fileChunksArray = fileDistributionsSorted.map(fd => ({
+          providerId: get(fd, 'provider'),
+          blocks: !get(fd, 'neverSynchronized') ? get(fd, 'blocks') : [],
+        }));
         const invalidationPossible = {};
-        fileChunksArray.forEach((chunks, index) => {
-          const providerId = get(fileDistributionsSorted[index], 'provider');
+        fileChunksArray.forEach(chunks => {
+          const providerId = get(chunks, 'providerId');
           invalidationPossible[providerId] = hasDuplicatedFileChunks(
             file.get('size'),
-            chunks,
-            fileChunksArray.filter(fc => fc !== chunks)
+            get(chunks, 'blocks'),
+            fileChunksArray.filter(fc =>
+              fc !== chunks &&
+              !providersIdsWithInvalidation.has(get(fc, 'providerId'))
+            ).map(fc => get(fc, 'blocks'))
           );
         });
         return invalidationPossible;

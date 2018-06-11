@@ -181,21 +181,31 @@ export default Component.extend(PromiseLoadingMixin, {
    */
   isInvalidationPossible: computed(
     'fileDistributionsSorted.@each.{blocks,neverSynchronized}',
+    'fileTransfers.[]',
     function () {
       const {
         fileDistributionsSorted,
         file,
-      } = this.getProperties('fileDistributionsSorted', 'file');
-      if (fileDistributionsSorted) {
-        const fileChunksArray = fileDistributionsSorted
-          .map(fd => !get(fd, 'neverSynchronized') ? get(fd, 'blocks') : []);
+        fileTransfers,
+      } = this.getProperties('fileDistributionsSorted', 'file', 'fileTransfers');
+      if (fileDistributionsSorted && fileTransfers) {
+        const fileChunksArray = fileDistributionsSorted.map(fd => ({
+          providerId: get(fd, 'provider'),
+          blocks: !get(fd, 'neverSynchronized') ? get(fd, 'blocks') : [],
+        }));
+        const providersWithInvalidation = fileTransfers.filter(transfer => 
+          get(transfer, 'type') === 'invalidation'
+        ).map(transfer => get(transfer, 'migrationSource'));
         const invalidationPossible = {};
-        fileChunksArray.forEach((chunks, index) => {
-          const providerId = get(fileDistributionsSorted[index], 'provider');
+        fileChunksArray.forEach(chunks => {
+          const providerId = get(chunks, 'providerId');
           invalidationPossible[providerId] = hasDuplicatedFileChunks(
             file.get('size'),
-            chunks,
-            fileChunksArray.filter(fc => fc !== chunks)
+            get(chunks, 'blocks'),
+            fileChunksArray.filter(fc =>
+              fc !== chunks &&
+              providersWithInvalidation.indexOf(get(fc, 'providerId')) === -1
+            ).map(fc => get(fc, 'blocks'))
           );
         });
         return invalidationPossible;

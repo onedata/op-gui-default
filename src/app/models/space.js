@@ -78,21 +78,21 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
   /**
    * @type {Ember.ComputedProperty<FakeListRecordRelation>}
    */
-  scheduledTransferList: computedTransfersList('scheduled'),
+  scheduledTransferList: computedTransfersList('waiting'),
   
   /**
    * @type {Ember.ComputedProperty<FakeListRecordRelation>}
    */
-  currentTransferList: computedTransfersList('current'),
+  currentTransferList: computedTransfersList('ongoing'),
   
   /**
    * @type {Ember.ComputedProperty<FakeListRecordRelation>}
    */
-  completedTransferList: computedTransfersList('completed'),
+  completedTransferList: computedTransfersList('ended'),
     
   /**
    * Fetch partial list of space transfer records
-   * @param {string} type one of: scheduled, current, completed
+   * @param {string} type one of: waiting, ongoing, ended
    * @returns {Promise<object>} promise of RPC request with transfers list
    */
   fetchTransfers(type, startFromIndex, size, offset) {
@@ -113,7 +113,7 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
 });
 
 /**
- * @param {string} type one of: scheduled, current, completed
+ * @param {string} type one of: waiting, ongoing, ended
  */
 function computedTransfersList(type) {
   return computed(function() {

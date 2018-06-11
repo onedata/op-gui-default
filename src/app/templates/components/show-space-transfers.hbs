@@ -41,15 +41,6 @@
             class="nav-tabs-transfers"
           }}
             {{#bs-nav-item
-              active=(eq activeTabId "on-the-fly")
-            }}
-              <a href="#on-the-fly"
-                class="nav-link"
-                role="tab" {{action select "on-the-fly"}}>
-                {{t "components.transfers.onTheFlyTransfers"}}
-              </a>
-            {{/bs-nav-item}}
-            {{#bs-nav-item
               active=(eq activeTabId "scheduled")
             }}
               <a href="#scheduled"
@@ -74,6 +65,15 @@
                 class="nav-link"
                 role="tab" {{action select "completed"}}>
                 {{t "components.transfers.completedTransfers"}}
+              </a>
+            {{/bs-nav-item}}
+            {{#bs-nav-item
+              active=(eq activeTabId "on-the-fly")
+            }}
+              <a href="#on-the-fly"
+                class="nav-link"
+                role="tab" {{action select "on-the-fly"}}>
+                {{t "components.transfers.onTheFlyTransfers"}}
               </a>
             {{/bs-nav-item}}
           {{/bs-nav}}

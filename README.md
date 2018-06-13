@@ -19,7 +19,10 @@ To build a development release of GUI:
 
 ```
 make             # run natively (requires npm, bower, ember)
-./make.py        # run in docker (onedata/builder) that has all deps
+```
+```
+make submodules  # run in docker (onedata/builder) that has all deps
+./make.py        
 ```
 <br />
 
@@ -27,6 +30,9 @@ To build a production release of GUI:
 
 ```
 make rel         # run natively (requires npm, bower, ember)
+```
+```
+make submodules
 ./make.py rel    # run in docker (onedata/builder) that has all deps
 ```
 <br />

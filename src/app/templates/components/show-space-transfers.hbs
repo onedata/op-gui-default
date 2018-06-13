@@ -118,6 +118,8 @@
                           movedTransfers=transfersUpdater.movedTransfers
                           updaterId=(concat transfersUpdater.updaterId "-scheduled")
                           notifyTransferListChanged=(action "transferListChanged")
+                          justOpened=(eq _tabJustChangedId "scheduled")
+                          clearJustOpened=(action "clearJustChangedTabId" "scheduled")
                         }}
                       {{/loading-container}}
                     </div>
@@ -148,6 +150,8 @@
                           movedTransfers=transfersUpdater.movedTransfers
                           updaterId=(concat transfersUpdater.updaterId "-current")
                           notifyTransferListChanged=(action "transferListChanged")
+                          justOpened=(eq _tabJustChangedId "current")
+                          clearJustOpened=(action "clearJustChangedTabId" "current")
                         }}
                       {{/loading-container}}
                     </div>
@@ -178,6 +182,8 @@
                           movedTransfers=transfersUpdater.movedTransfers
                           updaterId=(concat transfersUpdater.updaterId "-completed")
                           notifyTransferListChanged=(action "transferListChanged")
+                          justOpened=(eq _tabJustChangedId "completed")
+                          clearJustOpened=(action "clearJustChangedTabId" "completed")
                         }}
                       {{/loading-container}}
                     </div>

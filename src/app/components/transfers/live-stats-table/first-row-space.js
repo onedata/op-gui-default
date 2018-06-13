@@ -35,9 +35,27 @@ export default Component.extend({
     return this.get('processedColumnsCount') - 1;
   }),
 
-  tdStyle: computed('firstRowListIndex', function getTdStyle() {
+  virtualRowsNumber: computed(
+    'firstRowListIndex',
+    'justOpened',
+    function getVirtualRowsNumber() {
+      const {
+        firstRowListIndex,
+        justOpened,
+      } = this.getProperties(
+        'firstRowListIndex',
+        'justOpened'
+      );
+      
+      return (
+        (!firstRowListIndex || firstRowListIndex < 0) && justOpened ?
+        1 : firstRowListIndex
+      );
+    }),
+  
+  tdStyle: computed('virtualRowsNumber', function getTdStyle() {
     return htmlSafe(
-      `height: ${this.get('firstRowListIndex') * rowHeight}px;`
+      `height: ${this.get('virtualRowsNumber') * rowHeight}px;`
     );
   }),
   

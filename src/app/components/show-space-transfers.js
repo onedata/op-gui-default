@@ -36,7 +36,8 @@ const {
   },
 } = Ember;
 
-const defaultActiveTabId = 'on-the-fly';
+// this will be overriden by onedata/transfers/show controller!
+const defaultActiveTabId = 'scheduled';
 
 export default Component.extend({
   classNames: ['show-space-transfers', 'row'],
@@ -73,6 +74,13 @@ export default Component.extend({
   listLocked: false,
   
   activeTabId: defaultActiveTabId,
+  
+  /**
+   * Holds tab ID that was opened recently.
+   * It should be cleared if some operations after opening has been done.
+   * @type {string|null}
+   */
+  _tabJustChangedId: null,
   
   /**
    * @type {boolean}
@@ -253,7 +261,7 @@ export default Component.extend({
   _transfersUpdaterEnabled: computed.readOnly('transfersUpdaterEnabled'),
   
   scheduledTransferList: computed.reads('space.scheduledTransferList'),
-  currentTransferList: computed.reads('space.currentTransferList'),
+  currentTransferList: computed.reads('space.currentTransferList'),  
   completedTransferList: computed.reads('space.completedTransferList'),
   
   onTheFlyTransferList: computed.reads('space.onTheFlyTransferList'),
@@ -268,27 +276,31 @@ export default Component.extend({
 
   /**
    * Collection of Transfer model for scheduled transfers
-   * @type {Ember.ComputedProperty<ArraySlice<Transfer>>}
+   * @type {Ember.ComputedProperty<ReplacingChunksArray<Transfer>>}
    */
   scheduledTransfers: undefined,
   
   /**
    * Collection of Transfer model for current transfers
-   * @type {Ember.ComputedProperty<ArraySlice<Transfer>>}
+   * @type {Ember.ComputedProperty<ReplacingChunksArray<Transfer>>}
    */
   currentTransfers: undefined,
   
   /**
    * Collection of Transfer model for completed transfers
-   * @type {Ember.ComputedProperty<ArraySlice<Transfer>>}
+   * @type {Ember.ComputedProperty<ReplacingChunksArray<Transfer>>}
    */
   completedTransfers: undefined,
     
   providersLoaded: computed.reads('providerList.queryList.isSettled'),
   providersError: computed.reads('providerList.queryList.reason'),
-
+ 
   scheduledTransfersLoaded: computed.reads('scheduledTransferList.isLoaded'),
-  currentTransfersLoaded: computed.reads('currentTransferList.isLoaded'),
+  // currentTransfersLoaded: computed.reads('currentTransferList.isLoaded'),
+  currentTransfersLoaded: computed('currentTransferList.isLoaded', function () {
+    return this.get('currentTransferList.isLoaded');
+  }),
+  
   completedTransfersLoaded: computed.reads('completedTransferList.isLoaded'),
   
   onTheFlyTransfersLoaded: computed(
@@ -445,7 +457,9 @@ export default Component.extend({
   //#endregion
   
   tabChanged: observer('activeTabId', function observeTabChanged() {
-    this.get('changeListTab')(this.get('activeTabId'));
+    const activeTabId = this.get('activeTabId');
+    this.get('changeListTab')(activeTabId);
+    this.set('_tabJustChangedId', activeTabId);
   }),
   
   enableWatcherCollection: observer('activeListUpdaterId', 'activeTabId', function enableWatcherCollection() {
@@ -571,7 +585,15 @@ export default Component.extend({
   
   actions: {
     transferListChanged(/* type */) {
-      this.get('listWatcher').scrollHandler();
+      const listWatcher = this.get('listWatcher');
+      if (listWatcher) {
+        listWatcher.scrollHandler();
+      }
+    },
+    clearJustChangedTabId(type) {
+      if (this.get('_tabJustChangedId') === type) {
+        this.set('_tabJustChangedId', null);
+      }
     },
   },
 });

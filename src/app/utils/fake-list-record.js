@@ -31,6 +31,9 @@ export default EmberObject.extend({
    */
   _listHasMany: undefined,
   
+  /**
+   * @type {PromiseObject<ReplacingChunksArray>}
+   */
   list: computed(function () {
     const _chunksArray = this.get('_chunksArray');
     return PromiseObject.create({ promise: Promise.resolve(_chunksArray) });

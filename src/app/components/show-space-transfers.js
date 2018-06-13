@@ -16,6 +16,7 @@ import mutateArray from 'ember-cli-onedata-common/utils/mutate-array';
 import generateColors from 'op-worker-gui/utils/generate-colors';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 import PromiseArray from 'ember-cli-onedata-common/utils/ember/promise-array';
+import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
 import ListWatcher from 'op-worker-gui/utils/list-watcher';
 
 const {
@@ -35,9 +36,6 @@ const {
     scheduleOnce,
   },
 } = Ember;
-
-// this will be overriden by onedata/transfers/show controller!
-const defaultActiveTabId = 'scheduled';
 
 export default Component.extend({
   classNames: ['show-space-transfers', 'row'],
@@ -67,13 +65,20 @@ export default Component.extend({
    */
   changeListTab: undefined,
   
+  /**
+   * @virtual optional
+   * If set, skip auto select of first opened tab and use injected tab ID
+   * @type {string|null}
+   */
+  defaultTab: undefined,
+  
   //#endregion
   
   //#region Internal properties
       
   listLocked: false,
   
-  activeTabId: defaultActiveTabId,
+  activeTabId: computed.reads('initialTab.content'),
   
   /**
    * Holds tab ID that was opened recently.
@@ -455,6 +460,33 @@ export default Component.extend({
   }),
   
   //#endregion
+  
+  /**
+   * @type {Ember.ComputedProperty<PromiseObject<string>>}
+   */
+  initialTab: computed(function () {
+    const defaultTab = this.get('defaultTab');
+    if (defaultTab) {
+      return PromiseObject.create({ promise: Promise.resolve(defaultTab) });
+    } else {
+      const promise = Promise.all(
+        ['scheduled', 'current', 'completed'].map(transferType =>
+          this.get(transferType + 'TransferList')
+        )
+      ).then(([ scheduledList, currentList, completedList ]) => {
+        if (get(scheduledList, 'length') > 0) {
+          return 'scheduled';
+        } else if (get(currentList, 'length') > 0) {
+          return 'current';
+        } else if (get(completedList, 'length') > 0) {
+          return 'completed';
+        } else {
+          return 'on-the-fly';
+        }
+      });
+      return PromiseObject.create({ promise }); 
+    }
+  }),
   
   tabChanged: observer('activeTabId', function observeTabChanged() {
     const activeTabId = this.get('activeTabId');

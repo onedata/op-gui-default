@@ -28,7 +28,7 @@ export default Controller.extend({
    */
   queryParams: ['selected_transfers', 'list_tab'],
     
-  list_tab: 'scheduled',
+  list_tab: undefined,
   
   /**
    * @type {Ember.ComputedProperty<Array<String>>}

@@ -38,8 +38,10 @@ export default EmberObject.extend({
     const _chunksArray = this.get('_chunksArray');
     return PromiseObject.create({ promise: Promise.resolve(_chunksArray) });
   }),
-  
+    
   chunksArray: computed.reads('_chunksArray'),
+  
+  length: computed.reads('chunksArray.length'),
   
   hasMany(relation) {
     if (relation === 'list') {

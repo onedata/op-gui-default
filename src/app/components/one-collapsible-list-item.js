@@ -36,7 +36,7 @@ export default Ember.Component.extend({
 
   eventsBus: service(),
 
-    /**
+  /**
    * Notify parent about item open/close.
    * Note: you should know if this is an accordion or multi-collapsible-list
    * @virtual optional
@@ -64,7 +64,8 @@ export default Ember.Component.extend({
   toggle: () => {},
 
   /**
-   * Can be injected to take external control on item collapse state
+   * Can be injected to take external control on item collapse state.
+   * If not injected, it is initialized to `reads` of `_isActive` in `init`.
    * @type {Ember.ComputedProperty<boolean>|boolean}
    */
   isActive: undefined,

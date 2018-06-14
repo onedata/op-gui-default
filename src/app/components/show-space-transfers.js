@@ -312,11 +312,7 @@ export default Component.extend({
   providersError: computed.reads('providerList.queryList.reason'),
  
   scheduledTransfersLoaded: computed.reads('scheduledTransferList.isLoaded'),
-  // currentTransfersLoaded: computed.reads('currentTransferList.isLoaded'),
-  currentTransfersLoaded: computed('currentTransferList.isLoaded', function () {
-    return this.get('currentTransferList.isLoaded');
-  }),
-  
+  currentTransfersLoaded: computed.reads('currentTransferList.isLoaded'),
   completedTransfersLoaded: computed.reads('completedTransferList.isLoaded'),
   
   onTheFlyTransfersLoaded: computed(

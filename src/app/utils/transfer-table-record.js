@@ -146,7 +146,8 @@ export default EmberObject.extend({
       transferCollection,
       status,
     } = this.getProperties('transferCollection', 'status');
-    return statusGroups[transferCollection].has(status);
+    return transferCollection && status ?
+      statusGroups[transferCollection].has(status) : true;
   }),
   
   init() {

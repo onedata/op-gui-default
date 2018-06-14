@@ -40,9 +40,9 @@ export default Ember.Route.extend(RouteRejectHandler, {
     if (!file.get('isDir')) {
       this.set('commonLoader.isLoading', true);
       return get(file, 'parent')
+        .finally(() => safeExec(this, 'set', 'commonLoader.isLoading', false))
         .then(parent => this.transitionTo('onedata.data.data-space.dir', parent))
-        .catch(() => safeExec(this, 'set', 'invalid', true))
-        .finally(() => safeExec(this, 'set', 'commonLoader.isLoading', false));
+        .catch(() => safeExec(this, 'set', 'invalid', true));
     }
 
     this.set('invalid', invalid);

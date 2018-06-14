@@ -148,9 +148,7 @@ export default Component.extend({
    * True if table has no data (except virtual rows)
    * @type {Ember.ComputedProperty<boolean>}
    */
-  _tableDataEmpty: computed('_tableData.length', function () {
-    return this.get('_tableData.length') < 2;
-  }),
+  _tableDataEmpty: computed.lt('_tableData.length', 2),
   
   /**
    * Custom classes for ember-models-table addon.

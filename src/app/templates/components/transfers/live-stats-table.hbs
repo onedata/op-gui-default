@@ -1,8 +1,11 @@
 {{#if _mobileMode}}
   {{!-- there can be a firstRowSpace row --}}
-  {{!-- FIXME: additional loader --}}
-  {{#if (and _tableDataEmpty (not justOpened))}}
-    <p>{{_tableCustomMessages.noDataToShow}}</p>
+  {{#if _tableDataEmpty}}
+    {{#if justOpened}}
+      {{loading-more-spinner size="sm"}}
+    {{else}}
+      <p>{{_tableCustomMessages.noDataToShow}}</p>
+    {{/if}}
   {{else}}
     {{#one-collapsible-list as |list|}}
       {{#each _tableData as |tableRowData|}}

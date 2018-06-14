@@ -51,7 +51,7 @@ export default Ember.Component.extend({
   classNameBindings: ['_searchQuery:filtered-list'],
   accordionMode: false,
   activeElementId: '',
-  
+
   /**
    * If true, each item can be selected through checkbox
    * @type {boolean}
@@ -69,7 +69,7 @@ export default Ember.Component.extend({
    * @type {Function}
    */
   filtrationChanged: () => {},
-  
+
   /**
    * List of selected item values
    * @type {Ember.Array.*}

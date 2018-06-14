@@ -2,7 +2,7 @@
  * Renders list of on-the-fly transfers.
  * 
  * @module components/transfers/on-the-fly-list
- * @author Michal Borzecki
+ * @author Michal Borzecki, Jakub Liput
  * @copyright (C) 2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
@@ -36,6 +36,20 @@ export default Ember.Component.extend({
   providersColors: undefined,
 
   /**
+   * List of provider IDs of the opened on-the-fly transfers charts.
+   * @virtual
+   * @type {Ember.Array<string>}
+   */
+  openedProviderIds: undefined,
+  
+  /**
+   * Notify parent about opened provider chart
+   * @virtual
+   * @type {Function} `(string) => any`
+   */
+  toggleProviderId: () => {},
+  
+  /**
    * Array of objects that represents each list element - on the fly transfer
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
@@ -55,4 +69,11 @@ export default Ember.Component.extend({
       get(a.provider, 'name').localeCompare(get(b.provider, 'name'))
     );
   }),
+    
+  actions: {
+    itemToggled(providerId, opened) {
+      const toggleProviderId = this.get('toggleProviderId');
+      toggleProviderId(providerId, opened);
+    },
+  },
 });

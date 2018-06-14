@@ -2,7 +2,8 @@ import Ember from 'ember';
 const {
   computed,
   computed: {
-    notEmpty
+    notEmpty,
+    reads,
   },
   observer,
   inject: {
@@ -35,6 +36,14 @@ export default Ember.Component.extend({
 
   eventsBus: service(),
 
+    /**
+   * Notify parent about item open/close.
+   * Note: you should know if this is an accordion or multi-collapsible-list
+   * @virtual optional
+   * @type {Function} `(opened: boolean) => any`
+   */
+  itemToggled: () => {},
+  
   isCollapsible: true,
   accordionMode: false,
   activeElementId: '',
@@ -54,6 +63,12 @@ export default Ember.Component.extend({
 
   toggle: () => {},
 
+  /**
+   * Can be injected to take external control on item collapse state
+   * @type {Ember.ComputedProperty<boolean>|boolean}
+   */
+  isActive: undefined,
+  
   /**
    * List of selected list items
    * @type {Array.*}
@@ -114,7 +129,7 @@ export default Ember.Component.extend({
     return !_matchesSearchQuery && _isSelected;
   }),
 
-  isActive: computed('activeElementId', 'accordionMode', function () {
+  _isActive: computed('activeElementId', 'accordionMode', function () {
     let {
       activeElementId,
       elementId
@@ -173,10 +188,16 @@ export default Ember.Component.extend({
       selectionValue
     } = this.getProperties('closeEventName', 'eventsBus', 'selectionValue');
     if (closeEventName) {
-      eventsBus.on(closeEventName, () => this.set('isActive', false));
+      eventsBus.on(closeEventName, () => this.set('_isActive', false));
     }
     if (selectionValue !== null) {
       this.get('_notifyValue')(selectionValue, true);
+    }
+    const isActive = this.get('isActive');
+    if (isActive) {
+      this.set('_isActive', isActive);
+    } else {
+      this.isActive = reads('_isActive');
     }
   },
 
@@ -209,6 +230,7 @@ export default Ember.Component.extend({
 
   actions: {
     toggle(opened) {
+      let newOpenedState = opened;
       if (!this.get('isCollapsible')) {
         return;
       }
@@ -216,11 +238,12 @@ export default Ember.Component.extend({
         this.get('toggle')(this.get('elementId'), opened);
       } else {
         if (opened !== undefined) {
-          this.set('isActive', !!opened);
+          this.set('_isActive', !!opened);
         } else {
-          this.toggleProperty('isActive');
+          newOpenedState = this.toggleProperty('_isActive');
         }
       }
+      this.get('itemToggled')(newOpenedState);
     },
     toggleSelection() {
       this('toggleItemSelection')(this.get('selectionValue'));

@@ -92,6 +92,17 @@ export default Component.extend({
    */
   _isTransfersTableBegin: undefined,
   
+  /**
+   * List of provider IDs of the opened on-the-fly transfers charts.
+   * Should be updated by the `on-the-fly-list` component.
+   * Note: all provider IDs will be opened if providers list will be modified,
+   * but for now the provider list is constant.
+   * @type {Ember.Array<string>}
+   */
+  _onTheFlyOpenedProviderIds: computed('providers.@each.id', function () {
+    return A(this.get('providers').map(p => get(p, 'id')));
+  }),
+  
   //#endregion
   
   //#region Computed properties
@@ -625,6 +636,16 @@ export default Component.extend({
     clearJustChangedTabId(type) {
       if (this.get('_tabJustChangedId') === type) {
         this.set('_tabJustChangedId', null);
+      }
+    },
+    toggleOnTheFlyProviderId(providerId, opened) {
+      const _onTheFlyOpenedProviderIds = this.get('_onTheFlyOpenedProviderIds');
+      if (opened) {
+        if (!_onTheFlyOpenedProviderIds.includes(providerId)) {
+          _onTheFlyOpenedProviderIds.pushObject(providerId);
+        }
+      } else {
+        _onTheFlyOpenedProviderIds.removeObject(providerId);
       }
     },
   },

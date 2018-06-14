@@ -175,7 +175,7 @@ export default Component.extend({
       isEnabled: _transfersUpdaterEnabled,
       scheduledEnabled: activeListUpdaterId === 'scheduled',
       currentEnabled: activeListUpdaterId === 'current',
-      currentStatEnabled: activeTabId === 'current',
+      currentStatEnabled: activeTabId === 'scheduled' || activeTabId === 'current',
       completedEnabled: activeListUpdaterId === 'completed',
       space: space,
     });    
@@ -514,7 +514,7 @@ export default Component.extend({
     transfersUpdater.setProperties({
       scheduledEnabled: activeListUpdaterId === 'scheduled',
       currentEnabled: activeListUpdaterId === 'current',
-      currentStatEnabled: activeTabId === 'current',
+      currentStatEnabled: activeTabId === 'scheduled' || activeTabId === 'current',
       completedEnabled: activeListUpdaterId === 'completed',
     });
   }),

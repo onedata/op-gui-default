@@ -33,7 +33,7 @@ const COMMON_I18N_PREFIX = 'components.transfers.';
 const I18N_PREFIX = COMMON_I18N_PREFIX + 'liveTableStats.';
 
 const tableExcludedColumns = {
-  scheduled: ['startedAt', 'finishedAt', 'totalBytes', 'totalFiles', 'status'],
+  scheduled: ['startedAt', 'finishedAt', 'totalBytes', 'totalFiles'],
   current: ['scheduledAt', 'finishedAt'],
   completed: ['scheduledAt'],
 };
@@ -194,6 +194,7 @@ export default Component.extend({
         firstRowSpace,
         movedTransfers,
         updaterId,
+        transferType,
       } = this.getProperties(
         'transfers',
         'providers',
@@ -202,7 +203,8 @@ export default Component.extend({
         '_tableDataCache',
         'firstRowSpace',
         'movedTransfers',
-        'updaterId'
+        'updaterId',
+        'transferType'
       );
       
       if (transfers && providers) {
@@ -242,6 +244,7 @@ export default Component.extend({
               providers,
               providersColors,
               updaterId,
+              transferCollection: transferType,
             }));
             arrayChanged = true;
           }

@@ -23,6 +23,24 @@ const {
 
 const START_END_TIME_FORMAT = 'D MMM YYYY H:mm:ss';
 
+const statusGroups = {
+  scheduled: new Set([
+    'scheduled',
+    'enqueued',
+  ]),
+  current: new Set([
+    'active',
+    'invalidating',
+    'cancelling',
+  ]),
+  completed: new Set([
+    'failed',
+    'cancelled',
+    'skipped',
+    'completed',
+  ]),
+};
+
 export default EmberObject.extend({
   destinationUnknownText: 'unknown',
   
@@ -61,6 +79,12 @@ export default EmberObject.extend({
    * @type {number}
    */
   updaterId: undefined,
+  
+  /**
+   * @virtual
+   * @type {string} one of: scheduled, current, completed
+   */
+  transferCollection: undefined,
   
   transferId: computed.reads('transfer.id'),
   path: computed.reads('transfer.path'),
@@ -115,6 +139,14 @@ export default EmberObject.extend({
       destination = get(destProvider, 'name');
     }
     return destination;
+  }),
+  
+  isInCorrectCollection: computed('transferCollection', 'status', function () {
+    const {
+      transferCollection,
+      status,
+    } = this.getProperties('transferCollection', 'status');
+    return statusGroups[transferCollection].has(status);
   }),
   
   init() {

@@ -52,6 +52,7 @@ export default Component.extend({
       case 'invalidating':
         return 'update';
       case 'scheduled':
+      case 'enqueued':
         return 'time';
     }
   }),

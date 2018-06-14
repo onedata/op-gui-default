@@ -544,6 +544,7 @@ export default {
           failed: 'Failed',
           active: 'Active',
           scheduled: 'Scheduled',
+          enqueued: 'Enqueued',
           invalidating: 'Invalidating',
         },
         cellType: {

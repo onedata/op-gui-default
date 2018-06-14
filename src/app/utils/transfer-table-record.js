@@ -64,6 +64,8 @@ export default EmberObject.extend({
   
   transferId: computed.reads('transfer.id'),
   path: computed.reads('transfer.path'),
+  file: computed.reads('transfer.file'),
+  space: computed.reads('transfer.space'),
   fileType: computed.reads('transfer.fileType'),
   userName: computed.reads('transfer.userName'),
   scheduledAtComparable: computed.reads('transfer.scheduleTime'),

@@ -12,6 +12,7 @@ import Ember from 'ember';
 import ArraySlice from 'ember-cli-onedata-common/utils/array-slice';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 import _ from 'lodash';
+import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
 
 const {
   observer,
@@ -32,12 +33,25 @@ export default ArraySlice.extend({
   indexMargin: 0,
   
   /**
-   * @type {Promise<ReplacingChunksArray>}
+   * Initialized in init
+   * @type {PromiseObject<ReplacingChunksArray>}
    */
   initialLoad: undefined,
   
+  /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
   isLoaded: computed.reads('initialLoad.isSettled'),
+  
+  /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
   isLoading: computed.not('isLoaded'),
+  
+  /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  isReloading: computed.reads('_isReloading'),
   
   /**
    * @type {Ember.ComputedProperty<number>}
@@ -71,12 +85,12 @@ export default ArraySlice.extend({
    * @type {boolean}
    */
   _fetchPrevLock: false,
-  
+    
   /**
-   * Prevents infinite observers recursion when modifying array content
+   * Set to true if reloading is in progress
    * @type {boolean}
    */
-  _arrayLocked: false,
+  _isReloading: false,
   
   startEndChanged: observer(
     '_start',
@@ -86,7 +100,7 @@ export default ArraySlice.extend({
     'loadMoreThreshold',
     'sourceArray.length',
     function observeStartEndChanged() {
-      if (!this.get('_arrayLocked')) {
+      if (!this.get('isReloading')) {
         const {
           _start,
           _end,
@@ -187,7 +201,7 @@ export default ArraySlice.extend({
       size = minSize;
     }
     
-    this.set('_arrayLocked', true);
+    this.set('_isReloading', true);
     return this.get('fetch')(
       head ? null : this.get('firstObject.index'),
       size,
@@ -200,12 +214,15 @@ export default ArraySlice.extend({
       sourceArray.clear();
       sourceArray.pushObjects(updatedRecordsArray);
       return this;
-    }).finally(() => safeExec(this, 'set', '_arrayLocked', false));
+    }).finally(() => safeExec(this, 'set', '_isReloading', false));
   },
   
   init() {
     this.set('sourceArray', A());
     this._super(...arguments);
-    this.set('initialLoad', this.reload());
+    this.set(
+      'initialLoad',
+      PromiseObject.create({ promise: this.reload() })
+    );
   },
 });

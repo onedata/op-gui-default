@@ -3,6 +3,12 @@
   
   tr.transfer-row, .transfer-item-header {
     height: 73px;
+    
+    &.other-collection {
+      td {
+        opacity: 0.6;
+      }
+    }
   }
   
   .transfer-item-header .cell-file-name {
@@ -394,6 +400,9 @@
     &.scheduled {
       color: $onedata-graphite;
     }
+    &.enqueued {
+      color: $color-one-yellow;
+  }
   }
   .cell-total-files {
     display: inline-block;

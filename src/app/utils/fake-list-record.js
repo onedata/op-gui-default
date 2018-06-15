@@ -31,12 +31,17 @@ export default EmberObject.extend({
    */
   _listHasMany: undefined,
   
+  /**
+   * @type {PromiseObject<ReplacingChunksArray>}
+   */
   list: computed(function () {
     const _chunksArray = this.get('_chunksArray');
     return PromiseObject.create({ promise: Promise.resolve(_chunksArray) });
   }),
-  
+    
   chunksArray: computed.reads('_chunksArray'),
+  
+  length: computed.reads('chunksArray.length'),
   
   hasMany(relation) {
     if (relation === 'list') {

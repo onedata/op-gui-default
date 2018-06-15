@@ -34,7 +34,7 @@ export default Component.extend({
   visibleColumnsCount: computed('processedColumns.length', function () {
     return this.get('processedColumns.length') - 1;
   }),
-    
+  
   init() {
     this._super(...arguments);
     if (!this.get('expandRow')) {

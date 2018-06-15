@@ -10,9 +10,14 @@
 import Ember from 'ember';
 
 const {
-  Component
+  Component,
+  computed,
 } = Ember;
 
 export default Component.extend({
   classNames: ['spinner-container', 'spinner-centered', 'spinner-64'],
+  
+  _scale: computed('size', function () {
+    return this.get('size') === 'sm' ? 0.2 : 0.4;
+  }),
 });

@@ -507,17 +507,15 @@ export default {
       publish: 'Publish',
     },
     transfers: {
-      providersMapOfDist: 'Active transfers map',
-      scheduledTransfers: 'Scheduled transfers',
-      activeTransfers: 'Active transfers',
-      completedTransfers: 'History of transfers',
-      onTheFlyTransfers: 'On-the-fly transfers',
-      noActiveTransfers: 'There are no active transfers',
-      noCompletedTransfers: 'There are no past transfers',
+      providersMapOfDist: 'Ongoing transfers map',
+      scheduledTransfers: 'Waiting',
+      activeTransfers: 'Ongoing',
+      completedTransfers: 'Ended',
+      onTheFlyTransfers: 'On-the-fly',
       noTransfers: {
-        scheduled: 'There are no scheduled transfers',
-        current: 'There are no active transfers',
-        completed: 'There are no past transfers',
+        scheduled: 'There are no waiting transfers',
+        current: 'There are no ongoing transfers',
+        completed: 'There are no ended transfers',
       },
       initializingTransfers: 'Initializing transfers...',
       notSupported: 'Cannot list transfers of selected space because it is not ' +
@@ -533,7 +531,7 @@ export default {
         startedAt: 'Started at',
         finishedAt: 'Finished at',
         totalBytes: 'Transferred',
-        totalFiles: 'Total files',
+        totalFiles: 'Processed files',
         status: 'Status',
         destinationUnknown: '-',
         cellFileName: {
@@ -546,6 +544,7 @@ export default {
           failed: 'Failed',
           active: 'Active',
           scheduled: 'Scheduled',
+          enqueued: 'Enqueued',
           invalidating: 'Invalidating',
         },
         cellType: {

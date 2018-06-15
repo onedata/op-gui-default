@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-4507 Multiple improvements in transfers list view
 * VFS-4538 Better control of invalidation feature availability for files
 * VFS-4471 Improved file chunks bar rendering
 * VFS-4391 More efficient infinite scroll for transfers list and file transfer status 

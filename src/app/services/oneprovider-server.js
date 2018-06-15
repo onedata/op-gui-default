@@ -396,7 +396,7 @@ export default Ember.Service.extend({
    
   /**
    * @param {String} spaceId
-   * @param {String} type one of: scheduled, current, completed
+   * @param {String} type one of: waiting, ongoing, ended
    * @param {String} startFromIndex
    * @param {number} offset
    * @param {number} size

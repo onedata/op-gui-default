@@ -1,7 +1,11 @@
 {{#if _mobileMode}}
   {{!-- there can be a firstRowSpace row --}}
-  {{#if (lt _tableData.length 2)}}
-    <p>{{_tableCustomMessages.noDataToShow}}</p>
+  {{#if _tableDataEmpty}}
+    {{#if justOpened}}
+      {{loading-more-spinner size="sm"}}
+    {{else}}
+      <p>{{_tableCustomMessages.noDataToShow}}</p>
+    {{/if}}
   {{else}}
     {{#one-collapsible-list as |list|}}
       {{#each _tableData as |tableRowData|}}
@@ -10,6 +14,7 @@
             tagName="li"
             visibleColumnsCount=1
             firstRowListIndex=firstRowSpace.firstRowListIndex
+            justOpened=justOpened
           }}
         {{else}}
           {{#list.item as |listItem|}}
@@ -68,8 +73,10 @@
     pageSize=1000000
     rowTemplate="components/transfers/live-stats-table/row-template"
     expandedRowTemplate=(if _hasExpandableRows "components/transfers/live-stats-table/expanded-row-template" null)
+    isReloading=_isReloading
+    justOpened=justOpened
   }}
-  {{#if (lt _tableData.length 2)}}
+  {{#if (and _tableDataEmpty (not justOpened))}}
     <p class="table-empty-message">{{_tableCustomMessages.noDataToShow}}</p>
   {{/if}}
 {{/if}}

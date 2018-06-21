@@ -436,9 +436,15 @@ export default {
         providersLink: 'providers',
         onlySingleProviderSupport: 'Current space is supported by only one provider, ' +
           'thus advanced data replication or migration features are not available.',
-        currentlyTransferredText: 'The data is currently transferred between ' +
+        currentlyTransferredText: 'This {{elementType}} is currently transferred between ' +
           'providers',
-        currentlyTransferredLink: 'see ongoing transfers on transfers tab',
+        currentlyTransferredLink: 'see ongoing transfers',
+        endedTransfersText: 'This {{elementType}} was transferred manually',
+        orMore: 'or more',
+        time: 'time',
+        times: 'times',
+        endedTransfersLink: 'see history',
+        noTransfersText: 'This {{elementType}} has never been transferred manually',
         providerRow: {
           replication: 'replication',
           migration: 'migration',

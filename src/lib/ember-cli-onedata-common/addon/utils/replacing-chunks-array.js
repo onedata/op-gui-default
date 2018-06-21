@@ -33,6 +33,21 @@ export default ArraySlice.extend({
   indexMargin: 0,
   
   /**
+   * @type {function}
+   */
+  sortFun(a, b) {
+    const ai = get(a, 'index');
+    const bi = get(b, 'index');
+    if (ai < bi) {
+      return -1;
+    } else if (ai > bi) {
+      return 1;
+    } else {
+      return 0;
+    }
+  },
+  
+  /**
    * Initialized in init
    * @type {PromiseObject<ReplacingChunksArray>}
    */
@@ -129,10 +144,12 @@ export default ArraySlice.extend({
   fetchPrev() {
     if (!this.get('_fetchPrevLock')) {
       this.set('_fetchPrevLock', true);
-      /** @type {Ember.ArrayProxy} */
-      const sourceArray = this.get('sourceArray');
-      /** @type {number} */
-      const chunkSize = this.get('chunkSize');
+      
+      const {
+        sourceArray,
+        chunkSize,
+        sortFun,
+      } = this.getProperties('sourceArray', 'chunkSize', 'sortFun');
       
       return this.get('fetch')(
         get(sourceArray, 'firstObject.index'),
@@ -142,9 +159,9 @@ export default ArraySlice.extend({
         if (get(array, 'length') < chunkSize) {
           safeExec(this, 'set', '_startReached', true);
         }
-        array = _.difference(array, sourceArray);
+        _.pullAll(array, sourceArray.toArray());
         sourceArray.unshift(...array);
-        sourceArray.sortBy('listIndex');
+        sourceArray.sort(sortFun);
         sourceArray.arrayContentDidChange();
       }).finally(() => safeExec(this, 'set', '_fetchPrevLock', false));
     }
@@ -153,10 +170,13 @@ export default ArraySlice.extend({
   fetchNext() {
     if (!this.get('_fetchNextLock')) {
       this.set('_fetchNextLock', true);
-      /** @type {Ember.ArrayProxy} */
-      const sourceArray = this.get('sourceArray');
-      /** @type {number} */
-      const chunkSize = this.get('chunkSize');
+      
+      const {
+        sourceArray,
+        chunkSize,
+        sortFun,
+      } = this.getProperties('sourceArray', 'chunkSize', 'sortFun');
+      
       return this.get('fetch')(
         get(sourceArray, 'lastObject.index'),
         chunkSize,
@@ -165,9 +185,9 @@ export default ArraySlice.extend({
         if (get(array, 'length') < chunkSize) {
           safeExec(this, 'set', '_endReached', true);
         }
-        array = _.difference(array, sourceArray);
+        _.pullAll(array, sourceArray.toArray());
         sourceArray.push(...array);
-        sourceArray.sortBy('listIndex');
+        sourceArray.sort(sortFun);
         sourceArray.arrayContentDidChange();
       }).finally(() => safeExec(this, 'set', '_fetchNextLock', false));
     }
@@ -180,12 +200,14 @@ export default ArraySlice.extend({
       startIndex,
       endIndex,
       sourceArray,
+      sortFun,
     } = this.getProperties(
       '_start',
       '_end',
       'startIndex',
       'endIndex',
-      'sourceArray'
+      'sourceArray',
+      'sortFun'
     );
 
     let reloadStart = Math.min(_start, startIndex);
@@ -212,6 +234,7 @@ export default ArraySlice.extend({
         _endReached: false,
       });
       sourceArray.clear();
+      updatedRecordsArray.sort(sortFun);
       sourceArray.pushObjects(updatedRecordsArray);
       return this;
     }).finally(() => safeExec(this, 'set', '_isReloading', false));

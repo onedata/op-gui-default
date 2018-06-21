@@ -41,6 +41,23 @@
               type="tabs"
               class="nav-tabs-transfers"
             }}
+              {{#if fileProxy.content}}
+                {{#bs-nav-item
+                  active=(eq activeTabId "file")
+                }}
+                  <a href="#file"
+                    class="nav-link nav-link-file"
+                    role="tab" {{action select "file"}}>
+                    {{one-icon class="tab-icon" icon=_fileTabIcon}}
+                    {{#truncated-string class="one-label tab-name"}}
+                      {{file.name}}
+                    {{/truncated-string}}
+                    <span class="tab-close clickable" {{action "closeFileTab"}}>
+                      {{one-icon icon="close"}}
+                    </span>
+                  </a>
+                {{/bs-nav-item}}
+              {{/if}}
               {{#bs-nav-item
                 active=(eq activeTabId "scheduled")
               }}
@@ -79,7 +96,37 @@
               {{/bs-nav-item}}
             {{/bs-nav}}
             <div class="tab-content tab-content-transfers-list">
-              {{#bs-tab-pane elementId="on-the-fly" }}
+              {{#if fileProxy}}
+                {{#bs-tab-pane elementId="file"}}
+                  {{#if (eq activeTabId "file")}}
+                    <div class="row row-file-transfers">
+                      <div class="col-xs-12 col-file-transfers">
+                        <div class="row loadable-row">
+                          {{#loading-container isLoading=(or
+                              fileProxy.isPending
+                              (not providersLoaded)
+                              (not fileTransfersLoaded)
+                            )
+                            class="loading-file-table"
+                          }}
+                            {{transfers/live-stats-table
+                              transfers=fileTransfers
+                              transferType="file"
+                              providers=providers
+                              providersColors=providersColors
+                              updaterId=(concat transfersUpdater.updaterId "-file-" file.id)
+                              notifyTransferListChanged=(action "transferListChanged")
+                              justOpened=(eq _tabJustChangedId "file")
+                              clearJustOpened=(action "clearJustChangedTabId" "file")
+                            }}
+                          {{/loading-container}}
+                        </div>
+                      </div>
+                    </div>
+                  {{/if}}
+                {{/bs-tab-pane}}
+              {{/if}}
+              {{#bs-tab-pane elementId="on-the-fly"}}
                 {{#if (eq activeTabId "on-the-fly")}}
                   <div class="row row-on-the-fly-transfers">
                     <div class="col-xs-12 col-on-the-fly-transfers">
@@ -117,8 +164,6 @@
                             transferType="scheduled"
                             providers=providers
                             providersColors=providersColors
-                            selectedTransferIds=selectedTransferIds
-                            movedTransfers=transfersUpdater.movedTransfers
                             updaterId=(concat transfersUpdater.updaterId "-scheduled")
                             notifyTransferListChanged=(action "transferListChanged")
                             justOpened=(eq _tabJustChangedId "scheduled")
@@ -149,8 +194,6 @@
                             transferType="current"
                             providers=providers
                             providersColors=providersColors
-                            selectedTransferIds=selectedTransferIds
-                            movedTransfers=transfersUpdater.movedTransfers
                             updaterId=(concat transfersUpdater.updaterId "-current")
                             notifyTransferListChanged=(action "transferListChanged")
                             justOpened=(eq _tabJustChangedId "current")
@@ -181,8 +224,6 @@
                             transferType="completed"
                             providers=providers
                             providersColors=providersColors
-                            selectedTransferIds=selectedTransferIds
-                            movedTransfers=transfersUpdater.movedTransfers
                             updaterId=(concat transfersUpdater.updaterId "-completed")
                             notifyTransferListChanged=(action "transferListChanged")
                             justOpened=(eq _tabJustChangedId "completed")

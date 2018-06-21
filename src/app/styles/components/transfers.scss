@@ -474,3 +474,36 @@
     width: 100%;
   }
 }
+
+.nav-tabs-transfers {
+  .nav-link-file {
+    min-width: 120px;
+    padding-right: 20px;
+    .tab-icon {
+      @include vertical-align-middle();
+      left: 8px;
+      font-size: 28px;
+      &.oneicon-folder {
+        // custom pull up for folder icons
+        margin-top: -2px;
+      }
+    }
+    .tab-name {
+      padding-left: 10px;
+      padding-right: 8px;
+      &.truncate {
+        max-width: 200px;  
+      }
+    }
+    .tab-close {
+      .one-icon {
+        @include vertical-align-middle();
+        right: 8px;
+        font-size: 24px;
+        &:hover {
+          color: $color-one-red;
+        }
+      }
+    }
+  }
+}

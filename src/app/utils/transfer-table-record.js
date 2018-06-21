@@ -24,6 +24,10 @@ const {
 const START_END_TIME_FORMAT = 'D MMM YYYY H:mm:ss';
 
 const statusGroups = {
+  // in file tab all transfers are on the right list
+  file: {
+    has: () => true,
+  },
   scheduled: new Set([
     'scheduled',
     'enqueued',
@@ -43,12 +47,6 @@ const statusGroups = {
 
 export default EmberObject.extend({
   destinationUnknownText: 'unknown',
-  
-  /**
-   * @virtual
-   * @type {Array<string>}
-   */
-  selectedTransferIds: undefined,
   
   /**
    * @virtual
@@ -111,14 +109,6 @@ export default EmberObject.extend({
   finishedAtReadable: computedPipe('finishedAtComparable', timeReadable),
   totalBytesReadable: computedPipe('transfer.transferredBytes', bytesToString),
   
-  initSelect: computed('selectedTransferIds.[]', 'transferId', function () {
-    const {
-      selectedTransferIds,
-      transferId
-    } = this.getProperties('selectedTransferIds', 'transferId');
-    return _.includes(selectedTransferIds, transferId);
-  }),
-  
   listIndex: computed('transfer', 'transfers.@each.startIndex', function () {
     const transfer = this.get('transfer');
     const transfers = this.get('transfers');
@@ -149,6 +139,8 @@ export default EmberObject.extend({
     return transferCollection && status ?
       statusGroups[transferCollection].has(status) : true;
   }),
+  
+  currentStatsObserver: undefined,
   
   init() {
     const transfer = this.get('transfer');
@@ -182,6 +174,14 @@ export default EmberObject.extend({
         // thus it can show some warnings/errors, but it's a temporary solution
         // TODO: remove this code when proper fix on backend will be made
         .then(t => t.belongsTo('currentStat').reload());
+    }
+    
+    if (this.get('transferCollection') === 'file') {
+      this.addObserver('status', function () {
+        transfer.reload();
+      });
+      // enable observer
+      this.get('status');
     }
   },
 });

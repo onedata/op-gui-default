@@ -32,6 +32,7 @@ const {
  */
 const TRANSFER_COLLECTION_DELAY = 300;
 
+const DEFAULT_FILE_TIME = 8 * 1000;
 const DEFAULT_SCHEDULED_TIME = 4 * 1000;
 const DEFAULT_COMPLETED_TIME = 8 * 1000;
 const MAP_TIME = 5100;
@@ -67,6 +68,12 @@ export default EmberObject.extend({
   isEnabled: false,
 
   /**
+   * @virtual
+   * @type {File}
+   */
+  file: undefined,
+  
+  /**
    * Minimum time for polling (if there are no transfers)
    * @type {Ember.Computed<number>}
    */
@@ -83,6 +90,12 @@ export default EmberObject.extend({
    * @type {number}
    */
   pollingTimeScheduled: DEFAULT_SCHEDULED_TIME,
+  
+  /**
+   * Polling interval (ms) used for fetching transfers list for file
+   * @type {number}
+   */
+  pollingTimeFile: DEFAULT_FILE_TIME,
   
   /**
    * Polling interval (ms) used for fetching current transfers
@@ -113,6 +126,11 @@ export default EmberObject.extend({
   /**
    * @type {boolean}
    */
+  fileEnabled: true,
+  
+  /**
+   * @type {boolean}
+   */
   scheduledEnabled: true,
   
   /**
@@ -135,6 +153,10 @@ export default EmberObject.extend({
    */
   mapEnabled: true,
 
+  _fileEnabled: computed('fileEnabled', 'isEnabled', function () {
+    return this.get('isEnabled') && this.get('fileEnabled');
+  }),
+  
   _scheduledEnabled: computed('scheduledEnabled', 'isEnabled', function () {
     return this.get('isEnabled') && this.get('scheduledEnabled');
   }),
@@ -155,6 +177,13 @@ export default EmberObject.extend({
     return this.get('isEnabled') && this.get('mapEnabled');
   }),
 
+  /**
+   * Initialized with `_createWatchers`.
+   * Updates info about transfers belong to file (if file is present)
+   * @type {Looper}
+   */
+  _fileWatcher: undefined,
+  
   /**
    * Initialized with `_createWatchers`.
    * Updates info about scheduled transfers
@@ -234,14 +263,13 @@ export default EmberObject.extend({
    */
   _toggleWatchersDelay: ENV.environment === 'test' ? 0 : 1000,
 
-  movedTransfers: undefined,
-  
   init() {
     this._super(...arguments);
 
     this.set('updaterId', new Date().getTime());
     
     this.setProperties({
+      fileIsUpdating: false,
       scheduledIsUpdating: false,
       currentIsUpdating: false,
       completedIsUpdating: false,
@@ -253,17 +281,13 @@ export default EmberObject.extend({
 
     // enable observers for properties
     this.getProperties(
+      '_fileEnabled',
       '_scheduledEnabled',
       '_currentEnabled',
       '_currentStatEnabled',
       '_completedEnabled',
       '_mapEnabled'
     );
-
-    this.set('_completedIdsCache', []);
-    this.set('_currentIdsCache', []);
-    this.set('managedTransfers', new Set());
-    this.set('movedTransfers', new Set());
   },
 
   destroy() {
@@ -271,6 +295,7 @@ export default EmberObject.extend({
       _.each(
         _.values(
           this.getProperties(
+            '_fileWatcher',
             '_scheduledWatcher',
             '_currentWatcher',
             '_currentStatWatcher',
@@ -289,6 +314,14 @@ export default EmberObject.extend({
    * Create watchers for fetching information
    */
   _createWatchers() {
+    const _fileWatcher = Looper.create({
+      immediate: true,
+    });
+    _fileWatcher
+      .on('tick', () => 
+        safeExec(this, 'fetchFile')
+      );
+    
     const _scheduledWatcher = Looper.create({
       immediate: true,
     });
@@ -330,6 +363,7 @@ export default EmberObject.extend({
       );
 
     this.setProperties({
+      _fileWatcher,
       _scheduledWatcher,
       _currentWatcher,
       _currentStatWatcher,
@@ -339,11 +373,13 @@ export default EmberObject.extend({
   },
 
   observeToggleWatchers: observer(
+    '_fileEnabled',
     '_scheduledEnabled',
     '_currentEnabled',
     '_currentStatEnabled',
     '_completedEnabled',
     '_mapEnabled',
+    'pollingTimeFile',
     'pollingTimeScheduled',
     'pollingTimeCurrent',
     'pollingTimeCompleted',
@@ -357,37 +393,48 @@ export default EmberObject.extend({
     // this method is invoked from debounce, so it's "this" can be destroyed
     safeExec(this, () => {
       const {
+        _fileEnabled,
         _scheduledEnabled,
         _currentEnabled,
         _currentStatEnabled,
         _completedEnabled,
         _mapEnabled,
+        _fileWatcher,
         _scheduledWatcher,
         _currentWatcher,
         _currentStatWatcher,
         _completedWatcher,
         _mapWatcher,
+        pollingTimeFile,
         pollingTimeScheduled,
         pollingTimeCurrent,
         pollingTimeCompleted,
         pollingTimeMap,
       } = this.getProperties(
+        '_fileEnabled',
         '_scheduledEnabled',
         '_currentEnabled',
         '_currentStatEnabled',
         '_completedEnabled',
         '_mapEnabled',
+        '_fileWatcher',
         '_scheduledWatcher',
         '_currentWatcher',
         '_currentStatWatcher',
         '_completedWatcher',
         '_mapWatcher',
+        'pollingTimeFile',
         'pollingTimeScheduled',
         'pollingTimeCurrent',
         'pollingTimeCompleted',
         'pollingTimeMap'
       );
 
+      set(
+        _fileWatcher,
+        'interval',
+        _fileEnabled ? pollingTimeFile : null
+      );
       set(
         _scheduledWatcher,
         'interval',
@@ -435,6 +482,23 @@ export default EmberObject.extend({
           }
         })
     ));
+  },
+  
+  /**
+   * Function invoked when file transfers should be updated by polling timer
+   * @return {Promise<Array<TransferCurrentStat>>} resolves with current stats
+   *    of updated current transfers
+   */
+  fetchFile() {
+    this.set('fileIsUpdating', true);
+    const file = this.get('file');
+    
+    return get(file, 'transferList').reload({
+      head: true,
+      minSize: minItemsCount,
+    })
+      .catch(error => safeExec(this, () => this.set('fileError', error)))
+      .finally(() => safeExec(this, () => this.set('fileIsUpdating', false)));
   },
   
   /**

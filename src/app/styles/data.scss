@@ -254,6 +254,8 @@
 
 // file chunks
 
+$-file-chunks-table-name-padding: 10px;
+
 #file-chunks-modal {
   @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
     .modal-dialog.modal-lg {
@@ -295,6 +297,13 @@
     left: 0;
     right: 0;
     text-align: center;
+  }
+  .row-go-to {
+    margin-top: 30px;
+    margin-bottom: -10px;
+    padding-left: $-file-chunks-table-name-padding;
+    padding-top: 10px;
+    border-top: 1px solid $table-border-color;
   }
 }
 
@@ -375,7 +384,7 @@
   }
 
   .provider-name {
-    padding-right: 10px;
+    padding-right: $-file-chunks-table-name-padding;
   }
   .chunks {
     // using something like width of canvas-based file chunks-bar

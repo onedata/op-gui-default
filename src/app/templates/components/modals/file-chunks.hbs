@@ -78,15 +78,36 @@
                   </tbody>
                 </table>
               </div>
-              {{#if (and fileTransfers fileTransfers.length)}}
-                <div class="row">
-                  <div class="alert alert-info">
-                    {{t "components.dataFilesListToolbar.fileChunksModal.currentlyTransferredText"}}
-                    &ndash;
-                    {{#link-to "onedata.transfers.show" space.id (query-params selected_transfers=transferIdsQuery)}}{{t "components.dataFilesListToolbar.fileChunksModal.currentlyTransferredLink"}}{{/link-to}}.
-                  </div>
-                </div>
-              {{/if}}
+              <div class="row row-go-to">
+                {{#if areTransfersInProgress}}
+                  {{t
+                    "components.dataFilesListToolbar.fileChunksModal.currentlyTransferredText"
+                    elementType=fileType
+                  }}
+                  &ndash;
+                  {{#link-to "onedata.transfers.show" space.id (query-params file_id=file.id)}}{{t
+                    "components.dataFilesListToolbar.fileChunksModal.currentlyTransferredLink"
+                  }}{{/link-to}}.
+                {{else if _endedTransfersCount}}
+                  {{t
+                    "components.dataFilesListToolbar.fileChunksModal.endedTransfersText"
+                    count=_endedTransfersCount
+                    elementType=fileType
+                  }}
+                  {{_endedTransfersCount}}
+                  {{t (concat "components.dataFilesListToolbar.fileChunksModal.time" (if (gt _endedTransfersCount 1) "s"))}}
+                  {{#if _endedTransfersMore}}
+                    {{t "components.dataFilesListToolbar.fileChunksModal.orMore"}}
+                  {{/if}}
+                  &ndash;
+                  {{#link-to "onedata.transfers.show" space.id (query-params file_id=file.id)}}{{t "components.dataFilesListToolbar.fileChunksModal.endedTransfersLink"}}{{/link-to}}.
+                {{else}}
+                  {{t
+                    "components.dataFilesListToolbar.fileChunksModal.noTransfersText"
+                    elementType=fileType
+                  }}.
+                {{/if}}
+              </div>
               
               {{#if migrationSource}}
                 <div class="open">

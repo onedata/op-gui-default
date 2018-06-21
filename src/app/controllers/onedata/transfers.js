@@ -23,7 +23,6 @@ export default Controller.extend({
     resetShowQueryParams() {
       return this.transitionToRoute({
         queryParams: {
-          selected_transfers: undefined,
           sort_by: undefined,
         },
       });

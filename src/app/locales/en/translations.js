@@ -540,6 +540,7 @@ export default {
         totalFiles: 'Processed files',
         status: 'Status',
         destinationUnknown: '-',
+        fileHistoryLimitReached: 'History limit per file reached',
         cellFileName: {
           deleted: 'deleted',
         },

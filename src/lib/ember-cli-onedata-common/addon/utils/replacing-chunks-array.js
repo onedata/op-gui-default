@@ -139,7 +139,6 @@ export default ArraySlice.extend({
         }
       }
     }),
-
   
   fetchPrev() {
     if (!this.get('_fetchPrevLock')) {

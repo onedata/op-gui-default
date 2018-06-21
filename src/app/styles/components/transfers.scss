@@ -28,6 +28,15 @@
     }
   }
 
+  .file-history-limit-message {
+    margin-top: 20px;
+    border-top: 1px solid $table-border-color;
+    padding-top: 16px;
+    padding-left: $-table-padding;
+    text-align: center;
+    color: darken($table-border-color, 20%);
+  }
+  
   .ct-label.ct-vertical, .ct-label.ct-horizontal {
     white-space: nowrap;
   }

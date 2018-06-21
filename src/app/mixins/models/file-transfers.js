@@ -37,8 +37,6 @@ export default Ember.Mixin.create({
     } = this.getProperties('oneproviderServer', 'store');
     return oneproviderServer.getTransfersForFile(fileId, 'ids')
       .then(({ ongoing, ended }) => {
-        // FIXME: do not fetch unnecessary!
-        console.log('fetch');
         const list = [...ongoing, ...ended];
         return Promise.all(list.map(transferId => store.findRecord('transfer', transferId)));
       });

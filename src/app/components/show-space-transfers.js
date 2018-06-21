@@ -168,6 +168,41 @@ export default Component.extend({
   //#endregion
       
   //#region Feature: transfers data container
+    
+  /**
+   * Max number of ended transfers that can be fetched for transfer
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _historyLimitPerFile: computed.reads('session.sessionDetails.config.transfersHistoryLimitPerFile'),
+      
+  /**
+   * Number of loaded ended transfers for file tab.
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _fileEndedTransfersCount: computed(
+    'fileTransfers.sourceArray.@each.finishTime',
+    function () {
+      return this.get('fileTransfers.sourceArray')
+        .reduce(
+          (sum, transfer) => sum + (get(transfer, 'finishTime') ? 1 : 0),
+          0
+        );
+    }),
+  
+  // FIXME: should be only if reached bottom
+  /**
+   * True if the `_endedTransfersCount` reached history limit
+   * @type {boolean}
+   */
+  _fileHistoryLimitReached: computed('fileTransfersLoadingMore', '_historyLimitPerFile', '_fileEndedTransfersCount', function () {
+    if (!this.get('fileTransfersLoadingMore')) {
+      const {
+        _historyLimitPerFile,
+        _fileEndedTransfersCount,
+      } = this.getProperties('_historyLimitPerFile', '_fileEndedTransfersCount');
+      return _fileEndedTransfersCount >= _historyLimitPerFile;
+    }
+  }),
   
   activeListUpdaterId: computed('activeTabId', '_isTransfersTableBegin', function () {
     if (this.get('_isTransfersTableBegin')) {

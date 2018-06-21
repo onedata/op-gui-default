@@ -46,6 +46,7 @@ export default function computedFileTransfersList() {
       startIndex: 0,
       endIndex: 10000,
       indexMargin: 10,
+      chunkSize: 10000,
     });
     return FakeListRecordRelation.create({ initChunksArray });
   });

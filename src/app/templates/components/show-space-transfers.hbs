@@ -119,6 +119,11 @@
                               justOpened=(eq _tabJustChangedId "file")
                               clearJustOpened=(action "clearJustChangedTabId" "file")
                             }}
+                            {{#if _fileHistoryLimitReached}}
+                              <p class="file-history-limit-message">
+                                {{t "components.transfers.liveTableStats.fileHistoryLimitReached"}}
+                              </p>
+                            {{/if}}
                           {{/loading-container}}
                         </div>
                       </div>

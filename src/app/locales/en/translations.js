@@ -436,9 +436,15 @@ export default {
         providersLink: 'providers',
         onlySingleProviderSupport: 'Current space is supported by only one provider, ' +
           'thus advanced data replication or migration features are not available.',
-        currentlyTransferredText: 'The data is currently transferred between ' +
+        currentlyTransferredText: 'This {{elementType}} is currently transferred between ' +
           'providers',
-        currentlyTransferredLink: 'see ongoing transfers on transfers tab',
+        currentlyTransferredLink: 'see ongoing transfers',
+        endedTransfersText: 'This {{elementType}} was transferred manually',
+        orMore: 'or more',
+        time: 'time',
+        times: 'times',
+        endedTransfersLink: 'see history',
+        noTransfersText: 'This {{elementType}} has never been transferred manually',
         providerRow: {
           replication: 'replication',
           migration: 'migration',
@@ -513,6 +519,7 @@ export default {
       completedTransfers: 'Ended',
       onTheFlyTransfers: 'On-the-fly',
       noTransfers: {
+        file: 'There are no transfers for selected file or directory',
         scheduled: 'There are no waiting transfers',
         current: 'There are no ongoing transfers',
         completed: 'There are no ended transfers',
@@ -522,6 +529,8 @@ export default {
         'supported by current provider',
       in: 'Input',
       out: 'Output',
+      fileHistoryLimitReached: 'History limit per file reached',
+      fileNotExists: 'Selected file or directory does not exist',
       liveTableStats: {
         type: 'Type',
         path: 'File/directory',

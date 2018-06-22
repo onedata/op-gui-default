@@ -41,7 +41,7 @@
               type="tabs"
               class="nav-tabs-transfers"
             }}
-              {{#if fileProxy.content}}
+              {{#if fileProxy.isSettled}}
                 {{#bs-nav-item
                   active=(eq activeTabId "file")
                 }}
@@ -50,7 +50,11 @@
                     role="tab" {{action select "file"}}>
                     {{one-icon class="tab-icon" icon=_fileTabIcon}}
                     {{#truncated-string class="one-label tab-name"}}
-                      {{file.name}}
+                      {{#if fileProxy.isFulfilled}}
+                        {{file.name}}
+                      {{else}}
+                        ?
+                      {{/if}}
                     {{/truncated-string}}
                     <span class="tab-close clickable" {{action "closeFileTab"}}>
                       {{one-icon icon="close"}}
@@ -96,33 +100,36 @@
               {{/bs-nav-item}}
             {{/bs-nav}}
             <div class="tab-content tab-content-transfers-list">
-              {{#if fileProxy}}
+              {{#if fileId}}
                 {{#bs-tab-pane elementId="file"}}
                   {{#if (eq activeTabId "file")}}
                     <div class="row row-file-transfers">
                       <div class="col-xs-12 col-file-transfers">
                         <div class="row loadable-row">
                           {{#loading-container isLoading=(or
-                              fileProxy.isPending
                               (not providersLoaded)
-                              (not fileTransfersLoaded)
+                              fileTransferList.isPending
                             )
                             class="loading-file-table"
                           }}
-                            {{transfers/live-stats-table
-                              transfers=fileTransfers
-                              transferType="file"
-                              providers=providers
-                              providersColors=providersColors
-                              updaterId=(concat transfersUpdater.updaterId "-file-" file.id)
-                              notifyTransferListChanged=(action "transferListChanged")
-                              justOpened=(eq _tabJustChangedId "file")
-                              clearJustOpened=(action "clearJustChangedTabId" "file")
-                            }}
-                            {{#if _fileHistoryLimitReached}}
-                              <p class="file-history-limit-message">
-                                {{t "components.transfers.liveTableStats.fileHistoryLimitReached"}}
-                              </p>
+                            {{#if fileProxy.isFulfilled}}
+                              {{transfers/live-stats-table
+                                transfers=fileTransfers
+                                transferType="file"
+                                providers=providers
+                                providersColors=providersColors
+                                updaterId=(concat transfersUpdater.updaterId "-file-" file.id)
+                                notifyTransferListChanged=(action "transferListChanged")
+                                justOpened=(eq _tabJustChangedId "file")
+                                clearJustOpened=(action "clearJustChangedTabId" "file")
+                              }}
+                              {{#if _fileHistoryLimitReached}}
+                                <p class="file-history-limit-message">
+                                  {{t "components.transfers.fileHistoryLimitReached"}}
+                                </p>
+                              {{/if}}
+                            {{else}}
+                              <p>{{t "components.transfers.fileNotExists"}}</p>
                             {{/if}}
                           {{/loading-container}}
                         </div>

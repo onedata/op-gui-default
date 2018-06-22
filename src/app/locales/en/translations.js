@@ -519,6 +519,7 @@ export default {
       completedTransfers: 'Ended',
       onTheFlyTransfers: 'On-the-fly',
       noTransfers: {
+        file: 'There are no transfers for selected file or directory',
         scheduled: 'There are no waiting transfers',
         current: 'There are no ongoing transfers',
         completed: 'There are no ended transfers',
@@ -528,6 +529,8 @@ export default {
         'supported by current provider',
       in: 'Input',
       out: 'Output',
+      fileHistoryLimitReached: 'History limit per file reached',
+      fileNotExists: 'Selected file or directory does not exist',
       liveTableStats: {
         type: 'Type',
         path: 'File/directory',
@@ -540,7 +543,6 @@ export default {
         totalFiles: 'Processed files',
         status: 'Status',
         destinationUnknown: '-',
-        fileHistoryLimitReached: 'History limit per file reached',
         cellFileName: {
           deleted: 'deleted',
         },

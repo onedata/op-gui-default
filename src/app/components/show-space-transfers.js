@@ -99,7 +99,9 @@ export default Component.extend({
   //#region Computed properties
 
   /**
-   * A file record for which a special tab will be rendered
+   * A file record for which a special tab will be rendered.
+   * If no `fileId` is provided - undefined.
+   * If file is broken - rejects.
    * @type {Ember.ComputedProperty<PromiseObject<models.File>>|undefined}
    */
   fileProxy: computed('fileId', function () {
@@ -108,7 +110,15 @@ export default Component.extend({
       fileId,
     } = this.getProperties('store', 'fileId');
     if (fileId) {
-      return store.findRecord('file', fileId);
+      const promise = store.findRecord('file', fileId)
+        .then(record => {
+          if (get(record, 'type') === 'broken') {
+            throw { message: 'not_found' };
+          } else {
+            return record;
+          }
+        });
+      return PromiseObject.create({ promise });
     }
   }),
 
@@ -141,6 +151,12 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<string>}
    */
   sessionProviderId: computed.reads('session.sessionDetails.providerId'),
+        
+  /**
+   * Max number of ended transfers that can be fetched for transfer
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _historyLimitPerFile: computed.reads('session.sessionDetails.config.transfersHistoryLimitPerFile'),
   
   /**
    * List of providers that support this space
@@ -170,26 +186,22 @@ export default Component.extend({
   //#region Feature: transfers data container
     
   /**
-   * Max number of ended transfers that can be fetched for transfer
-   * @type {Ember.ComputedProperty<number>}
-   */
-  _historyLimitPerFile: computed.reads('session.sessionDetails.config.transfersHistoryLimitPerFile'),
-      
-  /**
    * Number of loaded ended transfers for file tab.
    * @type {Ember.ComputedProperty<number>}
    */
   _fileEndedTransfersCount: computed(
     'fileTransfers.sourceArray.@each.finishTime',
     function () {
-      return this.get('fileTransfers.sourceArray')
+      const allFileTransfers = this.get('fileTransfers.sourceArray');
+      if (allFileTransfers) {
+        return this.get('fileTransfers.sourceArray')
         .reduce(
           (sum, transfer) => sum + (get(transfer, 'finishTime') ? 1 : 0),
           0
         );
+      }
     }),
   
-  // FIXME: should be only if reached bottom
   /**
    * True if the `_endedTransfersCount` reached history limit
    * @type {boolean}
@@ -220,13 +232,17 @@ export default Component.extend({
       transfersUpdater: oldTransfersUpdater,
       activeListUpdaterId,
       activeTabId,
+      fileProxy,
+      file,
     } = this.getProperties(
       '_transfersUpdaterEnabled',
       'space',
       'store',
       'activeTabId',
       'activeListUpdaterId',
-      'transfersUpdater'
+      'transfersUpdater',
+      'fileProxy',
+      'file'
     );
     
     if (oldTransfersUpdater) {
@@ -239,8 +255,9 @@ export default Component.extend({
       currentEnabled: activeListUpdaterId === 'current',
       currentStatEnabled: activeTabId === 'scheduled' || activeTabId === 'current',
       completedEnabled: activeListUpdaterId === 'completed',
-      fileEnabled: activeTabId === 'file',
+      fileEnabled: activeTabId === 'file' && fileProxy && get(fileProxy, 'isFulfilled'),
       space: space,
+      file: file,
     });    
     this.set('transfersUpdater', transfersUpdater);
     
@@ -288,6 +305,10 @@ export default Component.extend({
   scheduledTransferList: computed.reads('space.scheduledTransferList'),
   currentTransferList: computed.reads('space.currentTransferList'),  
   completedTransferList: computed.reads('space.completedTransferList'),
+  
+  /**
+   * @type {Ember.ComputedProperty<FakeListRecordRelation|undefined>}
+   */
   fileTransferList: computed.reads('file.transferList'),
   
   onTheFlyTransferList: computed.reads('space.onTheFlyTransferList'),
@@ -330,7 +351,6 @@ export default Component.extend({
   scheduledTransfersLoaded: computed.reads('scheduledTransferList.isLoaded'),
   currentTransfersLoaded: computed.reads('currentTransferList.isLoaded'),
   completedTransfersLoaded: computed.reads('completedTransferList.isLoaded'),
-  fileTransfersLoaded: computed.reads('fileTransferList.isLoaded'),
   
   onTheFlyTransfersLoaded: computed(
     'onTheFlyTransferList.isLoaded',
@@ -516,20 +536,27 @@ export default Component.extend({
     'activeListUpdaterId',
     'activeTabId',
     'file',
+    'fileProxy.isFulfilled',
     function enableWatcherCollection() {
       const {
         activeListUpdaterId,
         activeTabId,
         transfersUpdater,
         file,
-      } = this.getProperties('activeListUpdaterId', 'transfersUpdater', 'activeTabId',
-        'file');
+        fileProxy,
+      } = this.getProperties(
+        'activeListUpdaterId', 
+        'transfersUpdater', 
+        'activeTabId',
+        'file',
+        'fileProxy'
+      );
       transfersUpdater.setProperties({
         scheduledEnabled: activeListUpdaterId === 'scheduled',
         currentEnabled: activeListUpdaterId === 'current',
         currentStatEnabled: _.includes(['scheduled', 'current', 'file'], activeTabId),
         completedEnabled: activeListUpdaterId === 'completed',
-        fileEnabled: activeTabId === 'file',
+        fileEnabled: activeTabId === 'file' && fileProxy && get(fileProxy, 'isFulfilled'),
         file,
       });
     }),
@@ -632,7 +659,11 @@ export default Component.extend({
     } = this.getProperties('activeTabId', 'openedTransfersChunksArray', 'transfersUpdater', 'listLocked');
     if (!listLocked && activeTabId !== 'on-the-fly') {
       /** @type {Array<string>} */
-      const allTransferIds = this.get(`${activeTabId}TransferList.content`).hasMany('list').ids();
+      const transferListContent = this.get(`${activeTabId}TransferList.content`);
+      if (!transferListContent) {
+        return;
+      }
+      const allTransferIds = transferListContent.hasMany('list').ids();
       /** @type {Array<string>} */
       const renderedTransferIds = items.map(i => i.getAttribute('data-transfer-id'));
       const firstId = renderedTransferIds[0];

@@ -78,12 +78,12 @@ function create(type) {
   });
 
   relations['parent'] = belongsTo(parentModel, {
-    inverse: 'children',
+    inverse: null,
     async: true
   });
 
   relations['children'] = hasMany(parentModel, {
-    inverse: 'parent',
+    inverse: null,
     async: true
   });
 

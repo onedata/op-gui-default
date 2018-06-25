@@ -31,6 +31,8 @@ export default Component.extend({
   fileType: computed.reads('record.fileType'),
   filePath: computed.reads('record.path'),
   totalFiles: computed.reads('record.totalFiles'),
+  file: computed.reads('record.file'),
+  space: computed.reads('record.space'),
   
   fileName: computed('filePath', function () {
     return fileName(this.get('filePath'));

@@ -2,7 +2,7 @@
   id="transfer-row-{{record.transferId}}"
   data-transfer-id={{record.transferId}}
   data-list-index={{record.listIndex}}
-  class="transfer-row data-row {{if (exists-in selectedItems record) "selected-row"}} {{if (exists-in expandedRowIndexes record.transferIndex) "expanded-row"}}"
+  class="transfer-row data-row {{if (exists-in selectedItems record) "selected-row"}} {{if (exists-in expandedRowIndexes record.transferIndex) "expanded-row"}} {{if record.isInCorrectCollection "correct-collection" "other-collection"}}"
   {{action (if (not record.isLoading)
     (if (exists-in expandedRowIndexes record.transferIndex) "collapseRow" "expandRow")
     "collapseRow"

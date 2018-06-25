@@ -16,6 +16,7 @@ import mutateArray from 'ember-cli-onedata-common/utils/mutate-array';
 import generateColors from 'op-worker-gui/utils/generate-colors';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 import PromiseArray from 'ember-cli-onedata-common/utils/ember/promise-array';
+import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
 import ListWatcher from 'op-worker-gui/utils/list-watcher';
 
 const {
@@ -35,8 +36,6 @@ const {
     scheduleOnce,
   },
 } = Ember;
-
-const defaultActiveTabId = 'on-the-fly';
 
 export default Component.extend({
   classNames: ['show-space-transfers', 'row'],
@@ -66,18 +65,43 @@ export default Component.extend({
    */
   changeListTab: undefined,
   
+  /**
+   * @virtual optional
+   * If set, skip auto select of first opened tab and use injected tab ID
+   * @type {string|null}
+   */
+  defaultTab: undefined,
+  
   //#endregion
   
   //#region Internal properties
       
   listLocked: false,
   
-  activeTabId: defaultActiveTabId,
+  activeTabId: computed.reads('initialTab.content'),
+  
+  /**
+   * Holds tab ID that was opened recently.
+   * It should be cleared if some operations after opening has been done.
+   * @type {string|null}
+   */
+  _tabJustChangedId: null,
   
   /**
    * @type {boolean}
    */
   _isTransfersTableBegin: undefined,
+  
+  /**
+   * List of provider IDs of the opened on-the-fly transfers charts.
+   * Should be updated by the `on-the-fly-list` component.
+   * Note: all provider IDs will be opened if providers list will be modified,
+   * but for now the provider list is constant.
+   * @type {Ember.Array<string>}
+   */
+  _onTheFlyOpenedProviderIds: computed('providers.@each.id', function () {
+    return A(this.get('providers').map(p => get(p, 'id')));
+  }),
   
   //#endregion
   
@@ -151,7 +175,7 @@ export default Component.extend({
       isEnabled: _transfersUpdaterEnabled,
       scheduledEnabled: activeListUpdaterId === 'scheduled',
       currentEnabled: activeListUpdaterId === 'current',
-      currentStatEnabled: activeTabId === 'current',
+      currentStatEnabled: activeTabId === 'scheduled' || activeTabId === 'current',
       completedEnabled: activeListUpdaterId === 'completed',
       space: space,
     });    
@@ -253,7 +277,7 @@ export default Component.extend({
   _transfersUpdaterEnabled: computed.readOnly('transfersUpdaterEnabled'),
   
   scheduledTransferList: computed.reads('space.scheduledTransferList'),
-  currentTransferList: computed.reads('space.currentTransferList'),
+  currentTransferList: computed.reads('space.currentTransferList'),  
   completedTransferList: computed.reads('space.completedTransferList'),
   
   onTheFlyTransferList: computed.reads('space.onTheFlyTransferList'),
@@ -268,25 +292,25 @@ export default Component.extend({
 
   /**
    * Collection of Transfer model for scheduled transfers
-   * @type {Ember.ComputedProperty<ArraySlice<Transfer>>}
+   * @type {Ember.ComputedProperty<ReplacingChunksArray<Transfer>>}
    */
   scheduledTransfers: undefined,
   
   /**
    * Collection of Transfer model for current transfers
-   * @type {Ember.ComputedProperty<ArraySlice<Transfer>>}
+   * @type {Ember.ComputedProperty<ReplacingChunksArray<Transfer>>}
    */
   currentTransfers: undefined,
   
   /**
    * Collection of Transfer model for completed transfers
-   * @type {Ember.ComputedProperty<ArraySlice<Transfer>>}
+   * @type {Ember.ComputedProperty<ReplacingChunksArray<Transfer>>}
    */
   completedTransfers: undefined,
     
   providersLoaded: computed.reads('providerList.queryList.isSettled'),
   providersError: computed.reads('providerList.queryList.reason'),
-
+ 
   scheduledTransfersLoaded: computed.reads('scheduledTransferList.isLoaded'),
   currentTransfersLoaded: computed.reads('currentTransferList.isLoaded'),
   completedTransfersLoaded: computed.reads('completedTransferList.isLoaded'),
@@ -444,8 +468,37 @@ export default Component.extend({
   
   //#endregion
   
+  /**
+   * @type {Ember.ComputedProperty<PromiseObject<string>>}
+   */
+  initialTab: computed(function () {
+    const defaultTab = this.get('defaultTab');
+    if (defaultTab) {
+      return PromiseObject.create({ promise: Promise.resolve(defaultTab) });
+    } else {
+      const promise = Promise.all(
+        ['scheduled', 'current', 'completed'].map(transferType =>
+          this.get(transferType + 'TransferList')
+        )
+      ).then(([ scheduledList, currentList, completedList ]) => {
+        if (get(scheduledList, 'length') > 0) {
+          return 'scheduled';
+        } else if (get(currentList, 'length') > 0) {
+          return 'current';
+        } else if (get(completedList, 'length') > 0) {
+          return 'completed';
+        } else {
+          return 'on-the-fly';
+        }
+      });
+      return PromiseObject.create({ promise }); 
+    }
+  }),
+  
   tabChanged: observer('activeTabId', function observeTabChanged() {
-    this.get('changeListTab')(this.get('activeTabId'));
+    const activeTabId = this.get('activeTabId');
+    this.get('changeListTab')(activeTabId);
+    this.set('_tabJustChangedId', activeTabId);
   }),
   
   enableWatcherCollection: observer('activeListUpdaterId', 'activeTabId', function enableWatcherCollection() {
@@ -457,7 +510,7 @@ export default Component.extend({
     transfersUpdater.setProperties({
       scheduledEnabled: activeListUpdaterId === 'scheduled',
       currentEnabled: activeListUpdaterId === 'current',
-      currentStatEnabled: activeTabId === 'current',
+      currentStatEnabled: activeTabId === 'scheduled' || activeTabId === 'current',
       completedEnabled: activeListUpdaterId === 'completed',
     });
   }),
@@ -589,7 +642,25 @@ export default Component.extend({
     },
     
     transferListChanged(/* type */) {
-      this.get('listWatcher').scrollHandler();
+      const listWatcher = this.get('listWatcher');
+      if (listWatcher) {
+        listWatcher.scrollHandler();
+      }
+    },
+    clearJustChangedTabId(type) {
+      if (this.get('_tabJustChangedId') === type) {
+        this.set('_tabJustChangedId', null);
+      }
+    },
+    toggleOnTheFlyProviderId(providerId, opened) {
+      const _onTheFlyOpenedProviderIds = this.get('_onTheFlyOpenedProviderIds');
+      if (opened) {
+        if (!_onTheFlyOpenedProviderIds.includes(providerId)) {
+          _onTheFlyOpenedProviderIds.pushObject(providerId);
+        }
+      } else {
+        _onTheFlyOpenedProviderIds.removeObject(providerId);
+      }
     },
   },
 });

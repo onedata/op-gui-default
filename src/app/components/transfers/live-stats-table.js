@@ -49,7 +49,7 @@ export default Component.extend({
 
   /**
    * @virtual 
-   * @type {Array<Transfer>}
+   * @type {ReplacingChunksArray<Transfer>}
    */
   transfers: undefined,
 
@@ -111,12 +111,28 @@ export default Component.extend({
    * @type {Array<string>|undefined} array of transfer ids
    */
   selectedTransferIds: undefined,
-      
+    
+  /**
+   * @virtual
+   * If true, table was just showed to user, so some additional
+   * styles/operations, etc. should be performed
+   * @type {boolean}
+   */
+  justOpened: false,
+  
+  /**
+   * @virtual
+   * Invoke this function after operations associated with fresh opened
+   * table have been finished (see `justOpened` flag)
+   * @type {Function}
+   */
+  clearJustOpened: () => {},
+  
   /**
    * @type {EmberObject}
    */
   firstRowSpace: undefined,
-  
+    
   /**
    * If true, component is rendered in mobile mode.
    * @type {boolean}
@@ -135,6 +151,14 @@ export default Component.extend({
   _stickyTableHeaderOffset: 0,
   
   /**
+   * True if the list is reloaded.
+   * Note, it is still false if fetching more data or particular records 
+   * are reloaded.
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  _isReloading: computed.reads('transfers.isReloading'),
+  
+  /**
    * Custom icons for ember-models-table addon.
    * @type {Ember.Object}
    */
@@ -143,6 +167,12 @@ export default Component.extend({
     'sort-desc': 'oneicon oneicon-arrow-down',
   }),
 
+  /**
+   * True if table has no data (except virtual rows)
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  _tableDataEmpty: computed.lt('_tableData.length', 2),
+  
   /**
    * Custom classes for ember-models-table addon.
    * @type {Ember.Object}
@@ -187,6 +217,7 @@ export default Component.extend({
         movedTransfers,
         updaterId,
         _rowActions,
+        transferType,
       } = this.getProperties(
         'transfers',
         'providers',
@@ -196,7 +227,8 @@ export default Component.extend({
         'firstRowSpace',
         'movedTransfers',
         'updaterId',
-        '_rowActions'
+        '_rowActions',
+        'transferType'
       );
       
       if (transfers && providers) {
@@ -237,6 +269,7 @@ export default Component.extend({
               providersColors,
               updaterId,
               actions: _rowActions,
+              transferCollection: transferType,
             }));
             arrayChanged = true;
           }
@@ -467,7 +500,12 @@ export default Component.extend({
       'notifyTransferListChanged',
       this.get('transferType')
     );
-
+  }),
+  
+  isReloadingFinished: observer('_isReloading', function () {
+    if (this.get('justOpened') && !this.get('_isReloading')) {
+      this.get('clearJustOpened')();
+    }
   }),
   
   init() {
@@ -490,6 +528,8 @@ export default Component.extend({
     
     _resizeEventHandler();
     _window.addEventListener('resize', _resizeEventHandler);
+    
+    this.notifyTransferListChanged();
   },
   
   willDestroyElement() {

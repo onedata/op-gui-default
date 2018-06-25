@@ -23,7 +23,7 @@ const {
   observer,
   computed,
   RSVP: { Promise },
-  run: { later, debounce, next },
+  run: { later, debounce },
 } = Ember;
 
 /** 
@@ -32,8 +32,8 @@ const {
  */
 const TRANSFER_COLLECTION_DELAY = 300;
 
-const DEFAULT_SCHEDULED_TIME = 8 * 1000;
-const DEFAULT_COMPLETED_TIME = 16 * 1000;
+const DEFAULT_SCHEDULED_TIME = 4 * 1000;
+const DEFAULT_COMPLETED_TIME = 8 * 1000;
 const MAP_TIME = 5100;
 
 const minItemsCount = 50;
@@ -66,8 +66,6 @@ export default EmberObject.extend({
    */
   isEnabled: false,
 
-  _currentTransfersCount: 0,
-
   /**
    * Minimum time for polling (if there are no transfers)
    * @type {Ember.Computed<number>}
@@ -91,10 +89,10 @@ export default EmberObject.extend({
    * @type {number}
    */
   pollingTimeCurrent: computed(
-    '_currentTransfersCount',
+    'visibleIds.length',
     'basePollingTime',
     function getPollingTimeCurrent() {
-      const currentTransfersCount = this.get('_currentTransfersCount');
+      const currentTransfersCount = this.get('visibleIds.length');
       return currentTransfersCount ? this.computeCurrentPollingTime(currentTransfersCount) :
         this.get('basePollingTime');
     }
@@ -174,7 +172,7 @@ export default EmberObject.extend({
   _currentWatcher: undefined,
 
   /**
-   * Update visible current transfers current stats
+   * Update visible transfers current stats
    * @type {Looper}
    */
   _currentStatWatcher: undefined,
@@ -266,8 +264,6 @@ export default EmberObject.extend({
     this.set('_currentIdsCache', []);
     this.set('managedTransfers', new Set());
     this.set('movedTransfers', new Set());
-
-    next(() => safeExec(this, 'countCurrentTransfers'));
   },
 
   destroy() {
@@ -286,18 +282,6 @@ export default EmberObject.extend({
       );
     } finally {
       this._super(...arguments);
-    }
-  },
-
-  /**
-   * Updates `_currentTransfersCount` property
-   */
-  countCurrentTransfers() {
-    const listRecord = this.get('space.currentTransferList.content');
-    const newCount = listRecord ?
-      this.get('space.currentTransferList.content').hasMany('list').ids().length : 0;
-    if (newCount !== this.get('_currentTransfersCount')) {
-      this.set('_currentTransfersCount', newCount);
     }
   },
   
@@ -326,9 +310,9 @@ export default EmberObject.extend({
     });
     _currentStatWatcher
       .on('tick', () => 
-        safeExec(this, 'updateCurrent')
+        safeExec(this, 'updateCurrentStats')
       );
-
+      
     const _completedWatcher = Looper.create({
       immediate: true,
     });
@@ -357,6 +341,7 @@ export default EmberObject.extend({
   observeToggleWatchers: observer(
     '_scheduledEnabled',
     '_currentEnabled',
+    '_currentStatEnabled',
     '_completedEnabled',
     '_mapEnabled',
     'pollingTimeScheduled',
@@ -472,7 +457,7 @@ export default EmberObject.extend({
       .finally(() => safeExec(this, () => this.set('currentIsUpdating', false)));
   },
 
-  updateCurrent(immediate = false) {
+  updateCurrentStats(immediate = false) {
     return this.fetchSpecificRecords(this.get('visibleIds'), false)
       .then(list => safeExec(this, () => {
         const transfersCount = get(list, 'length');

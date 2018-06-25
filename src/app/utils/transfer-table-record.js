@@ -23,6 +23,24 @@ const {
 
 const START_END_TIME_FORMAT = 'D MMM YYYY H:mm:ss';
 
+const statusGroups = {
+  scheduled: new Set([
+    'scheduled',
+    'enqueued',
+  ]),
+  current: new Set([
+    'active',
+    'invalidating',
+    'cancelling',
+  ]),
+  completed: new Set([
+    'failed',
+    'cancelled',
+    'skipped',
+    'completed',
+  ]),
+};
+
 export default EmberObject.extend({
   destinationUnknownText: 'unknown',
   
@@ -62,8 +80,16 @@ export default EmberObject.extend({
    */
   updaterId: undefined,
   
+  /**
+   * @virtual
+   * @type {string} one of: scheduled, current, completed
+   */
+  transferCollection: undefined,
+  
   transferId: computed.reads('transfer.id'),
   path: computed.reads('transfer.path'),
+  file: computed.reads('transfer.file'),
+  space: computed.reads('transfer.space'),
   fileType: computed.reads('transfer.fileType'),
   userName: computed.reads('transfer.userName'),
   scheduledAtComparable: computed.reads('transfer.scheduleTime'),
@@ -113,6 +139,15 @@ export default EmberObject.extend({
       destination = get(destProvider, 'name');
     }
     return destination;
+  }),
+  
+  isInCorrectCollection: computed('transferCollection', 'status', function () {
+    const {
+      transferCollection,
+      status,
+    } = this.getProperties('transferCollection', 'status');
+    return transferCollection && status ?
+      statusGroups[transferCollection].has(status) : true;
   }),
   
   init() {

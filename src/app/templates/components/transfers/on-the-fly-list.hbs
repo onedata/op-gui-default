@@ -1,6 +1,10 @@
 {{#one-collapsible-list as |list|}}
   {{#each listRecords as |record|}}
-    {{#list.item isActive=true as |listItem|}}
+    {{#list.item
+      isActive=(contains record.provider.id openedProviderIds)
+      itemToggled=(action 'itemToggled' record.provider.id)
+      as |listItem|
+    }}
       {{#listItem.header}}
         <span class="item-icon-container">
           {{one-icon class="item-icon" icon="provider"}}

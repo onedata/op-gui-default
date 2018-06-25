@@ -31,3 +31,12 @@ test_xunit_output: deps
 
 test_rel_xunit_output:
 	cd $(SRC_DIR) && xvfb-run ember test -r xunit --path ../rel
+
+##
+## Submodules
+##
+
+submodules:
+	git submodule sync --recursive ${submodule}
+	git submodule update --init --recursive ${submodule}
+

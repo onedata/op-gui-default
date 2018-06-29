@@ -394,9 +394,10 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
    */
   _chartYMax: computed('_stats', function () {
     const _stats = this.get('_stats');
+    const minY = 8;
     const arrays = _.values(_stats);
     if (!arrays.length) {
-      return 0;
+      return minY;
     }
     let maxSum = 0;
     _.range(arrays[0].length).forEach(i => {
@@ -405,7 +406,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
         maxSum = sum;
       }
     });
-    return Math.max(maxSum, 8);
+    return Math.max(maxSum, minY);
   }),
 
   /**

@@ -65,7 +65,7 @@ export default Component.extend({
         return 'cancelled';
       case 'failed':
         return 'checkbox-filled-x';
-      case 'active':
+      case 'replicating':
       case 'invalidating':
         return 'update';
       case 'scheduled':

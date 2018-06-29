@@ -430,8 +430,7 @@
     font-size: 2em;
     line-height: 0;
     vertical-align: middle;
-    &.completed,
-    &.invalidating {
+    &.completed {
       color: $color-one-mint;
     }
     &.skipped {
@@ -441,14 +440,11 @@
     &.cancelled {
       color: $color-one-red;
     }
-    &.active, &.enqueued {
+    &.replicating, &.invalidating, &.enqueued {
       color: $color-one-yellow;
     }
     &.scheduled {
       color: $onedata-graphite;
-    }
-    &.enqueued {
-      color: $color-one-yellow;
     }
     // action pending states (frontend)
     &.aborting {

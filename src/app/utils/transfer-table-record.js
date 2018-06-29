@@ -29,7 +29,7 @@ const statusGroups = {
     'enqueued',
   ]),
   current: new Set([
-    'active',
+    'replicating',
     'invalidating',
     'cancelling',
   ]),

@@ -550,7 +550,7 @@ export default {
           skipped: 'Skipped',
           cancelled: 'Cancelled',
           failed: 'Failed',
-          active: 'Active',
+          replicating: 'Replicating',
           scheduled: 'Scheduled',
           enqueued: 'Enqueued',
           aborting: 'Aborting',

@@ -1,10 +1,7 @@
 import DS from 'ember-data';
 import Ember from 'ember';
 import isDefaultMixinFactory from 'ember-cli-onedata-common/mixin-factories/models/is-default';
-import ReplacingChunksArray from 'ember-cli-onedata-common/utils/replacing-chunks-array';
-
-import FakeListRecordRelation from 'op-worker-gui/utils/fake-list-record-relation';
-
+import computedTransfersList from 'op-worker-gui/utils/computed-transfers-list';
 
 const {
   attr,
@@ -12,7 +9,6 @@ const {
 } = DS;
 
 const {
-  computed,
   RSVP: { Promise },
   inject: { service },
 } = Ember;
@@ -112,17 +108,3 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
   },
 });
 
-/**
- * @param {string} type one of: waiting, ongoing, ended
- */
-function computedTransfersList(type) {
-  return computed(function() {
-    const initChunksArray = ReplacingChunksArray.create({
-      fetch: (...args) => this.fetchTransfers(type, ...args),
-      startIndex: 0,
-      endIndex: 50,
-      indexMargin: 10,
-    });
-    return FakeListRecordRelation.create({ initChunksArray });
-  });
-}

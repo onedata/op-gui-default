@@ -35,6 +35,7 @@ const COMMON_I18N_PREFIX = 'components.transfers.';
 const I18N_PREFIX = COMMON_I18N_PREFIX + 'liveTableStats.';
 
 const tableExcludedColumns = {
+  file: ['path'],
   scheduled: ['startedAt', 'finishedAt', 'totalBytes', 'totalFiles'],
   current: ['scheduledAt', 'finishedAt'],
   completed: ['scheduledAt'],
@@ -105,13 +106,6 @@ export default Component.extend({
    */
   transferType: 'current',
 
-  /**
-   * Which transfers should be presented as selected on table render
-   * @public
-   * @type {Array<string>|undefined} array of transfer ids
-   */
-  selectedTransferIds: undefined,
-    
   /**
    * @virtual
    * If true, table was just showed to user, so some additional
@@ -204,17 +198,14 @@ export default Component.extend({
     'transfers.{startIndex,endIndex}',
     'providers',
     'providersColors',
-    'selectedTransferIds.[]',
     '_rowActions',
     function () {
       const {
         transfers,
         providers,
         providersColors,
-        selectedTransferIds,
         _tableDataCache,
         firstRowSpace,
-        movedTransfers,
         updaterId,
         _rowActions,
         transferType,
@@ -222,10 +213,8 @@ export default Component.extend({
         'transfers',
         'providers',
         'providersColors',
-        'selectedTransferIds',
         '_tableDataCache',
         'firstRowSpace',
-        'movedTransfers',
         'updaterId',
         '_rowActions',
         'transferType'
@@ -256,13 +245,8 @@ export default Component.extend({
             // force load record
             if (!get(transfer, 'isLoaded') && !get(transfer, 'isLoading')) {
               transfer.store.findRecord('transfer', transferId);
-            } else if (movedTransfers.has(transferId)) {
-              transfer.reload().then(transfer => {
-                transfer.belongsTo('currentStat').reload();
-              });
             }
             _tableDataCache.push(TransferTableRecord.create({
-              selectedTransferIds,
               transfer,
               transfers,
               providers,
@@ -274,8 +258,18 @@ export default Component.extend({
             arrayChanged = true;
           }
         });
-        _tableDataCache.sort((a, b) => get(a, 'listIndex') - get(b, 'listIndex'));
-        const topRecord = _.minBy(_tableDataCache.slice(1), tc => get(tc, 'listIndex'));
+        let needSort = false;
+        for (let i = 0; i < get(_tableDataCache, 'length') - 1; ++i) {
+          if (get(_tableDataCache[i], 'listIndex') >= get(_tableDataCache[i + 1], 'listIndex')) {
+            needSort = true;
+            break;
+          }
+        }
+        if (needSort) {
+          _tableDataCache.sort((a, b) => get(a, 'listIndex') - get(b, 'listIndex'));
+          arrayChanged = true;
+        }
+        const topRecord = _tableDataCache[1];
         set(
           firstRowSpace,
           'firstRowListIndex',

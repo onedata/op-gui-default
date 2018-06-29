@@ -21,33 +21,22 @@ export default Controller.extend({
   
   /**
    * Query parameters used for onedata.transfers.show route:
-   * - `selected_transfers` (string) - list of transfers ids separated by `,`
-   *    that will be automatically opened, blink and be scrolled to on entering
-   *    the view; eg. "transferid1,transferid2"
    * - `list_tab` (string) - id of transfers table list to open
    */
-  queryParams: ['selected_transfers', 'list_tab'],
+  queryParams: ['list_tab', 'file_id'],
     
   list_tab: undefined,
-  
-  /**
-   * @type {Ember.ComputedProperty<Array<String>>}
-   */
-  selectedTransferIds: computed('selected_transfers', function () {
-    const selected_transfers = this.get('selected_transfers');
-    if (selected_transfers) {
-      return selected_transfers.toString().split(',');
-    }
-  }),
-  
+    
   listTab: computed.reads('list_tab'),
+  fileId: computed.reads('file_id'),
     
   /**
    * Reset only some of the params
    */
   resetQueryParams() {
     this.setProperties({
-      selected_transfers: undefined,
+      list_tab: undefined,
+      file_id: undefined,
     });
   },
 
@@ -69,6 +58,9 @@ export default Controller.extend({
   actions: {
     changeListTab(listTab) {
       this.set('list_tab', listTab);
+    },
+    closeFileTab() {
+      this.set('file_id', undefined);
     },
     resetQueryParams() {
       this.resetQueryParams();

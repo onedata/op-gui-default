@@ -32,6 +32,7 @@ const FAST_POLLING_TIME = 4 * 1000;
 export default Component.extend(PromiseLoadingMixin, {
   classNames: ['file-chunks', 'file-chunks-modal'],
   
+  session: service(),
   store: service(),
   oneproviderServer: service(),
 
@@ -114,6 +115,30 @@ export default Component.extend(PromiseLoadingMixin, {
    * @type {Looper}
    */
   _fileTransfersWatcher: undefined,
+  
+  /**
+   * Number of ended transfers for this file. Updated by `_updateFileTransfers`
+   * @type {number}
+   */
+  _endedTransfersCount: 0,
+  
+  /**
+   * Max number of ended transfers that can be fetched for transfer
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _historyLimitPerFile: computed.reads('session.sessionDetails.config.transfersHistoryLimitPerFile'),
+  
+  /**
+   * True if the `_endedTransfersCount` reached history limit
+   * @type {boolean}
+   */
+  _endedTransfersMore: computed('_historyLimitPerFile', '_endedTransfersCount', function () {
+    const {
+      _historyLimitPerFile,
+      _endedTransfersCount,
+    } = this.getProperties('_historyLimitPerFile', '_endedTransfersCount');
+    return _endedTransfersCount >= _historyLimitPerFile;
+  }),
   
   //#endregion
   
@@ -233,6 +258,12 @@ export default Component.extend(PromiseLoadingMixin, {
   ),
 
   /**
+   * True if there is at least one waiting or ongoing transfer for this file
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  areTransfersInProgress: computed.reads('fileTransfers.length'),
+  
+  /**
    * @type {Ember.ComputedProperty<string>}
    */
   modalSize: computed('file.isDir', function () {
@@ -299,16 +330,6 @@ export default Component.extend(PromiseLoadingMixin, {
     const fileId = this.get('file.id');
     if (workingTransfersDataLoaded && workingTransfers) {
       return workingTransfers.filter(t => t.belongsTo('file').id() === fileId);
-    }
-  }),
-  
-  /**
-   * @type {string}
-   */
-  transferIdsQuery: computed('fileTransfers.@each.id', function () {
-    const fileTransfers = this.get('fileTransfers');
-    if (fileTransfers) {
-      return fileTransfers.map(t => get(t, 'id')).join(',');
     }
   }),
   
@@ -511,10 +532,11 @@ export default Component.extend(PromiseLoadingMixin, {
       oneproviderServer,
     } = this.getProperties('store', 'oneproviderServer');
     return oneproviderServer
-      .getOngoingTransfersForFile(this.get('file.id'))
-      .then(({ list }) =>
-        Promise.all(list.map(transferId => store.findRecord('transfer', transferId)))
-      )
+      .getTransfersForFile(this.get('file.id'), 'count')
+      .then(({ ongoing, ended }) => {
+        safeExec(this, 'set', '_endedTransfersCount', ended);
+        return Promise.all(ongoing.map(transferId => store.findRecord('transfer', transferId)));
+      })
       .then(transfers => safeExec(this, 'set', 'workingTransfers', transfers))
       .then(transfers => transfers.map(transfer => transfer.belongsTo('currentStat').reload()));
   },

@@ -22,6 +22,9 @@ import ListWatcher from 'op-worker-gui/utils/list-watcher';
 const {
   Component,
   computed,
+  computed: {
+    reads,
+  },
   observer,
   isArray,
   get,
@@ -33,7 +36,6 @@ const {
   },
   run: {
     next,
-    scheduleOnce,
   },
 } = Ember;
 
@@ -53,13 +55,6 @@ export default Component.extend({
   space: undefined,
     
   /**
-   * Ids of transfers that should be expanded, "blinked" and scrolled to
-   * on entering view
-   * @type {Array<string>|undefined}
-   */
-  selectedTransferIds: undefined,
-  
-  /**
    * @virtual
    * @type {function}
    */
@@ -71,6 +66,13 @@ export default Component.extend({
    * @type {string|null}
    */
   defaultTab: undefined,
+  
+  /**
+   * An ID of file for which a special transfers tab will be created.
+   * If undefined/null the tab will not be created
+   * @type {string|undefined}
+   */
+  fileId: undefined,
   
   //#endregion
   
@@ -92,6 +94,47 @@ export default Component.extend({
    */
   _isTransfersTableBegin: undefined,
   
+  //#endregion
+  
+  //#region Computed properties
+
+  /**
+   * A file record for which a special tab will be rendered.
+   * If no `fileId` is provided - undefined.
+   * If file is broken - rejects.
+   * @type {Ember.ComputedProperty<PromiseObject<models.File>>|undefined}
+   */
+  fileProxy: computed('fileId', function () {
+    const {
+      store,
+      fileId,
+    } = this.getProperties('store', 'fileId');
+    if (fileId) {
+      const promise = store.findRecord('file', fileId)
+        .then(record => {
+          if (get(record, 'type') === 'broken') {
+            throw { message: 'not_found' };
+          } else {
+            return record;
+          }
+        });
+      return PromiseObject.create({ promise });
+    }
+  }),
+
+  /**
+   * @type {Ember.ComputedProperty<models.File>}
+   */
+  file: reads('fileProxy.content'),
+  
+  /**
+   * Name of icon to use in file tab
+   * @type {Ember.ComputedProperty<string>}
+   */
+  _fileTabIcon: computed('file.isDir', function () {
+    return this.get('file.isDir') ? 'folder' : 'file';
+  }),
+  
   /**
    * List of provider IDs of the opened on-the-fly transfers charts.
    * Should be updated by the `on-the-fly-list` component.
@@ -103,15 +146,17 @@ export default Component.extend({
     return A(this.get('providers').map(p => get(p, 'id')));
   }),
   
-  //#endregion
-  
-  //#region Computed properties
-    
   /**
    * Alias for Id of this provider - used for checking if transfers can be fetched
    * @type {Ember.ComputedProperty<string>}
    */
   sessionProviderId: computed.reads('session.sessionDetails.providerId'),
+        
+  /**
+   * Max number of ended transfers that can be fetched for transfer
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _historyLimitPerFile: computed.reads('session.sessionDetails.config.transfersHistoryLimitPerFile'),
   
   /**
    * List of providers that support this space
@@ -139,6 +184,37 @@ export default Component.extend({
   //#endregion
       
   //#region Feature: transfers data container
+    
+  /**
+   * Number of loaded ended transfers for file tab.
+   * @type {Ember.ComputedProperty<number>}
+   */
+  _fileEndedTransfersCount: computed(
+    'fileTransfers.sourceArray.@each.finishTime',
+    function () {
+      const allFileTransfers = this.get('fileTransfers.sourceArray');
+      if (allFileTransfers) {
+        return this.get('fileTransfers.sourceArray')
+        .reduce(
+          (sum, transfer) => sum + (get(transfer, 'finishTime') ? 1 : 0),
+          0
+        );
+      }
+    }),
+  
+  /**
+   * True if the `_endedTransfersCount` reached history limit
+   * @type {boolean}
+   */
+  _fileHistoryLimitReached: computed('fileTransfersLoadingMore', '_historyLimitPerFile', '_fileEndedTransfersCount', function () {
+    if (!this.get('fileTransfersLoadingMore')) {
+      const {
+        _historyLimitPerFile,
+        _fileEndedTransfersCount,
+      } = this.getProperties('_historyLimitPerFile', '_fileEndedTransfersCount');
+      return _fileEndedTransfersCount >= _historyLimitPerFile;
+    }
+  }),
   
   activeListUpdaterId: computed('activeTabId', '_isTransfersTableBegin', function () {
     if (this.get('_isTransfersTableBegin')) {
@@ -156,6 +232,8 @@ export default Component.extend({
       transfersUpdater: oldTransfersUpdater,
       activeListUpdaterId,
       activeTabId,
+      fileProxy,
+      file,
     } = this.getProperties(
       '_transfersUpdaterEnabled',
       'space',
@@ -163,8 +241,8 @@ export default Component.extend({
       'activeTabId',
       'activeListUpdaterId',
       'transfersUpdater',
-      // just enable observers
-      'allTablesLoaded'
+      'fileProxy',
+      'file'
     );
     
     if (oldTransfersUpdater) {
@@ -177,7 +255,9 @@ export default Component.extend({
       currentEnabled: activeListUpdaterId === 'current',
       currentStatEnabled: activeTabId === 'scheduled' || activeTabId === 'current',
       completedEnabled: activeListUpdaterId === 'completed',
+      fileEnabled: activeTabId === 'file' && fileProxy && get(fileProxy, 'isFulfilled'),
       space: space,
+      file: file,
     });    
     this.set('transfersUpdater', transfersUpdater);
     
@@ -186,64 +266,10 @@ export default Component.extend({
     return transfersUpdater;
   },
     
-  /**
-   * Assume that transfer lists (ids) are loaded
-   * If one of selected transfer is found on the completed list - go to this list and scroll/expand
-   * Otherwise, serch on current, and next search on scheduled
-   */
-  _scrollToFirstSelectedTransfer() {
-    const selectedTransferIds = this.get('selectedTransferIds');
-    const includedInSelectedTransfers = (id) => {
-      return _.includes(selectedTransferIds, id);
-    };
-    
-    let selectedList;
-    let indexOnList;
-    for (const transferType of ['completed', 'current', 'scheduled']) {
-      const transferIds = this.get(transferType + 'TransferList.content').hasMany('list').ids();
-      const index = _.findIndex(transferIds, includedInSelectedTransfers);
-      if (index > -1) {
-        selectedList = transferType;
-        indexOnList = index;
-        break;
-      }
-    }
-
-    if (selectedList) {
-      this.set('listLocked', true);
-      this.set('activeTabId', selectedList);
-      scheduleOnce('afterRender', this, function () {
-        this.get('openedTransfersChunksArray').setProperties({
-          startIndex: indexOnList,
-          endIndex: indexOnList,
-        });
-        next(() => {
-          safeExec(this, function () {
-            const $tr = this.$(`tr.transfer-row[data-list-index=${indexOnList}]`);
-            // magic number... after render, tr jumps to top, currently don't know why
-            $('#content-scroll').scrollTop($tr.offset().top - 800);
-            next(() => {
-              safeExec(this, function () {
-                this.set('listLocked', false);
-              });
-            });
-          });
-        });
-      });
-    }
-  },
-  
   _initializeDefaultValues() {
     this.set('_ptcCache', A());
   },
   
-  observeScrollToSelectedTransfers: observer('selectedTransferIds', 'allTablesLoaded', function () {
-    if (this.get('allTablesLoaded') && !this.get('_scrolledToSelectedTransfers')) {
-      next(() => this._scrollToFirstSelectedTransfer());
-      this.set('_scrolledToSelectedTransfers', true);
-    }
-  }),
-    
   /**
    * Watches updater settings dependecies and changes its settings
    */
@@ -280,6 +306,11 @@ export default Component.extend({
   currentTransferList: computed.reads('space.currentTransferList'),  
   completedTransferList: computed.reads('space.completedTransferList'),
   
+  /**
+   * @type {Ember.ComputedProperty<FakeListRecordRelation|undefined>}
+   */
+  fileTransferList: computed.reads('file.transferList'),
+  
   onTheFlyTransferList: computed.reads('space.onTheFlyTransferList'),
   providerList: computed.reads('space.providerList'),
   providersMap: computed.reads('space.transferLinkState.activeLinks'),
@@ -307,7 +338,13 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<ReplacingChunksArray<Transfer>>}
    */
   completedTransfers: undefined,
-    
+
+  /**
+   * Collection of Transfer model for file transfers
+   * @type {Ember.ComputedProperty<ReplacingChunksArray<Transfer>>}
+   */
+  fileTransfers: undefined,
+  
   providersLoaded: computed.reads('providerList.queryList.isSettled'),
   providersError: computed.reads('providerList.queryList.reason'),
  
@@ -373,17 +410,6 @@ export default Component.extend({
     'onTheFlyProviders.isFulfilled'
   ),
 
-  /**
-   * @type {Ember.ComputedProperty<boolean>}
-   */
-  allTablesLoaded: computed.and(
-    'isSupportedByCurrentProvider',
-    'providersLoaded',
-    'scheduledTransfersLoaded',
-    'currentTransfersLoaded',
-    'completedTransfersLoaded'
-  ),
-    
   /**
    * If true, this instance of data container already scrolled to selected transfers
    * @type {boolean}
@@ -473,8 +499,13 @@ export default Component.extend({
    */
   initialTab: computed(function () {
     const defaultTab = this.get('defaultTab');
-    if (defaultTab) {
+    const fileId = this.get('fileId');
+    if (defaultTab &&
+      (defaultTab === 'file' && fileId) || _.includes(['scheduled', 'current', 'complete'], defaultTab)
+    ) {
       return PromiseObject.create({ promise: Promise.resolve(defaultTab) });
+    } else if (fileId) {
+      return PromiseObject.create({ promise: Promise.resolve('file') });
     } else {
       const promise = Promise.all(
         ['scheduled', 'current', 'completed'].map(transferType =>
@@ -501,44 +532,71 @@ export default Component.extend({
     this.set('_tabJustChangedId', activeTabId);
   }),
   
-  enableWatcherCollection: observer('activeListUpdaterId', 'activeTabId', function enableWatcherCollection() {
-    const {
-      activeListUpdaterId,
-      activeTabId,
-      transfersUpdater,
-    } = this.getProperties('activeListUpdaterId', 'transfersUpdater', 'activeTabId');
-    transfersUpdater.setProperties({
-      scheduledEnabled: activeListUpdaterId === 'scheduled',
-      currentEnabled: activeListUpdaterId === 'current',
-      currentStatEnabled: activeTabId === 'scheduled' || activeTabId === 'current',
-      completedEnabled: activeListUpdaterId === 'completed',
-    });
-  }),
-  
+  enableWatcherCollection: observer(
+    'activeListUpdaterId',
+    'activeTabId',
+    'file',
+    'fileProxy.isFulfilled',
+    function enableWatcherCollection() {
+      const {
+        activeListUpdaterId,
+        activeTabId,
+        transfersUpdater,
+        file,
+        fileProxy,
+      } = this.getProperties(
+        'activeListUpdaterId', 
+        'transfersUpdater', 
+        'activeTabId',
+        'file',
+        'fileProxy'
+      );
+      transfersUpdater.setProperties({
+        scheduledEnabled: activeListUpdaterId === 'scheduled',
+        currentEnabled: activeListUpdaterId === 'current',
+        currentStatEnabled: _.includes(['scheduled', 'current', 'file'], activeTabId),
+        completedEnabled: activeListUpdaterId === 'completed',
+        fileEnabled: activeTabId === 'file' && fileProxy && get(fileProxy, 'isFulfilled'),
+        file,
+      });
+    }),
+    
   scheduledTransfersLoadingMore: false,
   currentTransfersLoadingMore: false,
   completedTransfersLoadingMore: false,
+  fileTransfersLoadingMore: false,
+  
+  fileChanged: observer('fileProxy.content', function observerFileChanged() {
+    if (this.get('file')) {
+      this.initTransfers('file');
+    }
+  }),
   
   spaceChanged: observer('space', function observeSpaceChanged() {
-    this.reinitializeTransfers();
+    this._spaceChanged();
   }),
   
   init() {
     this._super(...arguments);
-    this.spaceChanged();
-    this.observeScrollToSelectedTransfers();
+    this._spaceChanged(true);
+    this.fileChanged();
+  },
+
+  _spaceChanged(isInit = false) {
+    if (!isInit) {
+      this._clearFileId();
+    }
+    this.reinitializeTransfers();
+  },
+  
+  _clearFileId() {
+    return this.sendAction('closeFileTab');
   },
   
   reinitializeTransfers() {
-    const transfersUpdater = this._initTransfersData();
+    this._initTransfersData();
     ['scheduled', 'current', 'completed'].forEach(type => {
-      this.get(`${type}TransferList`).then(listRecord => {
-        get(listRecord, 'list').then(list => {
-          this.set(`${type}Transfers`, list);
-        });
-        const visibleIds = listRecord.hasMany('list').ids();
-        transfersUpdater.fetchSpecificRecords(visibleIds);
-      });
+      this.initTransfers(type);
     });
     const listWatcher = this.get('listWatcher');
     if (listWatcher) {
@@ -546,6 +604,16 @@ export default Component.extend({
     }
     this.setProperties({
       listLocked: false,
+    });
+  },
+  
+  initTransfers(type) {
+    this.get(`${type}TransferList`).then(listRecord => {
+      get(listRecord, 'list').then(list => {
+        safeExec(this, 'set', `${type}Transfers`, list);
+      });
+      const visibleIds = listRecord.hasMany('list').ids();
+      this.get('transfersUpdater').fetchSpecificRecords(visibleIds);
     });
   },
   
@@ -591,7 +659,11 @@ export default Component.extend({
     } = this.getProperties('activeTabId', 'openedTransfersChunksArray', 'transfersUpdater', 'listLocked');
     if (!listLocked && activeTabId !== 'on-the-fly') {
       /** @type {Array<string>} */
-      const allTransferIds = this.get(`${activeTabId}TransferList.content`).hasMany('list').ids();
+      const transferListContent = this.get(`${activeTabId}TransferList.content`);
+      if (!transferListContent) {
+        return;
+      }
+      const allTransferIds = transferListContent.hasMany('list').ids();
       /** @type {Array<string>} */
       const renderedTransferIds = items.map(i => i.getAttribute('data-transfer-id'));
       const firstId = renderedTransferIds[0];
@@ -661,6 +733,10 @@ export default Component.extend({
       } else {
         _onTheFlyOpenedProviderIds.removeObject(providerId);
       }
+    },
+    closeFileTab() {
+      this.set('activeTabId', 'scheduled');
+      this._clearFileId();
     },
   },
 });

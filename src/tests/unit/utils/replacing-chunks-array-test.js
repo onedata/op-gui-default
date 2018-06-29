@@ -46,7 +46,8 @@ describe('Unit | Utility | replacing chunks array', function() {
     return get(array, 'initialLoad').then(() => {
       expect(fetchSpy, 'initial fetch').to.be.calledOnce;
       expect(get(array, 'length'), 'length after init').to.equal(10);
-      expect(array.toArray(), 'content after init').to.deep.equal(recordRange(0, 10));
+      expect(array.toArray(), 'content after init: ' + array.mapBy('index'))
+        .to.deep.equal(recordRange(0, 10));
       
       array.setProperties({
         startIndex: 7,

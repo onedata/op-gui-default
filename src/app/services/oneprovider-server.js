@@ -442,17 +442,23 @@ export default Ember.Service.extend({
       size: size,
     });
   },
-   
+  
   /**
    * @param {String} fileId
    * @returns {RSVP.Promise} A backend operation completion:
    * - `resolve(object: data)` when successfully fetched the list
-   *  - `data.list: Array<string>` - list of transfer IDs for the file
+   *  - `data.ongoing: Array<string>` - list of non-ended transfers (waiting
+   *       and outgoing) transfer IDs for the file
+   *  - `data.ended: Array<string>|Number` - list of ended transfer IDs for the file,
+   *       which size is limited to the value of
+   *       `session.sessionDetails.config.transfersHistoryLimitPerFile`
+   *        or number of ended transfers if endedInfo is "count"
    * - `reject(object: error)` on failure
    */
-   getOngoingTransfersForFile(fileId) {
-    return this.get('server').privateRPC('getOngoingTransfersForFile', {
+  getTransfersForFile(fileId, endedInfo = 'count') {
+    return this.get('server').privateRPC('getTransfersForFile', {
       fileId,
+      endedInfo,
     });
   },
 });

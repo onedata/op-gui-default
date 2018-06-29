@@ -18,7 +18,7 @@
   {{else}}
     {{#each processedColumns as |column|}}
       {{#if column.isVisible}}
-        <td class="{{if record.initSelect "animated very-slow notice-blink"}} {{column.className}}">
+        <td class="{{column.className}}">
           {{#if column.routeName}}
             {{#link-to column.routeName record.id}}
               {{#if column.propertyName}}
@@ -50,8 +50,3 @@
     </td>
   </tr>
 {{/if}}
-{{!-- invoke expand action up --}}
-{{#if record.initSelect}}
-  {{test-callback tagName="" callback=(action "expandRow" record.transferIndex)}}
-{{/if}}
-

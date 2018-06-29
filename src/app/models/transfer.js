@@ -140,6 +140,13 @@ export default Model.extend({
   }),
   
   isCurrent: computed.reads('isOngoing'),
+
+  /**
+   * @type {boolean}
+   */
+  isEnded: computed('status', function () {
+    return finishedStatuses.indexOf(this.get('status')) !== -1;
+  }),
   
   /**
    * @type {string}
@@ -177,21 +184,23 @@ export default Model.extend({
    * If true, user has invoked transfer cancellation
    * @type {boolean}
    */
-  isCancelling: computed('_isCancelling', 'status', {
+  isCancelling: computed('_isCancelling', 'status', 'isEnded', {
     get() {
       const {
         status,
+        isEnded,
         _isCancelling,
-      } = this.getProperties('_isCancelling', 'status');
+      } = this.getProperties('_isCancelling', 'isEnded', 'status');
       // if transfer is finished, then cancelling is not possible
-      return status === 'aborting' ||
-        (_isCancelling && finishedStatuses.indexOf(status) === -1);
+      return status === 'aborting' || (_isCancelling && !isEnded);
     },
     set(key, value) {
-      const status = this.get('status');
+      const {
+        status,
+        isEnded,
+      } = this.getProperties('status', 'isEnded');
       this.set('_isCancelling', value);
-      return status === 'aborting' ||
-        (value && finishedStatuses.indexOf(this.get('status')) === -1);
+      return status === 'aborting' || (value && !isEnded);
     },
   }),
   

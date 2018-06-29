@@ -123,6 +123,7 @@
                             notifyTransferListChanged=(action "transferListChanged")
                             justOpened=(eq _tabJustChangedId "scheduled")
                             clearJustOpened=(action "clearJustChangedTabId" "scheduled")
+                            rerunTransfer=(action "rerunTransfer")
                             cancelTransfer=(action "cancelTransfer")
                           }}
                         {{/loading-container}}
@@ -156,6 +157,7 @@
                             notifyTransferListChanged=(action "transferListChanged")
                             justOpened=(eq _tabJustChangedId "current")
                             clearJustOpened=(action "clearJustChangedTabId" "current")
+                            rerunTransfer=(action "rerunTransfer")
                             cancelTransfer=(action "cancelTransfer")
                           }}
                         {{/loading-container}}

@@ -65,6 +65,7 @@ export default Component.extend({
     'record.isRerunning',
     'isCancelling',
     'transferFilesDeleted',
+    'record.transfer.isEnded',
     function () {
       const actions = this.get('record.actions');
       if (actions) {
@@ -75,16 +76,34 @@ export default Component.extend({
           'i18n',
           'record'
         );
-        return A(actions.map(({ id, action }) => EmberObject.create({
-          title: i18n.t(I18N_PREFIX + id),
-          // TODO: optimize - a function is created for each cell
-          action: () => action(record),
-          icon: ACTION_ICONS[id],
-          disabled: this.isActionDisabled(id),
-        })));
+        return A(actions
+          .filter(({ id }) => !this.isActionInvisible(id))
+          .map(({ id, action }) => EmberObject.create({
+            title: i18n.t(I18N_PREFIX + id),
+            // TODO: optimize - a function is created for each cell
+            action: () => action(record),
+            icon: ACTION_ICONS[id],
+            disabled: this.isActionDisabled(id),
+          }))
+        );
       }
     }
   ),
+
+  /**
+   * Returns true if action should be hidden for this transfer
+   * @param {string} actionId
+   * @returns {boolean}
+   */
+  isActionInvisible(actionId) {
+    const isTransferEnded = this.get('record.transfer.isEnded');
+    switch (actionId) {
+      case 'cancelTransfer':
+        return isTransferEnded;
+      case 'rerunTransfer':
+        return !isTransferEnded;
+    }
+  },
 
   /**
    * Returns true if action cannot be performed for this transfer

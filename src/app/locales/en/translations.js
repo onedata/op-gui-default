@@ -537,7 +537,7 @@ export default {
         cancelFailure: 'Error occurred during transfer cancellation.',
         rerunFailure: 'Error occurred during transfer rerun.',
         rerunStarting: 'Rerunning transfer...',
-        rerunSuccess: 'Rerun transfer may be found in "Scheduled transfers" tab.',
+        rerunSuccess: 'Rerun transfer may be found in "Waiting" tab.',
         cellActions: {
           cancelTransfer: 'Cancel transfer',
           rerunTransfer: 'Rerun transfer',

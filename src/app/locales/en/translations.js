@@ -539,7 +539,7 @@ export default {
         scheduledAt: 'Scheduled at',
         startedAt: 'Started at',
         finishedAt: 'Finished at',
-        totalBytes: 'Transferred',
+        totalBytes: 'Replicated',
         totalFiles: 'Processed files',
         status: 'Status',
         destinationUnknown: '-',
@@ -572,7 +572,7 @@ export default {
         },
         cellTotalFiles: {
           invalidated: 'invalidated',
-          transferred: 'transferred',
+          replicated: 'replicated',
         },
       },
       transferChart: {

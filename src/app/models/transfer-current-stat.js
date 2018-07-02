@@ -16,15 +16,16 @@ const {
 
 export default Model.extend({
   timestamp: attr('number'),
-  transferredBytes: attr('number'),
-  transferredFiles: attr('number'),
+  replicatedBytes: attr('number'),
+  replicatedFiles: attr('number'),
   invalidatedFiles: attr('number'),
   
   /**
    * One of:
    * - scheduled
-   * - active
+   * - replicating
    * - invalidating
+   * - aborting
    * - skipped
    * - completed
    * - cancelled

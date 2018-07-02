@@ -131,8 +131,8 @@ export default Model.extend({
   status: computed.reads('currentStat.status'),
   dest: computed.reads('destination'),
   userName: computed.reads('systemUser.name'),
-  transferredBytes: computed.reads('currentStat.transferredBytes'),
-  transferredFiles: computed.reads('currentStat.transferredFiles'),
+  replicatedBytes: computed.reads('currentStat.replicatedBytes'),
+  replicatedFiles: computed.reads('currentStat.replicatedFiles'),
   invalidatedFiles: computed.reads('currentStat.invalidatedFiles'),
   
   currentStatError: computed('currentStat.{isSettled,content}', function () {

@@ -93,7 +93,7 @@ export default EmberObject.extend({
   scheduledAtComparable: computed.reads('transfer.scheduleTime'),
   startedAtComparable: computed.reads('transfer.startTime'),
   finishedAtComparable: computed.reads('transfer.finishTime'),
-  transferredFiles: computed.reads('transfer.transferredFiles'),
+  replicatedFiles: computed.reads('transfer.replicatedFiles'),
   invalidatedFiles: computed.reads('transfer.invalidatedFiles'),
   status: computed.reads('transfer.status'),
   currentStatError: computed.reads('transfer.currentStatError'),
@@ -107,7 +107,7 @@ export default EmberObject.extend({
   scheduledAtReadable: computedPipe('scheduledAtComparable', timeReadable),
   startedAtReadable: computedPipe('startedAtComparable', timeReadable),
   finishedAtReadable: computedPipe('finishedAtComparable', timeReadable),
-  totalBytesReadable: computedPipe('transfer.transferredBytes', bytesToString),
+  totalBytesReadable: computedPipe('transfer.replicatedBytes', bytesToString),
   
   listIndex: computed('transfer', 'transfers.@each.startIndex', function () {
     const transfer = this.get('transfer');

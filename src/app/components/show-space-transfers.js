@@ -384,7 +384,7 @@ export default Component.extend({
       promise = Promise.resolve(A());
     } else {
       const providersIds =
-        onTheFlyTransfers.map(transfer => get(transfer, 'destination'));
+        onTheFlyTransfers.map(transfer => get(transfer, 'replicatingProvider'));
       const providersIdsToLoad =
         _.difference(providersIds, providers.map(p => get(p, 'id')));
       if (providersIdsToLoad.length) {

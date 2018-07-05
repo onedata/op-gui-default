@@ -115,21 +115,25 @@ export default EmberObject.extend({
     return transfers.indexOf(transfer) + get(transfers, '_start');
   }),
   
-  destination: computed('providers.@each.name', 'transfer.destination', function () {
-    const destinationId = this.get('transfer.destination');
-    // invalidation transfer
-    if (!destinationId) {
-      return '-';
+  destination: computed(
+    'providers.@each.name',
+    'transfer.replicatingProvider',
+    function () {
+      const destinationId = this.get('transfer.replicatingProvider');
+      // invalidation transfer
+      if (!destinationId) {
+        return '-';
+      }
+      let destination = this.get('destinationUnknownText');
+      const destProvider = destination ? _.find(this.get('providers'), provider => 
+        get(provider, 'id') === destinationId
+      ) : null;
+      if (destProvider) {
+        destination = get(destProvider, 'name');
+      }
+      return destination;
     }
-    let destination = this.get('destinationUnknownText');
-    const destProvider = destination ? _.find(this.get('providers'), provider => 
-      get(provider, 'id') === destinationId
-    ) : null;
-    if (destProvider) {
-      destination = get(destProvider, 'name');
-    }
-    return destination;
-  }),
+  ),
   
   isInCorrectCollection: computed('transferCollection', 'status', function () {
     const {

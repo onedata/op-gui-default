@@ -449,17 +449,19 @@ export default Component.extend({
    * Collection of transfers for current file and provider
    * @type {Ember.Array<Transfer>}
    */
-  fileProviderTransfers: computed('fileTransfers.@each.{destination,migrationSource}',
+  fileProviderTransfers: computed(
+    'fileTransfers.@each.{replicatingProvider,invalidatingProvider}',
     function () {
       const fileTransfers = this.get('fileTransfers');
       const providerId = this.get('providerId');
       if (fileTransfers) {
         return fileTransfers.filter(t =>
-          get(t, 'destination') === providerId || get(t, 'migrationSource') ===
-          providerId
+          get(t, 'replicatingProvider') === providerId ||
+          get(t, 'invalidatingProvider') === providerId
         );
       }
-    }),
+    }
+  ),
 
   transfersCount: computed.reads('fileProviderTransfers.length'),
 
@@ -472,19 +474,19 @@ export default Component.extend({
    * @type {string|null}
    */
   transferType: computed(
-    'fileProviderTransfers.@each.{migrationSource,destination}',
+    'fileProviderTransfers.@each.{invalidatingProvider,replicatingProvider}',
     'providerId',
     function getTransferType() {
       const fileProviderTransfers = this.get('fileProviderTransfers');
       const providerId = this.get('providerId');
       if (fileProviderTransfers && !isEmpty(fileProviderTransfers)) {
         if (fileProviderTransfers.some(t =>
-          get(t, 'migration') && get(t, 'migrationSource') === providerId)
+          get(t, 'invalidatingProvider') === providerId)
         ) {
-          return fileProviderTransfers.some(t => !get(t, 'destination')) ?
+          return fileProviderTransfers.some(t => !get(t, 'replicatingProvider')) ?
             'invalidation' : 'migration-source';
         } else if (fileProviderTransfers.some(t =>
-          get(t, 'destination') === providerId)
+          get(t, 'replicatingProvider') === providerId)
         ) {
           return 'replication-destination';
         } else {

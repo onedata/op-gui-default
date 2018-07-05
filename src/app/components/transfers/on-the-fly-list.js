@@ -60,7 +60,7 @@ export default Ember.Component.extend({
     } = this.getProperties('transfers', 'providers');
     return transfers.map(transfer => {
       const provider =
-        providers.filter(p => get(p, 'id') === get(transfer, 'destination'))[0];
+        providers.filter(p => get(p, 'id') === get(transfer, 'replicatingProvider'))[0];
       return {
         transfer,
         provider,

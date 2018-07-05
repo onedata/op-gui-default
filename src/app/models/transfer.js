@@ -35,20 +35,14 @@ export default Model.extend({
   /**
    * Id of Provider that is destination of this transfer
    */
-  destination: attr('string'),
+  replicatingProvider: attr('string'),
   
   file: belongsTo('file', { async: true, inverse: null }),
   
   /**
-   * If true, the transfer is a migration, so the file will be invalidated
-   * on `migrationSource` provider after migration completion
-   */
-  migration: attr('boolean'),
-  
-  /**
    * Id of provider that will invalidate the file after transfer
    */
-  migrationSource: attr('string'),
+  invalidatingProvider: attr('string'),
   
   /**
    * If true, the transfer is in progress (should be in current transfers collection)
@@ -129,7 +123,7 @@ export default Model.extend({
   ),
   
   status: computed.reads('currentStat.status'),
-  dest: computed.reads('destination'),
+  dest: computed.reads('replicatingProvider'),
   userName: computed.reads('systemUser.name'),
   replicatedBytes: computed.reads('currentStat.replicatedBytes'),
   replicatedFiles: computed.reads('currentStat.replicatedFiles'),
@@ -152,9 +146,13 @@ export default Model.extend({
    * @type {string}
    * One of: migration, invalidation, replication
    */
-  type: computed('migration', 'destination', function getType() {
-    if (this.get('migration')) {
-      return this.get('destination') ? 'migration' : 'invalidation';
+  type: computed('invalidatingProvider', 'replicatingProvider', function getType() {
+    const {
+      replicatingProvider,
+      invalidatingProvider,
+    } = this.getProperties('replicatingProvider', 'invalidatingProvider');
+    if (invalidatingProvider) {
+      return replicatingProvider ? 'migration' : 'invalidation';
     } else {
       return 'replication';
     }
@@ -168,7 +166,7 @@ export default Model.extend({
   getIsLocal(providerId) {
     const type = this.get('type');
     const property = (type === 'replication' || type === 'migration' && this.get('status') === 'invalidating') ?
-      'destination' : 'migrationSource';
+      'replicatingProvider' : 'invalidatingProvider';
     return this.get(property) === providerId;
   },
 

@@ -23,11 +23,13 @@ const {
   run,
   inject: { service },
   assert,
-  RSVP: { Promise },
+  RSVP: { Promise, resolve, defer },
 } = Ember;
 
 const SLOW_POLLING_TIME = 10 * 1000;
 const FAST_POLLING_TIME = 4 * 1000;
+
+const I18N_PREFIX = 'components.dataFilesListToolbar.fileChunksModal.';
 
 export default Component.extend(PromiseLoadingMixin, {
   classNames: ['file-chunks', 'file-chunks-modal'],
@@ -35,6 +37,7 @@ export default Component.extend(PromiseLoadingMixin, {
   session: service(),
   store: service(),
   oneproviderServer: service(),
+  i18n: service(),
 
   //#region External properties
   
@@ -110,6 +113,10 @@ export default Component.extend(PromiseLoadingMixin, {
   providerInvalidationsInvoked: undefined,
   
   fileBlocksSorting: ['getProvider.name'],
+    
+  confirmOperationType: null,
+  
+  confirmOpened: false,
   
   /**
    * @type {Looper}
@@ -141,6 +148,12 @@ export default Component.extend(PromiseLoadingMixin, {
   }),
   
   //#endregion
+  
+  confirmOperationBtnLabel: computed('confirmOperationType', function confirmOperationBtnLabel() {
+    const i18n = this.get('i18n');
+    const confirmOperationType = this.get('confirmOperationType');
+    return `${i18n.t(I18N_PREFIX + 'confirmStart')} ${i18n.t(I18N_PREFIX + 'confirmType.' + confirmOperationType)}`;
+  }),
   
   /**
    * If transfers options should be disabled for current modal, returns
@@ -541,71 +554,15 @@ export default Component.extend(PromiseLoadingMixin, {
       .then(transfers => transfers.map(transfer => transfer.belongsTo('currentStat').reload()));
   },
   
-  actions: {
-    /**
-     * File chunks modal component is placed all the time,
-     * so this open actions works like a constructor.
-     * On open, `file` property can change.
-     */
-    open() {
-      this.set('providerMigrationsInvoked', A([]));
-      this.set('providerInvalidationsInvoked', A([]));
-
-      this._initTransfersWatcher();
-      this.set('transfersLoading', true);
-      this.forceUpdateTransfers();
-
-      this._initDistributionUpdater();
-      this.fetchDistribution();
-      
-      this.observeTransfersCount();
-    },
-
-    /**
-     * Works as a pseudo-destructor
-     */
-    closed() {
-      this._destroyDistributionUpdater();
-      this._destroyTransfersWatcher();
-      
-      this.setProperties({
-        file: null,
-        fileBlocks: null,
-        chunksModalError: null,
-        migrationSource: null,
-        providerMigrationsInvoked: undefined,
-        providerInvalidationsInvoked: undefined,
-      });
-      this.closedAction();
-    },
-
-    /**
-     * Opens a menu with list of migration destination providers
-     *
-     * @param {Provider} sourceProvider a Provider that will source of migration
-     */
-    openMigrationOptions(sourceProvider) {
-      run.next(() => {
-        this.set('migrationSource', sourceProvider);
-      });
-    },
-
-    /**
-     * Closes a menu with list of migration destination providers
-     */
-    closeMigrationOptions() {
-      this.set('migrationSource', null);
-    },
-
-    /**
-     * Starts file migration from source provider to destination provider using backend
-     * @param {File} file 
-     * @param {string} source 
-     * @param {string} destination 
-     * @returns {Promise<Transfer|any>} resolves with saved transfer record
-     *  migration start success
-     */
-    startMigration(file, source, destination) {
+  /**
+   * Starts file migration from source provider to destination provider using backend
+   * @param {File} file 
+   * @param {string} source 
+   * @param {string} destination 
+   * @returns {Promise<Transfer|any>} resolves with saved transfer record
+   *  migration start success
+   */
+  startMigration(file, source, destination) {
       this.set('migrationSource', null);
       const providerMigrationsInvoked = this.get('providerMigrationsInvoked');
       providerMigrationsInvoked.pushObject(source);
@@ -690,6 +647,123 @@ export default Component.extend(PromiseLoadingMixin, {
           providerInvalidationsInvoked.removeObject(source);
         });
     },
-  },
+    
+    showConfirmOperation(confirmOperationType) {
+      const confirmationDeferred = defer();
+      this.setProperties({
+        confirmOpened: true,
+        confirmOperationType,
+        confirmationDeferred,
+      });
+      return confirmationDeferred.promise;
+    },
+    
+    startConfirmOperation(transfersPending, type, fun) {
+      if (transfersPending) {
+        return this.showConfirmOperation(type)
+          .then(confirmed => {
+            if (confirmed) {
+              return fun();
+            } else {
+              return resolve();
+            }
+          });
+      } else {
+        return fun();
+      }
+    },
+    
+    actions: {
+      confirmOperation(confirmed) {
+        const confirmationDeferred = this.get('confirmationDeferred');
+        confirmationDeferred.resolve(confirmed);
+        this.setProperties({
+          confirmOpened: false,
+          confirmOperationType: null,
+          confirmationDeferred: null,
+        });
+      },
+      
+      /**
+       * File chunks modal component is placed all the time,
+       * so this open actions works like a constructor.
+       * On open, `file` property can change.
+       */
+      open() {
+        this.set('providerMigrationsInvoked', A([]));
+        this.set('providerInvalidationsInvoked', A([]));
+
+        this._initTransfersWatcher();
+        this.set('transfersLoading', true);
+        this.forceUpdateTransfers();
+
+        this._initDistributionUpdater();
+        this.fetchDistribution();
+
+        this.observeTransfersCount();
+      },
+
+      /**
+       * Works as a pseudo-destructor
+       */
+      closed() {
+        this._destroyDistributionUpdater();
+        this._destroyTransfersWatcher();
+
+        this.setProperties({
+          file: null,
+          fileBlocks: null,
+          chunksModalError: null,
+          migrationSource: null,
+          providerMigrationsInvoked: undefined,
+          providerInvalidationsInvoked: undefined,
+        });
+        this.closedAction();
+      },
+
+      /**
+       * Opens a menu with list of migration destination providers
+       *
+       * @param {Provider} sourceProvider a Provider that will source of migration
+       */
+      openMigrationOptions(sourceProvider, { transfersPending }) {
+        run.next(() => {
+          this.set('migrationSource', sourceProvider);
+          this.set('migrationTransfersPending', transfersPending);
+        });
+      },
+
+      /**
+       * Closes a menu with list of migration destination providers
+       */
+      closeMigrationOptions() {
+        this.set('migrationSource', null);
+        this.set('migrationTransfersPending', null);
+      },
+
+      startMigration(file, source, destination, { transfersPending }) {
+        return this.startConfirmOperation(
+          transfersPending,
+          'migrate',
+          () => this.startMigration(file, source, destination)
+        );
+      },
+
+      startReplication(destination, { transfersPending }) {
+        return this.startConfirmOperation(
+          transfersPending,
+          'replicate',
+          () => this.startReplication(destination)
+        );
+      },
+
+      startInvalidation(source, { transfersPending }) {
+        return this.startConfirmOperation(
+          transfersPending,
+          'invalidate',
+          () => this.startInvalidation(source)
+        );
+      },
+    },
 
 });

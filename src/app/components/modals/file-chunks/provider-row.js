@@ -9,6 +9,7 @@
  */
 
 import Ember from 'ember';
+import _ from 'lodash';
 
 const {
   Component,
@@ -79,16 +80,22 @@ export default Component.extend({
    * @type {Function}
    */
   stopTransfersUpdater: () => {},
+  
+  //#endregion
 
   /**
    * True if migration has been started by user but request is not completed yet
-   * @virtual
    * @type {boolean}
    */
   migrationInvoked: false,
-
-  //#endregion
-
+  
+  /**
+   * If true, do not allow to invoke other actions for provider when there
+   * are pending transfers for it
+   * @type {boolean}
+   */
+  disableActionInProgress: false,
+  
   /**
    * @type {boolean}
    */
@@ -118,14 +125,10 @@ export default Component.extend({
    * True if transfers options should be inactive (not-clickable)
    * @type {Ember.ComputedProperty<boolean>}
    */
-  transferLocked: computed.or(
-    'migrationInProgress',
-    'replicationInProgress',
-    'invalidationInProgress'
-  ),
+  transferLocked: false,
 
-  replicationInProgress: computed('transferType', 'replicationInvoked', function () {
-    return this.get('transferType') === 'replication-destination' ||
+  replicationInProgress: computed('transferTypes', 'replicationInvoked', function () {
+    return _.includes(this.get('transferTypes'), 'replication-destination') ||
       this.get('replicationInvoked');
   }),
 
@@ -155,8 +158,8 @@ export default Component.extend({
     }
   ),
 
-  migrationInProgress: computed('transferType', 'migrationInvoked', function () {
-    return this.get('transferType') === 'migration-source' ||
+  migrationInProgress: computed('transferTypes', 'migrationInvoked', function () {
+    return _.includes(this.get('transferTypes'), 'migration-source') ||
       this.get('migrationInvoked');
   }),
 
@@ -191,10 +194,10 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<boolean>}
    */
   invalidationInProgress: computed(
-    'transferType',
+    'transferTypes',
     'invalidationInvoked',
     function () {
-      return this.get('transferType') === 'invalidation' ||
+      return _.includes(this.get('transferTypes'), 'invalidation') ||
         this.get('invalidationInvoked');
     }
   ),
@@ -242,19 +245,22 @@ export default Component.extend({
     'pendingActionAnimation',
     'migrationInProgress',
     'migrationEnabled',
+    'disableActionInProgress',
     function () {
       let classes = 'action-icon toolbar-icon ';
       const {
         pendingActionAnimation,
         migrationInProgress,
         migrationEnabled,
+        disableActionInProgress,
       } = this.getProperties(
         'pendingActionAnimation',
         'migrationInProgress',
-        'migrationEnabled'
+        'migrationEnabled',
+        'disableActionInProgress'
       );
       if (migrationInProgress) {
-        classes += 'disabled ' + pendingActionAnimation;
+        classes += disableActionInProgress ? 'disabled ' : '' + pendingActionAnimation;
       } else if (!migrationEnabled) {
         classes += 'disabled';
       }
@@ -270,19 +276,22 @@ export default Component.extend({
     'pendingActionAnimation',
     'replicationInProgress',
     'replicationEnabled',
+    'disableActionInProgress',
     function () {
       let classes = 'action-icon toolbar-icon ';
       const {
         pendingActionAnimation,
         replicationInProgress,
         replicationEnabled,
+        disableActionInProgress,
       } = this.getProperties(
         'pendingActionAnimation',
         'replicationInProgress',
-        'replicationEnabled'
+        'replicationEnabled',
+        'disableActionInProgress'
       );
       if (replicationInProgress) {
-        classes += 'disabled ' + pendingActionAnimation;
+        classes += disableActionInProgress ? 'disabled ' : '' + pendingActionAnimation;
       } else if (!replicationEnabled) {
         classes += 'disabled';
       }
@@ -298,19 +307,22 @@ export default Component.extend({
     'pendingActionAnimation',
     'invalidationInProgress',
     'invalidationEnabled',
+    'disableActionInProgress',
     function () {
       let classes = 'action-icon toolbar-icon ';
       const {
         pendingActionAnimation,
         invalidationInProgress,
         invalidationEnabled,
+        disableActionInProgress,
       } = this.getProperties(
         'pendingActionAnimation',
         'invalidationInProgress',
-        'invalidationEnabled'
+        'invalidationEnabled',
+        'disableActionInProgress'
       );
       if (invalidationInProgress) {
-        classes += 'disabled ' + pendingActionAnimation;
+        classes += disableActionInProgress ? 'disabled ' : '' + pendingActionAnimation;
       } else if (!invalidationEnabled) {
         classes += 'disabled';
       }
@@ -463,6 +475,7 @@ export default Component.extend({
 
   transfersCount: computed.reads('fileProviderTransfers.length'),
 
+  // FIXME: support multiple types in GUI?
   /**
    * - If it's invalidation: 'invalidation'
    * - If it's migration source: 'migration-source'
@@ -471,25 +484,26 @@ export default Component.extend({
    * - If there is no transfers: null
    * @type {string|null}
    */
-  transferType: computed(
+  transferTypes: computed(
     'fileProviderTransfers.@each.{migrationSource,destination}',
     'providerId',
     function getTransferType() {
       const fileProviderTransfers = this.get('fileProviderTransfers');
       const providerId = this.get('providerId');
       if (fileProviderTransfers && !isEmpty(fileProviderTransfers)) {
-        if (fileProviderTransfers.some(t =>
-          get(t, 'migration') && get(t, 'migrationSource') === providerId)
-        ) {
-          return fileProviderTransfers.some(t => !get(t, 'destination')) ?
-            'invalidation' : 'migration-source';
-        } else if (fileProviderTransfers.some(t =>
-          get(t, 'destination') === providerId)
-        ) {
-          return 'replication-destination';
-        } else {
-          return 'unknown';
+        const types = [];
+        for (let t of fileProviderTransfers) {
+          if (get(t, 'migration') && get(t, 'migrationSource') === providerId) {
+            if (get(t, 'destination')) {
+              types.push('migration-source');              
+            } else {
+              types.push('invalidation');
+            }
+          } else if (get(t, 'destination') === providerId) {
+            types.push('replication-destination');
+          }
         }
+        return types;
       } else {
         return null;
       }
@@ -512,9 +526,12 @@ export default Component.extend({
       const {
         migrationEnabled,
         provider,
-      } = this.getProperties('migrationEnabled', 'provider');
+        transferTypes,
+      } = this.getProperties('migrationEnabled', 'provider', 'transferTypes');
       if (migrationEnabled) {
-        this.openMigrationOptions(provider);
+        this.get('openMigrationOptions')(provider, {
+          transfersPending: !_.isEmpty(transferTypes),
+        });
       }
     },
     // TODO: this cannot be used until provider property is loaded
@@ -522,10 +539,13 @@ export default Component.extend({
       const {
         replicationEnabled,
         providerId,
-      } = this.getProperties('replicationEnabled', 'providerId');
+        transferTypes,
+      } = this.getProperties('replicationEnabled', 'providerId', 'transferTypes');
       if (replicationEnabled) {
         this.set('replicationInvoked', true);
-        return this.startReplication(providerId)
+        return this.get('startReplication')(providerId, {
+          transfersPending: !_.isEmpty(transferTypes),
+        })
           .finally(() => this.set('replicationInvoked', false));
       }
     },
@@ -533,9 +553,12 @@ export default Component.extend({
       const {
         invalidationEnabled,
         providerId,
-      } = this.getProperties('invalidationEnabled', 'providerId');
+        transferTypes,
+      } = this.getProperties('invalidationEnabled', 'providerId', 'transferTypes');
       if (invalidationEnabled) {
-        return this.startInvalidation(providerId);
+        return this.get('startInvalidation')(providerId, {
+          transfersPending: !_.isEmpty(transferTypes),
+        });
       }
     }
   },

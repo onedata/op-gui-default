@@ -64,6 +64,7 @@
     "ember-math-helpers": "2.4.0",
     "ember-models-table": "1.13.0",
     "ember-moment": "7.4.1",
+    "ember-native-dom-helpers": "0.6.2",
     "ember-notify": "5.2.0",
     "ember-page-title": "3.1.5",
     "ember-power-select": "1.4.0",

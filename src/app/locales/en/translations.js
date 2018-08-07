@@ -476,8 +476,8 @@ export default {
           migrate: 'migration',
           invalidate: 'invalidation',
         },
-        pendingTransfersWarning: 'There are pending transfers of current file for selected provider. Starting new transfer can lead to interrupt other scheduled or working transfer. Do you want to start new {{type}} process?',
-        confirmDialogTitle: 'Potential unsafe operation',
+        pendingTransfersWarning: 'There are pending transfers of the file in this provider. Starting a new {{type}} can interrupt existing transfers. Do you want to start a new {{type}} anyway?',
+        confirmDialogTitle: 'Warning',
       },
       notify: {
         createFileFailed: 'File or directory "{{fileName}}" creation failed'

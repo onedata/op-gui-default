@@ -158,10 +158,10 @@
         }}
       {{/bs-modal-body}}
       {{#bs-modal-footer}}
-        {{#bs-button action=(action "confirmOperation" false) type="default"}}
+        {{#bs-button class="btn-confirm" action=(action "confirmOperation" false) type="default"}}
           {{t "common.modal.cancel"}}
         {{/bs-button}}
-        {{#bs-button action=(action "confirmOperation" true) type="primary"}}
+        {{#bs-button class="btn-cancel" action=(action "confirmOperation" true) type="warning"}}
           {{confirmOperationBtnLabel}}
         {{/bs-button}}
       {{/bs-modal-footer}}

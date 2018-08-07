@@ -122,8 +122,10 @@ export default Component.extend({
   invalidationInvoked: false,
 
   /**
-   * True if transfers options should be inactive (not-clickable)
-   * @type {Ember.ComputedProperty<boolean>}
+   * True if transfers options should be inactive (not-clickable).
+   * Currently always false, as we do not want lock other operations when
+   * there are pending transfers.
+   * @type {boolean}
    */
   transferLocked: false,
 
@@ -475,14 +477,13 @@ export default Component.extend({
 
   transfersCount: computed.reads('fileProviderTransfers.length'),
 
-  // FIXME: support multiple types in GUI?
   /**
+   * Possible elements in array:
    * - If it's invalidation: 'invalidation'
    * - If it's migration source: 'migration-source'
    * - If it's only a replication destination: 'replication-destination'
-   * - If it's none of the above: 'unknown' (should not occur)
    * - If there is no transfers: null
-   * @type {string|null}
+   * @type {Array<string>|null}
    */
   transferTypes: computed(
     'fileProviderTransfers.@each.{migrationSource,destination}',

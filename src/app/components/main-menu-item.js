@@ -23,6 +23,13 @@ export default Ember.Component.extend({
   mainMenu: Ember.inject.service(),
 
   /**
+   * @virtual optional
+   * If true, an external link icon will be shown
+   * @type {boolean}
+   */
+  isExternal: false,
+  
+  /**
    * @virtual
    * Link route target
    * @type {string}
@@ -45,7 +52,7 @@ export default Ember.Component.extend({
   
   /**
    * @virtual
-   * Name of oneicon to use\
+   * Name of oneicon to use
    * @type {string}
    */
   icon: undefined,

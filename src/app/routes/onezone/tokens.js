@@ -3,7 +3,7 @@
  *
  * @module routes/onezone/tokens
  * @author Jakub Liput
- * @copyright (C) 2017 ACK CYFRONET AGH
+ * @copyright (C) 2017-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -20,6 +20,6 @@ export default Route.extend({
    * @param {Ember.Transition} transition 
    */
   redirect(model) {
-    window.location = `${model.onezoneUrl}?expand_tokens=true`;
+    window.location = `${model.onezoneUrl}/#/onedata/tokens`;
   },
 });

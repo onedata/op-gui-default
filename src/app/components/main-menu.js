@@ -34,10 +34,6 @@ export default Ember.Component.extend({
     this.set('service.component', this);
   }),
 
-  onezoneUrl: function() {
-    return this.get('session.sessionDetails.manageProvidersURL');
-  }.property('session.sessionDetails'),
-
   didInsertElement() {
     this._super(...arguments);
     run.scheduleOnce('afterRender', this, function() {

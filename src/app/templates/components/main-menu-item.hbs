@@ -1,6 +1,9 @@
 {{#link-to link id=anchorId}}
-  <figure>
-    {{one-icon icon=icon}}
+  <figure class="menu-item-figure">
+    {{#if isExternal}}
+      {{one-icon icon="link-external" class="menu-item-external-link"}}
+    {{/if}}
+    {{one-icon icon=icon class="menu-item-icon"}}
     <figcaption>{{title}}</figcaption>
   </figure>
 {{/link-to}}

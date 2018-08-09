@@ -20,6 +20,11 @@ export default Ember.Component.extend({
 
   userName: computed.alias('session.user.name'),
   
+  manageAccountUrl: computed('session.sessionDetails.onezoneURL', function manageAccountLink() {
+    const onezoneUrl = this.get('session.sessionDetails.onezoneURL');
+    return `${onezoneUrl}/#/onedata/users`;
+  }),
+  
   actions: {
     showAbout() {
       this.set('aboutOpened', true);

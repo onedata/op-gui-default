@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import ACE from 'op-worker-gui/utils/access-control-entity';
+import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 
 const {
   computed,
@@ -7,6 +8,7 @@ const {
   observer,
   inject,
   run,
+  get,
   RSVP: {
     Promise
   }
@@ -106,29 +108,17 @@ export default Ember.Component.extend({
    * @param {String} type - one of: user, group
    */
   fetchSystemModel(type) {
-    const thisModel = `system${type.capitalize()}sModel`;
-    let listModel = `${type}List`;
-    let systemModel = `system${type.capitalize()}`;
-    let space = this.get('dataSpace');
+      const thisModel = `system${type.capitalize()}sModel`;
+      let listModel = `${type}List`;
+      let space = this.get('dataSpace');
 
-    let fetch = new Promise((resolve, reject) => {
-      let getSpace = space.get(listModel);
-      getSpace.then(list => {
-        let getPermissions = list.get('permissions');
-        getPermissions.then(permissions => {
-          let getSystems = Promise.all(
-            permissions.map(p => p.get(systemModel))
-          );
-          getSystems.then(resolve);
-          getSystems.catch(reject);
+      get(space, listModel)
+        .then(list => get(list, `system${type.capitalize()}Records`))
+        .then(systemRecords => safeExec(this, 'set', thisModel, systemRecords))
+        .catch(error => {
+          safeExec(this, 'set', thisModel, null);
+          throw error;
         });
-        getPermissions.catch(error => reject(error));
-      });
-      getSpace.catch(reject);
-    });
-    fetch.then(permissions => this.set(thisModel, permissions));
-    fetch.catch(() => this.set(thisModel, null));
-    return fetch;
   },
 
   // -- try to fetch system users/groups list for selector

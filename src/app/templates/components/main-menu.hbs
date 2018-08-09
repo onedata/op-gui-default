@@ -31,26 +31,28 @@
       icon="menu-trash" goToItem="goToItem"}}
 
     --}}
+    
+    {{main-menu-item
+      name="transfers"
+      title=(t "components.mainMenu.transfers")
+      icon="menu-transfers"
+      link="onedata.transfers"
+    }}
 
     {{main-menu-item
       name="spaces"
       title=(t "components.mainMenu.spaces")
       icon="space-empty"
-      link="onedata.spaces"
+      link="onezone.spaces"
+      isExternal=true
     }}
 
     {{main-menu-item
       name="groups"
       title=(t "components.mainMenu.groups")
       icon="menu-groups"
-      link="onedata.groups"
-    }}
-      
-    {{main-menu-item
-      name="transfers"
-      title=(t "components.mainMenu.transfers")
-      icon="menu-transfers"
-      link="onedata.transfers"
+      link="onezone.groups"
+      isExternal=true
     }}
     
     {{main-menu-item
@@ -58,6 +60,7 @@
       title=(t "components.mainMenu.token")
       icon="menu-token"
       link="onezone.tokens"
+      isExternal=true
     }}
 
     {{main-menu-item
@@ -65,6 +68,7 @@
       title=(t "components.mainMenu.providers")
       icon="menu-providers"
       link="onezone.providers"
+      isExternal=true
     }}
 
 </ul>

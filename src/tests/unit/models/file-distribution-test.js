@@ -12,7 +12,7 @@ describeModel(
   function() {
     it('computes if there are no file blocks', function () {
       const model = this.subject({
-        blocks: [],
+        chunksBarData: {},
         fileSize: FILE_SIZE,
       });
       expect(model.get('isEmpty')).to.be.true;
@@ -20,7 +20,10 @@ describeModel(
     
     it('computes if file distribution is not empty nor complete', function() {
       const model = this.subject({
-        blocks: [10, 20],
+        chunksBarData: {
+          10: 100,
+          20: 0,
+        },
         fileSize: FILE_SIZE,
       });
       expect(model.get('isEmpty')).to.be.false;
@@ -29,15 +32,15 @@ describeModel(
     
     it('computes if file distribution is complete', function () {
       const model = this.subject({
-        blocks: [0, 10, 10, 90, 90, FILE_SIZE],
+        chunksBarData: { 0: 100, 50: 100 },
         fileSize: FILE_SIZE,
       });
       expect(model.get('isComplete')).to.be.true;
     });
     
-    it('detects that file is empty even if it has entries in block array', function () {
+    it('detects that file is empty even if it has entries in chunksBarData', function () {
       const model = this.subject({
-        blocks: [0, 0, 10, 10],
+        chunksBarData: { 0: 0, 50: 0 },
         fileSize: FILE_SIZE,
       });
       expect(model.get('isEmpty')).to.be.true;
@@ -45,7 +48,7 @@ describeModel(
     
     it('detects that file is not complete if it has "empty" entries', function () {
       const model = this.subject({
-        blocks: [0, 0],
+        chunksBarData: { 0: 0 },
         fileSize: FILE_SIZE,
       });
       expect(model.get('isComplete')).to.be.false;

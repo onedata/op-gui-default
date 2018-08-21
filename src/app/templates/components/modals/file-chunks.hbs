@@ -112,7 +112,11 @@
               {{#if migrationSource}}
                 <div class="open">
                   {{modals/file-chunks/migrate-popover
-                    startMigration=(action "startMigration" file)
+                    startMigration=(action
+                      "startMigration"
+                      file
+                    )
+                    migrationTransfersPending=migrationTransfersPending
                     sourceProvider=migrationSource
                     disabledProviderIds=currentMigrationSourceIds
                     providers=providers
@@ -134,6 +138,35 @@
         </div>
       </div>
     {{/if}}
+    
+    
+    {{#bs-modal
+      open=confirmOpened
+      body=false
+      footer=false
+      id=(concat modalId "-confirm")
+      title=(t "components.dataFilesListToolbar.fileChunksModal.confirmDialogTitle")
+      keyboard=true
+      autoClose=true
+      backdropClose=false
+      closeButton=true
+    }}
+      {{#bs-modal-body}}
+        {{t
+          "components.dataFilesListToolbar.fileChunksModal.pendingTransfersWarning"
+          type=(t (concat "components.dataFilesListToolbar.fileChunksModal.confirmType." confirmOperationType))
+        }}
+      {{/bs-modal-body}}
+      {{#bs-modal-footer}}
+        {{#bs-button class="btn-confirm" action=(action "confirmOperation" false) type="default"}}
+          {{t "common.modal.cancel"}}
+        {{/bs-button}}
+        {{#bs-button class="btn-cancel" action=(action "confirmOperation" true) type="warning"}}
+          {{confirmOperationBtnLabel}}
+        {{/bs-button}}
+      {{/bs-modal-footer}}
+    {{/bs-modal}}
+    
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
     {{#bs-button action=(action "close" target=footer) type="primary"}}

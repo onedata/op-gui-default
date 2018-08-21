@@ -470,10 +470,18 @@ export default {
             busy: 'busy',
           },
         },
+        confirmStart: 'Start',
+        confirmType: {
+          replicate: 'replication',
+          migrate: 'migration',
+          invalidate: 'invalidation',
+        },
+        pendingTransfersWarning: 'There are pending transfers of the file in this provider. Starting a new {{type}} can interrupt existing transfers. Do you want to start a new {{type}} anyway?',
+        confirmDialogTitle: 'Warning',
       },
       notify: {
         createFileFailed: 'File or directory "{{fileName}}" creation failed'
-      }
+      },
     },
     fileUpload: {
       titleUpload: 'Uploading {{count}} file(s)',

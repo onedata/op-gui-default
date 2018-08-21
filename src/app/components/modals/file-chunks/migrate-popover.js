@@ -107,7 +107,9 @@ export default Component.extend(ClickOutside, {
   
   actions: {
     startMigration(destination) {
-      this.get('startMigration')(this.get('sourceProvider.id'), destination);
+      this.get('startMigration')(this.get('sourceProvider.id'), destination, {
+        transfersPending: this.get('migrationTransfersPending'),
+      });
     },
   },
 });

@@ -7,6 +7,7 @@ CHANGELOG
 ### Latest changes
 
 * VFS-4242 Added transfers cancelling and rerunning actions
+* VFS-4753 Allow to start new transfers if other transfers are pending for file/provider
 * VFS-4566 Added transfers list tab for specific file
 * VFS-4507 Multiple improvements in transfers list view
 * VFS-4538 Better control of invalidation feature availability for files

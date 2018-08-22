@@ -29,16 +29,17 @@ describe('Integration | Component | file chunks bar', function() {
     expect($fileChunksBar).to.contain('1 KiB');
   });
   
-  it('computes data 0% for empty chunksBarData', function () {
+  it('shows percentage of blocks', function () {
     this.set('chunksBarData', {});
     this.render(hbs`{{file-chunks-bar
       file=file
       chunksBarData=chunksBarData
+      blocksPercentage=40.023
     }}`);
     
     const $fileChunksBar = this.$('.file-chunks-bar');
     
     expect($fileChunksBar).to.exist;
-    expect($fileChunksBar).to.contain('0%');
+    expect($fileChunksBar).to.contain('40%');
   });
 });

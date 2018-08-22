@@ -459,7 +459,7 @@ export default {
           disabledReplicationIsComplete: 'Cannot schedule replication as all file block are already on this provider',
           disabledReplicationInProgress: 'The data is currently replicated to selected provider',
           disabledInProgress: 'Operation is unavailable as there are transfers in progress on this provider',
-          disabledInvalidationNoBlocks: 'Invalidation is not possible unless all data blocks on this provider are redundant',
+          disabledInvalidationNoBlocks: 'Invalidation is not possible unless some data blocks on this provider are redundant',
           disabledInvalidationInProgress: 'The data is currently invalidated in selected provider',
           disabledMigrationUnknown: 'The data cannot be migrated from selected provider now',
           disabledReplicationUnknown: 'The data cannot be replicated into selected provider now',

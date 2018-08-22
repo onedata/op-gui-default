@@ -40,7 +40,11 @@
         title=(t "components.dataFilesListToolbar.fileChunksModal.neverSynchronizedHint")
       }}
     {{else}}
-      {{file-chunks-bar file=file chunksBarData=fileDistribution.chunksBarData}}
+      {{file-chunks-bar
+        file=file
+        blocksPercentage=fileDistribution.blocksPercentage
+        chunksBarData=fileDistribution.chunksBarData
+      }}
     {{/if}}
   </td>
 {{/if}}

@@ -1,7 +1,6 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object'; 
-import _ from 'lodash';
 
 const {
   computed,
@@ -45,6 +44,11 @@ export default DS.Model.extend({
    */
   chunksBarData: DS.attr('object', { defaultValue: { 0: 0 } }),
   
+  /**
+   * Float in range 0..100 with percentage of data blocks of this file on the provider
+   */
+  blocksPercentage: DS.attr('number', { defaultValue: 0 }),
+  
   file: DS.belongsTo('file', { async: true, inverse: null }),
     
   neverSynchronized: DS.attr('boolean', { defaultValue: false }),
@@ -52,17 +56,13 @@ export default DS.Model.extend({
   fileSize: computed.reads('file.size'),
   
   isEmpty: computed('fileSize', 'chunksBarData', function () {
-    if (this.get('fileSize') !== undefined) {
-      const chunksBarData = this.get('chunksBarData');
-      return _.isEmpty(chunksBarData) || _.values(chunksBarData).every(i => i === 0);
-    }
+    return this.get('fileSize') !== undefined && !this.get('blocksPercentage');
   }),
   
-  isComplete: computed('isEmpty', 'chunksBarData', function () {
+  isComplete: computed('isEmpty', 'blocksPercentage', function () {
     const isEmpty = this.get('isEmpty');
-    const chunksBarData = this.get('chunksBarData');
     if (isEmpty === false) {
-      return _.values(chunksBarData).every(i => i === 100);
+      return this.get('blocksPercentage') >= 100;
     } else if (isEmpty === true) {
       return false;
     } else {

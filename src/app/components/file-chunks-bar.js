@@ -36,7 +36,15 @@ export default Ember.Component.extend({
    * @type {object}
    */
   chunksBarData: undefined,
-
+  
+  /**
+   * @virtual
+   * Percentage of blocks of the file on this provider.
+   * Float in range 0..100.
+   * @type {Number}
+   */
+  blocksPercentage: undefined,
+  
   didInsertElement() {
     this._super(...arguments);
     run.scheduleOnce('afterRender', this, function() {
@@ -50,39 +58,14 @@ export default Ember.Component.extend({
   isLoading: false,
 
   /**
-   * @type {Ember.ComputedProperty<number>}
-   */
-  chunksShare: computed('chunksBarData', function () {
-    const chunksBarData = this.get('chunksBarData');
-    if (chunksBarData) {
-      let sum = 0;
-      
-      let fragmentStarts = Object.keys(chunksBarData).map(x => parseInt(x));
-      fragmentStarts.sort((x, y) => x - y);
-      if (fragmentStarts.length !== 0 &&
-        fragmentStarts[fragmentStarts.length - 1] !== barWidth) {
-          fragmentStarts.push(barWidth);
-      }
-      fragmentStarts = fragmentStarts.map(i => String(i));
-      
-      for (let i = 0; i < fragmentStarts.length - 1; i += 1) {
-        const fragmentWidth = fragmentStarts[i + 1] - fragmentStarts[i];
-        sum += chunksBarData[fragmentStarts[i]] * fragmentWidth;
-      }
-      return sum / barWidth;
-    } else {
-      return undefined;
-    }
-  }),
-  /**
    * @type {Ember.ComputedProperty<string>}
    */
-  chunksPercent: computed('chunksShare', function chunksPercent() {
-    const chunksShare = this.get('chunksShare');
-    if (chunksShare > 0 && chunksShare < 0.1) {
+  chunksPercent: computed('blocksPercentage', function chunksPercent() {
+    const blocksPercentage = this.get('blocksPercentage') || 0;
+    if (blocksPercentage > 0 && blocksPercentage < 0.1) {
       return '< 0.1%';
     } else {
-      return `${Math.round(chunksShare * 10) / 10}%`;
+      return `${Math.round(blocksPercentage * 10) / 10}%`;
     }
   }),
 

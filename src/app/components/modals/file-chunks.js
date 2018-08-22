@@ -238,16 +238,13 @@ export default Component.extend(PromiseLoadingMixin, {
    */
   isInvalidationPossible: computed(
     'isFileEmpty',
-    'fileDistributionsSorted.@each.{isEmpty}',
-    'providersIdsWithInvalidation',
+    'fileDistributionsSorted.@each.isEmpty',
     function () {
       const {
         fileDistributionsSorted,
-        providersIdsWithInvalidation,
         isFileEmpty,
       } = this.getProperties(
         'fileDistributionsSorted',
-        'providersIdsWithInvalidation',
         'isFileEmpty'
       );
       if (fileDistributionsSorted) {
@@ -256,7 +253,7 @@ export default Component.extend(PromiseLoadingMixin, {
           const providerId = get(fd, 'provider');
           invalidationPossible[providerId] =
             !isFileEmpty && !get(fd, 'isEmpty') &&
-            !providersIdsWithInvalidation.has(providerId);
+            !_.without(fileDistributionsSorted, fd).every(fdi => get(fdi, 'isEmpty'));
         });
         return invalidationPossible;
       }

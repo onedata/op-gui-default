@@ -547,10 +547,18 @@ export default {
         scheduledAt: 'Scheduled at',
         startedAt: 'Started at',
         finishedAt: 'Finished at',
-        totalBytes: 'Transferred',
+        totalBytes: 'Replicated',
         totalFiles: 'Processed files',
         status: 'Status',
         destinationUnknown: '-',
+        cancelFailure: 'Error occurred during transfer cancellation.',
+        rerunFailure: 'Error occurred during transfer rerun.',
+        rerunStarting: 'Rerunning transfer...',
+        rerunSuccess: 'Rerun transfer may be found in "Waiting" tab.',
+        cellActions: {
+          cancelTransfer: 'Cancel transfer',
+          rerunTransfer: 'Rerun transfer',
+        },
         cellFileName: {
           deleted: 'deleted',
         },
@@ -559,9 +567,10 @@ export default {
           skipped: 'Skipped',
           cancelled: 'Cancelled',
           failed: 'Failed',
-          active: 'Active',
+          replicating: 'Replicating',
           scheduled: 'Scheduled',
           enqueued: 'Enqueued',
+          aborting: 'Aborting',
           invalidating: 'Invalidating',
         },
         cellType: {
@@ -571,7 +580,7 @@ export default {
         },
         cellTotalFiles: {
           invalidated: 'invalidated',
-          transferred: 'transferred',
+          replicated: 'replicated',
         },
       },
       transferChart: {

@@ -384,7 +384,7 @@ export default Component.extend({
       promise = Promise.resolve(A());
     } else {
       const providersIds =
-        onTheFlyTransfers.map(transfer => get(transfer, 'destination'));
+        onTheFlyTransfers.map(transfer => get(transfer, 'replicatingProvider'));
       const providersIdsToLoad =
         _.difference(providersIds, providers.map(p => get(p, 'id')));
       if (providersIdsToLoad.length) {
@@ -693,8 +693,26 @@ export default Component.extend({
       this.set(`${activeTabId}TransfersLoadingMore`, isLoadingMore);
     }
   },
-  
+
   actions: {
+    /**
+     * Start transfer cancel procedure
+     * @param {string} transferId
+     * @returns {Promise<undefined|any>}
+     */
+    cancelTransfer(transferId) {
+      return this.get('oneproviderServer').cancelTransfer(transferId);
+    },
+
+    /**
+     * Rerun transfer procedure
+     * @param {string} transferId
+     * @returns {Promise<undefined|any>}
+     */
+    rerunTransfer(transferId) {
+      return this.get('oneproviderServer').rerunTransfer(transferId);
+    },
+    
     transferListChanged(/* type */) {
       const listWatcher = this.get('listWatcher');
       if (listWatcher) {

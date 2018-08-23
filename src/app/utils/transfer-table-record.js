@@ -33,7 +33,7 @@ const statusGroups = {
     'enqueued',
   ]),
   current: new Set([
-    'active',
+    'replicating',
     'invalidating',
     'cancelling',
   ]),
@@ -93,7 +93,7 @@ export default EmberObject.extend({
   scheduledAtComparable: computed.reads('transfer.scheduleTime'),
   startedAtComparable: computed.reads('transfer.startTime'),
   finishedAtComparable: computed.reads('transfer.finishTime'),
-  transferredFiles: computed.reads('transfer.transferredFiles'),
+  replicatedFiles: computed.reads('transfer.replicatedFiles'),
   invalidatedFiles: computed.reads('transfer.invalidatedFiles'),
   status: computed.reads('transfer.status'),
   currentStatError: computed.reads('transfer.currentStatError'),
@@ -107,7 +107,7 @@ export default EmberObject.extend({
   scheduledAtReadable: computedPipe('scheduledAtComparable', timeReadable),
   startedAtReadable: computedPipe('startedAtComparable', timeReadable),
   finishedAtReadable: computedPipe('finishedAtComparable', timeReadable),
-  totalBytesReadable: computedPipe('transfer.transferredBytes', bytesToString),
+  totalBytesReadable: computedPipe('transfer.replicatedBytes', bytesToString),
   
   listIndex: computed('transfer', 'transfers.@each.startIndex', function () {
     const transfer = this.get('transfer');
@@ -115,21 +115,25 @@ export default EmberObject.extend({
     return transfers.indexOf(transfer) + get(transfers, '_start');
   }),
   
-  destination: computed('providers.@each.name', 'transfer.destination', function () {
-    const destinationId = this.get('transfer.destination');
-    // invalidation transfer
-    if (!destinationId) {
-      return '-';
+  destination: computed(
+    'providers.@each.name',
+    'transfer.replicatingProvider',
+    function () {
+      const destinationId = this.get('transfer.replicatingProvider');
+      // invalidation transfer
+      if (!destinationId) {
+        return '-';
+      }
+      let destination = this.get('destinationUnknownText');
+      const destProvider = destination ? _.find(this.get('providers'), provider => 
+        get(provider, 'id') === destinationId
+      ) : null;
+      if (destProvider) {
+        destination = get(destProvider, 'name');
+      }
+      return destination;
     }
-    let destination = this.get('destinationUnknownText');
-    const destProvider = destination ? _.find(this.get('providers'), provider => 
-      get(provider, 'id') === destinationId
-    ) : null;
-    if (destProvider) {
-      destination = get(destProvider, 'name');
-    }
-    return destination;
-  }),
+  ),
   
   isInCorrectCollection: computed('transferCollection', 'status', function () {
     const {

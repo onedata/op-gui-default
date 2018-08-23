@@ -33,7 +33,7 @@ describe('Integration | Component | transfers/transfer chart', function() {
       currentStat: PromiseObject.create({
         promise: Promise.resolve({}),
       }),
-      status: 'active',
+      status: 'replicating',
       on(event, f) {
         if (event === 'didLoad') {
           f();

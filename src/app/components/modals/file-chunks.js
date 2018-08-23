@@ -223,7 +223,7 @@ export default Component.extend(PromiseLoadingMixin, {
     if (fileTransfers) {
       fileTransfers.forEach(transfer => {
         if (get(transfer, 'type') === 'invalidation') {
-          providers.add(get(transfer, 'migrationSource'));
+          providers.add(get(transfer, 'invalidatingProvider'));
         }
       });
     }
@@ -349,13 +349,16 @@ export default Component.extend(PromiseLoadingMixin, {
   /**
    * @type {Ember.ComputedProperty<Array<string>>|null}
    */
-  currentMigrationSourceIds: computed('fileTransfers.@each.migrationSource', function () {
-    /** @type {Ember.Array|undefined} */
-    const fileTransfers = this.get('fileTransfers');
-    if (fileTransfers) {
-      return fileTransfers.map(t => get(t, 'migrationSource')).filter(s => s);
+  currentMigrationSourceIds: computed(
+    'fileTransfers.@each.invalidatingProvider',
+    function () {
+      /** @type {Ember.Array|undefined} */
+      const fileTransfers = this.get('fileTransfers');
+      if (fileTransfers) {
+        return fileTransfers.map(t => get(t, 'invalidatingProvider')).filter(s => s);
+      }
     }
-  }),
+  ),
   
   /**
    * Type of element that is presented in modal
@@ -569,9 +572,8 @@ export default Component.extend(PromiseLoadingMixin, {
       const transfer = this.get('store')
         .createRecord('transfer', {
           file,
-          migration: true,
-          migrationSource: source,
-          destination: destination,
+          invalidatingProvider: source,
+          replicatingProvider: destination,
         });
       return transfer.save()
         // TODO: test it and make better fail messages
@@ -600,8 +602,7 @@ export default Component.extend(PromiseLoadingMixin, {
       const transfer = this.get('store')
         .createRecord('transfer', {
           file,
-          migration: false,
-          destination,
+          replicatingProvider: destination,
         });
       return transfer.save()
         .catch(error => {
@@ -629,8 +630,7 @@ export default Component.extend(PromiseLoadingMixin, {
       const transfer = this.get('store')
         .createRecord('transfer', {
           file,
-          migration: true,
-          migrationSource: source,
+          invalidatingProvider: source,
         });
       return transfer.save()
         .catch(error => {

@@ -107,4 +107,10 @@ describe('Unit | Utility | bytes to string', function () {
     let result = bytesToString(625000, { format: 'bit' });
     expect(result).to.be.equal('5 Mb');
   });
+  
+  it('converts 1000 Mbps to 1 Gbps', function () {
+    const bytes = Math.pow(10, 9) / 8;
+    const result = bytesToString(bytes, { format: 'bit' });
+    expect(result).to.be.equal('1 Gb');
+  });
 });

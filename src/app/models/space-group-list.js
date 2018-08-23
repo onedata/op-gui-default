@@ -1,9 +1,16 @@
+import Ember from 'ember';
 import DS from 'ember-data';
+import PromiseArray from 'ember-cli-onedata-common/utils/ember/promise-array';
 
 const {
   belongsTo,
-  hasMany
+  attr,
 } = DS;
+
+const {
+  computed,
+  RSVP: { Promise },
+} = Ember;
 
 /**
  * Model with group permissions list for space.
@@ -14,5 +21,23 @@ const {
  */
 export default DS.Model.extend({
   space: belongsTo('space', { async: true }),
-  permissions: hasMany('space-group-permission', { async: true }),
+  
+  systemGroups: attr('array'),
+  
+  systemGroupRecords: computed('space.id', 'systemGroups', function () {
+    const systemGroups = this.get('systemGroups');
+    const spaceId = this.belongsTo('space').id();
+    if (spaceId != null) {
+      return PromiseArray.create({
+        promise: Promise.all(systemGroups.map(systemGroupId =>
+          this.store.queryRecord('system-group', {
+            id: systemGroupId,
+            context: {
+              od_space: spaceId,
+            }
+          })
+        ))
+      }); 
+    }
+  }),
 });

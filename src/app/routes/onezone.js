@@ -20,7 +20,7 @@ export default Route.extend({
   i18n: service(),
 
   model(params, transition) {
-    const onezoneUrl = this.get('session.sessionDetails.manageProvidersURL');
+    const onezoneUrl = this.get('session.sessionDetails.onezoneURL');
     if (!onezoneUrl) {
       this.get('notify').error(this.get('i18n').t('onezone.cannotResolveUrl'));
       transition.abort();

@@ -237,9 +237,16 @@ html, body {
         overflow: hidden;
         vertical-align: middle;
         border-bottom: solid #565960 1px;
-
-        .oneicon {
+        
+        .oneicon.menu-item-icon {
           font-size: 40px;
+        }
+        
+        .oneicon.menu-item-external-link {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          font-size: 16px;
         }
 
         &.active a {
@@ -260,7 +267,8 @@ html, body {
 
 
           // TODO: generic figure styles moved up
-          figure {
+          figure.menu-item-figure {
+            position: relative;
             max-height: $sidebar-item-height;
             color: #fff;
 

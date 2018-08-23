@@ -1,9 +1,9 @@
 /**
- * Redirect to providers tokens management in Onezone
+ * Redirect to spaces management in Onezone
  *
  * @module routes/onezone/providers
  * @author Jakub Liput
- * @copyright (C) 2017-2018 ACK CYFRONET AGH
+ * @copyright (C) 2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -15,11 +15,11 @@ const {
 
 export default Route.extend({
   /**
-   * Redirect to providers page of Onezone
+   * Redirect to spaces page of Onezone
    * @param {object} model contains onezoneUrl: string
    * @param {Ember.Transition} transition 
    */
   redirect(model) {
-    window.location = `${model.onezoneUrl}/#/onedata/providers`;
+    window.location = `${model.onezoneUrl}/#/onedata/spaces`;
   },
 });

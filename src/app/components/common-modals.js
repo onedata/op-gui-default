@@ -1,4 +1,6 @@
 /**
+ * DEPRECATED
+ * 
  * Adds common modals to HTML, which can be opened with common-modals service.
  * Uses camelCase-keyed, boolean-valued properties: opened<ModalName>
  * to open a modals defined in this component template. See template for details.

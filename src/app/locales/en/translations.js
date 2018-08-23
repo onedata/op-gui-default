@@ -77,7 +77,7 @@ export default {
     },
     topBar: {
       logout: 'Log out',
-      manageProviders: 'Manage account',
+      manageAccount: 'Manage account',
       about: 'About this provider',
     },
     mainMenu: {
@@ -150,129 +150,6 @@ export default {
         }
       }
     },
-    spacesMenu: {
-      title: 'spaces',
-      create: 'Create',
-      join: 'Join',
-      drop: {
-        setHome: 'Set as home',
-        moveUp: 'Move up',
-        moveDown: 'Move down',
-        leave: 'Leave space',
-        rename: 'Rename',
-        remove: 'Remove',
-        inviteGroup: 'Invite group',
-        inviteUser: 'Invite user',
-        getSupport: 'Get support'
-      },
-      createModal: {
-        title: 'Create a new space',
-        enterName: 'Enter new space name:'
-      },
-      joinModal: {
-        title: 'Join a space',
-        label: 'Enter a token of a space to join:'
-      },
-      renameModal: {
-        title: 'Rename a space',
-        label: 'Enter new space name:'
-      },
-      leaveModal: {
-        title: 'Leave a space',
-        label: 'Are you sure you want to leave space "{{spaceName}}"?'
-      },
-      removeModal: {
-        title: 'Remove a space',
-        label: 'Are you sure you want to remove the "{{spaceName}}" space?'
-      },
-      notify: {
-        setAsHomeSuccess: 'Space "{{spaceName}}" set as home',
-        setAsHomeFailed: 'Space "{{spaceName}}" cannot be set as home due to an error',
-        createSuccess: 'Space "{{spaceName}}" created successfully',
-        createFailed: 'Space "{{spaceName}}" cannot be created due to an error',
-        leaveSuccess: 'Space "{{spaceName}}" left successfully',
-        leaveFailed: 'Cannot leave space "{{spaceName}}" due to an error',
-        removeSuccess: 'Space "{{spaceName}}" has been removed',
-        removeFailed: 'Failed to remove space "{{spaceName}}"',
-        joinSuccess: 'Successfully joined space "{{spaceName}}"',
-        joinFailed: 'Cannot join space: "{{errorDetails}}"'
-      }
-    },
-    spacesSubmenu: {
-      users: 'users',
-      groups: 'groups',
-      providers: 'providers'
-    },
-    groupsSubmenu: {
-      members: 'members',
-      spaces: 'spaces'
-    },
-    groupsMenu: {
-      title: 'groups',
-      create: 'Create',
-      join: 'Join',
-      drop: {
-        moveUp: 'Move up',
-        moveDown: 'Move down',
-        leave: 'Leave this group',
-        leaveParentGroup: 'Leave parent group...',
-        rename: 'Rename',
-        remove: 'Remove',
-        inviteUser: 'Invite user',
-        inviteGroup: 'Invite group',
-        joinSpace: 'Join space',
-        joinAsSubgroup: 'Join as subgroup'
-      },
-      createModal: {
-        title: 'Create a new group',
-        enterName: 'Enter new group name:'
-      },
-      joinModal: {
-        title: 'Join a group',
-        label: 'Enter a token of a group to join:'
-      },
-      joinAsSubgroupModal: {
-        title: 'Join a group to group',
-        label: 'Enter a token of a group to make "{{groupName}}" its subgroup:'
-      },
-      joinSpaceModal: {
-        title: 'Join a space',
-        label: 'Enter a token of a space to join the group "{{groupName}}" to it:'
-      },
-      renameModal: {
-        title: 'Rename a group',
-        label: 'Enter new group name:'
-      },
-      leaveModal: {
-        title: 'Leave the group',
-        label: 'Are you sure you want to leave group "{{groupName}}"?'
-      },
-      leaveParentGroupModal: {
-        title: 'Leave a parent group...',
-        label: 'Choose a group, that "{{subgroupName}}" should leave:'
-      },
-      removeModal: {
-        title: 'Remove a group',
-        label: 'Are you sure you want to remove the "{{groupName}}" group?'
-      },
-      notify: {
-        createSuccess: 'Group "{{name}}" created successfully',
-        createFailed: 'Group "{{name}}" cannot be created due to an error',
-        leaveSuccess: 'Group "{{name}}" left successfully',
-        leaveFailed: 'Cannot leave group "{{name}}" due to an error',
-        leaveParentGroupSuccess: 'Group "{{parentGroupName}}" left successfully by "{{subgroupName}}"',
-        leaveParentGroupFailed: 'Group "{{subgroupName}}" cannot leave parent group "{{parentGroupName}}" due to an error',
-        removeSuccess: 'Group "{{name}" has been removed',
-        removeFailed: 'Failed to remove group "{{name}}"',
-        joinSpaceSuccess: 'Successfully joined group "{{groupName}}" to space "{{spaceName}}"',
-        joinSpaceFailed: 'Failed to join "{{groupName}}" to some space',
-        joinAsSubgroupSuccess: 'Successfully joined group "{{thisGroupName}}" to group "{{groupName}}"',
-        joinAsSubgroupFailed: 'Failed to join "{{groupName}}" to some group as a subgroup',
-        joinSuccess: 'Successfully joined to group "{{groupName}}"',
-        joinFailed: 'Failed to join group'
-
-      }
-    },
     transfersMenu: {
       title: 'space data transfers',
     },
@@ -290,54 +167,6 @@ export default {
       removeModal: {
         title: 'Remove share',
         label: 'Are you sure that you want to remove the "{{name}}" share?'
-      }
-    },
-    permissionsTable: {
-      save: 'save',
-      discard: 'discard',
-      inviteButton: {
-        user: 'Invite user',
-        group: 'Invite group'
-      },
-      viewSpace: 'view space',
-      modifySpace: 'modify space',
-      setPrivileges: 'set privileges',
-      removeSpace: 'remove space',
-      inviteUser: 'invite user',
-      removeUser: 'remove user',
-      inviteGroup: 'invite group',
-      removeGroup: 'remove group',
-      inviteProvider: 'invite provider',
-      removeProvider: 'remove provider',
-      viewGroup: 'view group',
-      modifyGroup: 'modify group',
-      createSpace: 'create space',
-      joinSpace: 'join space',
-      leaveSpace: 'leave space',
-      getSupport: 'get support',
-      removeSubgroup: 'remove subgroup',
-      joinGroup: 'join group',
-      manageShares: 'manage shares',
-      writeFiles: 'write files',
-      inviteModal: {
-        title: 'Invite {{type}} to space',
-        label: 'Pass the below token to the {{type}} you want to invite'
-      },
-      notify: {
-        saveFailedAny: 'Some of permissions saving failed',
-        saveFailedSingle: 'Cannot set permissions for "{{name}}"'
-      },
-      tableTitle: {
-        users: 'Users',
-        groups: 'Groups'
-      },
-      noUsers: {
-        space: 'This space has no users',
-        group: 'This group has no users',
-      },
-      noGroups: {
-        group: 'This group has no subgroups',
-        space: 'This space has no groups'
       }
     },
     // data
@@ -492,28 +321,6 @@ export default {
       error: "Error:",
       completed: "Completed!"
     },
-    tokenModals: {
-      userJoinSpace: {
-        title: 'Invite user to the space',
-        label: 'Pass the below token to the user you want to invite to space'
-      },
-      groupJoinSpace: {
-        title: 'Invite group to the space',
-        label: 'Pass the below token to the group you want to invite to space'
-      },
-      providerSupport: {
-        title: 'Get support for the space',
-        label: 'Pass the below token to the provider you want to request support from'
-      },
-      userJoinGroup: {
-        title: 'Invite user to the group',
-        label: 'Pass the below token to the user you want to invite to group'
-      },
-      groupJoinGroup: {
-        title: 'Invite group to the group',
-        label: 'Pass the below token to the group you want to invite to group'
-      },
-    },
     shareInfoHead: {
       path: 'Path',
       publicUrl: 'Public URL',
@@ -620,17 +427,6 @@ export default {
   login: {
     message: "Authenticating..."
   },
-  groups: {
-    title: 'Groups',
-    show: {
-      title: 'Group settings',
-      members: {
-        title: 'Members permissions'
-      },
-      spaces: "Spaces",
-      viewPrivileges: "view members of this group"
-    }
-  },
   shares: {
     title: 'Shared'
   },
@@ -642,19 +438,6 @@ export default {
   },
   links: {
     title: 'Links'
-  },
-  spaces: {
-    title: 'Spaces',
-    show: {
-      title: 'Space settings',
-      users: {
-        title: 'Users permissions'
-      },
-      groups: {
-        title: 'Groups permissions'
-      },
-      viewMembersPrivileges: 'view members of this space'
-    }
   },
   data: {
     title: 'Data',

@@ -388,12 +388,40 @@ export default Ember.Service.extend({
       childGroupId: childGroupId
     });
   },
-  
-    
+
   /**--------------------------------------------------------------------
-   Transfers related procedures
+   Transfer related procedures
    -------------------------------------------------------------------- */
-   
+  
+  /**
+   * Cancels the transfer
+   * 
+   * @param {string} transferId 
+   * @returns {RSVP.Promise} A backend operation completion,
+   * ``resolve()`` when cancelling procedure has started successfully
+   * ``reject(object: error)`` on failure
+   */
+  cancelTransfer(transferId) {
+    return this.get('server').privateRPC('cancelTransfer', {
+      transferId,
+    });
+  },
+
+  /**
+   * Reruns the transfer
+   * 
+   * @param {string} transferId 
+   * @returns {RSVP.Promise} A backend operation completion,
+   * ``resolve(transferId: string)`` when rerunning procedure has started
+   *   successfully. Passes id of the newly created transfer
+   * ``reject(object: error)`` on failure
+   */
+  rerunTransfer(transferId) {
+    return this.get('server').privateRPC('rerunTransfer', {
+      transferId,
+    });
+  },
+     
   /**
    * @param {String} spaceId
    * @param {String} type one of: waiting, ongoing, ended

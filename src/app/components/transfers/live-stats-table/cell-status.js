@@ -32,8 +32,24 @@ export default Component.extend({
    * Transfer status.
    * @type {Ember.ComputedProperty<string>}
    */
-  _status: computed.reads('record.status'),
+  transferStatus: computed.reads('record.status'),
 
+  /**
+   * @type {Ember.ComputedProperty<boolean|undefined>}
+   */
+  isCancelling: computed.reads('record.transfer.isCancelling'),
+  
+  /**
+   * @type {Ember.ComputedProperty<string>}
+   */
+  _status: computed('transferStatus', 'isCancelling', function () {
+    if (this.get('isCancelling')) {
+      return 'aborting';
+    } else {
+      return this.get('transferStatus');
+    }
+  }),
+  
   /**
    * Status icon.
    * @type {Ember.ComputedProperty<string>}
@@ -44,11 +60,12 @@ export default Component.extend({
         return 'checkbox-filled';
       case 'skipped':
         return 'skipped';
+      case 'aborting':
       case 'cancelled':
         return 'cancelled';
       case 'failed':
         return 'checkbox-filled-x';
-      case 'active':
+      case 'replicating':
       case 'invalidating':
         return 'update';
       case 'scheduled':

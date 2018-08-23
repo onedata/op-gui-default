@@ -114,6 +114,20 @@ $dropdown-bg: #2B3037;
     }
   }
 
+  &.dropdown-menu-left {
+    &:before {
+      position: absolute;
+      // draw full right triangle
+      top: $dropdown-triangle-width * 2;
+      right: 2 * (-$dropdown-triangle-width);
+      border-bottom: $dropdown-triangle-width solid transparent;
+      border-left: $dropdown-triangle-width solid $dropdown-bg;
+      border-right: $dropdown-triangle-width solid transparent;
+      border-top: $dropdown-triangle-width solid transparent;
+      content: '';
+    }
+  }
+
   &.dropdown-menu-settings {
     width: 220px;
     border-radius: 0px !important;

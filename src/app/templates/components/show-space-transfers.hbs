@@ -122,6 +122,8 @@
                                 notifyTransferListChanged=(action "transferListChanged")
                                 justOpened=(eq _tabJustChangedId "file")
                                 clearJustOpened=(action "clearJustChangedTabId" "file")
+                                rerunTransfer=(action "rerunTransfer")
+                                cancelTransfer=(action "cancelTransfer")
                               }}
                               {{#if _fileHistoryLimitReached}}
                                 <p class="file-history-limit-message">
@@ -180,6 +182,8 @@
                             notifyTransferListChanged=(action "transferListChanged")
                             justOpened=(eq _tabJustChangedId "scheduled")
                             clearJustOpened=(action "clearJustChangedTabId" "scheduled")
+                            rerunTransfer=(action "rerunTransfer")
+                            cancelTransfer=(action "cancelTransfer")
                           }}
                         {{/loading-container}}
                       </div>
@@ -210,6 +214,8 @@
                             notifyTransferListChanged=(action "transferListChanged")
                             justOpened=(eq _tabJustChangedId "current")
                             clearJustOpened=(action "clearJustChangedTabId" "current")
+                            rerunTransfer=(action "rerunTransfer")
+                            cancelTransfer=(action "cancelTransfer")
                           }}
                         {{/loading-container}}
                       </div>
@@ -240,6 +246,7 @@
                             notifyTransferListChanged=(action "transferListChanged")
                             justOpened=(eq _tabJustChangedId "completed")
                             clearJustOpened=(action "clearJustChangedTabId" "completed")
+                            rerunTransfer=(action "rerunTransfer")
                           }}
                         {{/loading-container}}
                       </div>

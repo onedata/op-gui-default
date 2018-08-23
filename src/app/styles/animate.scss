@@ -125,3 +125,9 @@
 .notice-blink, .notice-blink-mint {
   animation-name: notice-blink-mint; 
 }
+
+@include animation-fg-color-change(
+  pulse-red-transparent,
+  $color-one-red,
+  transparent
+);

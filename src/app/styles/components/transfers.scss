@@ -285,9 +285,48 @@
     }
   }
 
+  .cell-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+
+    .action-message {
+      $-left-border-style: 5px solid;
+      position: absolute;
+      bottom: -15px;
+      right: 12px;
+      padding: 2px $padding-base-horizontal;
+      background-color: $onedata-light-gray;
+      white-space: nowrap;
+      font-size: 80%;
+
+      &.success {
+        border-left: $-left-border-style $color-one-mint;
+      }
+      &.failure {
+        border-left: $-left-border-style $color-one-red;
+      }
+      &.warning {
+        border-left: $-left-border-style $color-one-yellow;
+      }
+    }
+  }
+
+  .one-collapsible-list-item {
+    position: relative;
+    .cell-actions {
+      position: absolute;
+      top: 18px;
+      right: 8px;
+      .action-message {
+        display: none;
+      }
+    }
+  }
+
   .one-collapsible-list-item-header.row {
     padding-left: $padding-large-horizontal;
-    padding-right: 45px;;
+    padding-right: 45px;
   }
 
   .content-row {
@@ -314,7 +353,7 @@
         cursor: pointer;
       }
       &.expanded-row {
-        background-color: darken($onedata-light-gray, 5%);
+        background-color: darken($onedata-light-gray, 4%);
         &:hover {
           background-color: darken($onedata-light-gray, 9%);
         }
@@ -349,6 +388,9 @@
           }
         }
       }
+    }
+    .cell-status {
+      top: 1px;
     }
   }
   
@@ -386,14 +428,15 @@
   .col-icon {
     .cell-icon {
       display: block;
+      position: relative;
+      top: -4px;
     }
   }
   .cell-icon {
     font-size: 2em;
     line-height: 0;
     vertical-align: middle;
-    &.completed,
-    &.invalidating {
+    &.completed {
       color: $color-one-mint;
     }
     &.skipped {
@@ -403,15 +446,28 @@
     &.cancelled {
       color: $color-one-red;
     }
-    &.active {
+    &.replicating, &.invalidating, &.enqueued {
       color: $color-one-yellow;
     }
     &.scheduled {
       color: $onedata-graphite;
     }
-    &.enqueued {
-      color: $color-one-yellow;
+    // action pending states (frontend)
+    &.aborting {
+      @extend .animated;
+      @extend .infinite;
+      @extend .hinge;
+      @extend .pulse-red-transparent;
+    }
   }
+  .transfer-actions-cell {
+    position: relative;
+    width: 40px;
+    .cell-actions {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
   }
   .cell-total-files {
     display: inline-block;

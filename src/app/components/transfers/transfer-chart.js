@@ -22,6 +22,7 @@ import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
 import eventListener from 'op-worker-gui/utils/chartist/event-listener';
 import ChartistValuesLine from 'op-worker-gui/mixins/components/chartist-values-line';
 import ChartistTooltip from 'op-worker-gui/mixins/components/chartist-tooltip';
+import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 
 const {
   Component,
@@ -393,9 +394,10 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
    */
   _chartYMax: computed('_stats', function () {
     const _stats = this.get('_stats');
+    const minY = 8;
     const arrays = _.values(_stats);
     if (!arrays.length) {
-      return 0;
+      return minY;
     }
     let maxSum = 0;
     _.range(arrays[0].length).forEach(i => {
@@ -404,7 +406,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
         maxSum = sum;
       }
     });
-    return Math.max(maxSum, 8);
+    return Math.max(maxSum, minY);
   }),
 
   /**
@@ -688,7 +690,7 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
  
     console.debug('transfer-chart: creating updater');
     _timeStatForUnit
-      .then(timeStat => {
+      .then(timeStat => safeExec(this, () => {
         this.set('_statsError', null);
         if (!isCurrent) {
           this.set('timeUnit', this._getPrefferedUnit());
@@ -703,10 +705,8 @@ export default Component.extend(ChartistValuesLine, ChartistTooltip, {
           updater.fetch();
         }
         this.set('updater', updater);
-      })
-      .catch(error => {
-        this.set('_statsError', error);
-      });
+      }))
+      .catch(error => safeExec(this, 'set', '_statsError', error));
   },
   
   /**

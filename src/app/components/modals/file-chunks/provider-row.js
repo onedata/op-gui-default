@@ -460,17 +460,19 @@ export default Component.extend({
    * Collection of transfers for current file and provider
    * @type {Ember.Array<Transfer>}
    */
-  fileProviderTransfers: computed('fileTransfers.@each.{destination,migrationSource}',
+  fileProviderTransfers: computed(
+    'fileTransfers.@each.{replicatingProvider,invalidatingProvider}',
     function () {
       const fileTransfers = this.get('fileTransfers');
       const providerId = this.get('providerId');
       if (fileTransfers) {
         return fileTransfers.filter(t =>
-          get(t, 'destination') === providerId || get(t, 'migrationSource') ===
-          providerId
+          get(t, 'replicatingProvider') === providerId ||
+          get(t, 'invalidatingProvider') === providerId
         );
       }
-    }),
+    }
+  ),
 
   transfersCount: computed.reads('fileProviderTransfers.length'),
 
@@ -483,7 +485,7 @@ export default Component.extend({
    * @type {Array<string>|null}
    */
   transferTypes: computed(
-    'fileProviderTransfers.@each.{migrationSource,destination}',
+    'fileProviderTransfers.@each.{invalidatingProvider,replicatingProvider}',
     'providerId',
     function getTransferType() {
       const fileProviderTransfers = this.get('fileProviderTransfers');
@@ -491,13 +493,13 @@ export default Component.extend({
       if (fileProviderTransfers && !isEmpty(fileProviderTransfers)) {
         const types = [];
         for (let t of fileProviderTransfers) {
-          if (get(t, 'migration') && get(t, 'migrationSource') === providerId) {
-            if (get(t, 'destination')) {
+          if (get(t, 'invalidatingProvider') === providerId) {
+            if (get(t, 'replicatingProvider')) {
               types.push('migration-source');              
             } else {
               types.push('invalidation');
             }
-          } else if (get(t, 'destination') === providerId) {
+          } else if (get(t, 'replicatingProvider') === providerId) {
             types.push('replication-destination');
           }
         }

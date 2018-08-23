@@ -22,26 +22,27 @@ const {
   computed,
 } = Ember;
 
+const finishedStatuses = [
+  'completed',
+  'skipped',
+  'cancelled',
+  'failed',
+];
+
 export default Model.extend({
   index: attr('string'),
   
   /**
    * Id of Provider that is destination of this transfer
    */
-  destination: attr('string'),
+  replicatingProvider: attr('string'),
   
   file: belongsTo('file', { async: true, inverse: null }),
   
   /**
-   * If true, the transfer is a migration, so the file will be invalidated
-   * on `migrationSource` provider after migration completion
-   */
-  migration: attr('boolean'),
-  
-  /**
    * Id of provider that will invalidate the file after transfer
    */
-  migrationSource: attr('string'),
+  invalidatingProvider: attr('string'),
   
   /**
    * If true, the transfer is in progress (should be in current transfers collection)
@@ -122,10 +123,10 @@ export default Model.extend({
   ),
   
   status: computed.reads('currentStat.status'),
-  dest: computed.reads('destination'),
+  dest: computed.reads('replicatingProvider'),
   userName: computed.reads('systemUser.name'),
-  transferredBytes: computed.reads('currentStat.transferredBytes'),
-  transferredFiles: computed.reads('currentStat.transferredFiles'),
+  replicatedBytes: computed.reads('currentStat.replicatedBytes'),
+  replicatedFiles: computed.reads('currentStat.replicatedFiles'),
   invalidatedFiles: computed.reads('currentStat.invalidatedFiles'),
   
   currentStatError: computed('currentStat.{isSettled,content}', function () {
@@ -133,14 +134,25 @@ export default Model.extend({
   }),
   
   isCurrent: computed.reads('isOngoing'),
+
+  /**
+   * @type {boolean}
+   */
+  isEnded: computed('status', function () {
+    return finishedStatuses.indexOf(this.get('status')) !== -1;
+  }),
   
   /**
    * @type {string}
    * One of: migration, invalidation, replication
    */
-  type: computed('migration', 'destination', function getType() {
-    if (this.get('migration')) {
-      return this.get('destination') ? 'migration' : 'invalidation';
+  type: computed('invalidatingProvider', 'replicatingProvider', function getType() {
+    const {
+      replicatingProvider,
+      invalidatingProvider,
+    } = this.getProperties('replicatingProvider', 'invalidatingProvider');
+    if (invalidatingProvider) {
+      return replicatingProvider ? 'migration' : 'invalidation';
     } else {
       return 'replication';
     }
@@ -154,7 +166,41 @@ export default Model.extend({
   getIsLocal(providerId) {
     const type = this.get('type');
     const property = (type === 'replication' || type === 'migration' && this.get('status') === 'invalidating') ?
-      'destination' : 'migrationSource';
+      'replicatingProvider' : 'invalidatingProvider';
     return this.get(property) === providerId;
   },
+
+  //#region Runtime properties
+
+  /**
+   * Helper property for `isCancelling` computed property.
+   * @type {boolean}
+   */
+  _isCancelling: false,
+  
+  /**
+   * If true, user has invoked transfer cancellation
+   * @type {boolean}
+   */
+  isCancelling: computed('_isCancelling', 'status', 'isEnded', {
+    get() {
+      const {
+        status,
+        isEnded,
+        _isCancelling,
+      } = this.getProperties('_isCancelling', 'isEnded', 'status');
+      // if transfer is finished, then cancelling is not possible
+      return status === 'aborting' || (_isCancelling && !isEnded);
+    },
+    set(key, value) {
+      const {
+        status,
+        isEnded,
+      } = this.getProperties('status', 'isEnded');
+      this.set('_isCancelling', value);
+      return status === 'aborting' || (value && !isEnded);
+    },
+  }),
+  
+  //#endregion
 });

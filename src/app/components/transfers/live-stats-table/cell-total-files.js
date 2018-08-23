@@ -28,24 +28,24 @@ export default Ember.Component.extend({
   /**
    * @type {Ember.ComputedProperty<number>}
    */
-  totalFiles: computed('record.{transferredFiles,invalidatedFiles}', function () {
+  totalFiles: computed('record.{replicatedFiles,invalidatedFiles}', function () {
     const {
-      transferredFiles,
+      replicatedFiles,
       invalidatedFiles,
-    } = getProperties(this.get('record'), 'transferredFiles', 'invalidatedFiles');
-    return (transferredFiles + invalidatedFiles) || 0;
+    } = getProperties(this.get('record'), 'replicatedFiles', 'invalidatedFiles');
+    return (replicatedFiles + invalidatedFiles) || 0;
   }),
 
   /**
    * @type {Ember.ComputedProperty<string>}
    */
-  tooltipTitle: computed('record.{transferredFiles,invalidatedFiles}', function () {
+  tooltipTitle: computed('record.{replicatedFiles,invalidatedFiles}', function () {
     const {
-      transferredFiles,
+      replicatedFiles,
       invalidatedFiles,
-    } = getProperties(this.get('record'), 'transferredFiles', 'invalidatedFiles');
+    } = getProperties(this.get('record'), 'replicatedFiles', 'invalidatedFiles');
     const i18n = this.get('i18n');
-    return `${transferredFiles || 0} ${i18n.t(I18N_PREFIX + 'transferred')}, ` + 
+    return `${replicatedFiles || 0} ${i18n.t(I18N_PREFIX + 'replicated')}, ` + 
       `${invalidatedFiles || 0} ${i18n.t(I18N_PREFIX + 'invalidated')}`;
   }),
 });

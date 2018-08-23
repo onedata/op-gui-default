@@ -19,7 +19,7 @@ export default Model.extend({
   /**
    * Provider id that is a destination of this transfer
    */
-  destination: attr('string'),
+  replicatingProvider: attr('string'),
   
   minuteStat: belongsTo('transfer-time-stat'),
   hourStat: belongsTo('transfer-time-stat'),

@@ -211,21 +211,18 @@ export default Component.extend({
     'neverSynchronized',
     'isEmpty',
     'transferEnabled',
-    'transferLocked',
     'file.isDir',
     'hasBlocksToInvalidate',
     function () {
       const {
         neverSynchronized,
         isEmpty,
-        transferLocked,
         transferEnabled,
         file,
         hasBlocksToInvalidate,
       } = this.getProperties(
         'neverSynchronized',
         'isEmpty',
-        'transferLocked',
         'transferEnabled',
         'file',
         'hasBlocksToInvalidate'
@@ -235,7 +232,7 @@ export default Component.extend({
         (get(file, 'isDir') ?
           true :
           (!neverSynchronized && !isEmpty && hasBlocksToInvalidate)
-        ) && !transferLocked;
+        );
     }
   ),
 

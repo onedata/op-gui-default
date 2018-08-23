@@ -4,14 +4,13 @@ import PromiseObject from 'ember-cli-onedata-common/utils/ember/promise-object';
 
 const {
   computed,
-  isEmpty,
 } = Ember;
 
 /**
  * Information about distribution of file blocks among single provider.
  * @module models/file-distribution
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend({
@@ -30,16 +29,25 @@ export default DS.Model.extend({
       return PromiseObject.create({ promise });
     }
   ),
-
+  
   /**
-    Array of integers. Number of elements should be even.
-    - Let n=0,2,4,6,...
-    - Each (n, n+1) pair of integers is a file block (start, end) bytes count.
-    - Eg. [0,10,15,20,60,100] denotes, that there are 3 file blocks:
-      - 0-10b, 15-20b, 60-100b
-    - the file (which has a id = fileId) should have size >= last number (in this example >= 100b)
-  */
-  blocks: DS.attr({defaultValue: []}),
+   * Used for drawing file distribution bar chart.
+   * 
+   * The format is an object, where keys are start pixel of bar (0-319)
+   * and values are opacity of fill that should be used to fill the fragment
+   * from start pixel to next start pixel.
+   * 
+   * Eg. `{ 0: 0, 160: 50, 300: 25 }` will draw:
+   * - first half of the bar will be empty
+   * - from the half of the bar, the bar will have 50% opacity
+   * - on the end (300-319 pixels) the bar will have 25% opacity
+   */
+  chunksBarData: DS.attr('object', { defaultValue: { 0: 0 } }),
+  
+  /**
+   * Float in range 0..100 with percentage of data blocks of this file on the provider
+   */
+  blocksPercentage: DS.attr('number', { defaultValue: 0 }),
   
   file: DS.belongsTo('file', { async: true, inverse: null }),
     
@@ -47,22 +55,14 @@ export default DS.Model.extend({
 
   fileSize: computed.reads('file.size'),
   
-  isEmpty: computed('fileSize', 'blocks.[]', function () {
-    if (this.get('fileSize') !== undefined) {
-      const blocks = this.get('blocks');
-      return isEmpty(blocks) || compareNeighbors(blocks);
-    }
+  isEmpty: computed('fileSize', 'chunksBarData', function () {
+    return this.get('fileSize') !== undefined && !this.get('blocksPercentage');
   }),
   
-  isComplete: computed('isEmpty', 'fileSize', 'blocks.[]', function () {
+  isComplete: computed('isEmpty', 'blocksPercentage', function () {
     const isEmpty = this.get('isEmpty');
     if (isEmpty === false) {
-      const sblocks = this.get('blocks').map(i => parseInt(i)).sort((a, b) => a - b);
-      return (
-        sblocks[0] === 0 &&
-        sblocks[sblocks.length - 1] === this.get('fileSize') &&
-        compareNeighbors(sblocks.slice(1, sblocks.length - 1))
-      );
+      return this.get('blocksPercentage') >= 100;
     } else if (isEmpty === true) {
       return false;
     } else {
@@ -70,12 +70,3 @@ export default DS.Model.extend({
     }
   }),
 });
-
-function compareNeighbors(sblocks) {
-  for (let i = 0; i < sblocks.length; i += 2) {
-    if (sblocks[i] !== sblocks[i+1]) {
-      return false;
-    }
-  }
-  return true;
-}

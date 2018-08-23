@@ -2,11 +2,11 @@
 
 @font-face {
   font-family: '#{$icomoon-font-family}';
-  src:  url('#{$icomoon-font-path}/#{$icomoon-font-family}.eot?rzf02c');
-  src:  url('#{$icomoon-font-path}/#{$icomoon-font-family}.eot?rzf02c#iefix') format('embedded-opentype'),
-    url('#{$icomoon-font-path}/#{$icomoon-font-family}.ttf?rzf02c') format('truetype'),
-    url('#{$icomoon-font-path}/#{$icomoon-font-family}.woff?rzf02c') format('woff'),
-    url('#{$icomoon-font-path}/#{$icomoon-font-family}.svg?rzf02c##{$icomoon-font-family}') format('svg');
+  src:  url('#{$icomoon-font-path}/#{$icomoon-font-family}.eot?w0npth');
+  src:  url('#{$icomoon-font-path}/#{$icomoon-font-family}.eot?w0npth#iefix') format('embedded-opentype'),
+    url('#{$icomoon-font-path}/#{$icomoon-font-family}.ttf?w0npth') format('truetype'),
+    url('#{$icomoon-font-path}/#{$icomoon-font-family}.woff?w0npth') format('woff'),
+    url('#{$icomoon-font-path}/#{$icomoon-font-family}.svg?w0npth##{$icomoon-font-family}') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -26,6 +26,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.oneicon-rerun {
+  &:before {
+    content: $oneicon-rerun; 
+  }
+}
 .oneicon-replicate {
   &:before {
     content: $oneicon-replicate; 

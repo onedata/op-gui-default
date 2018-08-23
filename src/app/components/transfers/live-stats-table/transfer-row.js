@@ -8,6 +8,7 @@
  */
 
 import Ember from 'ember';
+import $ from 'jquery';
 
 const {
   Component,
@@ -44,14 +45,30 @@ export default Component.extend({
       this.set('collapseRow', emptyFun);
     }
   },
+
+  /**
+   * Returns true if click should be ignored
+   * @param {jQuery.Event} event
+   * @returns {boolean}
+   */
+  shouldIgnoreClick(event) {
+    // ignore dots-menu
+    return $(event.target).closest('.dots-menu').length > 0;
+  },
   
   actions: {
-    expandRow() {
+    expandRow(transferIndex, event) {
+      if (this.shouldIgnoreClick(event)) {
+        return;
+      }
       /** @type {function|undefined} */
       const expandRow = this.get('expandRow');
       return expandRow ? expandRow(...arguments) : null;
     },
-    collapseRow() {
+    collapseRow(transferIndex, event) {
+      if (this.shouldIgnoreClick(event)) {
+        return;
+      }
       /** @type {function} */
       const collapseRow = this.get('collapseRow');
       return collapseRow ? collapseRow(...arguments) : null;

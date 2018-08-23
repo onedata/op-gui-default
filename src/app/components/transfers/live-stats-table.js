@@ -11,6 +11,7 @@
 
 import Ember from 'ember';
 import TransferTableRecord from 'op-worker-gui/utils/transfer-table-record';
+import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 import _ from 'lodash';
 
 const {
@@ -25,6 +26,7 @@ const {
   },
   get,
   set,
+  setProperties,
   A,
   Object: EmberObject,
 } = Ember;
@@ -44,6 +46,7 @@ export default Component.extend({
   classNameBindings: ['transferType'],
 
   i18n: service(),
+  notify: service(),
 
   /**
    * @virtual 
@@ -63,6 +66,26 @@ export default Component.extend({
    * @type {Function}
    */
   notifyLoaded: () => {},
+  
+  /**
+   * @virtual
+   * @type {Function}
+   * External implementation of cancelTransfer that should actually invoke
+   * a procedure
+   * @returns {Promise<undefined|any>} promise should resolve when cancelling has
+   *    started successfully
+   */
+  cancelTransfer: undefined,
+
+  /**
+   * @virtual
+   * @type {Function}
+   * External implementation of rerunTransfer that should actually invoke
+   * a procedure
+   * @returns {Promise<undefined|any>} promise should resolve when rerunning has
+   *    started successfully
+   */
+  rerunTransfer: undefined,
   
   /**
    * @virtual 
@@ -175,6 +198,7 @@ export default Component.extend({
     'transfers.{startIndex,endIndex}',
     'providers',
     'providersColors',
+    '_rowActions',
     function () {
       const {
         transfers,
@@ -183,6 +207,7 @@ export default Component.extend({
         _tableDataCache,
         firstRowSpace,
         updaterId,
+        _rowActions,
         transferType,
       } = this.getProperties(
         'transfers',
@@ -191,6 +216,7 @@ export default Component.extend({
         '_tableDataCache',
         'firstRowSpace',
         'updaterId',
+        '_rowActions',
         'transferType'
       );
       
@@ -226,6 +252,7 @@ export default Component.extend({
               providers,
               providersColors,
               updaterId,
+              actions: _rowActions,
               transferCollection: transferType,
             }));
             arrayChanged = true;
@@ -335,6 +362,13 @@ export default Component.extend({
         component: 'transfers/live-stats-table/cell-status',
       },
     ];
+    if (!_mobileMode) {
+      allColumns.push({
+        id: 'actions',
+        component: 'transfers/live-stats-table/cell-actions',
+        className: 'transfer-actions-cell',
+      });
+    }
     allColumns.forEach(column => column.disableSorting = true);
     return _.differenceWith(allColumns, excludedColumns, (col, eid) => col.id === eid);
   }),
@@ -352,6 +386,105 @@ export default Component.extend({
   _hasExpandableRows: computed('transferType', function getExpandableRows() {
     const transferType = this.get('transferType');
     return transferType !== 'scheduled';
+  }),
+
+  /**
+   * Internal cancel of transfer which knows which row (table record) invoked
+   * the procedure, so it can modify row (record) state.
+   * @param {object} record instance of model-table record for which the transfer
+   *    has been canceled
+   */
+  _cancelTransfer: computed('cancelTransfer', function () {
+    const cancelTransfer = this.get('cancelTransfer');
+    return cancelTransfer ? (record) => {
+      const {
+        notify,
+        i18n,
+      } = this.getProperties('notify', 'i18n');
+      setProperties(record, {
+        actionMessage: undefined,
+        actionMessageType: undefined,
+      });
+      set(record, 'transfer.isCancelling', true);
+      cancelTransfer(get(record, 'transfer.id'))
+        .catch(error => {
+          notify.error(i18n.t(I18N_PREFIX + 'cancelFailure'));
+          safeExec(record, () => setProperties(record, {
+            actionMessage: i18n.t(I18N_PREFIX + 'cancelFailure'),
+            actionMessageType: 'failure',
+          }));
+          safeExec(get(record, 'transfer'), 'set', 'isCancelling', false);
+          throw error;
+        })
+        .then(() => {
+          return record.transfer.reload();
+        });
+    } : undefined;
+  }),
+  
+  /**
+   * Internal rerun of transfer which knows which row (table record) invoked
+   * the procedure, so it can modify row (record) state.
+   * @param {object} record instance of model-table record for which the transfer
+   *    has been rerun
+   */
+  _rerunTransfer: computed('rerunTransfer', function () {
+    const rerunTransfer = this.get('rerunTransfer');
+    return rerunTransfer ? (record) => {
+      const {
+        notify,
+        i18n,
+      } = this.getProperties('notify', 'i18n');
+      setProperties(record, {
+        actionMessage: i18n.t(I18N_PREFIX + 'rerunStarting'),
+        actionMessageType: 'warning',
+        isRerunning: true,
+      });
+      rerunTransfer(get(record, 'transfer.id'))
+        .catch(error => {
+          setProperties(record, {
+            actionMessage: i18n.t(I18N_PREFIX + 'rerunFailure'),
+            actionMessageType: 'failure',
+          });
+          notify.error(i18n.t(I18N_PREFIX + 'rerunFailure'));
+          throw error;
+        })
+        .then(() => {
+          setProperties(record, {
+            actionMessage: i18n.t(I18N_PREFIX + 'rerunSuccess'),
+            actionMessageType: 'success',
+          });
+          notify.success(i18n.t(I18N_PREFIX + 'rerunSuccess'));
+          return record.transfer.reload();
+        })
+        .finally(() => {
+          record.set('isRerunning', false);
+        });
+    } : undefined;
+  }),
+
+  /**
+   * @type {Ember.ComputedProperty<Array<Object>>}
+   */
+  _rowActions: computed('_cancelTransfer', '_rerunTransfer', function () {
+    const {
+      _cancelTransfer,
+      _rerunTransfer,
+    } = this.getProperties('_cancelTransfer', '_rerunTransfer');
+    const actions = [];
+    if (_cancelTransfer) {
+      actions.push({
+        id: 'cancelTransfer',
+        action: _cancelTransfer,
+      });
+    }
+    if (_rerunTransfer) {
+      actions.push({
+        id: 'rerunTransfer',
+        action: _rerunTransfer,
+      });
+    }
+    return actions;
   }),
     
   transferListChanged: observer('_tableDataCache.[]', function() {
@@ -410,5 +543,4 @@ export default Component.extend({
       this.get('stickyTableChanged')(state);
     },
   },
-  
 });

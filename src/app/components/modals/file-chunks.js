@@ -10,7 +10,6 @@ import Ember from 'ember';
 import PromiseLoadingMixin from 'ember-cli-onedata-common/mixins/promise-loading';
 import Looper from 'ember-cli-onedata-common/utils/looper';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
-import hasDuplicatedFileChunks from 'op-worker-gui/utils/has-duplicated-file-chunks';
 
 import _ from 'lodash';
 
@@ -86,7 +85,7 @@ export default Component.extend(PromiseLoadingMixin, {
   /**
    * @type {Array<FileDistribution>}
    */
-  fileBlocks: null,
+  fileDistribution: null,
 
   /**
    * @type {Provider}
@@ -112,7 +111,7 @@ export default Component.extend(PromiseLoadingMixin, {
    */
   providerInvalidationsInvoked: undefined,
   
-  fileBlocksSorting: ['getProvider.name'],
+  fileDistributionSorting: ['getProvider.name'],
     
   confirmOperationType: null,
   
@@ -197,15 +196,15 @@ export default Component.extend(PromiseLoadingMixin, {
    */
   fileDistributionsSorted: computed(
     'providers',
-    'fileBlocks.@each.provider',
+    'fileDistribution.@each.provider',
     function getFileDistributionsSorted() {
       const {
-        fileBlocks,
+        fileDistribution,
         providers,
-      } = this.getProperties('fileBlocks', 'providers');
-      if (fileBlocks && providers) {
+      } = this.getProperties('fileDistribution', 'providers');
+      if (fileDistribution && providers) {
         return _.sortBy(
-          this.get('fileBlocks').toArray(),
+          this.get('fileDistribution').toArray(),
           fb => get(_.find(providers, p => get(p, 'id') === get(fb, 'provider')), 'name')
         );
       }
@@ -223,7 +222,7 @@ export default Component.extend(PromiseLoadingMixin, {
     if (fileTransfers) {
       fileTransfers.forEach(transfer => {
         if (get(transfer, 'type') === 'invalidation') {
-          providers.add(get(transfer, 'migrationSource'));
+          providers.add(get(transfer, 'invalidatingProvider'));
         }
       });
     }
@@ -231,39 +230,30 @@ export default Component.extend(PromiseLoadingMixin, {
   }),
 
   /**
-   * Returns mapping: providerId -> boolean value. Value is true if there are
-   * some blocks available for invalidation.
+   * Returns mapping: providerId -> boolean value.
+   * Value is true if there are basic possibility to start invalidation.
+   * Note, that this property does not detect lack of blocks, because
+   * backend doesn't provide us the complete information.
    * @type {Ember.ComputedProperty<Object>}
    */
   isInvalidationPossible: computed(
-    'fileDistributionsSorted.@each.{blocks,neverSynchronized}',
-    'providersIdsWithInvalidation',
+    'isFileEmpty',
+    'fileDistributionsSorted.@each.isEmpty',
     function () {
       const {
         fileDistributionsSorted,
-        file,
-        providersIdsWithInvalidation,
+        isFileEmpty,
       } = this.getProperties(
         'fileDistributionsSorted',
-        'file',
-        'providersIdsWithInvalidation'
+        'isFileEmpty'
       );
       if (fileDistributionsSorted) {
-        const fileChunksArray = fileDistributionsSorted.map(fd => ({
-          providerId: get(fd, 'provider'),
-          blocks: !get(fd, 'neverSynchronized') ? get(fd, 'blocks') : [],
-        }));
         const invalidationPossible = {};
-        fileChunksArray.forEach(chunks => {
-          const providerId = get(chunks, 'providerId');
-          invalidationPossible[providerId] = hasDuplicatedFileChunks(
-            file.get('size'),
-            get(chunks, 'blocks'),
-            fileChunksArray.filter(fc =>
-              fc !== chunks &&
-              !providersIdsWithInvalidation.has(get(fc, 'providerId'))
-            ).map(fc => get(fc, 'blocks'))
-          );
+        fileDistributionsSorted.forEach(fd => {
+          const providerId = get(fd, 'provider');
+          invalidationPossible[providerId] =
+            !isFileEmpty && !get(fd, 'isEmpty') &&
+            !_.without(fileDistributionsSorted, fd).every(fdi => get(fdi, 'isEmpty'));
         });
         return invalidationPossible;
       }
@@ -294,13 +284,13 @@ export default Component.extend(PromiseLoadingMixin, {
    */
   tableDataLoaded: computed(
     'file.isDir',
-    'fileBlocks.@each.isLoading',
+    'fileDistribution.@each.isLoading',
     'providers.@each.isLoaded',
     'transfersLoading',
     function () {
       const isDir = this.get('file.isDir');
-      const fileBlocks = this.get('fileBlocks');
-      if (isDir || (fileBlocks && fileBlocks.every(fb => !get(fb, 'isLoading')))) {
+      const fileDistribution = this.get('fileDistribution');
+      if (isDir || (fileDistribution && fileDistribution.every(fb => !get(fb, 'isLoading')))) {
         const providers = this.get('providers');
         if (providers && providers.every(p => get(p, 'isLoaded'))) {
           return this.get('transfersLoading') === false;
@@ -349,13 +339,16 @@ export default Component.extend(PromiseLoadingMixin, {
   /**
    * @type {Ember.ComputedProperty<Array<string>>|null}
    */
-  currentMigrationSourceIds: computed('fileTransfers.@each.migrationSource', function () {
-    /** @type {Ember.Array|undefined} */
-    const fileTransfers = this.get('fileTransfers');
-    if (fileTransfers) {
-      return fileTransfers.map(t => get(t, 'migrationSource')).filter(s => s);
+  currentMigrationSourceIds: computed(
+    'fileTransfers.@each.invalidatingProvider',
+    function () {
+      /** @type {Ember.Array|undefined} */
+      const fileTransfers = this.get('fileTransfers');
+      if (fileTransfers) {
+        return fileTransfers.map(t => get(t, 'invalidatingProvider')).filter(s => s);
+      }
     }
-  }),
+  ),
   
   /**
    * Type of element that is presented in modal
@@ -436,7 +429,7 @@ export default Component.extend(PromiseLoadingMixin, {
     const fileId = this.get('file.id');
     this.get('store').query('file-distribution', { file: fileId }).then(
       (fbs) => {
-        return this.set('fileBlocks', fbs);
+        return this.set('fileDistribution', fbs);
       },
       (error) => {
         console.error('Error loading file distribution: ' + error.message);
@@ -483,11 +476,11 @@ export default Component.extend(PromiseLoadingMixin, {
 
   _slowDistributionUpdater() {
     const isDir = this.get('file.isDir');
-    const _fileTransfersWatcher = this.get('distributionUpdater');
+    const distributionUpdater = this.get('distributionUpdater');
     if (!isDir) {
-      if (_fileTransfersWatcher &&
-        _fileTransfersWatcher.get('interval') !== SLOW_POLLING_TIME) {
-        _fileTransfersWatcher.set('interval', SLOW_POLLING_TIME);
+      if (distributionUpdater &&
+        distributionUpdater.get('interval') !== SLOW_POLLING_TIME) {
+          distributionUpdater.set('interval', SLOW_POLLING_TIME);
       }
     }
   },
@@ -569,9 +562,8 @@ export default Component.extend(PromiseLoadingMixin, {
       const transfer = this.get('store')
         .createRecord('transfer', {
           file,
-          migration: true,
-          migrationSource: source,
-          destination: destination,
+          invalidatingProvider: source,
+          replicatingProvider: destination,
         });
       return transfer.save()
         // TODO: test it and make better fail messages
@@ -600,8 +592,7 @@ export default Component.extend(PromiseLoadingMixin, {
       const transfer = this.get('store')
         .createRecord('transfer', {
           file,
-          migration: false,
-          destination,
+          replicatingProvider: destination,
         });
       return transfer.save()
         .catch(error => {
@@ -629,8 +620,7 @@ export default Component.extend(PromiseLoadingMixin, {
       const transfer = this.get('store')
         .createRecord('transfer', {
           file,
-          migration: true,
-          migrationSource: source,
+          invalidatingProvider: source,
         });
       return transfer.save()
         .catch(error => {
@@ -698,7 +688,6 @@ export default Component.extend(PromiseLoadingMixin, {
         this.forceUpdateTransfers();
 
         this._initDistributionUpdater();
-        this.fetchDistribution();
 
         this.observeTransfersCount();
       },
@@ -712,7 +701,7 @@ export default Component.extend(PromiseLoadingMixin, {
 
         this.setProperties({
           file: null,
-          fileBlocks: null,
+          fileDistribution: null,
           chunksModalError: null,
           migrationSource: null,
           providerMigrationsInvoked: undefined,

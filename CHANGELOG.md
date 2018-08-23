@@ -6,6 +6,8 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-4791 Support for highly scattered files in file distribution charts
+* VFS-4242 Added transfers cancelling and rerunning actions
 * VFS-4738 Removed spaces and groups tabs implementation and redirect to Zone GUI spaces and groups
 * VFS-4753 Allow to start new transfers if other transfers are pending for file/provider
 * VFS-4566 Added transfers list tab for specific file

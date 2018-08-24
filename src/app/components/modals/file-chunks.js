@@ -444,23 +444,20 @@ export default Component.extend(PromiseLoadingMixin, {
    *  or nothing if distribution updater should not be created
    */
   _initDistributionUpdater() {
-    const isDir = this.get('file.isDir');
-    if (!isDir) {
-      let distributionUpdater = this.get('distributionUpdater');
-      assert(
-        'distributionUpdater should be empty before init',
-        !distributionUpdater || get(distributionUpdater, 'isDestroyed')
+    let distributionUpdater = this.get('distributionUpdater');
+    assert(
+      'distributionUpdater should be empty before init',
+      !distributionUpdater || get(distributionUpdater, 'isDestroyed')
+    );
+    distributionUpdater = Looper.create({
+      immediate: true,
+      interval: SLOW_POLLING_TIME,
+    });
+    distributionUpdater
+      .on('tick', () =>
+        safeExec(this, 'fetchDistribution')
       );
-      distributionUpdater = Looper.create({
-        immediate: true,
-        interval: SLOW_POLLING_TIME,
-      });
-      distributionUpdater
-        .on('tick', () =>
-          safeExec(this, 'fetchDistribution')
-        );
-      return this.set('distributionUpdater', distributionUpdater); 
-    }
+    return this.set('distributionUpdater', distributionUpdater); 
   },
 
   _fastDistributionUpdater() {
@@ -686,9 +683,13 @@ export default Component.extend(PromiseLoadingMixin, {
         this._initTransfersWatcher();
         this.set('transfersLoading', true);
         this.forceUpdateTransfers();
-
-        this._initDistributionUpdater();
-
+        
+        if (this.get('file.isDir')) {
+          this.fetchDistribution();
+        } else {
+          this._initDistributionUpdater();
+        }
+        
         this.observeTransfersCount();
       },
 

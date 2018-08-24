@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-4806 Fixed regression bug: file distribution modal for directory has no transfers buttons
 * VFS-4791 Support for highly scattered files in file distribution charts
 * VFS-4242 Added transfers cancelling and rerunning actions
 * VFS-4753 Allow to start new transfers if other transfers are pending for file/provider

@@ -49,6 +49,8 @@ export default Ember.Component.extend({
     } else if (this.get('isEditing')) {
       acl.forEach(ace => ace.set('isCreatedItem', false));
     }
+    
+    this.dataSpaceChanged();
   },
 
   didInsertElement() {
@@ -108,22 +110,22 @@ export default Ember.Component.extend({
    * @param {String} type - one of: user, group
    */
   fetchSystemModel(type) {
-      const thisModel = `system${type.capitalize()}sModel`;
+      const modelName = `system${type.capitalize()}sModel`;
       let listModel = `${type}List`;
       let space = this.get('dataSpace');
 
       get(space, listModel)
         .then(list => get(list, `system${type.capitalize()}Records`))
-        .then(systemRecords => safeExec(this, 'set', thisModel, systemRecords))
+        .then(systemRecords => safeExec(this, 'set', modelName, systemRecords))
         .catch(error => {
-          safeExec(this, 'set', thisModel, null);
+          safeExec(this, 'set', modelName, null);
           throw error;
         });
   },
 
   // -- try to fetch system users/groups list for selector
 
-  dataSpaceChanged: on('init', observer('dataSpace', function() {
+  dataSpaceChanged: observer('dataSpace', function() {
     this.set('isLoadingModel', true);
     const promises = [
       this.fetchSystemModel('user'),
@@ -137,26 +139,34 @@ export default Ember.Component.extend({
         statusMessage: 'List of available users or groups could not be loaded',
         statusType: 'error'
       }));
-  })),
+  }),
 
   // -- convert systemUsers/Groups RecordArrays to selectors elements
 
   systemUsers: computed('systemUsersModel.@each.{name,id}', function() {
     const models = this.get('systemUsersModel');
-    let selectData = models.map(m => ({
-      id: m.get('id'),
-      text: m.get('name')
-    }));
-    return selectData;
+    if (models) {
+      const selectData = models.map(m => ({
+        id: m.get('id'),
+        text: m.get('name')
+      }));      
+      return selectData;
+    } else {
+      return [];
+    }
   }),
 
   systemGroups: computed('systemGroupsModel.@each.{name,id}', function() {
     const models = this.get('systemGroupsModel');
-    let selectData = models.map(m => ({
-      id: m.get('id'),
-      text: m.get('name')
-    }));
-    return selectData;
+    if (models) {
+      const selectData = models.map(m => ({
+        id: m.get('id'),
+        text: m.get('name')
+      }));
+      return selectData;
+    } else {
+      return [];
+    }
   }),
 
   setMaxHeightFun: computed(function() {

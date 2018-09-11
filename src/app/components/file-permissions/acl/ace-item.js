@@ -49,25 +49,30 @@ export default Ember.Component.extend({
    * Permission subject name for read-only entries. Eg. user name.
    * @type {computed<string>}
    */
-  subjectName: computed('ace.{subject,user,group}', function() {
-    let subjectsListProperty;
-    let subjectIdProperty;
-    switch (this.get('ace.subject')) {
-      case 'user':
-        subjectsListProperty = 'systemUsers';
-        subjectIdProperty = 'ace.user';
-        break;
-      case 'group':
-        subjectsListProperty = 'systemGroups';
-        subjectIdProperty = 'ace.group';
-        break;
-      default:
-        return null;
+  subjectName: computed(
+    'ace.{subject,user,group}',
+    'systemGroups.@each.id',
+    'systemUsers.@each.id',
+    function subjectName() {
+      let subjectsListProperty;
+      let subjectIdProperty;
+      switch (this.get('ace.subject')) {
+        case 'user':
+          subjectsListProperty = 'systemUsers';
+          subjectIdProperty = 'ace.user';
+          break;
+        case 'group':
+          subjectsListProperty = 'systemGroups';
+          subjectIdProperty = 'ace.group';
+          break;
+        default:
+          return null;
+      }
+      const subjectInfo = (this.get(subjectsListProperty) || [])
+        .find(e => e.id === this.get(subjectIdProperty));
+      return subjectInfo && subjectInfo.text;
     }
-    const subjectInfo = (this.get(subjectsListProperty) || [])
-      .find(e => e.id === this.get(subjectIdProperty));
-    return subjectInfo && subjectInfo.text;
-  }).readOnly(),
+  ),
 
   /**
    * This should resolve subject type icon name for ace.type.

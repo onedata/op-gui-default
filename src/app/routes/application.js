@@ -13,7 +13,6 @@ const {
   inject: {
     service
   },
-  on
 } = Ember;
 
 export default Ember.Route.extend(ApplicationRouteMixin, {
@@ -25,7 +24,13 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
     }
   },
 
-  initSession: on('init', function() {
+  
+  init() {
+    this._super(...arguments);
+    this.initSession();
+  },
+  
+  initSession() {
     let {
       session
     } = this.getProperties('session');
@@ -47,5 +52,5 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
     });
 
     return sessionInitialization;
-  }),
+  },
 });

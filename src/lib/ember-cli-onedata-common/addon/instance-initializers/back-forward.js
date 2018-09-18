@@ -24,7 +24,7 @@ function checkBackForward() {
     return performance && performance.navigation.type === performance.navigation.TYPE_BACK_FORWARD;
   } else {
     // new experimental API
-    performance.getEntriesByType('navigation')[0].type === 'back_forward';
+    return performance.getEntriesByType('navigation')[0].type === 'back_forward';
   }
   
 }

@@ -27,7 +27,7 @@ export default Mixin.create({
    * instance initializer should set `back_forward` query param flag to true.
    * If we reached this route from back/forward, then we should prevent
    * redirecting because it will leave our app.
-   * Otherwise, we should set the last seen route in the localstorage,
+   * Otherwise, we should set the last seen route in the sessionStorage,
    * to remember it when we want to go back to this route and prevent redirect.
    * @param {Transition} transition 
    */

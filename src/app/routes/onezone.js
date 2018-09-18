@@ -8,37 +8,27 @@
  */
 
 import Ember from 'ember';
+import RedirectRoute from 'ember-cli-onedata-common/mixins/routes/redirect';
 
 const {
   Route,
   inject: { service },
 } = Ember;
 
-export default Route.extend({
+export default Route.extend(RedirectRoute, {
   session: service(),
   notify: service(),
   i18n: service(),
 
-  beforeModel(transition) {
-    if (transition.queryParams.back_forward ||
-      performance && performance.navigation.type === performance.navigation.TYPE_BACK_FORWARD
-    ) {
-      console.debug(
-        'route:onezone: detected back/forward - redirecting to onedata route'
-      );
-      delete transition.queryParams.back_forward;
-      const hashBeforeRedirect = sessionStorage.getItem('hash-before-redirect');
-      sessionStorage.clear('hash-before-redirect');
-      transition.abort();
-      window.location.replace(hashBeforeRedirect || '#/');
-    } else {
-      const currentHash = window.location.hash;
-      if (!/\/onezone/.test(currentHash)) {
-        sessionStorage.setItem('hash-before-redirect', currentHash);
-      } else {
-        sessionStorage.clear('hash-before-redirect');
-      }
-    }
+  /** 
+   * @override
+   */
+  checkComeFromOtherRoute(currentHash) {
+    return !/\/onezone/.test(currentHash);
+  },
+
+  beforeModel() {
+    return this._super(...arguments);
   },
 
   model(params, transition) {

@@ -8,16 +8,28 @@
  */
 
 import Ember from 'ember';
+import RedirectRoute from 'ember-cli-onedata-common/mixins/routes/redirect';
 
 const {
   Route,
   inject: { service },
 } = Ember;
 
-export default Route.extend({
+export default Route.extend(RedirectRoute, {
   session: service(),
   notify: service(),
   i18n: service(),
+
+  /** 
+   * @override
+   */
+  checkComeFromOtherRoute(currentHash) {
+    return !/\/onezone/.test(currentHash);
+  },
+
+  beforeModel() {
+    return this._super(...arguments);
+  },
 
   model(params, transition) {
     const onezoneUrl = this.get('session.sessionDetails.manageProvidersURL');

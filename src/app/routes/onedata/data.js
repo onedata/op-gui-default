@@ -28,9 +28,9 @@ export default Ember.Route.extend(userCollectionModel('spaces', { nonEmpty: true
   actions: {
     goToDataSpace(spaceId) {
       if (spaceId) {
-        this.transitionTo('onedata.data.data-space', spaceId);
+        this.replaceWith('onedata.data.data-space', spaceId);
       } else {
-        this.transitionTo('onedata.data.index');
+        this.replaceWith('onedata.data.index');
       }
     }
   }

@@ -6,6 +6,6 @@ export default Ember.Route.extend({
   },
 
   redirect(shareModel) {
-    this.transitionTo('onedata.shares.show.dir', shareModel.get('containerDir'));
+    this.replaceWith('onedata.shares.show.dir', shareModel.get('containerDir'));
   }
 });

@@ -24,7 +24,7 @@ export default Controller.extend({
     console.debug(`controller:onedata.transfers.index: Will try to go to default tr. for space`);
     let defaultSpace = this._getDefaultSpace(this.get('model'));
     if (defaultSpace) {
-      this.transitionToRoute('onedata.transfers.show', defaultSpace);
+      this.replaceRoute('onedata.transfers.show', defaultSpace);
     } else {
       console.debug(`controller:onedata.transfers.index: No space to go`);
     }

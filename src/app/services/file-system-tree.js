@@ -15,6 +15,8 @@ const {
   inject: { service },
   Evented,
   computed: { alias },
+  get,
+  set,
 } = Ember;
 
 export default Service.extend(Evented, {
@@ -139,7 +141,21 @@ export default Service.extend(Evented, {
     if (file.get('isEditingMetadata')) {
       this.closeMetadataEditor(file);
     } else {
+      set(file, 'isShowingInfo', false);
       this.openMetadataEditor(file);
     }
-  }
+  },
+  
+  /**
+   * @param {Array<models.File>} files 
+   */
+  toggleInfoViewer(files) {
+    const openAll = files.some(f => !get(f, 'isShowingInfo'));
+    files.forEach(f => {
+      set(f, 'isShowingInfo', openAll);
+      if (openAll && f.get('isEditingMetadata')) {
+        this.closeMetadataEditor(f);
+      }
+    });
+  },
 });

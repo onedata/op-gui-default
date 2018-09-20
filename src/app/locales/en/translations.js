@@ -360,6 +360,18 @@ export default {
         metadataDeleteFailed: 'Could not delete metadata for file "{{fileName}": {{errorMessage}}',
         metadataDeleteSuccess: 'Deleted metadata for file "{{fileName}}"',
       },
+      fileInfoRow: {
+        cdmiObjectId: 'CDMI Object ID',
+        spaceId: 'Space ID',
+        name: {
+          file: 'File name',
+          dir: 'Directory name',
+        },
+        path: {
+          file: 'File path',
+          dir: 'Directory path',
+        },
+      },
       uploadIndicator: 'Uploading: {{currentlyUploadingCount}} file(s) left...',
       uploadFinishedWait: 'Finalizing the upload...',
       noViewPrivileges: 'view contents of this directory',
@@ -384,6 +396,7 @@ export default {
         remove: 'Remove element',
         chunks: 'Show data distribution',
         metadata: 'Edit metadata',
+        info: 'Toggle element info',
       },
       renameFileModal: {
         title: 'Rename file or directory',

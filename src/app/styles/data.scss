@@ -69,9 +69,6 @@
 .table.files-table {
   position: relative;
 
-  @include vendor-prefix(user-select, none);
-  cursor: default;
-
   thead {
     th {
       height: $secondary-sidebar-item-height;
@@ -126,6 +123,7 @@
           .file-label {
             position: absolute;
             margin-left: 10px;
+            padding-right: 40px;
             left: 0;
             top: 50%;
             transform: translateY(-50%);
@@ -152,17 +150,25 @@
             top: 0;
             right: 0;
             height: 100%;
-          }
-
-          // metadata tool is on the left of first right tool
-          .file-tool-metadata {
-            right: 32px;
-
             &.active {
               color: $onedata-red;
             }
           }
+
+          // metadata tool is on the left of first right tool
+          .file-tool-info {
+            right: 64px;
+          }
+          
+          // metadata tool is on the left of first right tool
+          .file-tool-metadata {
+            right: 32px;
+          }
         }
+      }
+      
+      &:hover td .file-label-container .file-label {
+        padding-right: 80px;
       }
     }
   }

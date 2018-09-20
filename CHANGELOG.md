@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-4856 Added CMDI object ID and file path info to file row
 * VFS-4553 Fixed browser back from Onezone to Oneprovider GUI (wrong redirect and broken WebSocket in Safari)
 * VFS-4806 Fixed regression bug: file distribution modal for directory has no transfers buttons
 * VFS-4791 Support for highly scattered files in file distribution charts

@@ -33,6 +33,7 @@ export default Ember.Mixin.create({
   isExpanded: false,
   isSelected: false,
   isEditingMetadata: false,
+  isShowingInfo: false,
   isNewlyCreated: false,
 
   /*** INIT */

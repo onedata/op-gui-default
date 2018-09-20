@@ -1,0 +1,35 @@
+{{!-- infinite colspan --}}
+<td colspan="999">
+  {{#if isLoading}}
+    <div class="spinner-container spinner-64 spinner-centered">
+      {{spin-spinner scale=0.5 lines=12 length=20 width=10}}
+    </div>
+  {{else if infoError}}
+    {{resource-load-error reason=infoError}}
+  {{else}}
+    <div class="row row-file-name">
+      <label>
+        {{t (concat i18nPrefix "name." file.type)}}
+      </label>
+      {{input-copy inputValue=file.name}}
+    </div>
+    <div class="row row-cdmi-object-id">
+      <label>
+        {{t (concat i18nPrefix "cdmiObjectId")}}
+      </label>
+      {{input-copy inputValue=file.cdmiObjectId}}
+    </div>
+    <div class="row row-path">
+      <label>
+        {{t (concat i18nPrefix "path." file.type)}}
+      </label>
+      {{input-copy inputValue=file.path}}
+    </div>
+    <div class="row row-space-id">
+      <label>
+        {{t (concat i18nPrefix "spaceId")}}
+      </label>
+      {{input-copy inputValue=spaceId}}
+    </div>
+  {{/if}}
+</td>

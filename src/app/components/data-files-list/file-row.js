@@ -37,11 +37,15 @@ export default Ember.Component.extend({
     return htmlSafe(style);
   }),
 
-  highlightClass: computed('file.isSelected', 'file.isEditingMetadata', function() {
-    return this.get('file.isSelected') && 'active' ||
-      this.get('file.isEditingMetadata') && 'metadata-opened' ||
-      '';
-  }),
+  highlightClass: computed(
+    'file.{isSelected,isEditingMetadata,isShowingInfo}',
+    function highlightClass() {
+      return this.get('file.isSelected') && 'active' ||
+        this.get('file.isEditingMetadata') && 'metadata-opened' ||
+        this.get('file.isShowingInfo') && 'info-opened' ||
+        '';
+    }
+  ),
 
   isNewlyCreated: computed.alias('file.isNewlyCreated'),
 
@@ -222,6 +226,9 @@ export default Ember.Component.extend({
     },
     toggleFileMetadata(file) {
       this.sendAction('toggleFileMetadata', file || this.get('file'));
+    },
+    toggleFileInfo(file) {
+      this.sendAction('toggleFilesInfo', [ file || this.get('file') ]);
     }
   }
 });

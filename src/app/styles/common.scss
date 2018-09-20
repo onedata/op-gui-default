@@ -597,7 +597,7 @@ html, body {
     // .form-control style for input will not have a strange Bootstrap border
 
     // a hack to pull up
-    margin-top: -2px;
+    margin-top: -3px;
 
     @-moz-document url-prefix() {
       vertical-align: baseline;

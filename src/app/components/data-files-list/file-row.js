@@ -40,10 +40,17 @@ export default Ember.Component.extend({
   highlightClass: computed(
     'file.{isSelected,isEditingMetadata,isShowingInfo}',
     function highlightClass() {
-      return this.get('file.isSelected') && 'active' ||
-        this.get('file.isEditingMetadata') && 'metadata-opened' ||
-        this.get('file.isShowingInfo') && 'info-opened' ||
-        '';
+      let classes = '';
+      if (this.get('file.isSelected')) {
+        classes += 'active';
+      }
+      if (this.get('file.isEditingMetadata')) {
+        classes += ' metadata-opened';
+      }
+      if (this.get('file.isShowingInfo')) {
+        classes += ' info-opened';
+      }
+      return classes;
     }
   ),
 

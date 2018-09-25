@@ -167,8 +167,10 @@
         }
       }
       
-      &:hover td .file-label-container .file-label {
-        padding-right: 80px;
+      &:hover, &.info-opened {
+        td .file-label-container .file-label {
+          padding-right: 80px;
+        }
       }
     }
   }

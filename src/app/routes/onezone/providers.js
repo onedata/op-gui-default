@@ -20,6 +20,6 @@ export default Route.extend({
    * @param {Ember.Transition} transition 
    */
   redirect(model) {
-    window.location = `${model.onezoneUrl}/#/onedata/providers`;
+    window.location = `${model.onezoneUrl}/#/onedata/data`;
   },
 });

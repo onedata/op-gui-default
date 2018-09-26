@@ -1,5 +1,5 @@
 {{!-- TODO: dir path or name? --}}
-{{page-title (t 'data.dataSpace.dir.title')}}
+{{page-title (t "data.dataSpace.dir.title")}}
 
 {{modals/share-info open=isShowingShareInfo
     share=(if isShowingShareInfo share null)
@@ -10,7 +10,9 @@
     file=(and isCreatingShare fileShareFile)}}
 
 <div class="files-list">
-  {{data-files-list dir=(readonly model)
-    openDirInBrowser='openDirInBrowser'
-    openFileShareModal='openFileShareModal'}}
+  {{data-files-list 
+    dir=(readonly model)
+    openDirInBrowser="openDirInBrowser"
+    openFileShareModal="openFileShareModal"
+  }}
 </div>

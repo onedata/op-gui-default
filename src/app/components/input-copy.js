@@ -4,7 +4,7 @@ export default Ember.Component.extend({
   notify: Ember.inject.service(),
   i18n: Ember.inject.service(),
 
-  classNames: ['input-with-button'],
+  classNames: ['input-copy', 'input-with-button'],
 
   /// Options
   autofocus: true,

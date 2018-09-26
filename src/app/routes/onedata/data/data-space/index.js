@@ -29,7 +29,7 @@ export default Ember.Route.extend({
         this.set('invalidRootDir', false);
         console.debug(`Redirecting to root dir "${rootDir.get('id')}" of space "${dataSpace.get('id')}"`);
         Ember.run.scheduleOnce('afterRender', this, function() {
-          this.transitionTo('onedata.data.data-space.dir', rootDir.get('id'));
+          this.replaceWith('onedata.data.data-space.dir', rootDir.get('id'));
         });
       }
     } else {

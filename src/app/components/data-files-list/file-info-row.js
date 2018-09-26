@@ -7,13 +7,13 @@ const {
 } = Ember;
 
 export default Component.extend({
+  tagName: 'tr',
+  classNames: ['first-level', 'file-info-row'],
+  classNameBindings: ['highlightClass'],
+  
   notify: service(),
   fileSystemTree: service(),
 
-  tagName: 'tr',
-  classNames: ['first-level'],
-  classNameBindings: ['highlightClass'],
-  
   /**
    * @virtual
    * File for which info is shown

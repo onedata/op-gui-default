@@ -588,7 +588,7 @@ html, body {
   }
 
   input, .form-control {
-    height: 42px !important;
+    height: 42px;
     text-overflow: ellipsis;
   }
 
@@ -612,6 +612,25 @@ html, body {
     height: 42px;
     padding-left: 4px;
     padding-right: 4px;
+  }
+  
+  &.light {
+    input, .form-control {
+      height: $input-height-base;
+    }
+    .btn {
+      width: 34px;
+      height: 34px;
+      margin-top: -4px;
+      color: inherit !important;
+      background: transparent;
+      .oneicon {
+        font-size: 26px;
+      }
+      &:hover, &:focus, &:active {
+        background: transparent;
+      }
+    }
   }
 }
 

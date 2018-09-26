@@ -7,29 +7,37 @@
   {{else if infoError}}
     {{resource-load-error reason=infoError}}
   {{else}}
-    <div class="row row-file-name">
-      <label>
-        {{t (concat i18nPrefix "name." file.type)}}
-      </label>
-      {{input-copy inputValue=file.name}}
-    </div>
-    <div class="row row-cdmi-object-id">
-      <label>
-        {{t (concat i18nPrefix "cdmiObjectId")}}
-      </label>
-      {{input-copy inputValue=file.cdmiObjectId}}
-    </div>
-    <div class="row row-path">
-      <label>
-        {{t (concat i18nPrefix "path." file.type)}}
-      </label>
-      {{input-copy inputValue=file.path}}
-    </div>
-    <div class="row row-space-id">
-      <label>
-        {{t (concat i18nPrefix "spaceId")}}
-      </label>
-      {{input-copy inputValue=spaceId}}
+    {{one-icon icon="checkbox-x" class="close-button" click=(action "closeInfoViewer")}}
+    
+    <div class="rows">
+      <div class="row row-info-line row-file-name">
+      {{input-copy
+        label=(t (concat i18nPrefix "name." file.type))
+        inputValue=file.name
+        class="light"
+      }}
+      </div>
+      <div class="row row-info-line row-cdmi-object-id">
+        {{input-copy
+          label=(t (concat i18nPrefix "cdmiObjectId"))
+          inputValue=file.cdmiObjectId
+          class="light"
+        }}
+      </div>
+      <div class="row row-info-line row-path">
+        {{input-copy
+          label=(t (concat i18nPrefix "path." file.type))
+          inputValue=file.path
+          class="light"
+        }}
+      </div>
+      <div class="row row-info-line row-space-id">
+        {{input-copy
+          label=(t (concat i18nPrefix "spaceId"))
+          inputValue=spaceId
+          class="light"
+        }}
+      </div>
     </div>
   {{/if}}
 </td>

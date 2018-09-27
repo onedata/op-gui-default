@@ -12,7 +12,6 @@ import Ember from 'ember';
 const {
   computed,
   Component,
-  inject: { service },
 } = Ember;
 
 export default Component.extend({

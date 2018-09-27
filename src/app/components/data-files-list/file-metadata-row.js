@@ -33,7 +33,7 @@ export default Component.extend({
   metadataError: computed.reads('file.metadataError'),
 
   highlightClass: computed('file.isSelected', function() {
-    return this.get('file.isSelected') ? 'active' : 'metadata-opened';
+    return this.get('file.isSelected') ? 'active' : 'metadata-opened panel-opened';
   }),
 
   /**

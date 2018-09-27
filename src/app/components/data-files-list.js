@@ -3,6 +3,7 @@ import addConflictLabels from 'ember-cli-onedata-common/utils/add-conflict-label
 
 const {
   computed,
+  computed: { reads },
   inject,
   run,
   observer,
@@ -63,18 +64,18 @@ export default Ember.Component.extend({
   classNames: ['data-files-list'],
 
   /// Options, features
-
+  
   /**
-   * To inject. Optional.
+   * @virtual optional
    *
    * If true, files list will have a file drop area to upload files.
    * @type {Boolean}
    * @default true
    */
   uploadEnabled: true,
-
+  
   /**
-   * To inject. Optional.
+   * @virtual optional
    *
    * If true, a breadcrumbs component will be shown on top of file browser.
    * It allows to naviage through dirs tree of the list.
@@ -84,7 +85,7 @@ export default Ember.Component.extend({
   breadcrumbsEnabled: false,
 
   /**
-   * To inject.
+   * @virtual
    * Where the browser is used.
    * Possible values: data, shared, public
    * @type {String}
@@ -92,7 +93,7 @@ export default Ember.Component.extend({
   browserLocation: 'data',
 
   /**
-   * To inject.
+   * @virtual
    * Optional: if specified, breadcrumbs will have this dir as a root.
    * Otherwise, breadcrumbs will display full parents path.
    * @type {File}
@@ -100,7 +101,7 @@ export default Ember.Component.extend({
   rootDir: null,
 
   /**
-   * To inject.
+   * @virtual
    * If true, content cannot be edited.
    * @type {Boolean}
    * @default
@@ -108,14 +109,14 @@ export default Ember.Component.extend({
   readOnly: false,
 
   /**
-   * To inject.
+   * @virtual
    * A parent directory to list its files
    * @type {File}
    */
   dir: null,
 
   /**
-   * To inject. Optional.
+   * @virtual optional
    * If scrolling, how many files ahead we should invoke more files loading.
    * @type {Number}
    */
@@ -163,7 +164,12 @@ export default Ember.Component.extend({
    * @type {Boolean}
    */
   firstLoadDone: false,
-
+  
+  /**
+   * @type {Ember.ComputedProperty<string>}
+   */
+  spaceId: reads('fileSystemTree.selectedSpace.id'),
+  
   init() {
     this._super(...arguments);
     this.dirChanged();
@@ -805,6 +811,10 @@ export default Ember.Component.extend({
 
     toggleFileMetadata(file) {
       this.get('fileSystemTree').toggleMetadataEditor(file);
+    },
+    
+    toggleFilesInfo(files) {
+      this.get('fileSystemTree').toggleInfoViewer(files);
     },
 
     fetchMoreFiles(resolve, reject) {

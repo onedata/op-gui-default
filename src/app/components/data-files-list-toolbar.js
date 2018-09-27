@@ -160,6 +160,13 @@ export default Ember.Component.extend({
           tooltip: i18n.t('components.dataFilesListToolbar.tooltip.shareFile')
         },
         {
+          id: 'file-info-tool',
+          icon: 'info',
+          action: 'showFileInfo',
+          disabled: !isSomeFileSelected,
+          tooltip: i18n.t('components.dataFilesListToolbar.tooltip.info')
+        },
+        {
           id: 'file-metadata-tool',
           icon: 'metadata',
           action: 'editFileMetadata',
@@ -312,6 +319,12 @@ export default Ember.Component.extend({
       const file = this.get('dir.singleSelectedFile');
       const fileSystemTree = this.get('fileSystemTree');
       fileSystemTree.toggleMetadataEditor(file);
+    },
+    
+    showFileInfo() {
+      const files = this.get('dir.selectedFiles');
+      const fileSystemTree = this.get('fileSystemTree');
+      fileSystemTree.toggleInfoViewer(files);
     },
 
     uploadBrowse() {

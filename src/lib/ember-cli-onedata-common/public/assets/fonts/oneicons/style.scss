@@ -2,11 +2,10 @@
 
 @font-face {
   font-family: '#{$icomoon-font-family}';
-  src:  url('#{$icomoon-font-path}/#{$icomoon-font-family}.eot?w0npth');
-  src:  url('#{$icomoon-font-path}/#{$icomoon-font-family}.eot?w0npth#iefix') format('embedded-opentype'),
-    url('#{$icomoon-font-path}/#{$icomoon-font-family}.ttf?w0npth') format('truetype'),
-    url('#{$icomoon-font-path}/#{$icomoon-font-family}.woff?w0npth') format('woff'),
-    url('#{$icomoon-font-path}/#{$icomoon-font-family}.svg?w0npth##{$icomoon-font-family}') format('svg');
+  src:
+    url('#{$icomoon-font-path}/#{$icomoon-font-family}.ttf?qli2bv') format('truetype'),
+    url('#{$icomoon-font-path}/#{$icomoon-font-family}.woff?qli2bv') format('woff'),
+    url('#{$icomoon-font-path}/#{$icomoon-font-family}.svg?qli2bv##{$icomoon-font-family}') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -26,9 +25,19 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.oneicon-info {
+  &:before {
+    content: $oneicon-info; 
+  }
+}
 .oneicon-rerun {
   &:before {
     content: $oneicon-rerun; 
+  }
+}
+.oneicon-link-external {
+  &:before {
+    content: $oneicon-link-external; 
   }
 }
 .oneicon-replicate {
@@ -579,11 +588,6 @@
 .oneicon-add {
   &:before {
     content: $oneicon-add; 
-  }
-}
-.oneicon-link-external {
-  &:before {
-    content: $oneicon-link-external; 
   }
 }
 

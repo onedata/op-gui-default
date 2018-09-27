@@ -1,7 +1,22 @@
+/**
+ * Additional icon buttons for file row
+ * 
+ * @module components/data-file-list/file-row-tools
+ * @author Jakub Liput
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 
-export default Ember.Component.extend({
-  fileSystemTree: Ember.inject.service(),
+const {
+  computed,
+  Component,
+  inject: { service },
+} = Ember;
+
+export default Component.extend({
+  fileSystemTree: service(),
 
   classNames: ['file-row-tools'],
   classNameBindings: ['highlightClass'],
@@ -21,7 +36,7 @@ export default Ember.Component.extend({
    */
   readOnly: false,
 
-  metadataClass: Ember.computed('file.isEditingMetadata', 'file.hasMetadata', 'readOnly', function() {
+  metadataClass: computed('file.isEditingMetadata', 'file.hasMetadata', 'readOnly', function() {
     if (this.get('file.isEditingMetadata')) {
       return 'active';
     } else if (this.get('file.hasMetadata')) {
@@ -31,6 +46,10 @@ export default Ember.Component.extend({
     } else {
       return 'visible-on-parent-hover';
     }
+  }),
+  
+  infoClass: computed('file.isShowingInfo', function infoClass() {
+    return this.get('file.isShowingInfo') ? 'active' : 'visible-on-parent-hover';
   }),
 
   actions: {
@@ -46,6 +65,9 @@ export default Ember.Component.extend({
     },
     toggleFileMetadata() {
       this.sendAction('toggleFileMetadata', this.get('file'));
+    },
+    toggleFileInfo() {
+      this.sendAction('toggleFileInfo', this.get('file'));
     },
     createFileMetadata() {
       const file = this.get('file');

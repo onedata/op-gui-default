@@ -361,7 +361,7 @@ export default {
         metadataDeleteSuccess: 'Deleted metadata for file "{{fileName}}"',
       },
       fileInfoRow: {
-        cdmiObjectId: 'CDMI Object ID',
+        cdmiObjectId: 'File ID',
         spaceId: 'Space ID',
         name: {
           file: 'File name',

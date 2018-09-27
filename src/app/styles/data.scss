@@ -90,7 +90,7 @@
         background-color: $onedata-light-azure;
       }
 
-      &.metadata-opened {
+      &:not(.active).panel-opened {
         background-color: $onedata-light-gray;
       }
 
@@ -155,7 +155,7 @@
             }
           }
 
-          // metadata tool is on the left of first right tool
+          // file info tool is on the left of metadata tool
           .file-tool-info {
             right: 64px;
           }

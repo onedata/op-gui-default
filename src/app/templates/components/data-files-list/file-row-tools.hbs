@@ -5,11 +5,11 @@
     {{one-icon icon="share"}}
   </div>
 {{/if}}
-<div {{action (action "toggleFileInfo") bubbles=false}}
+<div {{action "toggleFileInfo" bubbles=false}}
   class="file-tool file-tool-info {{infoClass}}">
   {{one-icon icon="info"}}
 </div>
-<div {{action (action "metadataClicked") bubbles=false}}
+<div {{action "metadataClicked" bubbles=false}}
   class="file-tool file-tool-metadata {{metadataClass}}">
   {{one-icon icon="metadata"}}
 </div>

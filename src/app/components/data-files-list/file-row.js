@@ -45,10 +45,10 @@ export default Ember.Component.extend({
         classes += 'active';
       }
       if (this.get('file.isEditingMetadata')) {
-        classes += ' metadata-opened';
+        classes += ' panel-opened metadata-opened';
       }
       if (this.get('file.isShowingInfo')) {
-        classes += ' info-opened';
+        classes += ' panel-opened info-opened';
       }
       return classes;
     }

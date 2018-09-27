@@ -1,3 +1,12 @@
+/**
+ * Additional row in files list to show information about above file
+ * 
+ * @module components/data-files/list/file-info-row
+ * @author Jakub Liput
+ * @copyright (C) 2018 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 
 const {
@@ -10,9 +19,6 @@ export default Component.extend({
   tagName: 'tr',
   classNames: ['first-level', 'file-info-row'],
   classNameBindings: ['highlightClass'],
-  
-  notify: service(),
-  fileSystemTree: service(),
 
   /**
    * @virtual
@@ -29,42 +35,9 @@ export default Component.extend({
 
   i18nPrefix: 'components.dataFilesList.fileInfoRow.',
   
-  isLoading: computed.equal('metadataProxy.isPending', true),
-  
-  /**
-   * Is true if failed to fetch file metadata
-   * @type {Ember.ComputedProperty<boolean|undefined>}
-   */
-  metadataError: computed.reads('file.metadataError'),
-
-  highlightClass: computed('file.isSelected', function() {
-    return this.get('file.isSelected') ? 'active' : 'metadata-opened';
+  highlightClass: computed('file.isSelected', function highlightClass() {
+    return this.get('file.isSelected') ? 'active' : 'info-opened panel-opened';
   }),
-
-  /**
-   * Handle remove result of metadata
-   * @param {Boolean} [failed] if true, meta record destroy failed (it is not destroyed)
-   * @param {Object} [error] error object, that should be present only of ``failed`` is true
-   */
-  handleMetadataRemoved(failed, error) {
-    const fileName = this.get('file.name');
-    const i18n = this.get('i18n');
-    if (failed === true) {
-      this.get('notify').error(
-        i18n.t('components.dataFilesList.fileMetadataRow.metadataDeleteFailed', {
-          fileName: fileName,
-          errorMessage: error.message
-        })
-      );
-    } else {
-      this.get('notify').info(
-        i18n.t('components.dataFilesList.fileMetadataRow.metadataDeleteSuccess', {
-          fileName: fileName
-        })
-      );
-      this.send('closeMetadataEditor');
-    }
-  },
 
   actions: {
     closeInfoViewer() {

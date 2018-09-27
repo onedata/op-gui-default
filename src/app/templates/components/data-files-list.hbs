@@ -6,7 +6,7 @@
 
 {{#if uploadEnabled}}
   <div class="drop-area">
-    {{one-icon icon='upload'}}
+    {{one-icon icon="upload"}}
   </div>
 {{/if}}
 
@@ -15,17 +15,17 @@
   <table class="table table-strips files-table relative">
     <thead>
       <th>
-        {{t 'components.dataFilesList.files'}}
+        {{t "components.dataFilesList.files"}}
       </th>
       <th class="hidden-xs">
-        {{t 'components.dataFilesList.size'}}
+        {{t "components.dataFilesList.size"}}
       </th>
       {{!-- TODO: disabled in beta4 --}}
       {{!-- <th class="hidden-xs hidden-sm">
-    {{t 'components.dataFilesList.permissions'}}
+    {{t "components.dataFilesList.permissions"}}
       </th> --}}
       <th class="hidden-xs">
-        {{t 'components.dataFilesList.modification'}}
+        {{t "components.dataFilesList.modification"}}
       </th>
     </thead>
     <tbody>
@@ -33,16 +33,16 @@
         <tr class="file-row-uploading selection-background-pulse first-level">
           <td colspan=99 class="file-list-col-file">
             <div class="file-icon">
-              {{one-icon icon='upload'}}
+              {{one-icon icon="upload"}}
             </div>
             <div class="file-label-container">
               <div class="file-label truncate">
                 {{#if currentlyUploadingCount}}
-                  {{t 'components.dataFilesList.uploadIndicator'
+                  {{t "components.dataFilesList.uploadIndicator"
                     currentlyUploadingCount=currentlyUploadingCount
                   }}
                 {{else if isWaitingForPushAfterUpload}}
-                  {{t 'components.dataFilesList.uploadFinishedWait'}}
+                  {{t "components.dataFilesList.uploadFinishedWait"}}
                 {{/if}}
               </div>
             </div>
@@ -54,18 +54,22 @@
         {{#if (and file.isLoaded (not file.isBroken))}}
           {{data-files-list/file-row
             file=file
-            openDirInBrowser='openDirInBrowser'
-            downloadFile='downloadFile'
-            fileClicked='handleFileClicked'
-            clearFilesSelection='clearFilesSelection'
+            openDirInBrowser="openDirInBrowser"
+            downloadFile="downloadFile"
+            fileClicked="handleFileClicked"
+            clearFilesSelection="clearFilesSelection"
             readOnly=readOnly 
             listIndex=index 
             labelMaxWidth=fileLabelMaxWidth 
-            openFileShareModal='openFileShareModal'
-            toggleFileMetadata='toggleFileMetadata'
+            openFileShareModal="openFileShareModal"
+            toggleFileMetadata="toggleFileMetadata"
+            toggleFilesInfo="toggleFilesInfo"
             watchAppear=(or (eq index fileIndexToWatchVisibility) (eq index (dec visibleFiles.length)))
-            onAppear=(action "fileAppeared" index) 
+            onAppear=(action "fileAppeared" index)
           }}
+          {{#if file.isShowingInfo}}
+            {{data-files-list/file-info-row file=file spaceId=spaceId}}
+          {{/if}}
           {{#if file.isEditingMetadata}}
             {{data-files-list/file-metadata-row file=file readOnly=readOnly}}
           {{/if}}
@@ -88,7 +92,7 @@
 
   {{#route-error icon="folder"}}
     {{t "common.noPrivileges"
-      privileges=(t 'components.dataFilesList.noViewPrivileges')
+      privileges=(t "components.dataFilesList.noViewPrivileges")
     }}
   {{/route-error}}
   
@@ -102,7 +106,7 @@
           Nothing here yet.
         </div>
         <div class="empty-model-message secondary">
-          Drop your files here or use the <span class="inline-button">{{one-icon icon='upload'}}</span> button in toolbar
+          Drop your files here or use the <span class="inline-button">{{one-icon icon="upload"}}</span> button in toolbar
         </div>
       {{else}}
         <div class="empty-model-message">

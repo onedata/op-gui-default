@@ -33,6 +33,7 @@ export default Ember.Mixin.create({
   isExpanded: false,
   isSelected: false,
   isEditingMetadata: false,
+  isShowingInfo: false,
   isNewlyCreated: false,
 
   /*** INIT */
@@ -112,9 +113,15 @@ export default Ember.Mixin.create({
    * A stringified path to file
    * @type {computed<string>}
    */
-  path: computed('dirsPath.@each.name', function () {
+  path: computed('dirsPath.@each.name', function path() {
     const dp = this.get('dirsPath');
-    return dp && dp.mapBy('name').join('/');
+    if (dp) {
+      let fpath = '/' + dp.mapBy('name').join('/');
+      if (this.get('isDir')) {
+        fpath += '/';
+      }
+      return fpath;
+    }
   }),
 
   hasSubDirs: computed('children.@each.isDir', function () {

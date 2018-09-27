@@ -1,8 +1,13 @@
-<div class="form-group">
+<div class="form-group form-group-input-copy">
+  {{#if label}}
+    <label class="control-label">
+      {{label}}
+    </label>
+  {{/if}}
   {{input type="text" value=inputValue autofocus=autofocus readonly=true
-    class='ember-view ember-text-field form-control'}}
+    class="ember-view ember-text-field form-control"}}
 </div>
-{{#copy-button success='copySuccess' error='copyError'
+{{#copy-button success="copySuccess" error="copyError"
   clipboardTarget=clipboardTarget class="btn btn-primary btn-right"}}
-  {{one-icon icon='copy'}}
+  {{one-icon icon="copy"}}
 {{/copy-button}}

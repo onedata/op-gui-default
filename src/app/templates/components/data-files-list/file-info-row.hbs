@@ -1,0 +1,35 @@
+{{!-- infinite colspan --}}
+<td colspan="999">
+  {{one-icon icon="checkbox-x" class="close-button" click=(action "closeInfoViewer")}}
+  
+  <div class="rows">
+    <div class="row row-info-line row-file-name">
+    {{input-copy
+      label=(t (concat i18nPrefix "name." file.type))
+      inputValue=file.name
+      class="light"
+    }}
+    </div>
+    <div class="row row-info-line row-path">
+      {{input-copy
+        label=(t (concat i18nPrefix "path." file.type))
+        inputValue=file.path
+        class="light"
+      }}
+    </div>
+    <div class="row row-info-line row-cdmi-object-id">
+      {{input-copy
+        label=(t (concat i18nPrefix "cdmiObjectId"))
+        inputValue=file.cdmiObjectId
+        class="light"
+      }}
+    </div>
+    <div class="row row-info-line row-space-id">
+      {{input-copy
+        label=(t (concat i18nPrefix "spaceId"))
+        inputValue=spaceId
+        class="light"
+      }}
+    </div>
+  </div>
+</td>

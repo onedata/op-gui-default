@@ -69,9 +69,6 @@
 .table.files-table {
   position: relative;
 
-  @include vendor-prefix(user-select, none);
-  cursor: default;
-
   thead {
     th {
       height: $secondary-sidebar-item-height;
@@ -93,7 +90,7 @@
         background-color: $onedata-light-azure;
       }
 
-      &.metadata-opened {
+      &:not(.active).panel-opened {
         background-color: $onedata-light-gray;
       }
 
@@ -126,6 +123,7 @@
           .file-label {
             position: absolute;
             margin-left: 10px;
+            padding-right: 40px;
             left: 0;
             top: 50%;
             transform: translateY(-50%);
@@ -152,16 +150,45 @@
             top: 0;
             right: 0;
             height: 100%;
-          }
-
-          // metadata tool is on the left of first right tool
-          .file-tool-metadata {
-            right: 32px;
-
             &.active {
               color: $onedata-red;
             }
           }
+
+          // file info tool is on the left of metadata tool
+          .file-tool-info {
+            right: 64px;
+          }
+          
+          // metadata tool is on the left of first right tool
+          .file-tool-metadata {
+            right: 32px;
+          }
+        }
+      }
+      
+      &.file-info-row {
+        td {
+          position: relative;
+          padding: 24px 68px 18px 48px;
+        }
+        .close-button {
+          position: absolute;
+          top: 4px;
+          font-size: 28px;
+          right: 4px;
+          font-weight: bold;
+          color: $color-button-default;
+          cursor: pointer;
+          &:hover, &:focus {
+            color: inherit;
+          }
+        }
+      }
+      
+      &:hover, &.info-opened {
+        td .file-label-container .file-label {
+          padding-right: 80px;
         }
       }
     }
@@ -513,5 +540,28 @@ $-file-chunks-table-name-padding: 10px;
     position: absolute;
     right: 8px;
     top: 2px;
+  }
+}
+
+// special styles for copy lines in file info
+.file-info-row {
+  .row-info-line {
+    &:not(:first-of-type) {
+      padding-top: $padding-large-horizontal;
+    }
+  }
+  .input-copy {
+    .form-group-input-copy {
+      position: relative;
+      padding-left: 130px;
+      .control-label {
+        position: absolute;
+        display: inline-block;
+        left: 0;
+        width: 120px;
+        max-width: 120px;
+        overflow: hidden;
+      }
+    }
   }
 }

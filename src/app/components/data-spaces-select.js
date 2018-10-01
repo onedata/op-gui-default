@@ -21,7 +21,6 @@ const {
 export default Ember.Component.extend({
   classNames: ['data-spaces-select'],
   fileSystemTree: inject.service(),
-  commonLoader: inject.service(),
 
   /**
    * List of Spaces records from User relation.

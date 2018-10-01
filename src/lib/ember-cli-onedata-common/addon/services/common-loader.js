@@ -23,4 +23,14 @@ export default Ember.Service.extend({
    * @type string
    */
   area: 'main-content',
+  
+  reset() {
+    this.setProperties({
+      isLoading: false,
+      solidBackground: false,
+      message: null,
+      messageSecondary: null,
+      area: 'main-content',
+    });
+  },
 });

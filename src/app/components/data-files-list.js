@@ -473,7 +473,7 @@ export default Ember.Component.extend({
     }
   }),
 
-  toggleLoader: on('init', observer('showGlobalLoader', 'commonLoader.isLoading', 'commonLoader.type', function() {
+  toggleLoader: on('init', observer('showGlobalLoader', 'commonLoader.{isLoading,type}', function() {
     if (this.get('showGlobalLoader')) {
       // prevent loader stealing
       if (!this.get('commonLoader.isLoading')) {

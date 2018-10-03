@@ -2,15 +2,21 @@ import Ember from 'ember';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
 const {
-  inject
+  inject: { service },
+  get,
 } = Ember;
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
-  session: inject.service(),
+  session: service(),
+  commonLoader: service(),
 
   beforeModel() {
     // Added to remember about invoking super for AuthenticatedRouteMixin
     this._super(...arguments);
+    const commonLoader = this.get('commonLoader');
+    if (get(commonLoader, 'type') === 'login') {
+      commonLoader.reset();
+    }
   },
   
   model() {

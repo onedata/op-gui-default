@@ -31,7 +31,7 @@ export default Ember.Controller.extend({
     return this.get('spaces.isLoaded') !== true || this.get('spaces').any((s) => !s.get('isLoaded'));
   }),
 
-  isLoadingChanged: observer('isLoadingSpaces', function() {
+  isLoadingChanged: observer('isLoadingSpaces', 'commonLoader.type', function() {
     let {
       commonLoader, isLoadingSpaces
     } = this.getProperties('commonLoader', 'isLoadingSpaces');
@@ -41,13 +41,15 @@ export default Ember.Controller.extend({
         isLoading: true,
         message: i18n.t('components.commonLoader.synchronizingSpaces'),
         messageSecondary: i18n.t('components.commonLoader.firstLogin'),
-        area: 'main-content'
+        area: 'main-content',
+        type: 'dataSpaces',
       });
-    } else {
+    } else if (this.get('commonLoader.type') === 'dataSpaces') {
       commonLoader.setProperties({
         isLoading: false,
         message: null,
         messageSecondary: null,
+        type: null,
       });
     }
   }),

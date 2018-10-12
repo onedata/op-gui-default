@@ -21,7 +21,7 @@ const {
   observer,
   on,
   Evented,
-  run,
+  run: { next },
 } = Ember;
 
 export default Ember.Object.extend(Evented, {
@@ -36,6 +36,7 @@ export default Ember.Object.extend(Evented, {
   immediate: false,
 
   resetInterval: on('init', observer('interval', function () {
+    console.warn('looper reset interval: ' + Date().toString());
     let {
       immediate,
       interval,
@@ -69,6 +70,6 @@ export default Ember.Object.extend(Evented, {
   },
 
   notify() {
-    run.later(() => this.trigger('tick'));
+    next(() => this.trigger('tick'));
   }
 });

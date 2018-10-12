@@ -261,7 +261,7 @@ export default EmberObject.extend({
    * Set it to 0 for tests purposes.
    * @type {number}
    */
-  _toggleWatchersDelay: ENV.environment === 'test' ? 0 : 1000,
+  _toggleWatchersDelay: ENV.environment === 'test' ? 0 : 5,
 
   init() {
     this._super(...arguments);

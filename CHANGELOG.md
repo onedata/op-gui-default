@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-3774 Fixed broken request for OpenSans font in Safari if redirecting to Onezone
 * VFS-4454 Fix hanging authorization loader spinner
 * VFS-4856 Added CDMI object ID and file path info to file row
 * VFS-4553 Fixed browser back from Onezone to Oneprovider GUI (wrong redirect and broken WebSocket in Safari)

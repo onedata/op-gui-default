@@ -8,11 +8,13 @@
 
 import Ember from 'ember';
 import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
+import { WebFont } from 'webfontloader';
 
 const {
   inject: {
     service
   },
+  RSVP: { Promise },
 } = Ember;
 
 export default Ember.Route.extend(ApplicationRouteMixin, {
@@ -28,6 +30,12 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
   init() {
     this._super(...arguments);
     this.initSession();
+  },
+  
+  model() {
+    return new Promise(resolve => {
+      WebFont.on('active', resolve, true);
+    });
   },
   
   initSession() {

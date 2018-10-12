@@ -35,7 +35,14 @@ module.exports = function(environment) {
       authenticationRoute: 'login', // 'login'
       routeAfterAuthentication: 'onedata', // 'onedata'
       routeIfAlreadyAuthenticated: 'onedata' // 'onedata'
-    }
+    },
+    
+    webFontConfig: {
+      custom: {
+        families: ['Open Sans'],
+      },
+      timeout: 60000,
+    },
   };
 
   if (['development', 'localstorage'].indexOf(environment) !== -1) {

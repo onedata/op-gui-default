@@ -47,15 +47,14 @@ export default Component.extend({
         'justOpened'
       );
       
-      return (
-        (!firstRowListIndex || firstRowListIndex < 0) && justOpened ?
-        1 : firstRowListIndex
-      );
+      return firstRowListIndex == null && justOpened ? 1 : Math.max(0, firstRowListIndex);
     }),
   
   tdStyle: computed('virtualRowsNumber', function getTdStyle() {
+    const virtualRowsNumber = this.get('virtualRowsNumber');
     return htmlSafe(
-      `height: ${this.get('virtualRowsNumber') * rowHeight}px;`
+      virtualRowsNumber && virtualRowsNumber > 0 ?
+      `height: ${virtualRowsNumber * rowHeight}px;` : `display: none;`
     );
   }),
   

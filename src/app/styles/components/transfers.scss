@@ -485,7 +485,8 @@
     transition: top 0.25s ease-out;
     padding-bottom: 50px;
     &.sticky {
-      z-index: 5;
+      // on top of spinner
+      z-index: 2000000001;
       position: fixed;
       padding-bottom: 0;
     }

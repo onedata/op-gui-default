@@ -386,7 +386,7 @@ export default EmberObject.extend({
     'pollingTimeMap',
     '_toggleWatchersDelay',
     function () {
-      debounce(this, '_toggleWatchers', this.get('_toggleWatchersDelay'));
+      debounce(this, '_toggleWatchers', this.get('_toggleWatchersDelay'), true);
     }),
 
   _toggleWatchers() {

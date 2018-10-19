@@ -36,7 +36,6 @@ export default Ember.Object.extend(Evented, {
   immediate: false,
 
   resetInterval: on('init', observer('interval', function () {
-    console.warn('looper reset interval: ' + Date().toString());
     let {
       immediate,
       interval,

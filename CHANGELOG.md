@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-4927 Fixed delay before loading transfers list; error handling
 * VFS-3774 Fixed broken request for OpenSans font in Safari if redirecting to Onezone
 * VFS-4454 Fix hanging authorization loader spinner
 * VFS-4856 Added CDMI object ID and file path info to file row

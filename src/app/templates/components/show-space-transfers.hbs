@@ -39,7 +39,7 @@
           }}
             {{#bs-nav
               type="tabs"
-              class="nav-tabs-transfers"
+              class="nav-tabs-transfers nav-tabs-with-loading"
             }}
               {{#if fileProxy.isSettled}}
                 {{#bs-nav-item
@@ -48,14 +48,21 @@
                   <a href="#file"
                     class="nav-link nav-link-file"
                     role="tab" {{action select "file"}}>
-                    {{one-icon class="tab-icon" icon=_fileTabIcon}}
-                    {{#truncated-string class="one-label tab-name"}}
+                    <span class="tab-label">
+                      {{#unless (eq _tabJustChangedId "file")}}
+                        {{one-icon class="tab-icon" icon=_fileTabIcon}}
+                      {{/unless}}
                       {{#if fileProxy.isFulfilled}}
-                        {{file.name}}
+                        {{#truncated-string class="one-label tab-name"}}
+                          {{file.name}}
+                        {{/truncated-string}}
                       {{else}}
                         ?
                       {{/if}}
-                    {{/truncated-string}}
+                    </span>
+                    {{#if (eq _tabJustChangedId "file")}}
+                      {{spin-spinner-block sizeClass="xs" class="tab-spinner tab-spinner-left"}}
+                    {{/if}}
                     <span class="tab-close clickable" {{action "closeFileTab"}}>
                       {{one-icon icon="close"}}
                     </span>
@@ -68,7 +75,12 @@
                 <a href="#scheduled"
                   class="nav-link"
                   role="tab" {{action select "scheduled"}}>
-                  {{t "components.transfers.scheduledTransfers"}}
+                  <span class="tab-label">
+                    {{t "components.transfers.scheduledTransfers"}}
+                  </span>
+                  {{#if (eq _tabJustChangedId "scheduled")}}
+                    {{spin-spinner-block sizeClass="xs" class="tab-spinner"}}
+                  {{/if}}
                 </a>
               {{/bs-nav-item}}
               {{#bs-nav-item
@@ -77,7 +89,12 @@
                 <a href="#current"
                   class="nav-link"
                   role="tab" {{action select "current"}}>
-                  {{t "components.transfers.activeTransfers"}}
+                  <span class="tab-label">
+                    {{t "components.transfers.activeTransfers"}}
+                  </span>
+                  {{#if (eq _tabJustChangedId "current")}}
+                    {{spin-spinner-block sizeClass="xs" class="tab-spinner"}}
+                  {{/if}}
                 </a>
               {{/bs-nav-item}}
               {{#bs-nav-item
@@ -86,7 +103,12 @@
                 <a href="#completed"
                   class="nav-link"
                   role="tab" {{action select "completed"}}>
-                  {{t "components.transfers.completedTransfers"}}
+                  <span class="tab-label">
+                    {{t "components.transfers.completedTransfers"}}
+                  </span>
+                  {{#if (eq _tabJustChangedId "completed")}}
+                    {{spin-spinner-block sizeClass="xs" class="tab-spinner"}}
+                  {{/if}}
                 </a>
               {{/bs-nav-item}}
               {{#bs-nav-item

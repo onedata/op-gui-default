@@ -72,7 +72,7 @@ export default Component.extend({
    * @type {Function}
    * External implementation of cancelTransfer that should actually invoke
    * a procedure
-   * @returns {Promise<undefined|any>} promise should resolve when cancelling has
+   * @returns {Promise<any>} promise should resolve when cancelling has
    *    started successfully
    */
   cancelTransfer: undefined,
@@ -82,7 +82,7 @@ export default Component.extend({
    * @type {Function}
    * External implementation of rerunTransfer that should actually invoke
    * a procedure
-   * @returns {Promise<undefined|any>} promise should resolve when rerunning has
+   * @returns {Promise<any>} promise should resolve when rerunning has
    *    started successfully
    */
   rerunTransfer: undefined,
@@ -151,6 +151,11 @@ export default Component.extend({
    * @type {Ember.ComputedProperty<boolean>}
    */
   _isReloading: computed.reads('transfers.isReloading'),
+  
+  /**
+   * @type {ComputedProperty<any>}
+   */
+  _transfersError: computed.reads('transfers.error'),
   
   /**
    * Custom icons for ember-models-table addon.
@@ -496,7 +501,7 @@ export default Component.extend({
     );
   }),
   
-  isReloadingFinished: observer('_isReloading', function () {
+  isReloadingFinished: observer('justOpened', '_isReloading', function () {
     if (this.get('justOpened') && !this.get('_isReloading')) {
       this.get('clearJustOpened')();
     }

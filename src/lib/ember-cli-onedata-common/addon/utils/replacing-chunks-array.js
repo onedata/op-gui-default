@@ -54,6 +54,12 @@ export default ArraySlice.extend({
   initialLoad: undefined,
   
   /**
+   * Stores fetch error if at least one item cannot be fetched
+   * @type {any}
+   */
+  error: undefined,
+  
+  /**
    * @type {Ember.ComputedProperty<boolean>}
    */
   isLoaded: computed.reads('initialLoad.isSettled'),
@@ -231,12 +237,17 @@ export default ArraySlice.extend({
       safeExec(this, 'setProperties', {
         _startReached: true,
         _endReached: false,
+        error: undefined,
       });
       sourceArray.clear();
       updatedRecordsArray.sort(sortFun);
       sourceArray.pushObjects(updatedRecordsArray);
       return this;
-    }).finally(() => safeExec(this, 'set', '_isReloading', false));
+    })
+    .catch(error => {
+      safeExec(this, 'set', 'error', error);
+    })
+    .finally(() => safeExec(this, 'set', '_isReloading', false));
   },
   
   init() {

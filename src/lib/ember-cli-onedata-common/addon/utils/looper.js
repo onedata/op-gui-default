@@ -21,7 +21,7 @@ const {
   observer,
   on,
   Evented,
-  run,
+  run: { next },
 } = Ember;
 
 export default Ember.Object.extend(Evented, {
@@ -69,6 +69,6 @@ export default Ember.Object.extend(Evented, {
   },
 
   notify() {
-    run.later(() => this.trigger('tick'));
+    next(() => this.trigger('tick'));
   }
 });

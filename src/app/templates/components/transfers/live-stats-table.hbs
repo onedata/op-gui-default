@@ -61,25 +61,29 @@
     {{/one-collapsible-list}}
   {{/if}}
 {{else}}
-  {{models-table
-    data=_tableData
-    columns=_tableColumns
-    customIcons=_tableCustomIcons
-    customClasses=_tableCustomClasses
-    customMessages=_tableCustomMessages
-    showColumnsDropdown=false
-    showGlobalFilter=false
-    useFilteringByColumns=false
-    showComponentFooter=false
-    multipleColumnsSorting=false
-    multipleExpand=_hasExpandableRows
-    pageSize=1000000
-    rowTemplate="components/transfers/live-stats-table/row-template"
-    expandedRowTemplate=(if _hasExpandableRows "components/transfers/live-stats-table/expanded-row-template" null)
-    isReloading=_isReloading
-    justOpened=justOpened
-  }}
-  {{#if (and _tableDataEmpty (not justOpened))}}
-    <p class="table-empty-message">{{_tableCustomMessages.noDataToShow}}</p>
+  {{#if _transfersError}}
+    {{resource-load-error reason=_transfersError}}
+  {{else}}
+    {{models-table
+      data=_tableData
+      columns=_tableColumns
+      customIcons=_tableCustomIcons
+      customClasses=_tableCustomClasses
+      customMessages=_tableCustomMessages
+      showColumnsDropdown=false
+      showGlobalFilter=false
+      useFilteringByColumns=false
+      showComponentFooter=false
+      multipleColumnsSorting=false
+      multipleExpand=_hasExpandableRows
+      pageSize=1000000
+      rowTemplate="components/transfers/live-stats-table/row-template"
+      expandedRowTemplate=(if _hasExpandableRows "components/transfers/live-stats-table/expanded-row-template" null)
+      isReloading=_isReloading
+      justOpened=justOpened
+    }}
+    {{#if (and _tableDataEmpty (not justOpened))}}
+      <p class="table-empty-message">{{_tableCustomMessages.noDataToShow}}</p>
+    {{/if}}
   {{/if}}
 {{/if}}

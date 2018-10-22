@@ -1,8 +1,0 @@
-{{#one-icon icon=icon class="transfer-file-icon"}}
-  {{bs-tooltip placement="top" title=hint}}
-{{/one-icon}}
-{{#if (or (eq fileType "file") (eq fileType "dir"))}}
-  {{#link-to "onedata.data.data-space.dir" space file class="transfer-file-name"}}{{fileName}}{{/link-to}}
-{{else}}
-  <span class="transfer-file-name">{{fileName}}</span>
-{{/if}}

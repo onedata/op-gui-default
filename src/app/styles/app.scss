@@ -158,6 +158,9 @@ $screen-lg-min: $min-width-desktop-medium;
 @import 'components/one-collapsible-list-item-header';
 @import 'components/one-collapsible-list-item-content';
 @import 'components/providers-map';
+@import 'components/query-options';
+@import 'components/db-index-modal';
+@import 'components/input-copy';
 
 // onedata-common components
 @import 'components/button-common';

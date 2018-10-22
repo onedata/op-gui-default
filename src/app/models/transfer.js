@@ -20,6 +20,7 @@ const {
 
 const {
   computed,
+  RSVP: { resolve },
 } = Ember;
 
 const finishedStatuses = [
@@ -37,27 +38,57 @@ export default Model.extend({
    */
   replicatingProvider: attr('string'),
   
-  file: belongsTo('file', { async: true, inverse: null }),
-  
   /**
-   * Id of provider that will invalidate the file after transfer
+   * Id of provider that will evict the file after transfer
    */
-  invalidatingProvider: attr('string'),
+  evictingProvider: attr('string'),
   
   /**
    * If true, the transfer is in progress (should be in current transfers collection)
    */
   isOngoing: attr('boolean'),
+    
+  queryParams: attr('object'),
   
   /**
-   * Absolute file or directory path that is transferred
+   * One of: dir, file, deleted, index, unknown
    */
-  path: attr('string'),
+  dataSourceType: attr('string'),
   
   /**
-   * One of: dir, file, deleted, unknown
+   * If data type is file/dir/deleted, then it's absolute path of file.
+   * If data type is index then it's index name.
    */
-  fileType: attr('string'),
+  dataSourceName: attr('string'),
+  
+  dataSourceIdentifier: attr('string'),
+  
+  /**
+   * Id of record that holds data that is transferred. Depends of data type:
+   * - for file, dir, deleted: id of file record
+   * - for index: id od db-index record
+   */
+  dataSourceRecord: computed('dataSourceType', 'dataSourceIdentifier', function dataSourceRecord() {
+    const {
+      store,
+      dataSourceType,
+      dataSourceIdentifier,
+    } = this.getProperties('store', 'dataSourceType', 'dataSourceIdentifier');
+    let promise;
+    switch (dataSourceType) {
+      case 'dir':
+      case 'file':
+        promise = store.findRecord('file', dataSourceIdentifier);
+        break;
+      case 'index':
+        promise = store.findRecord('db-index', dataSourceIdentifier);
+        break;
+      default:
+        promise = resolve();
+        break;
+    }
+    return PromiseObject.create({ promise });
+  }),
   
   /**
    * UNIX timestamp seconds format
@@ -88,6 +119,26 @@ export default Model.extend({
    * Space in which this transfer is done
    */
   space: belongsTo('space', { async: true, inverse: null }),
+ 
+  /**
+   * Index name
+   */
+  indexName: computed('dataSourceName', 'dataSourceType', function path() {
+    const dataSourceType = this.get('dataSourceType');
+    if (dataSourceType === 'index') {
+      return this.get('dataSourceName');
+    }
+  }),
+  
+  /**
+   * Absolute file or directory path that is transferred
+   */
+  path: computed('dataSourceName', 'dataSourceType', function path() {
+    const dataSourceType = this.get('dataSourceType');
+    if (dataSourceType === 'file' || dataSourceType === 'dir' || dataSourceType === 'deleted') {
+      return this.get('dataSourceName');
+    }
+  }),
   
   /**
    * @type {Ember.ComputedProperty<PromiseObject<SystemProvider>>}
@@ -127,7 +178,7 @@ export default Model.extend({
   userName: computed.reads('systemUser.name'),
   replicatedBytes: computed.reads('currentStat.replicatedBytes'),
   replicatedFiles: computed.reads('currentStat.replicatedFiles'),
-  invalidatedFiles: computed.reads('currentStat.invalidatedFiles'),
+  evictedFiles: computed.reads('currentStat.evictedFiles'),
   
   currentStatError: computed('currentStat.{isSettled,content}', function () {
     return this.get('currentStat.isSettled') && this.get('currentStat.content') == null;
@@ -144,15 +195,15 @@ export default Model.extend({
   
   /**
    * @type {string}
-   * One of: migration, invalidation, replication
+   * One of: migration, eviction, replication
    */
-  type: computed('invalidatingProvider', 'replicatingProvider', function getType() {
+  type: computed('evictingProvider', 'replicatingProvider', function getType() {
     const {
       replicatingProvider,
-      invalidatingProvider,
-    } = this.getProperties('replicatingProvider', 'invalidatingProvider');
-    if (invalidatingProvider) {
-      return replicatingProvider ? 'migration' : 'invalidation';
+      evictingProvider,
+    } = this.getProperties('replicatingProvider', 'evictingProvider');
+    if (evictingProvider) {
+      return replicatingProvider ? 'migration' : 'eviction';
     } else {
       return 'replication';
     }
@@ -165,8 +216,8 @@ export default Model.extend({
    */
   getIsLocal(providerId) {
     const type = this.get('type');
-    const property = (type === 'replication' || type === 'migration' && this.get('status') === 'invalidating') ?
-      'replicatingProvider' : 'invalidatingProvider';
+    const property = (type === 'replication' || type === 'migration' && this.get('status') === 'evicting') ?
+      'replicatingProvider' : 'evictingProvider';
     return this.get(property) === providerId;
   },
 

@@ -45,7 +45,7 @@ export default Component.extend({
   /**
    * @type {Ember.ComputedProperty<boolean>}
    */
-  transferFilesDeleted: computed.equal('record.transfer.fileType', 'deleted'),
+  transferFilesDeleted: computed.equal('record.transfer.dataSourceType', 'deleted'),
 
   /**
    * @type {Ember.ComputedProperty<string>}

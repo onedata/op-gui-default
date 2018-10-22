@@ -11,7 +11,7 @@
     }
   }
   
-  .transfer-item-header .cell-file-name {
+  .transfer-item-header .cell-data-name {
     margin-top: 8px;
   }
   
@@ -410,7 +410,7 @@
     width: auto;
   }
   
-  .cell-file-name {
+  .cell-data-name {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -446,7 +446,7 @@
     &.cancelled {
       color: $color-one-red;
     }
-    &.replicating, &.invalidating, &.enqueued {
+    &.replicating, &.evicting, &.enqueued {
       color: $color-one-yellow;
     }
     &.scheduled {
@@ -474,6 +474,31 @@
   }
   .table-empty-message {
     padding-left: $-table-padding;
+  }
+  
+  .row-transfer-query-params {
+    position: relative;
+    margin-left: $padding-base-horizontal;
+    margin-right: $padding-base-horizontal / 2;
+    margin-bottom: $padding-base-horizontal;
+    padding-top: $padding-base-horizontal;
+    padding-bottom: $padding-base-horizontal;
+    .query-params-empty {
+      color: $onedata-gray;
+    }
+    .query-options {
+      @include vertical-align-middle();
+      margin-left: 140px;
+      width: calc(100% - 140px);
+    }
+    .query-string-input-copy {
+      .query-string-input-copy.truncate {
+        max-width: 500px;
+      }
+      .query-string {
+        @include vertical-align-middle();
+      }
+    }
   }
 }
 

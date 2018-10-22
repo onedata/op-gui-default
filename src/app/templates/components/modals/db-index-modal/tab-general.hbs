@@ -1,0 +1,16 @@
+<div class="one-list">
+  {{#each displayedProperties as |property|}}
+    <div class="one-list-row">
+      <span class="one-list-row-label">
+        {{t (concat "components.modals.dbIndexModal.tabGeneral." property)}}:
+      </span>
+      <span class="one-list-row-value">
+        {{get this property}}
+      </span>
+    </div>
+  {{/each}}
+  <div class="one-list-row row-query-options">
+    <span class="one-list-row-label">{{t "components.modals.dbIndexModal.tabGeneral.indexOptions"}}:</span>
+      {{query-options options=indexOptions}}
+  </div>
+</div>

@@ -106,10 +106,10 @@ export default Component.extend(PromiseLoadingMixin, {
   providerMigrationsInvoked: undefined,
 
   /**
-   * List of provider ids for which invalidation was invoked, but not yet started
+   * List of provider ids for which eviction was invoked, but not yet started
    * @type {Ember.Array<string>}
    */
-  providerInvalidationsInvoked: undefined,
+  providerEvictionsInvoked: undefined,
   
   fileDistributionSorting: ['getProvider.name'],
     
@@ -212,17 +212,17 @@ export default Component.extend(PromiseLoadingMixin, {
   ),
 
   /**
-   * Set with providerIds of providers, which have a working invalidation
+   * Set with providerIds of providers, which have a working eviction
    * transfer for file.
    * @type {Ember.ComputedProperty<Set<string>>}
    */
-  providersIdsWithInvalidation: computed('fileTransfers.[]', function () {
+  providersIdsWithEviction: computed('fileTransfers.[]', function () {
     const fileTransfers = this.get('fileTransfers');
     const providers = new Set();
     if (fileTransfers) {
       fileTransfers.forEach(transfer => {
-        if (get(transfer, 'type') === 'invalidation') {
-          providers.add(get(transfer, 'invalidatingProvider'));
+        if (get(transfer, 'type') === 'eviction') {
+          providers.add(get(transfer, 'evictingProvider'));
         }
       });
     }
@@ -231,12 +231,12 @@ export default Component.extend(PromiseLoadingMixin, {
 
   /**
    * Returns mapping: providerId -> boolean value.
-   * Value is true if there are basic possibility to start invalidation.
+   * Value is true if there are basic possibility to start eviction.
    * Note, that this property does not detect lack of blocks, because
    * backend doesn't provide us the complete information.
    * @type {Ember.ComputedProperty<Object>}
    */
-  isInvalidationPossible: computed(
+  isEvictionPossible: computed(
     'isFileEmpty',
     'fileDistributionsSorted.@each.isEmpty',
     function () {
@@ -248,14 +248,14 @@ export default Component.extend(PromiseLoadingMixin, {
         'isFileEmpty'
       );
       if (fileDistributionsSorted) {
-        const invalidationPossible = {};
+        const evictionPossible = {};
         fileDistributionsSorted.forEach(fd => {
           const providerId = get(fd, 'provider');
-          invalidationPossible[providerId] =
+          evictionPossible[providerId] =
             !isFileEmpty && !get(fd, 'isEmpty') &&
             !_.without(fileDistributionsSorted, fd).every(fdi => get(fdi, 'isEmpty'));
         });
-        return invalidationPossible;
+        return evictionPossible;
       }
     }
   ),
@@ -332,7 +332,7 @@ export default Component.extend(PromiseLoadingMixin, {
     );
     const fileId = this.get('file.id');
     if (workingTransfersDataLoaded && workingTransfers) {
-      return workingTransfers.filter(t => t.belongsTo('file').id() === fileId);
+      return workingTransfers.filter(t => get(t, 'dataSourceIdentifier') === fileId);
     }
   }),
   
@@ -340,12 +340,12 @@ export default Component.extend(PromiseLoadingMixin, {
    * @type {Ember.ComputedProperty<Array<string>>|null}
    */
   currentMigrationSourceIds: computed(
-    'fileTransfers.@each.invalidatingProvider',
+    'fileTransfers.@each.evictingProvider',
     function () {
       /** @type {Ember.Array|undefined} */
       const fileTransfers = this.get('fileTransfers');
       if (fileTransfers) {
-        return fileTransfers.map(t => get(t, 'invalidatingProvider')).filter(s => s);
+        return fileTransfers.map(t => get(t, 'evictingProvider')).filter(s => s);
       }
     }
   ),
@@ -553,13 +553,14 @@ export default Component.extend(PromiseLoadingMixin, {
    *  migration start success
    */
   startMigration(file, source, destination) {
+      const dataSourceIdentifier = get(file, 'id');
       this.set('migrationSource', null);
       const providerMigrationsInvoked = this.get('providerMigrationsInvoked');
       providerMigrationsInvoked.pushObject(source);
       const transfer = this.get('store')
         .createRecord('transfer', {
-          file,
-          invalidatingProvider: source,
+          dataSourceIdentifier,
+          evictingProvider: source,
           replicatingProvider: destination,
         });
       return transfer.save()
@@ -585,10 +586,10 @@ export default Component.extend(PromiseLoadingMixin, {
      * @param {string} destination providerId
      */
     startReplication(destination) {
-      const file = this.get('file');
+      const dataSourceIdentifier = this.get('file.id');
       const transfer = this.get('store')
         .createRecord('transfer', {
-          file,
+          dataSourceIdentifier,
           replicatingProvider: destination,
         });
       return transfer.save()
@@ -605,24 +606,23 @@ export default Component.extend(PromiseLoadingMixin, {
         .then(() => this._fastTransfersWatcher());
     },
 
-    startInvalidation(source) {
+    startEviction(source) {
+      const dataSourceIdentifier = this.get('file.id');
       const {
-        file,
-        providerInvalidationsInvoked
+        providerEvictionsInvoked
       } = this.getProperties(
-        'file',
-        'providerInvalidationsInvoked'
+        'providerEvictionsInvoked'
       );
-      providerInvalidationsInvoked.pushObject(source);
+      providerEvictionsInvoked.pushObject(source);
       const transfer = this.get('store')
         .createRecord('transfer', {
-          file,
-          invalidatingProvider: source,
+          dataSourceIdentifier,
+          evictingProvider: source,
         });
       return transfer.save()
         .catch(error => {
           transfer.deleteRecord();
-          this.set('chunksModalError', 'Failed to start file invalidation: ' + error.message);
+          this.set('chunksModalError', 'Failed to start file eviction: ' + error.message);
           this.observeTransfersCount();
           throw error;
         })
@@ -631,7 +631,7 @@ export default Component.extend(PromiseLoadingMixin, {
           return this.forceUpdateTransfers();
         })
         .finally(() => {
-          providerInvalidationsInvoked.removeObject(source);
+          providerEvictionsInvoked.removeObject(source);
         });
     },
     
@@ -678,7 +678,7 @@ export default Component.extend(PromiseLoadingMixin, {
        */
       open() {
         this.set('providerMigrationsInvoked', A([]));
-        this.set('providerInvalidationsInvoked', A([]));
+        this.set('providerEvictionsInvoked', A([]));
 
         this._initTransfersWatcher();
         this.set('transfersLoading', true);
@@ -706,7 +706,7 @@ export default Component.extend(PromiseLoadingMixin, {
           chunksModalError: null,
           migrationSource: null,
           providerMigrationsInvoked: undefined,
-          providerInvalidationsInvoked: undefined,
+          providerEvictionsInvoked: undefined,
         });
         this.closedAction();
       },
@@ -747,11 +747,11 @@ export default Component.extend(PromiseLoadingMixin, {
         );
       },
 
-      startInvalidation(source, { transfersPending }) {
+      startEviction(source, { transfersPending }) {
         return this.startConfirmOperation(
           transfersPending,
-          'invalidate',
-          () => this.startInvalidation(source)
+          'evict',
+          () => this.startEviction(source)
         );
       },
     },

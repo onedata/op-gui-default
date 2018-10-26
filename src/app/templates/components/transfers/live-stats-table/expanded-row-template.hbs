@@ -1,4 +1,16 @@
-{{transfers/transfer-chart
-  transfer=record.transfer
-  providers=record.providers
-  providersColors=record.providersColors}}
+{{#if (eq record.transfer.dataSourceType "index")}}
+<div class="row row-transfer-query-params">
+  {{#unless (is-empty record.transfer.queryParams)}}
+    <div class="query-label">{{t "components.transfers.queryParams.label"}}:</div>
+    {{query-options options=record.transfer.queryParams}}
+  {{else}}
+    <p class="query-params-empty"><em>{{t "components.transfers.queryParams.empty"}}</em></p>
+  {{/unless}}
+</div>
+{{/if}}
+<div class="row-transfer-chart">
+  {{transfers/transfer-chart
+    transfer=record.transfer
+    providers=record.providers
+    providersColors=record.providersColors}}  
+</div>

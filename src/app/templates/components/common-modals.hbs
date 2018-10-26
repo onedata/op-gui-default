@@ -4,4 +4,14 @@
   isOpened=(or commonModals.openedToken false)
   type=commonModals.modalParams.type
   funArgs=commonModals.modalParams.funArgs
+  close=(action "closeModal" "token")
 }}
+
+{{#if commonModals.openedDbIndex}}
+  {{modals/db-index-modal
+    open=commonModals.openedDbIndex
+    close=(action "closeModal" "dbIndex")
+    dbIndexId=commonModals.modalParams.dbIndexId
+  }}
+{{/if}}
+

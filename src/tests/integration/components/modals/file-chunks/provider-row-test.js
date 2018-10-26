@@ -75,20 +75,20 @@ describe('Integration | Component | modals/file chunks/provider row', function (
       fileDistribution=fileDistribution
       fileTransfers=fileTransfers
       transferEnabled=false
-      hasBlocksToInvalidate=true
+      hasBlocksToEvict=true
     }}`);
     
     wait().then(() => {
       const $providerRow = this.$('.provider-row');
       const $btnMigrate = $providerRow.find('.btn-migrate');
-      const $btnInvalidate = $providerRow.find('.btn-invalidate');
+      const $btnEvict = $providerRow.find('.btn-evict');
       const $btnReplicate = $providerRow.find('.btn-replicate');
             
       expect($btnMigrate).to.be.visible;
-      expect($btnInvalidate).to.be.visible;
+      expect($btnEvict).to.be.visible;
       expect($btnReplicate).to.be.visible;
       expect($btnMigrate, 'btn-migrate').to.have.class('disabled');
-      expect($btnInvalidate, 'btn-invalidate').to.have.class('disabled');
+      expect($btnEvict, 'btn-evict').to.have.class('disabled');
       expect($btnReplicate, 'btn-replicate').to.have.class('disabled');
       
       done();
@@ -105,84 +105,84 @@ describe('Integration | Component | modals/file chunks/provider row', function (
       fileDistribution=fileDistribution
       fileTransfers=fileTransfers
       transferEnabled=true
-      hasBlocksToInvalidate=true
+      hasBlocksToEvict=true
     }}`);
     
     wait().then(() => {
       const $providerRow = this.$('.provider-row');
       const $btnMigrate = $providerRow.find('.btn-migrate');
-      const $btnInvalidate = $providerRow.find('.btn-invalidate');
+      const $btnEvict = $providerRow.find('.btn-evict');
       const $btnReplicate = $providerRow.find('.btn-replicate');
       
       expect($btnMigrate).to.be.visible;
-      expect($btnInvalidate).to.be.visible;
+      expect($btnEvict).to.be.visible;
       expect($btnReplicate).to.be.visible;
       expect($btnMigrate, 'btn-migrate').to.not.have.class('disabled');
-      expect($btnInvalidate, 'btn-invalidate').to.not.have.class('disabled');
+      expect($btnEvict, 'btn-evict').to.not.have.class('disabled');
       expect($btnReplicate, 'btn-replicate').to.not.have.class('disabled');
       
       done();
     });
   });
   
-  it('allows to click invalidate even if invalidation is in progress', function () {
-    const startInvalidation = sinon.spy();
+  it('allows to click evict even if eviction is in progress', function () {
+    const startEviction = sinon.spy();
     
     this.setProperties({
       fileDistribution: FILE_DISTRIBUTION_F1_NS,
       fileTransfers: [],
-      startInvalidation,
+      startEviction,
     });
     
     this.render(hbs`{{modals/file-chunks/provider-row
       fileDistribution=fileDistribution
       fileTransfers=fileTransfers
       transferEnabled=true
-      hasBlocksToInvalidate=true
-      invalidationInProgress=true
-      startInvalidation=startInvalidation
+      hasBlocksToEvict=true
+      evictionInProgress=true
+      startEviction=startEviction
     }}`);  
     
     return wait().then(() => {
       const $providerRow = this.$('.provider-row');
-      const $btnInvalidate = $providerRow.find('.btn-invalidate');
+      const $btnEvict = $providerRow.find('.btn-evict');
       
-      expect($btnInvalidate).to.be.visible;
-      expect($btnInvalidate).to.not.have.class('disabled');
+      expect($btnEvict).to.be.visible;
+      expect($btnEvict).to.not.have.class('disabled');
       
-      click($btnInvalidate[0]).then(() => {
-        expect(startInvalidation).to.have.been.calledOnce;
+      click($btnEvict[0]).then(() => {
+        expect(startEviction).to.have.been.calledOnce;
       });
     });
   });
   
-  it('allows to click invalidate even if replication is in progress', function () {
-    const startInvalidation = sinon.stub().returns(resolve());
+  it('allows to click evict even if replication is in progress', function () {
+    const startEviction = sinon.stub().returns(resolve());
     
     this.setProperties({
       fileDistribution: FILE_DISTRIBUTION_F1_NS,
       fileTransfers: [],
-      startInvalidation,
+      startEviction,
     });
     
     this.render(hbs`{{modals/file-chunks/provider-row
       fileDistribution=fileDistribution
       fileTransfers=fileTransfers
       transferEnabled=true
-      hasBlocksToInvalidate=true
+      hasBlocksToEvict=true
       replicationInProgress=true
-      startInvalidation=startInvalidation
+      startEviction=startEviction
     }}`);  
     
     return wait().then(() => {
       const $providerRow = this.$('.provider-row');
-      const $btnInvalidate = $providerRow.find('.btn-invalidate');
+      const $btnEvict = $providerRow.find('.btn-evict');
       
-      expect($btnInvalidate).to.be.visible;
-      expect($btnInvalidate).to.not.have.class('disabled');
+      expect($btnEvict).to.be.visible;
+      expect($btnEvict).to.not.have.class('disabled');
       
-      click($btnInvalidate[0]).then(() => {
-        expect(startInvalidation).to.have.been.calledOnce;
+      click($btnEvict[0]).then(() => {
+        expect(startEviction).to.have.been.calledOnce;
       });
     });
   });
@@ -200,7 +200,7 @@ describe('Integration | Component | modals/file chunks/provider row', function (
       fileDistribution=fileDistribution
       fileTransfers=fileTransfers
       transferEnabled=true
-      hasBlocksToInvalidate=true
+      hasBlocksToEvict=true
       replicationInProgress=true
       openMigrationOptions=openMigrationOptions
     }}`);  
@@ -231,7 +231,7 @@ describe('Integration | Component | modals/file chunks/provider row', function (
       fileDistribution=fileDistribution
       fileTransfers=fileTransfers
       transferEnabled=true
-      hasBlocksToInvalidate=true
+      hasBlocksToEvict=true
       replicationInProgress=true
       startReplication=startReplication
     }}`);  

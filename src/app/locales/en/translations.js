@@ -92,7 +92,33 @@ export default {
       providers: 'providers',
       transfers: 'transfers',
     },
+    queryOptions: {
+      expand: 'Expand options',
+      hide: 'Hide options',
+      copy: 'Copy',
+    },
     modals: {
+      dbIndexModal: {
+        title: 'Database index information',
+        tabs: {
+          general: 'General',
+          mapFunction: 'Map function',
+          reduceFunction: 'Reduce function',
+        },
+        tabGeneral: {
+          indexName: 'Index name',
+          spaceName: 'Space name',
+          providers: 'Providers',
+          spatial: 'Spatial',
+          indexOptions: 'Index options',
+        },
+        tabMapFunction: {
+          empty: 'This index has no map function',
+        },
+        tabReduceFunction: {
+          empty: 'This index has no reduce function',
+        },
+      },
       aboutModal: {
         title: 'About this provider',
         providerName: 'Provider name:',
@@ -461,10 +487,10 @@ export default {
         providerRow: {
           replication: 'replication',
           migration: 'migration',
-          invalidation: 'invalidation',
+          eviction: 'eviction',
           migrationStart: 'Migrate the data to other provider...',
           replicationStart: 'Replicate the data to selected provider',
-          invalidationStart: 'Invalidate redundant data blocks on this provider',
+          evictionStart: 'Evict redundant data blocks on this provider',
           disabledSingleProvider: 'is available only with two or more supporting providers',
           disabledProxyProvider: 'Visit a supporting provider in order to schedule',
           disabledMigrationIsEmpty: 'Cannot schedule migration as there are no file blocks on this provider',
@@ -472,11 +498,11 @@ export default {
           disabledReplicationIsComplete: 'Cannot schedule replication as all file block are already on this provider',
           disabledReplicationInProgress: 'The data is currently replicated to selected provider',
           disabledInProgress: 'Operation is unavailable as there are transfers in progress on this provider',
-          disabledInvalidationNoBlocks: 'Invalidation is not possible unless some data blocks on this provider are redundant',
-          disabledInvalidationInProgress: 'The data is currently invalidated in selected provider',
+          disabledEvictionNoBlocks: 'Eviction is not possible unless some data blocks on this provider are redundant',
+          disabledEvictionInProgress: 'The data is currently evicted in selected provider',
           disabledMigrationUnknown: 'The data cannot be migrated from selected provider now',
           disabledReplicationUnknown: 'The data cannot be replicated into selected provider now',
-          disabledInvalidationUnknown: 'The data cannot be invalidated in selected provider now',
+          disabledEvictionUnknown: 'The data cannot be evicted in selected provider now',
         },
         migratePopover: {
           migrateItem: {
@@ -487,7 +513,7 @@ export default {
         confirmType: {
           replicate: 'replication',
           migrate: 'migration',
-          invalidate: 'invalidation',
+          evict: 'eviction',
         },
         pendingTransfersWarning: 'There are pending transfers of the file in this provider. Starting a new {{type}} can interrupt existing transfers. Do you want to start a new {{type}} anyway?',
         confirmDialogTitle: 'Warning',
@@ -573,6 +599,9 @@ export default {
           rerunTransfer: 'Rerun transfer',
         },
         cellFileName: {
+          file: 'File:',
+          dir: 'Directory',
+          index: 'Index',
           deleted: 'deleted',
         },
         cellStatus: {
@@ -584,17 +613,21 @@ export default {
           scheduled: 'Scheduled',
           enqueued: 'Enqueued',
           aborting: 'Aborting',
-          invalidating: 'Invalidating',
+          evicting: 'Evicting',
         },
         cellType: {
           replication: 'Replication',
           migration: 'Migration',
-          invalidation: 'Invalidation',
+          eviction: 'Eviction',
         },
         cellTotalFiles: {
-          invalidated: 'invalidated',
+          evicted: 'evicted',
           replicated: 'replicated',
         },
+      },
+      queryParams: {
+        label: 'Query parameters',
+        empty: 'No query parameters provided for index transfer'
       },
       transferChart: {
         minute: 'Minute',

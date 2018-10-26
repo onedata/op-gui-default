@@ -22,6 +22,7 @@ const {
     service,
   },
   run: {
+    next,
     scheduleOnce,
   },
   get,
@@ -316,7 +317,7 @@ export default Component.extend({
         propertyName: 'path',
         title: i18n.t(I18N_PREFIX + 'path'),
         component: _mobileMode ?
-          undefined : 'transfers/live-stats-table/cell-file-name',
+          undefined : 'transfers/live-stats-table/cell-data-name',
       }, {
         id: 'userName',
         propertyName: 'userName',
@@ -528,6 +529,9 @@ export default Component.extend({
     _resizeEventHandler();
     _window.addEventListener('resize', _resizeEventHandler);
     
+    next(() => {
+      safeExec(this, 'isReloadingFinished');
+    });
     this.notifyTransferListChanged();
   },
   

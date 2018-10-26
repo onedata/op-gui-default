@@ -66,7 +66,7 @@ export default Component.extend({
       case 'failed':
         return 'checkbox-filled-x';
       case 'replicating':
-      case 'invalidating':
+      case 'evicting':
         return 'update';
       case 'scheduled':
       case 'enqueued':

@@ -67,7 +67,7 @@ export default Component.extend({
    * @type {Function}
    * @returns {Promise<Transfer>}
    */
-  startInvalidation: () => {},
+  startEviction: () => {},
 
   /**
    * @virtual
@@ -116,10 +116,10 @@ export default Component.extend({
   replicationInvoked: false,
 
   /**
-   * True if invalidation has been started by user but request is not completed yet
+   * True if eviction has been started by user but request is not completed yet
    * @type {boolean}
    */
-  invalidationInvoked: false,
+  evictionInvoked: false,
 
   /**
    * True if transfers options should be inactive (not-clickable).
@@ -195,43 +195,43 @@ export default Component.extend({
   /**
    * @type {Ember.ComputedProperty<boolean>}
    */
-  invalidationInProgress: computed(
+  evictionInProgress: computed(
     'transferTypes',
-    'invalidationInvoked',
+    'evictionInvoked',
     function () {
-      return _.includes(this.get('transferTypes'), 'invalidation') ||
-        this.get('invalidationInvoked');
+      return _.includes(this.get('transferTypes'), 'eviction') ||
+        this.get('evictionInvoked');
     }
   ),
 
   /**
    * @type {Ember.ComputedProperty<boolean>}
    */
-  invalidationEnabled: computed(
+  evictionEnabled: computed(
     'neverSynchronized',
     'isEmpty',
     'transferEnabled',
     'file.isDir',
-    'hasBlocksToInvalidate',
+    'hasBlocksToEvict',
     function () {
       const {
         neverSynchronized,
         isEmpty,
         transferEnabled,
         file,
-        hasBlocksToInvalidate,
+        hasBlocksToEvict,
       } = this.getProperties(
         'neverSynchronized',
         'isEmpty',
         'transferEnabled',
         'file',
-        'hasBlocksToInvalidate'
+        'hasBlocksToEvict'
       );
 
       return transferEnabled &&
         (get(file, 'isDir') ?
           true :
-          (!neverSynchronized && !isEmpty && hasBlocksToInvalidate)
+          (!neverSynchronized && !isEmpty && hasBlocksToEvict)
         );
     }
   ),
@@ -299,30 +299,30 @@ export default Component.extend({
   ),
 
   /**
-   * Css classes for 'invalidate' button
+   * Css classes for 'evict' button
    * @type {Ember.ComputedProperty<string>}
    */
-  invalidateButtonClasses: computed(
+  evictButtonClasses: computed(
     'pendingActionAnimation',
-    'invalidationInProgress',
-    'invalidationEnabled',
+    'evictionInProgress',
+    'evictionEnabled',
     'disableActionInProgress',
     function () {
       let classes = 'action-icon toolbar-icon ';
       const {
         pendingActionAnimation,
-        invalidationInProgress,
-        invalidationEnabled,
+        evictionInProgress,
+        evictionEnabled,
         disableActionInProgress,
       } = this.getProperties(
         'pendingActionAnimation',
-        'invalidationInProgress',
-        'invalidationEnabled',
+        'evictionInProgress',
+        'evictionEnabled',
         'disableActionInProgress'
       );
-      if (invalidationInProgress) {
+      if (evictionInProgress) {
         classes += disableActionInProgress ? 'disabled ' : '' + pendingActionAnimation;
-      } else if (!invalidationEnabled) {
+      } else if (!evictionEnabled) {
         classes += 'disabled';
       }
       return classes;
@@ -396,36 +396,36 @@ export default Component.extend({
   ),
   
   /**
-   * Tooltip text for 'invalidate' button
+   * Tooltip text for 'evict' button
    * @type {Ember.ComputedProperty<string>}
    */
-  invalidateButtonTooltip: computed('invalidationInProgress', 'invalidationEnabled',
+  evictButtonTooltip: computed('evictionInProgress', 'evictionEnabled',
     function () {
       const {
-        invalidationInProgress,
-        invalidationEnabled,
+        evictionInProgress,
+        evictionEnabled,
         transferDisabledReason,
-        hasBlocksToInvalidate,
+        hasBlocksToEvict,
       } = this.getProperties(
-        'invalidationInProgress',
-        'invalidationEnabled',
+        'evictionInProgress',
+        'evictionEnabled',
         'transferDisabledReason',
-        'hasBlocksToInvalidate'
+        'hasBlocksToEvict'
       );
 
-      if (invalidationInProgress === true) {
-        return this._t('disabledInvalidationInProgress');
-      } else if (invalidationEnabled) {
-        return this._t('invalidationStart');
+      if (evictionInProgress === true) {
+        return this._t('disabledEvictionInProgress');
+      } else if (evictionEnabled) {
+        return this._t('evictionStart');
       } else if (transferDisabledReason === 'single-provider') {
-        return capitalize(this._t('invalidation').toString()) + ' ' +
+        return capitalize(this._t('eviction').toString()) + ' ' +
           this._t('disabledSingleProvider');
       } else if (transferDisabledReason === 'proxy-provider') {
-        return `${this._t('disabledProxyProvider')} ${this._t('invalidation')}`;
-      } else if (hasBlocksToInvalidate === false) {
-        return this._t('disabledInvalidationNoBlocks');
+        return `${this._t('disabledProxyProvider')} ${this._t('eviction')}`;
+      } else if (hasBlocksToEvict === false) {
+        return this._t('disabledEvictionNoBlocks');
       } else {
-        return this._t('disabledInvalidationUnknown');
+        return this._t('disabledEvictionUnknown');
       }
     }),
 
@@ -461,14 +461,14 @@ export default Component.extend({
    * @type {Ember.Array<Transfer>}
    */
   fileProviderTransfers: computed(
-    'fileTransfers.@each.{replicatingProvider,invalidatingProvider}',
+    'fileTransfers.@each.{replicatingProvider,evictingProvider}',
     function () {
       const fileTransfers = this.get('fileTransfers');
       const providerId = this.get('providerId');
       if (fileTransfers) {
         return fileTransfers.filter(t =>
           get(t, 'replicatingProvider') === providerId ||
-          get(t, 'invalidatingProvider') === providerId
+          get(t, 'evictingProvider') === providerId
         );
       }
     }
@@ -478,14 +478,14 @@ export default Component.extend({
 
   /**
    * Possible elements in array:
-   * - If it's invalidation: 'invalidation'
+   * - If it's eviction: 'eviction'
    * - If it's migration source: 'migration-source'
    * - If it's only a replication destination: 'replication-destination'
    * - If there is no transfers: null
    * @type {Array<string>|null}
    */
   transferTypes: computed(
-    'fileProviderTransfers.@each.{invalidatingProvider,replicatingProvider}',
+    'fileProviderTransfers.@each.{evictingProvider,replicatingProvider}',
     'providerId',
     function getTransferType() {
       const fileProviderTransfers = this.get('fileProviderTransfers');
@@ -493,11 +493,11 @@ export default Component.extend({
       if (fileProviderTransfers && !isEmpty(fileProviderTransfers)) {
         const types = [];
         for (let t of fileProviderTransfers) {
-          if (get(t, 'invalidatingProvider') === providerId) {
+          if (get(t, 'evictingProvider') === providerId) {
             if (get(t, 'replicatingProvider')) {
               types.push('migration-source');              
             } else {
-              types.push('invalidation');
+              types.push('eviction');
             }
           } else if (get(t, 'replicatingProvider') === providerId) {
             types.push('replication-destination');
@@ -549,14 +549,14 @@ export default Component.extend({
           .finally(() => this.set('replicationInvoked', false));
       }
     },
-    startInvalidation() {
+    startEviction() {
       const {
-        invalidationEnabled,
+        evictionEnabled,
         providerId,
         transferTypes,
-      } = this.getProperties('invalidationEnabled', 'providerId', 'transferTypes');
-      if (invalidationEnabled) {
-        return this.get('startInvalidation')(providerId, {
+      } = this.getProperties('evictionEnabled', 'providerId', 'transferTypes');
+      if (evictionEnabled) {
+        return this.get('startEviction')(providerId, {
           transfersPending: !_.isEmpty(transferTypes),
         });
       }

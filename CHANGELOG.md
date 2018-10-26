@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-4980 Added support for index transfers
 * VFS-4927 Fixed delay before loading transfers list; error handling
 * VFS-3774 Fixed broken request for OpenSans font in Safari if redirecting to Onezone
 * VFS-4454 Fix hanging authorization loader spinner

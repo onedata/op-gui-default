@@ -290,21 +290,6 @@ $-file-chunks-table-name-padding: 10px;
       margin: 0px 10px;
     }
   }
-  .empty-file-info {
-    position: relative;
-    height: 190px;
-    background-image: url(/assets/images/empty-file.svg);
-    background-position: center top;
-    background-size: 150px auto;
-    background-repeat: no-repeat;
-    .empty-file-info-msg {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      margin: 0;
-    }
-  }
   .migrate-popover.dropdown-menu-settings {    
     width: 350px;
     .item-label {

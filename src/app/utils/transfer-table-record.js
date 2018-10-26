@@ -34,7 +34,7 @@ const statusGroups = {
   ]),
   current: new Set([
     'replicating',
-    'invalidating',
+    'evicting',
     'cancelling',
   ]),
   completed: new Set([
@@ -85,16 +85,19 @@ export default EmberObject.extend({
   transferCollection: undefined,
   
   transferId: computed.reads('transfer.id'),
+  indexName: computed.reads('transfer.indexName'),
   path: computed.reads('transfer.path'),
   file: computed.reads('transfer.file'),
   space: computed.reads('transfer.space'),
-  fileType: computed.reads('transfer.fileType'),
+  dataSourceType: computed.reads('transfer.dataSourceType'),
+  dataSourceIdentifier: computed.reads('transfer.dataSourceIdentifier'),
+  dataSourceRecord: computed.reads('transfer.dataSourceRecord'),
   userName: computed.reads('transfer.userName'),
   scheduledAtComparable: computed.reads('transfer.scheduleTime'),
   startedAtComparable: computed.reads('transfer.startTime'),
   finishedAtComparable: computed.reads('transfer.finishTime'),
   replicatedFiles: computed.reads('transfer.replicatedFiles'),
-  invalidatedFiles: computed.reads('transfer.invalidatedFiles'),
+  evictedFiles: computed.reads('transfer.evictedFiles'),
   status: computed.reads('transfer.status'),
   currentStatError: computed.reads('transfer.currentStatError'),
   type: computed.reads('transfer.type'),
@@ -120,7 +123,7 @@ export default EmberObject.extend({
     'transfer.replicatingProvider',
     function () {
       const destinationId = this.get('transfer.replicatingProvider');
-      // invalidation transfer
+      // eviction transfer
       if (!destinationId) {
         return '-';
       }

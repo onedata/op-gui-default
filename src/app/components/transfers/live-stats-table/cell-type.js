@@ -29,7 +29,7 @@ export default Component.extend({
   record: undefined,
   
   /**
-   * Transfer type (replication/migration/invalidation).
+   * Transfer type (replication/migration/eviction).
    * @type {Ember.ComputedProperty<string>}
    */
   type: computed.reads('record.type'),
@@ -44,8 +44,8 @@ export default Component.extend({
         return 'migrate';
       case 'replication':
         return 'replicate';
-      case 'invalidation':
-        return 'invalidate';
+      case 'eviction':
+        return 'evict';
       default:
         return 'unknown';
     }

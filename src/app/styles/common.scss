@@ -601,18 +601,6 @@ html, body {
   }
 
   .btn {
-    // TODO these hacks could be removed if:
-    // .form-control style for input will not have a strange Bootstrap border
-
-    // a hack to pull up
-    margin-top: -3px;
-
-    @-moz-document url-prefix() {
-      vertical-align: baseline;
-      position: relative;
-      top: -2px;
-    }
-
     width: 48px;
 
     padding-top: 0;
@@ -933,5 +921,36 @@ h1.content-header {
     .toggle-icon {
       transform: translateY(-50%) rotate(180deg);
     }
+  }
+}
+
+.one-list {
+  .one-list-row {
+    padding: 15px 0;
+    &:not(:last-of-type) {
+      border-bottom: 1px solid #DEE1E2;
+    }
+    .one-list-row-label {
+      font-weight: bold;
+    }
+    .one-list-row-value {
+      margin-left: 4px;
+    }
+  }
+}
+
+.empty-file-info {
+  position: relative;
+  height: 190px;
+  background-image: url(/assets/images/empty-file.svg);
+  background-position: center top;
+  background-size: 150px auto;
+  background-repeat: no-repeat;
+  .empty-file-info-msg {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
   }
 }

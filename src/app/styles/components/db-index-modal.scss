@@ -1,0 +1,27 @@
+.db-index-modal-body {
+  .row-query-options {
+    position: relative;
+    padding-top: 24px;
+    padding-bottom: 24px;
+    .query-options {
+      @include vertical-align-middle();
+      padding-left: 120px;
+    }
+    .query-string-input-copy {
+      .query-string-input-copy.truncate {
+        max-width: 500px;
+      }
+      .query-string {
+        @include vertical-align-middle();
+      }
+    }
+  }
+  .tab-function {
+    .empty-file-info {
+      margin-top: $padding-base-vertical;
+    }
+    .function-source {
+      max-height: 320px;
+    }
+  }
+}

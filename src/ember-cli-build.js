@@ -8,6 +8,9 @@ module.exports = function(defaults) {
     'ember-math-helpers': {
       only: ['mult', 'add', 'sub'],
     },
+    'ember-prism': {
+      components: ['javascript'],
+    },
     sassOptions: {
       includePaths: [
         'app/styles',
@@ -87,6 +90,7 @@ module.exports = function(defaults) {
     'jquery-resizable/dist/jquery-resizable.min.js',
     'df-visible/jquery.visible.min.js',
     'jquery-sticky/jquery.sticky.js',
+    'js-beautify/js/lib/beautify.js'
   ];
 
   BOWER_ASSETS.forEach(path => app.import(app.bowerDirectory + '/' + path));

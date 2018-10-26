@@ -1,1 +1,7 @@
-{{!-- after remove of token modals it is DEPRECATED --}}
+{{#if commonModals.openedDbIndex}}
+  {{modals/db-index-modal
+    open=commonModals.openedDbIndex
+    close=(action "closeModal" "dbIndex")
+    dbIndexId=commonModals.modalParams.dbIndexId
+  }}
+{{/if}}

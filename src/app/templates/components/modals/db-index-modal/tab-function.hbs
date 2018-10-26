@@ -1,0 +1,9 @@
+{{functionString}}
+
+{{#if functionString}}
+  {{#code-block language="javascript" class="function-source"}}{{formattedSource}}{{/code-block}}
+{{else}}
+  <div class="empty-file-info">
+    <p class="empty-file-info-msg">{{emptyMessage}}</p>
+  </div>
+{{/if}}

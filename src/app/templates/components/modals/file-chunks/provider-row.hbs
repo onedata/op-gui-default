@@ -19,10 +19,10 @@
         {{bs-tooltip placement="top" title=migrateButtonTooltip}}
       {{/one-icon}}
     </a>
-    <a class={{concat invalidateButtonClasses " btn-invalidate"}}
-      {{action "startInvalidation" file providerId}}>
+    <a class={{concat evictButtonClasses " btn-evict"}}
+      {{action "startEviction" file providerId}}>
       {{#one-icon icon="invalidate"}}
-        {{bs-tooltip placement="top" title=invalidateButtonTooltip}}
+        {{bs-tooltip placement="top" title=evictButtonTooltip}}
       {{/one-icon}}
     </a>
   </div>

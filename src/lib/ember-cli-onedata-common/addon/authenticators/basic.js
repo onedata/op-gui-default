@@ -30,8 +30,8 @@ export default Base.extend({
     return this.get('session').tryToRestoreSession();
   },
 
-  invalidate(/*data*/) {
-    console.debug('auth invalidate start ');
+  evict(/*data*/) {
+    console.debug('auth evict start ');
     return new Ember.RSVP.Promise((resolve) => {
       this.get('session').set('sessionDetails', null);
       resolve();

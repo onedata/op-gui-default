@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-5030 Removed debug code from db-index view
 * VFS-4980 Added support for index transfers
 * VFS-4927 Fixed delay before loading transfers list; error handling
 * VFS-3774 Fixed broken request for OpenSans font in Safari if redirecting to Onezone

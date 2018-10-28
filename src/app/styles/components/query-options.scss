@@ -1,0 +1,18 @@
+.query-options {
+  .query-string {
+    &.truncate {
+      display: inline-block;
+      width: calc(100% - #{$padding-base-horizontal});
+      max-width: calc(100% - #{$padding-base-horizontal});
+    }
+    .query-string-amp {
+      color: $onedata-gray;
+    }
+    .query-string-value {
+      color: $onedata-red;
+    }
+    .query-string-key {
+      color: $onedata-azure;
+    } 
+  }
+}

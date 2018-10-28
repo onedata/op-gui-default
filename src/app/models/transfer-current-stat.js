@@ -18,13 +18,13 @@ export default Model.extend({
   timestamp: attr('number'),
   replicatedBytes: attr('number'),
   replicatedFiles: attr('number'),
-  invalidatedFiles: attr('number'),
+  evictedFiles: attr('number'),
   
   /**
    * One of:
    * - scheduled
    * - replicating
-   * - invalidating
+   * - evicting
    * - aborting
    * - skipped
    * - completed

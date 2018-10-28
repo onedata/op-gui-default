@@ -10,7 +10,7 @@ export default Ember.Component.extend({
   autofocus: true,
 
   clipboardTarget: Ember.computed('elementId', function() {
-    return `#${this.get('elementId')} input[type=text]`;
+    return `#${this.get('elementId')} .copy-text`;
   }),
 
   selectTokenText() {

@@ -1,0 +1,14 @@
+{{#one-icon icon=icon class="transfer-file-icon"}}
+  {{bs-tooltip placement="top" title=hint}}
+{{/one-icon}}
+{{#if (or (eq dataSourceType "file") (eq dataSourceType "dir"))}}
+  {{#link-to "onedata.data.data-space.dir" space dataSourceRecord class="transfer-file-name"}}{{dataSourceName}}{{/link-to}}
+{{else if (eq dataSourceType "index")}}
+  <a
+    class="transfer-file-name transfer-data-name"
+    onclick={{action "openIndexModal" bubbles=false}}>
+    {{dataSourceName}}
+  </a>
+{{else}}
+  <span class="transfer-file-name transfer-data-name">{{dataSourceName}}</span>
+{{/if}}

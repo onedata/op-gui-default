@@ -90,8 +90,8 @@ export default Ember.Component.extend({
 
   isBusy: Ember.computed.alias('isSubmitting'),
 
-  isReadyToSubmit: Ember.computed('metadataString', function() {
-    return !!this.get('handleService') && !!this.get('metadataString');
+  isReadyToSubmit: Ember.computed('handleService', function() {
+    return !!this.get('handleService');
   }),
 
   resetProperties() {

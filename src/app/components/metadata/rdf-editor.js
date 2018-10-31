@@ -1,5 +1,10 @@
 import Ember from 'ember';
 
+const {
+  observer,
+  computed,
+} = Ember;
+
 export default Ember.Component.extend({
   classNames: ['metadata-xml-editor'],
   classNameBindings: ['isError:parse-error'],
@@ -20,11 +25,13 @@ export default Ember.Component.extend({
 
   disabled: false,
 
-  isError: Ember.computed('error', function() {
+  onChange: () => {},
+
+  isError: computed('error', function() {
     return !!this.get('error');
   }),
 
-  error: Ember.computed('data', function() {
+  error: computed('data', function() {
     let parseError = null;
     try {
       $.parseXML(this.get('data'));
@@ -33,5 +40,14 @@ export default Ember.Component.extend({
       parseError = '!';
     }
     return parseError;
+  }),
+
+  dataObserver: observer('data', 'isError', function dataObserver() {
+    const {
+      data,
+      isError,
+      onChange,
+    } = this.getProperties('data', 'isError', 'onChange');
+    onChange(data, isError);
   }),
 });

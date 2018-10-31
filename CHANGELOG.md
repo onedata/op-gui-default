@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-5038 Added possibility to publish shared directory with no metadata specified
 * VFS-5030 Removed debug code from db-index view
 * VFS-4980 Added support for index transfers
 * VFS-4927 Fixed delay before loading transfers list; error handling

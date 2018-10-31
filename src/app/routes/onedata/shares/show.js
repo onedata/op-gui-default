@@ -5,7 +5,10 @@ export default Ember.Route.extend(RouteRejectHandler, {
   fallbackRoute: 'onedata.shares',
 
   model(params) {
-    return this.handleReject(this.store.find('share', params.share_id));
+    return this.handleReject(
+      this.store.find('share', params.share_id)
+        .then(share => share.get('handle').then(() => share))
+    );
   },
 
   setupController(controller, model) {

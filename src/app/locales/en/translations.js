@@ -162,7 +162,7 @@ export default {
         selectHandleServicePlaceholder: "Choose a handle service",
         publishButton: "Publish",
         noHandleServices: 'Unfortunately, currently you do not have access to any handle service.',
-        dublinCoreLabel: 'Please enter Dublin Core metadata here:',
+        dublinCoreLabel: 'Optionally, you can associate Dublin Core (XML) metadata with your dataset below:',
         publishFailure: 'Publishing share "{{shareName}}" failed: {{errorMessage}}',
         publishSuccess: 'Share "{{shareName}}" has been published successfully!',
       },
@@ -483,7 +483,10 @@ export default {
     message: "Authenticating..."
   },
   shares: {
-    title: 'Shared'
+    title: 'Shared',
+    show: {
+      noMetadata: 'There is no metadata associated with this dataset.',
+    },
   },
   trash: {
     title: 'Trash'

@@ -2,10 +2,14 @@
 
 {{share-info-head share=model openDataDir="openDataDir" publishShare="publishShare"}}
 
-{{#if model.handle.metadataString}}
-<div class="op-panel op-panel-metadata op-panel-background metadata-panel">
-  {{metadata/rdf-editor data=model.handle.metadataString readOnly=true}}
-</div>
+{{#if model.hasHandle}}
+  <div class="op-panel op-panel-metadata op-panel-background {{unless model.handle.metadataString "empty-metadata"}} metadata-panel">
+    {{#if model.handle.metadataString}}
+      {{metadata/rdf-editor data=model.handle.metadataString readOnly=true}}
+    {{else}}
+      {{t "shares.show.noMetadata"}}
+    {{/if}}
+  </div>
 {{/if}}
 
 

@@ -54,7 +54,13 @@ export default Ember.Component.extend({
    * MetadataString that will be added to handle created with this modal.
    * @type {String}
    */
-  metadataString: null,
+  metadataString: '',
+
+  /**
+   * True if medatadaString is not valid
+   * @type {boolean}
+   */
+  isMetadataIncorrect: false,
 
   init() {
     this._super();
@@ -90,15 +96,20 @@ export default Ember.Component.extend({
 
   isBusy: Ember.computed.alias('isSubmitting'),
 
-  isReadyToSubmit: Ember.computed('handleService', function() {
-    return !!this.get('handleService');
-  }),
+  isReadyToSubmit: Ember.computed(
+    'handleService',
+    'isMetadataIncorrect',
+    function isReadyToSubmit() {
+      return !!this.get('handleService') && !this.get('isMetadataIncorrect');
+    }
+  ),
 
   resetProperties() {
     this.setProperties({
       availableHandleServices: null,
       noHandleServicesAvailable: false,
-      metadataString: null,
+      metadataString: '',
+      isMetadataIncorrect: false,
       isSubmitting: false,
     });
   },
@@ -119,6 +130,13 @@ export default Ember.Component.extend({
 
     handleServiceChanged(handleService) {
       this.set('handleService', handleService);
+    },
+
+    onMetadataChange(metadataString, isError) {
+      this.setProperties({
+        metadataString,
+        isMetadataIncorrect: isError,
+      });
     },
 
     submit() {

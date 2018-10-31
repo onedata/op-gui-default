@@ -54,6 +54,9 @@
 }
 
 .metadata-panel {
+  &.empty-metadata {
+    min-height: 150px;
+  }
   textarea {
     font-family: monospace;
     resize: vertical;

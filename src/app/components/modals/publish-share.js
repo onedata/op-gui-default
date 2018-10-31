@@ -148,12 +148,13 @@ export default Ember.Component.extend({
         metadataString: this.get('metadataString'),
       });
 
-      this.set('share.handle', handle);
-
       const savePromise = handle.save();
 
       savePromise
-        .then((handle) => this.submitSucceed(this.get('share'), handle))
+        .then((handle) => {
+          this.set('share.handle', handle);
+          this.submitSucceed(this.get('share'), handle);
+        })
         .catch((error) => this.submitFailed(this.get('share'), handle, error))
         .finally(() => this.submitCompleted());
     },
@@ -182,7 +183,10 @@ export default Ember.Component.extend({
   },
 
   submitCompleted() {
-    this.set('open', false);
+    this.setProperties({
+      open: false,
+      isSubmitting: false,
+    });
   }
 
 });

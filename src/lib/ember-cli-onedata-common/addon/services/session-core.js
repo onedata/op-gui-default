@@ -120,17 +120,18 @@ export default SessionService.extend({
    * restoration rather than run authenticate. */
   initSession: function () {
     // bind session service websocket event handlers
-    this.get('server').initWebSocket(
+    return this.get('server').initWebSocket(
       this.get('onWebSocketOpen'),
       this.get('onWebSocketError'),
       this.get('onWebSocketClose')
-    );
-    return new Ember.RSVP.Promise((resolve, reject) => {
-      // This promise will be resolved when WS connection is established
-      // and session details are sent via WS.
-      this.setProperties({
-        sessionInitResolve: resolve,
-        sessionInitReject: reject
+    ).then(() => {
+      return new Ember.RSVP.Promise((resolve, reject) => {
+        // This promise will be resolved when WS connection is established
+        // and session details are sent via WS.
+        this.setProperties({
+          sessionInitResolve: resolve,
+          sessionInitReject: reject
+        });
       });
     });
   },

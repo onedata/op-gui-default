@@ -13,12 +13,16 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+const {
+  RSVP: { resolve }
+} = Ember;
+
 /** -------------------------------------------------------------------
  * Interface between client and server
  * Corresponding interface is located in gui_ws_handler.erl.
  * ------------------------------------------------------------------- */
 // Path where WS server is hosted
-let WS_ENDPOINT = '/ws/';
+let WS_ENDPOINT = '/ws';
 // Flush timeout of batch requests - they are accumulated and if no new request
 // from ember store comes within this time, the batch is sent to the server.
 // Expressed in milliseconds.
@@ -74,6 +78,8 @@ const FETCH_MODEL_OPERATIONS = new Set([
   OP_CREATE_RECORD
 ]);
 
+const reInOnzoneUrl = /.*\/(op)\/(.*?)\/(.*)/;
+
 export default DS.RESTAdapter.extend({
   store: Ember.inject.service('store'),
   serverMessagesHandler: Ember.inject.service(),
@@ -120,6 +126,12 @@ export default DS.RESTAdapter.extend({
    * WebSocket operations
    * ------------------------------------------------------------------- */
 
+   
+  getClusterIdFromUrl() {
+    const m = location.toString().match(reInOnzoneUrl);
+    return m && m[2];
+  },
+   
   /** Initializes the WebSocket */
   initWebSocket(onOpen, onError, onClose) {
     // Register callbacks even if WebSocket is already being initialized.
@@ -137,34 +149,47 @@ export default DS.RESTAdapter.extend({
       let adapter = this;
 
       let protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-      let host = window.location.hostname;
-      let port = window.location.port;
+      
+      // FIXME:
+      // zrobic /rest-credentials, wziac allButOnezoneToken
+      // jesli url zawiera cluster id to wziac z urla cluster id i zrobic ajax na /api/v3/clusters/:id
+      // tam bedzie domain, ktore nalezy wykorzystac ponizej do WS
+      
+      const clusterId = this.getClusterIdFromUrl();
+      
+      // let host = window.location.hostname;
+      const host = clusterId ? 'dev-oneprovider-krakow.default.svc.cluster.local' : location.hostname;
+      
+      return (clusterId ? ($.get('/rest-credentials').then(({allButOnezoneToken: token }) => resolve(token))) : resolve())
+        .then(token => {
+          let port = window.location.port;
 
-      let url = protocol + host + (port === '' ? '' : ':' + port) + WS_ENDPOINT;
-      console.debug('Connecting: ' + url);
+          let url = protocol + 'a:b@' + host + (port === '' ? '' : ':' + port) + WS_ENDPOINT;
+          console.debug('Connecting: ' + url);
 
-      if (adapter.socket === null) {
-        try {
-          adapter.socket = new WebSocket(url);
-          adapter.socket.onopen = function (event) {
-            adapter.open.apply(adapter, [event]);
-          };
-          adapter.socket.onmessage = function (event) {
-            adapter.receive.apply(adapter, [event]);
-          };
-          adapter.socket.onerror = function (event) {
-            adapter.error.apply(adapter, [event]);
-          };
-          adapter.socket.onclose = function (event) {
-            adapter.close.apply(adapter, [event]);
-          };
-        } catch (error) {
-          console.error(`WebSocket initializtion exception: ${error}`);
-          // invoke provided handler, it should idicate error to user
-          onClose();
-          throw error;
-        }
-      }
+          if (adapter.socket === null) {
+            try {
+              adapter.socket = new WebSocket(url + '?token=' + token);
+              adapter.socket.onopen = function (event) {
+                adapter.open.apply(adapter, [event]);
+              };
+              adapter.socket.onmessage = function (event) {
+                adapter.receive.apply(adapter, [event]);
+              };
+              adapter.socket.onerror = function (event) {
+                adapter.error.apply(adapter, [event]);
+              };
+              adapter.socket.onclose = function (event) {
+                adapter.close.apply(adapter, [event]);
+              };
+            } catch (error) {
+              console.error(`WebSocket initializtion exception: ${error}`);
+              // invoke provided handler, it should idicate error to user
+              onClose();
+              throw error;
+            }
+          }
+        });
     }
   },
 

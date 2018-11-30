@@ -25,7 +25,9 @@ export default Route.extend(UnauthenticatedRouteMixin, {
 
   beforeModel() {
     this._super(...arguments);
-    this.redirectIfSessionInitialized();
+    if (this.get('isSessionValid') !== undefined) {
+      this.redirectIfSessionInitialized();
+    }
   },
 
   redirectIfSessionInitialized: observer('isSessionValid', function() {

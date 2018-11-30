@@ -122,6 +122,7 @@ html, body {
           width: 156px;
           margin-left: $secondary-sidebar-item-padding;
           margin-right: 62px;
+          // FIXME: use root-url
           background-image: url("/assets/images/logo-dark.svg");
           background-position-x: left;
           background-position-y: $brand-top-padding;

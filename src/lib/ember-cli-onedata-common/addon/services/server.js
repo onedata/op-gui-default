@@ -27,15 +27,15 @@ export default Ember.Service.extend({
    * See WebSocket events on: https://developer.mozilla.org/en-US/docs/Web/Events
    */
   initWebSocket: function (onOpen, onError, onClose) {
-    this.get('adapter').initWebSocket(onOpen, onError, onClose);
+    return this.get('adapter').initWebSocket(onOpen, onError, onClose);
   },
 
   clearWebsocket() {
-    this.get('adapter').clearWebsocket();
+    return this.get('adapter').clearWebsocket();
   },
 
   closeWebsocket() {
-    this.get('adapter').closeWebsocket();
+    return this.get('adapter').closeWebsocket();
   },
 
   /**

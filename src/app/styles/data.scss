@@ -476,7 +476,7 @@ $-file-chunks-table-name-padding: 10px;
 }
 
 .empty-dir-image {
-  background-image: url("/assets/images/empty-dir.svg");
+  background-image: url($root-url + "images/empty-dir.svg");
 }
 
 .selection-background-pulse {

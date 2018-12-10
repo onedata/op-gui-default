@@ -14,7 +14,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 const {
-  RSVP: { resolve }
+  RSVP: { resolve, Promise }
 } = Ember;
 
 /** -------------------------------------------------------------------
@@ -150,26 +150,40 @@ export default DS.RESTAdapter.extend({
 
       let protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
       
-      // FIXME:
-      // zrobic /rest-credentials, wziac allButOnezoneToken
-      // jesli url zawiera cluster id to wziac z urla cluster id i zrobic ajax na /api/v3/clusters/:id
-      // tam bedzie domain, ktore nalezy wykorzystac ponizej do WS
-      
       const clusterId = this.getClusterIdFromUrl();
       
-      // let host = window.location.hostname;
-      const host = clusterId ? 'dev-oneprovider-krakow.default.svc.cluster.local' : location.hostname;
+      const tokensPromise = new Promise((resolve, reject) =>
+          $.get('/rest-credentials').then(resolve, reject)
+        )
+        .then(({ allButOnezoneToken, onezoneToken }) => ({
+          oneproviderToken: allButOnezoneToken,
+          onezoneToken
+        }));
+      const resolveHostname = (onezoneToken) =>
+        new Promise((resolve, reject) => $.ajax(
+            `/api/v3/onezone/clusters/${clusterId}`, {
+              method: 'GET',
+              headers: {
+                'X-Auth-Token': onezoneToken,
+              }
+            }
+          )
+          .then(resolve, reject))
+          .then(cluster => cluster.domain);
       
-      return (clusterId ? ($.get('/rest-credentials').then(({allButOnezoneToken: token }) => resolve(token))) : resolve())
-        .then(token => {
-          let port = window.location.port;
+      return tokensPromise
+        .then(({ oneproviderToken, onezoneToken }) => {
+          return resolveHostname(onezoneToken).then(hostname => ({ hostname, oneproviderToken }));
+        })
+        .then(({ hostname, oneproviderToken }) => {
+          const port = window.location.port;
 
-          let url = protocol + 'a:b@' + host + (port === '' ? '' : ':' + port) + WS_ENDPOINT;
+          const url = protocol + hostname + (port === '' ? '' : ':' + port) + WS_ENDPOINT;
           console.debug('Connecting: ' + url);
 
           if (adapter.socket === null) {
             try {
-              adapter.socket = new WebSocket(url + '?token=' + token);
+              adapter.socket = new WebSocket(url + (oneproviderToken ? `?token=${oneproviderToken}` : ''));
               adapter.socket.onopen = function (event) {
                 adapter.open.apply(adapter, [event]);
               };
@@ -190,6 +204,8 @@ export default DS.RESTAdapter.extend({
             }
           }
         });
+    } else {
+      return resolve();
     }
   },
 

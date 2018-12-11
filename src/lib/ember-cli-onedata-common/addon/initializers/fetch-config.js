@@ -13,12 +13,13 @@ import Ember from 'ember';
  * @copyright (C) 2016 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
+
 export function initialize(application) {
   application.getOnedataConfig = function() {
     return new Ember.RSVP.Promise((resolve, reject) => {
       $.ajax({
         dataSourceType: 'json',
-        url: '/app-config.json',
+        url: './app-config.json',
         success: function(data) {
           try {
             let config = {};

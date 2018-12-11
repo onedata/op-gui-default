@@ -14,7 +14,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 const {
-  RSVP: { resolve, Promise }
+  RSVP: { resolve, reject, Promise }
 } = Ember;
 
 /** -------------------------------------------------------------------
@@ -80,6 +80,19 @@ const FETCH_MODEL_OPERATIONS = new Set([
 
 const reInOnzoneUrl = /.*\/(op)\/(.*?)\/(.*)/;
 
+function resolveHostname(onezoneToken, clusterId) {
+  return new Promise((resolve, reject) => $.ajax(
+    `/api/v3/onezone/clusters/${clusterId}`, {
+      method: 'GET',
+      headers: {
+        'X-Auth-Token': onezoneToken,
+      }
+    }
+  )
+    .then(resolve, reject))
+    .then(cluster => cluster.domain);
+}
+
 export default DS.RESTAdapter.extend({
   store: Ember.inject.service('store'),
   serverMessagesHandler: Ember.inject.service(),
@@ -143,8 +156,10 @@ export default DS.RESTAdapter.extend({
     }
     if (onClose) {
       this.set('onCloseCallback', onClose);
-    }
-    if (this.get('initialized') === false) {
+    }    
+    if (this.get('initialized') === true) {
+      return reject();
+    } else {
       this.set('initialized', true);
       let adapter = this;
 
@@ -159,26 +174,16 @@ export default DS.RESTAdapter.extend({
           oneproviderToken: allButOnezoneToken,
           onezoneToken
         }));
-      const resolveHostname = (onezoneToken) =>
-        new Promise((resolve, reject) => $.ajax(
-            `/api/v3/onezone/clusters/${clusterId}`, {
-              method: 'GET',
-              headers: {
-                'X-Auth-Token': onezoneToken,
-              }
-            }
-          )
-          .then(resolve, reject))
-          .then(cluster => cluster.domain);
       
       return tokensPromise
         .then(({ oneproviderToken, onezoneToken }) => {
-          return resolveHostname(onezoneToken).then(hostname => ({ hostname, oneproviderToken }));
+          return resolveHostname(onezoneToken, clusterId)
+            .then(oneproviderHostname => ({ oneproviderHostname, oneproviderToken }));
         })
-        .then(({ hostname, oneproviderToken }) => {
+        .then(({ oneproviderHostname, oneproviderToken }) => {
           const port = window.location.port;
 
-          const url = protocol + hostname + (port === '' ? '' : ':' + port) + WS_ENDPOINT;
+          const url = protocol + oneproviderHostname + (port === '' ? '' : ':' + port) + WS_ENDPOINT;
           console.debug('Connecting: ' + url);
 
           if (adapter.socket === null) {
@@ -203,9 +208,9 @@ export default DS.RESTAdapter.extend({
               throw error;
             }
           }
+          
+          return resolve({ oneproviderHostname, oneproviderToken });
         });
-    } else {
-      return resolve();
     }
   },
 

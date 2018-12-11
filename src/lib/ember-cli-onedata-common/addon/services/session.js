@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import SessionCore from './session-core';
+import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 
 const RECONNECT_MSG_UPDATE_INTERVAL = 1000;
 const FIRST_RECONNECT_INTERVAL = 5*1000;
@@ -212,6 +213,11 @@ export default SessionCore.extend({
       this.get('onWebSocketOpen'),
       this.get('onWebSocketError'),
       this.get('onWebSocketClose')
+    ).then(({ oneproviderHostname, oneproviderToken }) =>
+      safeExec(this, 'setProperties', {
+        oneproviderToken,
+        oneproviderHostname,
+      })
     );
 
     // set a timeout for reconnection

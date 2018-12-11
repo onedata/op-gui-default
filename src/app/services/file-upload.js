@@ -1,6 +1,10 @@
 import Ember from 'ember';
 /* globals Resumable */
 
+const {
+  getProperties,
+} = Ember;
+
 function matchResumableFileByUuid(rf, resumableFileId) {
   return rf.uniqueIdentifier === resumableFileId;
 }
@@ -266,13 +270,20 @@ Directory content won't be updated!`);
 
   resumable: Ember.computed(function() {
     console.debug(`file-upload: Creating new Resumable`);
+    const {
+      oneproviderHostname,
+      oneproviderToken,
+    } = getProperties(this.get('session'), 'oneproviderHostname', 'oneproviderToken');
     const r = new Resumable({
-      target: '/upload',
+      target: `https://${oneproviderHostname}/upload`,
       chunkSize: 1*1024*1024,
       simultaneousUploads: 4,
       testChunks: false,
       throttleProgressCallbacks: 1,
       permanentErrors: [400, 404, 405, 415, 500, 501],
+      headers: {
+        'X-Auth-Token': oneproviderToken,
+      },
       query: (file) => {
         return {
           parentId: this.getParentIdOfUploadingFile(file.uniqueIdentifier)

@@ -12,6 +12,7 @@
 
 import Ember from 'ember';
 import SessionService from 'ember-simple-auth/services/session';
+import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 
 const {
   computed,
@@ -124,11 +125,13 @@ export default SessionService.extend({
       this.get('onWebSocketOpen'),
       this.get('onWebSocketError'),
       this.get('onWebSocketClose')
-    ).then(() => {
+    ).then(({ oneproviderHostname, oneproviderToken }) => {
       return new Ember.RSVP.Promise((resolve, reject) => {
         // This promise will be resolved when WS connection is established
         // and session details are sent via WS.
-        this.setProperties({
+        safeExec(this, 'setProperties', {
+          oneproviderHostname,
+          oneproviderToken,
           sessionInitResolve: resolve,
           sessionInitReject: reject
         });

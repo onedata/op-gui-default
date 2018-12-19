@@ -54,6 +54,8 @@ module.exports = function(environment) {
   }
 
   if (environment === 'test') {
+    ENV.rootURL = '/';
+    
     // Testem prefers this...
     ENV.locationType = 'none';
 

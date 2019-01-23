@@ -17,7 +17,7 @@ import Ember from 'ember';
 import ENV from 'op-worker-gui/config/environment';
 
 export function initialize(application) {
-  const rootURL = ENV.rootURL;
+  const rootURL = ENV.rootURL || '';
   application.getOnedataConfig = function() {
     return new Ember.RSVP.Promise((resolve, reject) => {
       $.ajax({

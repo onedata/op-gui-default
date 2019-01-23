@@ -12,6 +12,7 @@ const {
   computed,
   String: { htmlSafe },
   observer,
+  get,
 } = Ember;
 
 /**
@@ -31,6 +32,7 @@ const {
 export default SessionCore.extend({
   i18n: Ember.inject.service(),
   browser: Ember.inject.service(),
+  commonLoader: Ember.inject.service(),
 
   reconnectModal: Ember.Object.create(),
   firstReconnect: true,
@@ -79,6 +81,15 @@ export default SessionCore.extend({
           message += ': ' + i18n.t('services.session.connectionClosed.reasons.safariCert');
         }
         this.openConnectionClosedModal(message);
+        const commonLoader = this.get('commonLoader');
+        if (get(commonLoader, 'type') === 'login') {
+          commonLoader.setProperties({
+            isLoading: false,
+            message: null,
+            messageSecondary: null,
+            type: null,
+          });
+        }
       } else {
         // WebSocket.CLOSE_GOING_AWAY - used when user leaves current page
         if (event.code === 1001) {

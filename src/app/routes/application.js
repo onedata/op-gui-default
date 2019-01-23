@@ -19,6 +19,7 @@ const {
 
 export default Ember.Route.extend(ApplicationRouteMixin, {
   session: service(),
+  messageBox: service(),
 
   actions: {
     transitionTo() {
@@ -51,6 +52,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
     // TODO: translations
     sessionInitialization.catch(() => {
       console.debug('route:application: initSession rejected');
+      // TODO: messageBox doesn't work here because of loading route
       this.get('messageBox').open({
         type: 'error',
         allowClose: false,

@@ -80,16 +80,16 @@ const FETCH_MODEL_OPERATIONS = new Set([
 
 const reInOnzoneUrl = /.*\/(op)\/(.*?)\/(.*)/;
 
-function getGuiToken(serviceType, serviceId) {
+function getGuiToken(clusterType, clusterId) {
   return new Promise((resolve, reject) => $.ajax(
     `/gui-token`, {
       method: 'POST',
       contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-        data: JSON.stringify({
-          serviceType,
-          serviceId,
-        }),
+      dataType: 'json',
+      data: JSON.stringify({
+        clusterId,
+        clusterType,
+      }),
     }
   ).then(resolve, reject))
     .catch(error => {
@@ -98,27 +98,14 @@ function getGuiToken(serviceType, serviceId) {
           token: null,
           ttl: 0,
         };
+      } else {
+        throw error;
       }
     });
 }
 
-function getOnezoneToken() {
-  return getGuiToken('onezone', 'onezone');
-}
-
-function getOneproviderToken(serviceId) {
-  return getGuiToken('oneprovider', serviceId);
-}
-
-function getCluster(onezoneToken, clusterId) {
-  return new Promise((resolve, reject) => $.ajax(
-    `/api/v3/onezone/clusters/${clusterId}`, {
-      method: 'GET',
-      headers: {
-        'X-Auth-Token': onezoneToken,
-      }
-    }
-  ).then(resolve, reject));
+function getOneproviderToken(clusterId) {
+  return getGuiToken('oneprovider', clusterId);
 }
 
 export default DS.RESTAdapter.extend({
@@ -184,7 +171,7 @@ export default DS.RESTAdapter.extend({
     }
     if (onClose) {
       this.set('onCloseCallback', onClose);
-    }    
+    }
     if (this.get('initialized') === true) {
       return reject();
     } else {
@@ -192,51 +179,46 @@ export default DS.RESTAdapter.extend({
       let adapter = this;
 
       let protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-      
+
       const clusterId = this.getClusterIdFromUrl();
-      return getOnezoneToken().then(({ token: onezoneToken }) => {
-        // FIXME: getCluster can fail with invalid token
-        return getCluster(onezoneToken, clusterId)
-          .then(({ domain: oneproviderHostname, serviceId }) => {
-            return getOneproviderToken(serviceId)
-              .then(({ token: oneproviderToken }) => {
-                const port = window.location.port;
-                let url = protocol + oneproviderHostname +
-                  (port === '' ? '' : ':' + port) + WS_ENDPOINT;
-                  
-                if (oneproviderToken) {
-                  url += `?token=${oneproviderToken}`;
-                }
-                  
-                console.debug('Connecting: ' + url);
+      // TODO: if getOneproviderToken fail, we will see infinite loading
+      return getOneproviderToken(clusterId)
+        .then(({ token: oneproviderToken, domain: oneproviderHostname }) => {
+          const port = window.location.port;
+          let url = protocol + oneproviderHostname +
+            (port === '' ? '' : ':' + port) + WS_ENDPOINT;
 
-                if (adapter.socket === null) {
-                  try {
-                    adapter.socket = new WebSocket(url);
-                    adapter.socket.onopen = function (event) {
-                      adapter.open.apply(adapter, [event]);
-                    };
-                    adapter.socket.onmessage = function (event) {
-                      adapter.receive.apply(adapter, [event]);
-                    };
-                    adapter.socket.onerror = function (event) {
-                      adapter.error.apply(adapter, [event]);
-                    };
-                    adapter.socket.onclose = function (event) {
-                      adapter.close.apply(adapter, [event]);
-                    };
-                  } catch (error) {
-                    console.error(`WebSocket initializtion exception: ${error}`);
-                    // invoke provided handler, it should idicate error to user
-                    onClose();
-                    throw error;
-                  }
-                }
+          if (oneproviderToken) {
+            url += `?token=${oneproviderToken}`;
+          }
 
-                return resolve({ oneproviderHostname, oneproviderToken });
-              });
-          });
-      });
+          console.debug('Connecting: ' + url);
+
+          if (adapter.socket === null) {
+            try {
+              adapter.socket = new WebSocket(url);
+              adapter.socket.onopen = function (event) {
+                adapter.open.apply(adapter, [event]);
+              };
+              adapter.socket.onmessage = function (event) {
+                adapter.receive.apply(adapter, [event]);
+              };
+              adapter.socket.onerror = function (event) {
+                adapter.error.apply(adapter, [event]);
+              };
+              adapter.socket.onclose = function (event) {
+                adapter.close.apply(adapter, [event]);
+              };
+            } catch (error) {
+              console.error(`WebSocket initializtion exception: ${error}`);
+              // invoke provided handler, it should idicate error to user
+              onClose();
+              throw error;
+            }
+          }
+
+          return resolve({ oneproviderHostname, oneproviderToken });
+        });
     }
   },
 

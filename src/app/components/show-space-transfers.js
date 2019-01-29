@@ -145,12 +145,6 @@ export default Component.extend({
   _onTheFlyOpenedProviderIds: computed('providers.@each.id', function () {
     return A(this.get('providers').map(p => get(p, 'id')));
   }),
-  
-  /**
-   * Alias for Id of this provider - used for checking if transfers can be fetched
-   * @type {Ember.ComputedProperty<string>}
-   */
-  sessionProviderId: computed.reads('session.sessionDetails.providerId'),
         
   /**
    * Max number of ended transfers that can be fetched for transfer
@@ -169,13 +163,13 @@ export default Component.extend({
    * provider.
    * @type {Ember.ComputedProperty<boolean>}
    */
-  isSupportedByCurrentProvider: computed('sessionProviderId', 'providers.[]', function () {
+  isSupportedByCurrentProvider: computed('providerId', 'providers.[]', function () {
     const {
       providers,
-      sessionProviderId,
-    } = this.getProperties('sessionProviderId', 'providers');
-    if (isArray(providers) && sessionProviderId != null) {
-      return _.includes(providers.map(p => get(p, 'id')), sessionProviderId);
+      providerId,
+    } = this.getProperties('providerId', 'providers');
+    if (isArray(providers) && providerId != null) {
+      return _.includes(providers.map(p => get(p, 'id')), providerId);
     } else {
       return null;
     }

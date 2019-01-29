@@ -379,8 +379,6 @@ export default {
         completed: 'There are no ended transfers',
       },
       initializingTransfers: 'Initializing transfers...',
-      notSupported: 'Cannot list transfers of selected space because it is not ' +
-        'supported by current provider',
       in: 'Input',
       out: 'Output',
       fileHistoryLimitReached: 'History limit per file reached',

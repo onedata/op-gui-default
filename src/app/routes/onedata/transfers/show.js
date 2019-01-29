@@ -1,9 +1,13 @@
 import Ember from 'ember';
 import RouteRejectHandler from 'op-worker-gui/mixins/route-reject-handler';
+import resolveOrRedirectOneprovider from 'op-worker-gui/utils/resolve-or-redirect-oneprovider';
 
 const {
   Route,
   run,
+  get,
+  inject: { service },
+  computed: { reads },
 } = Ember;
 
 /**
@@ -11,10 +15,14 @@ const {
  * for a single space to show its transfers view
  * @module routes/transfers/show
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Route.extend(RouteRejectHandler, {
+  session: service(),
+  
+  providerId: reads('session.sessionDetails.providerId'),
+  
   fallbackRoute: 'onedata.transfers.index',
 
   model(params) {
@@ -23,6 +31,9 @@ export default Route.extend(RouteRejectHandler, {
 
   afterModel(model) {
     this.handleAfterModelErrors(model);
+    this._super(...arguments);
+    const providerId = this.get('providerId');
+    return resolveOrRedirectOneprovider(model, providerId, 'transfers', get(model, 'id'));
   },
 
   resetController(controller) {

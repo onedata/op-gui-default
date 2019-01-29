@@ -17,4 +17,5 @@ export default DS.Model.extend({
   latitude: attr('number'),
   longitude: attr('number'),
   status: attr('string'),
+  cluster: attr('string'),
 });

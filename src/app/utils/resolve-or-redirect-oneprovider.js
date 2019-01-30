@@ -13,7 +13,7 @@ import Ember from 'ember';
  
 const {
   get,
-  RSVP: { Promise, reject },
+  RSVP: { Promise },
 } = Ember;
  
 export default function resolveOrRedirectOneprovider(space, currentProviderId, type, resourceId) {
@@ -31,8 +31,7 @@ export default function resolveOrRedirectOneprovider(space, currentProviderId, t
                 `${location.origin}/op/${get(onlineProvider, 'cluster')}/i/#/onedata/${type}/${resourceId}`;
             });
           } else {
-            // FIXME: better graphics
-            reject('None of the supporting Oneproviders is available');
+            throw new Error('None of the supporting Oneproviders is available');
           }
         });
     }

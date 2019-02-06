@@ -28,7 +28,7 @@ export default function resolveOrRedirectOneprovider(space, currentProviderId, t
           if (onlineProvider) {
             return new Promise(() => {
               window.location =
-                `${location.origin}/op/${get(onlineProvider, 'cluster')}/i/#/onedata/${type}/${resourceId}`;
+                `${location.origin}/op/${get(onlineProvider, 'cluster')}/i#/onedata/${type}/${resourceId}`;
             });
           } else {
             throw new Error('None of the supporting Oneproviders is available');

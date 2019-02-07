@@ -15,7 +15,7 @@ const {
   get,
   RSVP: { Promise },
 } = Ember;
- 
+
 export default function resolveOrRedirectOneprovider(space, currentProviderId, type, resourceId) {
   return get(space, 'providerList').then(providerList => {
     const supportingProviderIds = get(providerList, 'list');

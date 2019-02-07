@@ -15,6 +15,6 @@ export default Ember.Route.extend({
 
   setupController(controller, model) {
     this._super(controller, model);
-    controller.goToDefaultTransfersForSpace(model);
+    return controller.goToDefaultTransfersForSpace(model);
   },
 });

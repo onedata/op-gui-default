@@ -14,7 +14,7 @@ const {
   Service,
   inject: { service },
   Evented,
-  computed: { alias },
+  computed: { alias, reads },
   get,
   set,
 } = Ember;
@@ -22,12 +22,16 @@ const {
 export default Service.extend(Evented, {
   store: service(),
   secondaryMenu: service(),
-
+  session: service(),
+  
   spaces: null,
-  selectedSpace: alias('secondaryMenu.activeSpace'),
   prevSelectedSpace: null,
 
   isLoading: null,
+  
+  selectedSpace: alias('secondaryMenu.activeSpace'),
+  
+  providerId: reads('session.sessionDetails.providerId'),
   
   /**
    * Stores ids of dirs that cannot be opened (eg. were rejected on request to backend).
@@ -87,14 +91,13 @@ export default Service.extend(Evented, {
   spacesChanged: function() {
     console.debug(`FST: Spaces changed: len ${this.get('spaces.length')}, prev: ${this.get('prevSelectedSpace')}`);
     const dataSpaces = this.get('spaces');
-    let newSpaceToSelect;
     if (!this.get('prevSelectedSpace') && this.get('spaces.length') > 0 &&
       dataSpaces.get('isUpdating') === false) {
-
-      newSpaceToSelect = getDefaultSpace(dataSpaces);
-
-      this.set('prevSelectedSpace', this.get('selectedSpace'));
-      this.set('selectedSpace', newSpaceToSelect);
+      getDefaultSpace(dataSpaces, this.get('providerId'))
+        .then(newSpaceToSelect => {
+          this.set('prevSelectedSpace', this.get('selectedSpace'));
+          this.set('selectedSpace', newSpaceToSelect);
+        });
     }
   }.observes('spaces', 'spaces.[]', 'spaces.@each.isDefault'),
 

@@ -12,7 +12,16 @@ import Ember from 'ember';
 
 import getDefaultSpace from 'op-worker-gui/utils/get-default-space';
 
+const {
+  inject: { service },
+  computed,
+} = Ember;
+
 export default Ember.Route.extend({
+  session: service(),
+  
+  providerId: computed.reads('session.sessionDetails.providerId'),
+  
   model() {
     return this.modelFor('onedata.data');
   },
@@ -20,8 +29,9 @@ export default Ember.Route.extend({
   setupController(controller, model) {
     this._super(controller, model);
     controller.onDataSpacesChange();
-    Ember.run.scheduleOnce('afterRender', () => {
-      this.send('goToDataSpace', getDefaultSpace(model));
+    return Ember.run.scheduleOnce('afterRender', () => {
+      return getDefaultSpace(model, this.get('providerId'))
+        .then(space => this.send('goToDataSpace', space));
     });
   }
 });

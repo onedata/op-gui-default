@@ -93,11 +93,10 @@ function getGuiToken(clusterType, clusterId) {
     }
   ).then(resolve, reject))
     .catch(error => {
-      if (error && error.status === '401') {
-        return {
-          token: null,
-          ttl: 0,
-        };
+      if (error && error.status === 401) {
+        window.location =
+          `/oz/onezone/i#/?redirect_url=${location.pathname}${location.hash}`;
+        return new Promise();
       } else {
         throw error;
       }

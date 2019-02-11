@@ -18,4 +18,6 @@ export default DS.Model.extend({
   longitude: attr('number'),
   status: attr('string'),
   cluster: attr('string'),
+  // FIXME: new field is not ready yet in backend
+  domain: attr('string'),
 });

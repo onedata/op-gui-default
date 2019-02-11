@@ -20,6 +20,7 @@ const {
  */
 export default Route.extend(RouteRejectHandler, {
   session: service(),
+  commonLoader: service(),
   
   providerId: reads('session.sessionDetails.providerId'),
   
@@ -32,8 +33,18 @@ export default Route.extend(RouteRejectHandler, {
   afterModel(model) {
     this.handleAfterModelErrors(model);
     this._super(...arguments);
-    const providerId = this.get('providerId');
-    return resolveOrRedirectOneprovider(model, providerId, 'transfers', get(model, 'id'));
+    const {
+      commonLoader,
+      providerId,
+    } = this.getProperties('commonLoader', 'providerId');
+    return resolveOrRedirectOneprovider({
+      space: model,
+      currentProviderId: providerId,
+      type: 'transfers',
+      resourceId: get(model, 'id'),
+      commonLoader,
+      loadingArea: 'content',
+    });
   },
 
   resetController(controller) {

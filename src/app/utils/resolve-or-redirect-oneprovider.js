@@ -10,13 +10,24 @@
  */
 
 import Ember from 'ember';
- 
+import checkImg from 'op-worker-gui/utils/check-img';
+import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
+
 const {
   get,
   RSVP: { Promise },
 } = Ember;
 
-export default function resolveOrRedirectOneprovider(space, currentProviderId, type, resourceId) {
+export default function resolveOrRedirectOneprovider({ space, currentProviderId, type, resourceId, commonLoader, loadingArea }) {
+  if (commonLoader) {
+    commonLoader.setProperties({
+      isLoading: true,
+      solidBackground: true,
+      message: 'Checking supporting Oneprovider...',
+      area: 'content-with-secondary-top',
+      type: 'resolveOneprovider'
+    }); 
+  }
   return get(space, 'providerList').then(providerList => {
     const supportingProviderIds = get(providerList, 'list');
     if (supportingProviderIds.indexOf(currentProviderId) !== -1) {
@@ -26,14 +37,36 @@ export default function resolveOrRedirectOneprovider(space, currentProviderId, t
         .then(providers => {
           const onlineProvider = providers.filter(p => get(p, 'status') === 'online')[0];
           if (onlineProvider) {
-            return new Promise(() => {
-              window.location =
-                `${location.origin}/op/${get(onlineProvider, 'cluster')}/i#/onedata/${type}/${resourceId}`;
-            });
+            return checkImg(`https://${get(onlineProvider, 'domain')}/assets/images/dir.png`)
+              .then(isAvailable => {
+                if (isAvailable) {
+                  return new Promise(() => {
+                    window.location =
+                      `${location.origin}/op/${get(onlineProvider, 'cluster')}/i#/onedata/${type}/${resourceId}`;
+                  });
+                } else {
+                  // FIXME: show better error
+                  throw new Error(
+                    'The target Oneprovider\'s domain cannot be reached from this web browser'
+                  );
+                }
+              });
           } else {
+            // FIXME: show better error
             throw new Error('None of the supporting Oneproviders is available');
           }
         });
+    }
+  })
+  .finally(() => {
+    if (commonLoader && loadingArea && get(commonLoader, 'type') === 'resolveOneprovider') {
+      safeExec(commonLoader, 'setProperties', {
+        isLoading: false,
+        solidBackground: undefined,
+        message: null,
+        area: null,
+        type: null,
+      });
     }
   });
 }

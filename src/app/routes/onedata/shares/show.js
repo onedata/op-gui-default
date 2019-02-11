@@ -10,6 +10,7 @@ const {
 
 export default Ember.Route.extend(RouteRejectHandler, {
   session: service(),
+  commonLoader: service(),
   
   providerId: reads('session.sessionDetails.providerId'),
   
@@ -24,12 +25,22 @@ export default Ember.Route.extend(RouteRejectHandler, {
   
   afterModel(model) {
     this._super(...arguments);
-    const providerId = this.get('providerId');
+    const {
+      commonLoader,
+      providerId,
+    } = this.getProperties('commonLoader', 'providerId');
     return get(model, 'dataSpace')
-            .then(space =>
-              resolveOrRedirectOneprovider(space, providerId, 'shares', get(model, 'id'))
-            )
-            .then(() => model);
+      .then(space =>
+        resolveOrRedirectOneprovider({
+          space,
+          currentProviderId: providerId,
+          type: 'shares',
+          resourceId: get(model, 'id'),
+          commonLoader,
+          loadingArea: 'content',
+        })
+      )
+      .then(() => model);
   },
 
   setupController(controller, model) {

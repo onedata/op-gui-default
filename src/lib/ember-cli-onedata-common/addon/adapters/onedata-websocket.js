@@ -94,9 +94,17 @@ function getGuiToken(clusterType, clusterId) {
   ).then(resolve, reject))
     .catch(error => {
       if (error && error.status === 401) {
-        window.location =
-          `/oz/onezone/i#/?redirect_url=${location.pathname}${location.hash}`;
-        return new Promise();
+        return new Promise(() => {
+          if (sessionStorage.getItem('redirectFromOnezone')) {
+            sessionStorage.setItem('redirectFromOnezone', false);
+            throw new Error(
+              'Redirection loop detected, try to clear browser cookies, logout from Onezone or contact administrators.'
+            );
+          } else {        
+            window.location =
+              `/oz/onezone/i#/?redirect_url=${location.pathname}${location.hash}`;
+          }
+        });
       } else {
         throw error;
       }

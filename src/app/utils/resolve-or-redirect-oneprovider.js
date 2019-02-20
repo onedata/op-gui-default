@@ -37,7 +37,7 @@ export default function resolveOrRedirectOneprovider({ space, currentProviderId,
         .then(providers => {
           const onlineProvider = providers.filter(p => get(p, 'status') === 'online')[0];
           if (onlineProvider) {
-            return checkImg(`https://${get(onlineProvider, 'domain')}/assets/images/dir.png`)
+            return checkImg(`https://${get(onlineProvider, 'domain')}/favicon.ico`)
               .then(isAvailable => {
                 if (isAvailable) {
                   return new Promise(() => {

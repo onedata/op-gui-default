@@ -20,7 +20,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
   },
   
   model() {
-    sessionStorage.setItem('redirectFromOnezone', false);
+    sessionStorage.setItem('redirectFromOnezone', 'false');
     return this.get('session.user');
   },
 });

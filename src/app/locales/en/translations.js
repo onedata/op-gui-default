@@ -91,6 +91,7 @@ export default {
       token: 'tokens',
       providers: 'providers',
       transfers: 'transfers',
+      clusters: 'clusters',
     },
     queryOptions: {
       expand: 'Expand options',

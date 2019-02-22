@@ -5,3 +5,13 @@
     dbIndexId=commonModals.modalParams.dbIndexId
   }}
 {{/if}}
+
+{{#if commonModals.providerRedirect}}
+  {{modals/provider-redirect
+    open=commonModals.providerRedirect
+    close=(action "closeModal" "providerRedirect")
+    space=commonModals.modalParams.space
+    providers=commonModal.modalParams.providers
+    deferredProviderChoose=commonModal.modalParams.deferredProviderChoose
+  }}
+{{/if}}

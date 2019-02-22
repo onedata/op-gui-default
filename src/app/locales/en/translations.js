@@ -99,6 +99,9 @@ export default {
       copy: 'Copy',
     },
     modals: {
+      providerRedirect: {
+        title: 'Oneprovider redirect'
+      },
       dbIndexModal: {
         title: 'Database index information',
         tabs: {

@@ -1,6 +1,5 @@
 import Ember from 'ember';
 import RouteRejectHandler from 'op-worker-gui/mixins/route-reject-handler';
-import resolveOrRedirectOneprovider from 'op-worker-gui/utils/resolve-or-redirect-oneprovider';
 
 const {
   get,
@@ -10,7 +9,7 @@ const {
 
 export default Ember.Route.extend(RouteRejectHandler, {
   session: service(),
-  commonLoader: service(),
+  remoteOneprovider: service(),
   
   providerId: reads('session.sessionDetails.providerId'),
   
@@ -26,17 +25,16 @@ export default Ember.Route.extend(RouteRejectHandler, {
   afterModel(model) {
     this._super(...arguments);
     const {
-      commonLoader,
       providerId,
-    } = this.getProperties('commonLoader', 'providerId');
+      remoteOneprovider,
+    } = this.getProperties('providerId', 'remoteOneprovider');
     return get(model, 'dataSpace')
       .then(space =>
-        resolveOrRedirectOneprovider({
+        remoteOneprovider.resolveOrRedirectOneprovider({
           space,
           currentProviderId: providerId,
           type: 'shares',
           resourceId: get(model, 'id'),
-          commonLoader,
           loadingArea: 'content',
         })
       )

@@ -31,6 +31,7 @@ export default Ember.Service.extend({
       message: null,
       messageSecondary: null,
       area: 'main-content',
+      type: null,
     });
   },
 });

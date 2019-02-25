@@ -29,7 +29,7 @@ export default Route.extend(RouteRejectHandler, {
     return this.handleReject(this.store.find('space', params.space_id));
   },
 
-  afterModel(model) {
+  afterModel(model, transition) {
     this.handleAfterModelErrors(model);
     this._super(...arguments);
     const {
@@ -42,6 +42,14 @@ export default Route.extend(RouteRejectHandler, {
       type: 'transfers',
       resourceId: get(model, 'id'),
       loadingArea: 'content',
+    }).then(space => {
+      if (!space) {
+        transition.then(() => {
+          this.get('fileSystemTree').backToPrevSpace();
+        });
+      } else {
+        return space;
+      }
     });
   },
 

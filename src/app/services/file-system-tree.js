@@ -161,4 +161,16 @@ export default Service.extend(Evented, {
       }
     });
   },
+  
+  setSelectedSpace(space) {
+    this.set('prevSelectedSpace', this.get('selectedSpace'));
+    this.set('selectedSpace', space);
+  },
+  
+  backToPrevSpace() {
+    const prevSpace = this.get('prevSelectedSpace');
+    if (prevSpace) {
+      this.setSelectedSpace(prevSpace);
+    }
+  },
 });

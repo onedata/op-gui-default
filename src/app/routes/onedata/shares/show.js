@@ -10,6 +10,7 @@ const {
 export default Ember.Route.extend(RouteRejectHandler, {
   session: service(),
   remoteOneprovider: service(),
+  fileSystemTree: service(),
   
   providerId: reads('session.sessionDetails.providerId'),
   
@@ -22,7 +23,7 @@ export default Ember.Route.extend(RouteRejectHandler, {
     );
   },
   
-  afterModel(model) {
+  afterModel(model, transition) {
     this._super(...arguments);
     const {
       providerId,
@@ -38,7 +39,15 @@ export default Ember.Route.extend(RouteRejectHandler, {
           loadingArea: 'content',
         })
       )
-      .then(() => model);
+      .then(space => {
+        if (!space) {
+          transition.then(() => {
+            this.get('fileSystemTree').backToPrevSpace();
+          });
+        } else {
+          return model;
+        }
+      });
   },
 
   setupController(controller, model) {

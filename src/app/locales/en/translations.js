@@ -42,7 +42,10 @@ export default {
     noPrivileges: 'You do not have privileges to {{privileges}}.'
   },
   services: {
-    session: sessionLocales
+    session: sessionLocales,
+    remoteOneprovider: {
+      checkSupportingOneprovider: 'Checking supporting Oneprovider...',
+    },
   },
   components: {
     resourceLoadError,
@@ -100,7 +103,14 @@ export default {
     },
     modals: {
       providerRedirect: {
-        title: 'Oneprovider redirect'
+        title: 'Oneprovider redirect',
+        selectPlaceholder: 'Choose Oneprovider to open',
+        textIntro1: 'Space',
+        textIntro2: 'is not supported by this Oneprovider',
+        textIntro3: 'Please choose a supporting Oneprovider (you will be redirected automatically):',
+        providerItem: {
+          offline: '(offline)',
+        },
       },
       dbIndexModal: {
         title: 'Database index information',

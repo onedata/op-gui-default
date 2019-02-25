@@ -1,23 +1,30 @@
+import Ember from 'ember';
 import DS from 'ember-data';
 
 const {
+  Model,
   attr,
 } = DS;
+
+const {
+  computed: { equal },
+} = Ember;
 
 /**
  * A single Onedata provider representation
  * Created originally for file-distribution model.
  * @module models/system-provider
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default DS.Model.extend({
+export default Model.extend({
   name: attr('string'),
   latitude: attr('number'),
   longitude: attr('number'),
   status: attr('string'),
   cluster: attr('string'),
-  // FIXME: new field is not ready yet in backend
   domain: attr('string'),
+  
+  online: equal('status', 'online'),
 });

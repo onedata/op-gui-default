@@ -6,12 +6,12 @@
   }}
 {{/if}}
 
-{{#if commonModals.providerRedirect}}
+{{#if commonModals.openedProviderRedirect}}
   {{modals/provider-redirect
-    open=commonModals.providerRedirect
+    open=commonModals.openedProviderRedirect
     close=(action "closeModal" "providerRedirect")
     space=commonModals.modalParams.space
-    providers=commonModal.modalParams.providers
-    deferredProviderChoose=commonModal.modalParams.deferredProviderChoose
+    providers=commonModals.modalParams.providers
+    deferredProviderChoice=commonModals.modalParams.deferredProviderChoice
   }}
 {{/if}}

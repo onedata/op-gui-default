@@ -14,11 +14,13 @@ const {
   inject: { service },
   computed: { reads },
   get,
+  run: { next },
 } = Ember;
 
 export default Ember.Route.extend(RouteRejectHandler, {
   session: service(),
   remoteOneprovider: service(),
+  fileSystemTree: service(),
   
   providerId: reads('session.sessionDetails.providerId'),
   
@@ -32,7 +34,7 @@ export default Ember.Route.extend(RouteRejectHandler, {
     );
   },
   
-  afterModel(model) {
+  afterModel(model, transition) {
     this._super(...arguments);
     const {
       providerId,
@@ -44,6 +46,14 @@ export default Ember.Route.extend(RouteRejectHandler, {
       type: 'data',
       resourceId: get(model, 'id'),
       loadingArea: 'content-with-secondary-top',
+    }).then(space => {
+      if (!space) {
+        transition.then(() => {
+          this.get('fileSystemTree').backToPrevSpace();
+        });
+      } else {
+        return space;
+      }
     });
   },
 

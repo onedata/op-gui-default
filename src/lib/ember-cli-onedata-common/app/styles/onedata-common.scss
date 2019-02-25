@@ -50,6 +50,9 @@ $root-url: './' !default;
   margin-right: auto;
 }
 
+@mixin oneicon-content($glyph) {
+  content: unquote("\"#{$glyph}\"");
+}
 
 .one-row {
   display: table;

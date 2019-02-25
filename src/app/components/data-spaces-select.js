@@ -49,16 +49,15 @@ export default Ember.Component.extend({
       });
     }
   }),
-
+  
   init() {
     this._super(...arguments);
     this.selectedSpaceDidChange();
   },
 
   actions: {
-    setSelectedSpace(space) {
-      this.set('prevSelectedSpace', this.get('selectedSpace'));
-      this.set('selectedSpace', space);
+    setSelectedSpace() {
+      return this.get('fileSystemTree').setSelectedSpace(...arguments);
     }
   }
 });

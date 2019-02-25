@@ -1,32 +1,31 @@
 {{#bs-modal open=open body=false footer=false
   id=modalId
   title=title
-  openAction="open"
-  openedAction="opened"
-  keyboard=true
-  autoClose=true
-  backdropClose=true
-  closeButton=true
+  keyboard=false
+  autoClose=false
+  backdropClose=false
+  closeButton=false
 }}
   {{#bs-modal-body}}
-  
-  <p>
-    FIXME: redirection to oneprovider
-  </p>
-  
-  
+    <p>
+      {{t "components.modals.providerRedirect.textIntro1"}}
+      <strong>{{space.name}}</strong>
+      {{t "components.modals.providerRedirect.textIntro2"}}
+      (<strong>{{currentProviderName}}</strong>).
+      {{t "components.modals.providerRedirect.textIntro3"}}
+    </p>
+    <div class="row row-oneprovider-select">
+      {{select-2
+        content=providerOptions
+        value=chosenProvider
+        placeholder=(t "components.modals.providerRedirect.selectPlaceholder")
+      }}
+    </div>
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
-    {{#spin-button-onedata buttonType="submit"
-      action=(if canSubmit "submit")
-      class="btn btn-primary no-outline" spinnerColor="#fff"
-      inFlight=isLoading
-      disabled=(not canSubmit)
-    }}
-      {{t "common.modal.ok"}}
-    {{/spin-button-onedata}}
-    {{#bs-button action=(action "close" target=footer) type="default"
-      disabled=isLoading
+    {{#bs-button
+      action=(action "cancel")
+      type="default"
     }}
       {{t "common.modal.cancel"}}
     {{/bs-button}}

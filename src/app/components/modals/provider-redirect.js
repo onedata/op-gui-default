@@ -3,7 +3,7 @@ import PromiseLoadingMixin from 'ember-cli-onedata-common/mixins/promise-loading
 
 const {
   computed,
-  computed: { reads },
+  computed: { reads, equal },
   get,
   observer,
   inject: { service },
@@ -47,6 +47,8 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   providers: undefined,
 
   chosenProvider: undefined,
+  
+  isSingleProvider: equal('providers.length', 1),
   
   isLoading: computed(
     'providers.@each.isLoading',
@@ -99,6 +101,10 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   },
   
   actions: {
+    goToSingleProvider() {
+      this.get('deferredProviderChoice').resolve(this.get('providers.firstObject'));
+      this.get('close')();
+    },
     cancel() {
       this.get('close')();
       this.get('deferredProviderChoice').resolve(null);

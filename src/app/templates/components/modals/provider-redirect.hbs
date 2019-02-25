@@ -7,22 +7,40 @@
   closeButton=false
 }}
   {{#bs-modal-body}}
-    <p>
-      {{t "components.modals.providerRedirect.textIntro1"}}
-      <strong>{{space.name}}</strong>
-      {{t "components.modals.providerRedirect.textIntro2"}}
-      (<strong>{{currentProviderName}}</strong>).
-      {{t "components.modals.providerRedirect.textIntro3"}}
-    </p>
-    <div class="row row-oneprovider-select">
-      {{select-2
-        content=providerOptions
-        value=chosenProvider
-        placeholder=(t "components.modals.providerRedirect.selectPlaceholder")
-      }}
-    </div>
+    {{#if isSingleProvider}}
+      <p>
+        {{t "components.modals.providerRedirect.textIntro1"}}
+        <strong>{{space.name}}</strong>
+        {{t "components.modals.providerRedirect.textSingleIntro2"}}
+        <strong>{{providers.firstObject.name}}</strong>.
+      </p>
+    {{else}}
+      <p>
+        {{t "components.modals.providerRedirect.textIntro1"}}
+        <strong>{{space.name}}</strong>
+        {{t "components.modals.providerRedirect.textIntro2"}}
+        (<strong>{{currentProviderName}}</strong>).
+        {{t "components.modals.providerRedirect.textIntro3"}}
+      </p>
+      <div class="row row-oneprovider-select">
+        {{select-2
+          content=providerOptions
+          value=chosenProvider
+          placeholder=(t "components.modals.providerRedirect.selectPlaceholder")
+        }}
+      </div>
+    {{/if}}
   {{/bs-modal-body}}
   {{#bs-modal-footer as |footer|}}
+    {{#if isSingleProvider}}
+      {{#bs-button
+        type="primary"
+        class="btn-go-to-provider"
+        action=(action "goToSingleProvider")
+      }}
+        {{t "components.modals.providerRedirect.takeMeThere"}}
+      {{/bs-button}}
+    {{/if}}
     {{#bs-button
       action=(action "cancel")
       type="default"

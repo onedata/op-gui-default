@@ -108,6 +108,8 @@ export default {
         textIntro1: 'Space',
         textIntro2: 'is not supported by this Oneprovider',
         textIntro3: 'Please choose a supporting Oneprovider (you will be redirected automatically):',
+        textSingleIntro2: 'is only supported by the Oneprovider',
+        takeMeThere: 'Take me there',
         providerItem: {
           offline: '(offline)',
         },

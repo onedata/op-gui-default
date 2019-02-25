@@ -14,7 +14,6 @@ const {
   inject: { service },
   computed: { reads },
   get,
-  run: { next },
 } = Ember;
 
 export default Ember.Route.extend(RouteRejectHandler, {

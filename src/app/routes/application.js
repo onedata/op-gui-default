@@ -34,8 +34,9 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
   },
   
   model() {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       WebFont.on('active', resolve, true);
+      WebFont.on('inactive', reject);
     });
   },
   

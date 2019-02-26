@@ -20,9 +20,9 @@ export default Ember.Route.extend(RouteRejectHandler, {
   session: service(),
   remoteOneprovider: service(),
   fileSystemTree: service(),
-  
+
   providerId: reads('session.sessionDetails.providerId'),
-  
+
   // TODO: rejection of model causes a file tree component to be broken
   // url resolves correct - this is a common problem with routing in data spaces
   fallbackRoute: 'onedata.data.index',
@@ -32,19 +32,20 @@ export default Ember.Route.extend(RouteRejectHandler, {
       this.store.findRecord('space', params.data_space_id)
     );
   },
-  
+
   afterModel(model, transition) {
-    this._super(...arguments);
     const {
       providerId,
       remoteOneprovider,
     } = this.getProperties('providerId', 'remoteOneprovider');
+    const space = model;
     return remoteOneprovider.resolveOrRedirectOneprovider({
-      space: model,
+      space,
       currentProviderId: providerId,
       type: 'data',
-      resourceId: get(model, 'id'),
+      resourceId: get(space, 'id'),
       loadingArea: 'content-with-secondary-top',
+      transition,
     }).then(space => {
       if (!space) {
         transition.then(() => {

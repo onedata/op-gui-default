@@ -13,13 +13,14 @@ export default Service.extend({
   commonLoader: service(),
   i18n: service(),
   commonModals: service(),
-  
-  resolveOrRedirectOneprovider({ 
-    space, 
-    currentProviderId, 
-    type, 
+
+  resolveOrRedirectOneprovider({
+    space,
+    currentProviderId,
+    type,
     resourceId,
     loadingArea = 'content-with-secondary-top',
+    transition,
   }) {
     const {
       commonLoader,
@@ -33,49 +34,71 @@ export default Service.extend({
       type: 'resolveOneprovider'
     });
     return get(space, 'providerList').then(providerList => {
-      const supportingProviderIds = get(providerList, 'list');
-      if (supportingProviderIds.indexOf(currentProviderId) !== -1) {
-        return space;
-      } else {
-        return get(providerList, 'queryList')
-          .then(providers => {
-            const onlineProvider = providers.filter(p => get(p, 'status') === 'online')[0];
-            if (onlineProvider) {
-              return this.chooseOneprovider(space, providers)
-                .then(chosenOneprovider => {
-                  if (chosenOneprovider) {
-                    return checkImg(`https://${get(chosenOneprovider, 'domain')}/favicon.ico`)
-                    .then(isAvailable => {
-                      if (isAvailable) {
-                        return new Promise(() => {
-                          window.location =
-                            `${location.origin}/op/${get(chosenOneprovider, 'cluster')}/i#/onedata/${type}/${resourceId}`;
+        const supportingProviderIds = get(providerList, 'list');
+        if (get(supportingProviderIds, 'length') === 0) {
+          // FIXME: handle error
+          throw {
+            isOnedataCustomError: true,
+            type: 'no-support',
+            space,
+            transition,
+          };
+        } else if (supportingProviderIds.indexOf(currentProviderId) !== -1) {
+          return space;
+        } else {
+          return get(providerList, 'queryList')
+            .then(providers => {
+              const onlineProvider = providers.filter(p => get(p, 'status') ===
+                'online')[0];
+              if (onlineProvider) {
+                return this.chooseOneprovider(space, providers)
+                  .then(chosenOneprovider => {
+                    if (chosenOneprovider) {
+                      return checkImg(
+                          `https://${get(chosenOneprovider, 'domain')}/favicon.ico`
+                        )
+                        .then(isAvailable => {
+                          if (isAvailable) {
+                            return new Promise(() => {
+                              window.location =
+                                `${location.origin}/op/${get(chosenOneprovider, 'cluster')}/i#/onedata/${type}/${resourceId}`;
+                            });
+                          } else {
+                            // FIXME: handle error
+                            throw {
+                              isOnedataCustomError: true,
+                              type: 'endpoint-error',
+                              space,
+                              provider: chosenOneprovider,
+                              transition,
+                            };
+                          }
                         });
-                      } else {
-                        // FIXME: show better error
-                        throw new Error(
-                          'The target Oneprovider\'s domain cannot be reached from this web browser'
-                        );
-                      }
-                    });
-                  } else {
-                    return null;
-                  }
-                });
-            } else {
-              // FIXME: show better error
-              throw new Error('None of the supporting Oneproviders is available');
-            }
-          });
-      }
-    })
-    .finally(() => {
-      if (commonLoader && loadingArea && get(commonLoader, 'type') === 'resolveOneprovider') {
-        safeExec(commonLoader, 'reset');
-      }
-    });
+                    } else {
+                      return null;
+                    }
+                  });
+              } else {
+                // FIXME: handle error
+                throw {
+                  isOnedataCustomError: true,
+                  type: 'all-supporting-oneproviders-offline',
+                  space,
+                  providers,
+                  transition,
+                };
+              }
+            });
+        }
+      })
+      .finally(() => {
+        if (commonLoader && loadingArea && get(commonLoader, 'type') ===
+          'resolveOneprovider') {
+          safeExec(commonLoader, 'reset');
+        }
+      });
   },
-  
+
   chooseOneprovider(space, providers) {
     try {
       const deferredProviderChoice = defer();
@@ -84,7 +107,7 @@ export default Service.extend({
         providers,
         deferredProviderChoice,
       });
-    return deferredProviderChoice.promise;
+      return deferredProviderChoice.promise;
     } catch (error) {
       return reject(error);
     }

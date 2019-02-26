@@ -1,0 +1,23 @@
+{{#route-error icon="space"}}
+  {{#if (eq error.type "no-support")}}
+    <p>
+      {{t "components.spaceContentError.noSupport"}}
+    </p>
+    <p>
+      {{t "components.spaceContentError.getSupport"}}
+      <a href={{spaceSupportUrl}}>{{t "components.spaceContentError.getSupportLink"}}</a>.
+    </p>
+  {{else if (eq error.type "all-supporting-oneproviders-offline")}}
+    <p>
+      {{t "components.spaceContentError.allSupportOffline"}}
+    </p>
+  {{else if (eq error.type "endpoint-error")}}
+    {{t "components.spaceContentError.endpointError"}}
+    {{#bs-button
+      type="primary"
+      action=(action "refreshRoute")
+    }}
+      {{t "components.spaceContentError.chooseOtherOneprovider"}}
+    {{/bs-button}}
+  {{/if}}
+{{/route-error}}

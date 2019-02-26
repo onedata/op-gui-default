@@ -48,6 +48,14 @@ export default {
     },
   },
   components: {
+    spaceContentError: {
+      noSupport: 'Selected space is not supported by any Oneprovider.',
+      getSupport: 'You can get support for this space',
+      getSupportLink: 'here',
+      endpointError: 'TODO: some text with steps',
+      allSupportOffline: 'All Oneproviders supporting selected space is currently offline.',
+      chooseOtherOneprovider: 'Choose other Oneprovider',
+    },
     resourceLoadError,
     errorInline,
     filePermissions: {

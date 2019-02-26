@@ -45,12 +45,7 @@ export default Ember.Controller.extend({
         type: 'dataSpaces',
       });
     } else if (this.get('commonLoader.type') === 'dataSpaces') {
-      commonLoader.setProperties({
-        isLoading: false,
-        message: null,
-        messageSecondary: null,
-        type: null,
-      });
+      commonLoader.clear();
     }
   }),
   

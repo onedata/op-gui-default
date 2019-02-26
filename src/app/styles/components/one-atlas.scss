@@ -3,7 +3,7 @@
   height: 100%;
   margin-left: auto;
   margin-right: auto;
-  background-image: url($root-url + "images/atlas-dark.svg");
+  background-image: url(root-url() + "images/atlas-dark.svg");
   // size will be set by script
   background-size: cover;
   background-position: top left;

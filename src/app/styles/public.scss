@@ -10,7 +10,7 @@
   .public-top-brand {
     height: 100%;
     width: 220px;
-    background-image: url($root-url + "images/logo-light.svg");
+    background-image: url(root-url() + "images/logo-light.svg");
     background-position: center left;
     background-size: 220px auto;
     background-repeat: no-repeat;

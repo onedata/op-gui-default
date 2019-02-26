@@ -41,7 +41,7 @@ module.exports = function(environment) {
       custom: {
         families: ['Open Sans'],
       },
-      timeout: 60000,
+      timeout: 20000,
     },
   };
 

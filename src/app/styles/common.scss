@@ -122,7 +122,7 @@ html, body {
           width: 156px;
           margin-left: $secondary-sidebar-item-padding;
           margin-right: 62px;
-          background-image: url($root-url + "images/logo-dark.svg");
+          background-image: url(root-url() + "images/logo-dark.svg");
           background-position-x: left;
           background-position-y: $brand-top-padding;
           background-size: auto 26px;
@@ -224,7 +224,7 @@ html, body {
         text-align: center;
 
         // TODO: use SVG
-        background-image: url($root-url + "images/logo-short-light.svg");
+        background-image: url(root-url() + "images/logo-short-light.svg");
         background-size: 40px 26px;
         background-repeat: no-repeat;
         background-position: center $brand-top-padding;
@@ -847,14 +847,14 @@ html, body {
   &.op-panel-azure, &.op-panel-metadata {
     border-color: $color-panel-azure;
     &.op-panel-background {
-      background-image: url($root-url + "images/panels/metadata.svg");
+      background-image: url(root-url() + "images/panels/metadata.svg");
     }
   }
 
   &.op-panel-red, &.op-panel-files {
     border-color: $color-panel-red;
     &.op-panel-background {
-      background-image: url($root-url + "images/panels/files.svg");
+      background-image: url(root-url() + "images/panels/files.svg");
     }
   }
 
@@ -942,7 +942,7 @@ h1.content-header {
 .empty-file-info {
   position: relative;
   height: 190px;
-  background-image: url($root-url + "images/empty-file.svg");
+  background-image: url(root-url() + "images/empty-file.svg");
   background-position: center top;
   background-size: 150px auto;
   background-repeat: no-repeat;

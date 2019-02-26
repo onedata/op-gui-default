@@ -47,7 +47,7 @@
     "ember-cli-moment-shim": "3.4.0",
     "ember-cli-node-assets": "0.2.2",
     "ember-cli-release": "1.0.0-beta.2",
-    "ember-cli-sass": "6.1.1",
+    "ember-cli-sass": "10.0.0",
     "ember-cli-sri": "2.1.1",
     "ember-cli-test-loader": "1.1.0",
     "ember-cli-uglify": "1.2.0",
@@ -80,6 +80,7 @@
     "livereload": "0.6.0",
     "loader.js": "4.1.0",
     "round10": "1.0.3",
+    "sass": "1.17.2",
     "sinon-chai": "2.8.0",
     "webfontloader": "1.6.28"
   },

@@ -7,6 +7,7 @@ const {
 } = DS;
 
 const {
+  computed,
   computed: { equal },
 } = Ember;
 
@@ -25,6 +26,10 @@ export default Model.extend({
   status: attr('string'),
   cluster: attr('string'),
   domain: attr('string'),
-  
+
   online: equal('status', 'online'),
+
+  apiOrigin: computed('domain', function apiOrigin() {
+    return `https://${this.get('domain')}`;
+  }),
 });

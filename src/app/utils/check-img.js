@@ -12,7 +12,7 @@ import Ember from 'ember';
 const {
   RSVP: { Promise },
 } = Ember;
- 
+
 export default function checkImg(url) {
   const img = document.body.appendChild(document.createElement('img'));
   img.classList.add('hidden');

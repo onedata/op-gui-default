@@ -531,7 +531,7 @@ html, body {
       // we do not set top padding of content
       padding-top: 0;
 
-      background-color: $color-main-background;
+    background-color: $color-main-background;
 
       // add a padding-top if not added already
       .inner-content {
@@ -541,8 +541,13 @@ html, body {
 
     .content-error {
       margin-top: 20px;
-      font-size: 2em;
+      font-size: 150%;
       text-align: center;
+      .container-error-secondary {
+        margin-top: 20px;
+        font-size: 75%;
+        text-align: left;
+      }
     }
 
     .content-error-icon {
@@ -953,4 +958,9 @@ h1.content-header {
     transform: translateX(-50%);
     margin: 0;
   }
+}
+
+.col-centered{
+  float: none;
+  margin: 0 auto;
 }

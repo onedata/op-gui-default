@@ -34,6 +34,7 @@ export default Ember.Route.extend(RouteRejectHandler, {
   },
 
   afterModel(model, transition) {
+    this._super(...arguments);
     const {
       providerId,
       remoteOneprovider,

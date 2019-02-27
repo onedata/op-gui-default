@@ -52,17 +52,24 @@ export default {
       noSupport: 'Selected space is not supported by any Oneprovider.',
       getSupport: 'You can get support for this space',
       getSupportLink: 'here',
-      endpointError: 'TODO: some text with steps',
-      allSupportOffline: 'All Oneproviders supporting selected space is currently offline.',
-      chooseOtherOneprovider: 'Choose other Oneprovider',
+      endpointError: {
+        text1: 'Cannot establish a connection to the Oneprovider server at',
+        text2: 'Please consider checking your network settings. The reason for this error can be one of the following:',
+        liOffline: 'The {{serverType}} server is offline',
+        liCert: 'The TLS certificate of the server is not trusted by your browser (verify by visiting',
+        liDomain: 'Your browser (or system) cannot resolve the domain',
+        liNetwork: 'Your browser (or system) cannot reach the server’s network',
+      },
+      allSupportOffline: 'All Oneproviders supporting selected space are currently offline.',
+      chooseOtherOneprovider: 'Try again',
+      supportingOneproviders: 'Supporting Oneproviders',
     },
     resourceLoadError,
     errorInline,
     filePermissions: {
       error: 'An error occured when loading permissions data:',
       posix: {
-        differentPermissionsMessage:
-          'Selected files have different POSIX permissions - you can reset them to common value',
+        differentPermissionsMessage: 'Selected files have different POSIX permissions - you can reset them to common value',
         resetPermissions: 'Set new permissions for all files'
       },
       acl: {

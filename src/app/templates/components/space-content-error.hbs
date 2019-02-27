@@ -1,23 +1,67 @@
-{{#route-error icon="space"}}
+{{#route-error icon="provider"}}
   {{#if (eq error.type "no-support")}}
     <p>
-      {{t "components.spaceContentError.noSupport"}}
+      {{t (concat i18nPrefix "noSupport")}}
     </p>
-    <p>
-      {{t "components.spaceContentError.getSupport"}}
-      <a href={{spaceSupportUrl}}>{{t "components.spaceContentError.getSupportLink"}}</a>.
-    </p>
+    <div class="container container-error-secondary text-center">
+      <div class="row">
+        <div class="col-xs-6 col-centered">
+          <p class="text-center">
+            {{t (concat i18nPrefix "getSupport")}}
+            <a href={{spaceSupportUrl}}>{{t (concat i18nPrefix "getSupportLink")}} {{one-icon icon="link-external"}}</a>
+          </p>
+        </div>
+      </div>
+    </div>
   {{else if (eq error.type "all-supporting-oneproviders-offline")}}
     <p>
-      {{t "components.spaceContentError.allSupportOffline"}}
+      {{t (concat i18nPrefix "allSupportOffline")}}
     </p>
+    <div class="container container-error-secondary">
+      <div class="row">
+        <div class="col-xs-6 col-centered">
+          <p>
+            {{t (concat i18nPrefix "supportingOneproviders")}}:
+          </p>
+          <ul class="info info-condensed">
+            {{#each providers as |provider|}}
+              <li>{{provider.name}}</li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+    </div>
   {{else if (eq error.type "endpoint-error")}}
-    {{t "components.spaceContentError.endpointError"}}
-    {{#bs-button
-      type="primary"
-      action=(action "refreshRoute")
-    }}
-      {{t "components.spaceContentError.chooseOtherOneprovider"}}
-    {{/bs-button}}
+    <p>
+      {{t (concat i18nPrefix "endpointError.text1")}}
+      <a style="white-space: nowrap;" href={{providerApiOrigin}}>{{providerApiOrigin}}</a>.
+    </p>
+    <p>
+      {{t (concat i18nPrefix "endpointError.text2")}}
+    </p>
+    <div class="container container-error-secondary">
+      <div class="row">
+        <div class="col-xs-9 col-centered">
+          <ul class="info info-condensed">
+            <li>{{t (concat i18nPrefix "endpointError.liOffline")}}</li>
+            <li>{{t (concat i18nPrefix "endpointError.liCert")}} <a href={{providerApiOrigin}}>{{providerApiOrigin}}</a>)</li>
+            <li>{{t (concat i18nPrefix "endpointError.liDomain")}}</li>
+            <li>{{t (concat i18nPrefix "endpointError.liNetwork")}}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="container container-error-secondary">
+      <div class="row">
+        <div class="col-xs-9 col-centered text-center">
+          {{#bs-button
+            type="primary"
+            action=(action "refreshRoute")
+          }}
+            {{t (concat i18nPrefix "chooseOtherOneprovider")}}
+          {{/bs-button}}
+        </div>
+      </div>
+    </div>
   {{/if}}
 {{/route-error}}

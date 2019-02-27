@@ -36,7 +36,6 @@ export default Service.extend({
     return get(space, 'providerList').then(providerList => {
         const supportingProviderIds = get(providerList, 'list');
         if (get(supportingProviderIds, 'length') === 0) {
-          // FIXME: handle error
           throw {
             isOnedataCustomError: true,
             type: 'no-support',
@@ -48,8 +47,7 @@ export default Service.extend({
         } else {
           return get(providerList, 'queryList')
             .then(providers => {
-              const onlineProvider = providers.filter(p => get(p, 'status') ===
-                'online')[0];
+              const onlineProvider = providers.filter(p => get(p, 'online'))[0];
               if (onlineProvider) {
                 return this.chooseOneprovider(space, providers)
                   .then(chosenOneprovider => {
@@ -79,7 +77,6 @@ export default Service.extend({
                     }
                   });
               } else {
-                // FIXME: handle error
                 throw {
                   isOnedataCustomError: true,
                   type: 'all-supporting-oneproviders-offline',

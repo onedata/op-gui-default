@@ -18,18 +18,16 @@ export default Component.extend({
    */
   error: undefined,
 
-  onezoneUrl: reads('session.sessionDetails.onezoneURL'),
+  i18nPrefix: 'components.spaceContentError.',
 
+  onezoneUrl: reads('session.sessionDetails.onezoneURL'),
+  providerApiOrigin: reads('error.provider.apiOrigin'),
   space: reads('error.space'),
+  providers: reads('error.providers'),
 
   spaceSupportUrl: computed('onezoneURL', 'space.id', function spaceSupportUrl() {
     return `${this.get('onezoneUrl')}/#/onedata/spaces/${this.get('space.id')}/support`;
   }),
-
-  // FIXME: debug
-  init() {
-    this._super(...arguments);
-  },
 
   actions: {
     refreshRoute() {

@@ -20,9 +20,11 @@ const {
 export default Route.extend(RouteRejectHandler, {
   session: service(),
   remoteOneprovider: service(),
-  
+  fileSystemTree: service(),
+  secondaryMenu: service(),
+
   providerId: reads('session.sessionDetails.providerId'),
-  
+
   fallbackRoute: 'onedata.transfers.index',
 
   model(params) {
@@ -42,10 +44,17 @@ export default Route.extend(RouteRejectHandler, {
       type: 'transfers',
       resourceId: get(model, 'id'),
       loadingArea: 'content',
+      transition,
     }).then(space => {
       if (!space) {
+        const m = /.*\/onedata\/transfers\/((.*)\?.*|(.*))/.exec(location.hash);
+        const spaceId = m[2] || m[1];
         transition.then(() => {
-          this.get('fileSystemTree').backToPrevSpace();
+          if (spaceId && spaceId !== get(model, 'id')) {
+            this.transitionTo('onedata.transfers.show', spaceId);
+          } else {
+            this.transitionTo('onedata.transfers.index');
+          }
         });
       } else {
         return space;
@@ -68,7 +77,7 @@ export default Route.extend(RouteRejectHandler, {
     goToTransfersForSpace(space) {
       return !space || space.get('id') !== this.controller.get('model.id');
     },
-    
+
     didTransition() {
       run.scheduleOnce('afterRender', () => {
         this.controller.changeMenuActiveItem(this.model);

@@ -4,8 +4,11 @@ var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 var fs = require('fs');
 const sass = require('sass');
 
-module.exports = function(defaults) {
+module.exports = function (defaults) {
   var app = new EmberApp(defaults, {
+    'fingerprint': {
+      extensions: ['js', 'css', 'map'],
+    },
     'ember-math-helpers': {
       only: ['mult', 'add', 'sub'],
     },
@@ -59,7 +62,6 @@ module.exports = function(defaults) {
     },
   });
 
-  
   if (!app.options.sassOptions) {
     app.options.sassOptions = {};
   }
@@ -67,17 +69,17 @@ module.exports = function(defaults) {
   if (!sassOptions.functions) {
     sassOptions.functions = {};
   }
-  
-  sassOptions.functions['root-url'] = function() {
-      return new sass.types.String(app.isProduction ? '../' : './');
+
+  sassOptions.functions['root-url'] = function () {
+    return new sass.types.String(app.isProduction ? '../' : './');
   };
-  
+
   // Generate app-config.json for environment that is used.
   // Currently app-config.json is always overwritten on build.
   var onedataAppConfig = {
     debug: !app.isProduction
   };
-  fs.writeFile("public/app-config.json", JSON.stringify(onedataAppConfig), function(err) {
+  fs.writeFile("public/app-config.json", JSON.stringify(onedataAppConfig), function (err) {
     if (err) {
       return console.error('Error on writing app-config.json: ' + err);
     }

@@ -69,10 +69,10 @@ export default SessionService.extend({
   /**
    * Returns a function that shout be bound to websocket onopen event.
    */
-  onWebSocketOpen: computed(function() {
+  onWebSocketOpen: computed(function () {
     // Ask the server for session details when the WebSocket connection
     // is established
-    return (/*event*/) => {
+    return ( /*event*/ ) => {
       this.resolveSession().finally(() => {
         this.setProperties({
           websocketWasOpened: true,
@@ -85,8 +85,8 @@ export default SessionService.extend({
   /**
    * Returns a function that shout be bound to websocket onerror event.
    */
-  onWebSocketError: function() {
-    return (/*event*/) => {
+  onWebSocketError: function () {
+    return ( /*event*/ ) => {
       // Reject session restoration if WebSocket connection
       // could not be established
       const initRejectFunction = this.get('sessionInitReject');
@@ -119,7 +119,7 @@ export default SessionService.extend({
    * NOTE: This requires server service and WebSocket adapter.
    * If this is called, session data from WebSocket will resolve session
    * restoration rather than run authenticate. */
-  initSession: function () {
+  initSession() {
     // bind session service websocket event handlers
     return this.get('server').initWebSocket(
       this.get('onWebSocketOpen'),
@@ -143,7 +143,10 @@ export default SessionService.extend({
    * restoration rather than run authenticate. */
   tryToRestoreSession: function () {
     return new Ember.RSVP.Promise((resolve, reject) => {
-      console.debug('tryToRestoreSession, sessionValid = ', this.get('sessionValid'));
+      console.debug(
+        'tryToRestoreSession, sessionValid = ',
+        this.get('sessionValid')
+      );
       if (this.get('sessionValid') === true) {
         resolve();
       } else {

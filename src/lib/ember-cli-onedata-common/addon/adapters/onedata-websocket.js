@@ -2,8 +2,7 @@
  * Custom adapter that handles model synchronization between client and server
  * using a websocket connection.
  * @module adapters/application
- * @author Łukasz Opioła
- * @author Jakub Liput
+ * @author Jakub Liput, Łukasz Opioła
  * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
@@ -82,16 +81,16 @@ const reInOnzoneUrl = /.*\/(op)\/(.*?)\/(.*)/;
 
 function getGuiToken(clusterType, clusterId) {
   return new Promise((resolve, reject) => $.ajax(
-    `/gui-token`, {
-      method: 'POST',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      data: JSON.stringify({
-        clusterId,
-        clusterType,
-      }),
-    }
-  ).then(resolve, reject))
+      `/gui-token`, {
+        method: 'POST',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        data: JSON.stringify({
+          clusterId,
+          clusterType,
+        }),
+      }
+    ).then(resolve, reject))
     .catch(error => {
       if (error && error.status === 401) {
         return new Promise(() => {
@@ -100,7 +99,7 @@ function getGuiToken(clusterType, clusterId) {
             throw new Error(
               'Redirection loop detected, try to clear browser cookies, logout from Onezone or contact administrators.'
             );
-          } else {        
+          } else {
             window.location =
               `/oz/onezone/i#/?redirect_url=${location.pathname}${location.hash}`;
           }
@@ -127,11 +126,11 @@ export default DS.RESTAdapter.extend({
   shouldBackgroundReloadRecord() {
     return false;
   },
-  
+
   shouldReloadRecord() {
     return false;
   },
-  
+
   //
   /**
    * Map of promises that will be resolved when response for message with
@@ -161,12 +160,11 @@ export default DS.RESTAdapter.extend({
    * WebSocket operations
    * ------------------------------------------------------------------- */
 
-   
   getClusterIdFromUrl() {
     const m = location.toString().match(reInOnzoneUrl);
     return m && m[2];
   },
-   
+
   /** Initializes the WebSocket */
   initWebSocket(onOpen, onError, onClose) {
     // Register callbacks even if WebSocket is already being initialized.
@@ -304,7 +302,7 @@ export default DS.RESTAdapter.extend({
     this.logToConsole(OP_CREATE_RECORD, [store, type, record]);
     let data = {};
     let serializer = store.serializerFor(type.modelName);
-    serializer.serializeIntoHash(data, type, record, {includeId: true});
+    serializer.serializeIntoHash(data, type, record, { includeId: true });
     return this.asyncRequest(OP_CREATE_RECORD, type.modelName, null, data);
   },
 
@@ -318,7 +316,7 @@ export default DS.RESTAdapter.extend({
 
     const serializer = store.serializerFor(type.modelName);
     let changesData =
-      serializer.serialize(snapshot, {keys: keys});
+      serializer.serialize(snapshot, { keys: keys });
 
     return this.asyncRequest(OP_UPDATE_RECORD, type.modelName, id, changesData);
   },
@@ -368,7 +366,7 @@ export default DS.RESTAdapter.extend({
 
   waitingMessages: Ember.A(),
 
-  isRespSemaphoreAcquired: Ember.computed('_respSemaphore', function() {
+  isRespSemaphoreAcquired: Ember.computed('_respSemaphore', function () {
     return this.get('_respSemaphore') > 0;
   }),
 
@@ -445,11 +443,11 @@ export default DS.RESTAdapter.extend({
   generateUuid() {
     let date = new Date().getTime();
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
-        function (character) {
-          let random = (date + Math.random() * 16) % 16 | 0;
-          date = Math.floor(date / 16);
-          return (character === 'x' ? random : (random & 0x7 | 0x8)).toString(16);
-        });
+      function (character) {
+        let random = (date + Math.random() * 16) % 16 | 0;
+        date = Math.floor(date / 16);
+        return (character === 'x' ? random : (random & 0x7 | 0x8)).toString(16);
+      });
   },
 
   /**
@@ -460,9 +458,9 @@ export default DS.RESTAdapter.extend({
     switch (operation) {
       case OP_CREATE_RECORD:
         return json[type] || json[type.camelize()];
- 
-      // case OP_QUERY:
-      // case OP_QUERY_RECORD:
+
+        // case OP_QUERY:
+        // case OP_QUERY_RECORD:
       default:
         return json;
     }
@@ -507,19 +505,20 @@ export default DS.RESTAdapter.extend({
     const adapter = this;
     if (adapter.messageBuffer.length > 0 && this.socket) {
       if (this.socket.readyState === 1) {
-        let batch = {batch: []};
+        let batch = { batch: [] };
         adapter.messageBuffer.forEach(function (payload) {
           batch.batch.push(payload);
         });
         adapter.messageBuffer = [];
         adapter.socket.send(JSON.stringify(batch));
 
-      // readyState > 1 means that WS is closing/closed, so we reject promises
-      // to avoid indefinitely wait for WS to be opened again (maybe TODO)
-      } if (this.socket.readyState > 1) {
+        // readyState > 1 means that WS is closing/closed, so we reject promises
+        // to avoid indefinitely wait for WS to be opened again (maybe TODO)
+      }
+      if (this.socket.readyState > 1) {
         adapter.messageBuffer.forEach((message) => {
           const promise_spec = adapter.promises.get(message.uuid);
-          promise_spec.error({message: 'Cannot send message - WebSocket closed'});
+          promise_spec.error({ message: 'Cannot send message - WebSocket closed' });
         });
       }
     }
@@ -530,7 +529,8 @@ export default DS.RESTAdapter.extend({
   debounce(func, wait, immediate) {
     var timeout;
     return () => {
-      var context = this, args = arguments;
+      var context = this,
+        args = arguments;
       var later = function () {
         timeout = null;
         if (!immediate) {
@@ -561,7 +561,9 @@ export default DS.RESTAdapter.extend({
         }
       }
     } else {
-      console.warn('A json.batch message was dropped because is not an Array, see debug logs for details');
+      console.warn(
+        'A json.batch message was dropped because is not an Array, see debug logs for details'
+      );
       console.debug('Warning: dropping message: ' + JSON.stringify(json));
     }
   },
@@ -581,20 +583,22 @@ export default DS.RESTAdapter.extend({
     }
   },
 
-  waitingMessagesChanged: Ember.observer('isRespSemaphoreAcquired', 'waitingMessages.length', function() {
-    let {
-      isRespSemaphoreAcquired,
-      waitingMessages
-    } = this.getProperties(
-      'isRespSemaphoreAcquired',
-      'waitingMessages'
-    );
+  waitingMessagesChanged: Ember.observer('isRespSemaphoreAcquired',
+    'waitingMessages.length',
+    function () {
+      let {
+        isRespSemaphoreAcquired,
+        waitingMessages
+      } = this.getProperties(
+        'isRespSemaphoreAcquired',
+        'waitingMessages'
+      );
 
-    if (!isRespSemaphoreAcquired && waitingMessages.get('length') > 0) {
-      console.debug('respSemaphore has been released - processing waitingMessages');
-      this.processQueuedMessages();
-    }
-  }),
+      if (!isRespSemaphoreAcquired && waitingMessages.get('length') > 0) {
+        console.debug('respSemaphore has been released - processing waitingMessages');
+        this.processQueuedMessages();
+      }
+    }),
 
   // TODO: document message object: data, uuid, result
   processMessage(message) {
@@ -622,13 +626,17 @@ export default DS.RESTAdapter.extend({
               promise.type,
               promise.operation
             );
-            console.debug(`FETCH_RESP success, (uuid=${message.uuid}): ${JSON.stringify(transformed_data)}`);
+            console.debug(
+              `FETCH_RESP success, (uuid=${message.uuid}): ${JSON.stringify(transformed_data)}`
+            );
             promise.success(transformed_data);
           } else if (result === RESULT_ERROR) {
             console.debug(`FETCH_RESP error, (uuid=${uuid}): ${JSON.stringify(data)}`);
             promise.error(data);
           } else {
-            console.warn(`Received model response (uuid=${uuid}) with unknown result: ${result}`);
+            console.warn(
+              `Received model response (uuid=${uuid}) with unknown result: ${result}`
+            );
             promise.error(data);
           }
         } finally {
@@ -636,7 +644,7 @@ export default DS.RESTAdapter.extend({
         }
 
         break;
-    
+
       case TYPE_RPC_RESP:
         try {
           // Received a response to RPC call
@@ -648,7 +656,8 @@ export default DS.RESTAdapter.extend({
             console.debug(`RPC_RESP error, (uuid=${uuid}): ${JSON.stringify(data)}`);
             promise.error(data);
           } else {
-            console.warn(`Received RPC response (uuid=${uuid}) with unknown result: ${result}`);
+            console.warn(
+              `Received RPC response (uuid=${uuid}) with unknown result: ${result}`);
             promise.error(data);
           }
         } finally {
@@ -678,9 +687,9 @@ export default DS.RESTAdapter.extend({
         } else {
           data.forEach(function (id) {
             store.findRecord(resourceType, id).then(
-                function (record) {
-                  store.unloadRecord(record);
-                });
+              function (record) {
+                store.unloadRecord(record);
+              });
           });
         }
         break;

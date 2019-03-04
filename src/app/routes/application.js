@@ -27,41 +27,33 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
     }
   },
 
-  
   init() {
     this._super(...arguments);
     this.initSession();
   },
-  
+
   model() {
     return new Promise((resolve, reject) => {
       WebFont.on('active', resolve, true);
       WebFont.on('inactive', reject);
     });
   },
-  
+
   initSession() {
-    let {
-      session
-    } = this.getProperties('session');
-
-    let sessionInitialization = session.initSession();
-
-    sessionInitialization.then(() => {
-      console.debug('route:application: initSession resolved');
-    });
-    // TODO: translations
-    sessionInitialization.catch(() => {
-      console.debug('route:application: initSession rejected');
-      // TODO: messageBox doesn't work here because of loading route
-      this.get('messageBox').open({
-        type: 'error',
-        allowClose: false,
-        title: 'Session initialization error',
-        message: 'Fatal error: session cannot be initialized'
+    return this.get('session').initSession()
+      .then(() => {
+        console.debug('route:application: initSession resolved');
+      })
+      .catch(error => {
+        console.debug('route:application: initSession rejected');
+        // TODO: messageBox doesn't work here because of loading route
+        this.get('messageBox').open({
+          type: 'error',
+          allowClose: false,
+          title: 'Session initialization error',
+          message: 'Fatal error: session cannot be initialized'
+        });
+        throw error;
       });
-    });
-
-    return sessionInitialization;
   },
 });

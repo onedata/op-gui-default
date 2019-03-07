@@ -79,7 +79,7 @@ const FETCH_MODEL_OPERATIONS = new Set([
 
 const reInOnzoneUrl = /.*\/(op)\/(.*?)\/(.*)/;
 
-function getGuiToken(clusterType, clusterId) {
+function getApiToken(clusterId) {
   return new Promise((resolve, reject) => $.ajax(
       `/gui-token`, {
         method: 'POST',
@@ -87,7 +87,7 @@ function getGuiToken(clusterType, clusterId) {
         dataType: 'json',
         data: JSON.stringify({
           clusterId,
-          clusterType,
+          clusterType: 'oneprovider',
         }),
       }
     ).then(resolve, reject))
@@ -110,8 +110,26 @@ function getGuiToken(clusterType, clusterId) {
     });
 }
 
-function getOneproviderToken(clusterId) {
-  return getGuiToken('oneprovider', clusterId);
+function getApiCredentials(clusterId, isPublic = false) {
+  return (isPublic ? resolve() : getApiToken(clusterId))
+    .then(tokenData => {
+      const token = tokenData && tokenData.token;
+      return new Promise((resolve, reject) => $.ajax(
+          `/gui-origin`, {
+            method: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({
+              clusterId,
+              clusterType: 'oneprovider',
+            }),
+          }
+        ).then(resolve, reject))
+        .then(({ domain }) => ({
+          token,
+          domain
+        }));
+    });
 }
 
 export default DS.RESTAdapter.extend({
@@ -166,7 +184,7 @@ export default DS.RESTAdapter.extend({
   },
 
   /** Initializes the WebSocket */
-  initWebSocket(onOpen, onError, onClose) {
+  initWebSocket(onOpen, onError, onClose, isPublic = false) {
     // Register callbacks even if WebSocket is already being initialized.
     if (onOpen) {
       this.set('onOpenCallback', onOpen);
@@ -187,7 +205,7 @@ export default DS.RESTAdapter.extend({
 
       const clusterId = this.getClusterIdFromUrl();
       // TODO: if getOneproviderToken fail, we will see infinite loading
-      return getOneproviderToken(clusterId)
+      return getApiCredentials(clusterId, isPublic)
         .then(({ token: oneproviderToken, domain: oneproviderHostname }) => {
           const port = window.location.port;
           let url = protocol + oneproviderHostname +

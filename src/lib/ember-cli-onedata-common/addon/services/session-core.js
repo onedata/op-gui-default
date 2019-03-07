@@ -119,12 +119,13 @@ export default SessionService.extend({
    * NOTE: This requires server service and WebSocket adapter.
    * If this is called, session data from WebSocket will resolve session
    * restoration rather than run authenticate. */
-  initSession() {
+  initSession(isPublic) {
     // bind session service websocket event handlers
     return this.get('server').initWebSocket(
       this.get('onWebSocketOpen'),
       this.get('onWebSocketError'),
-      this.get('onWebSocketClose')
+      this.get('onWebSocketClose'),
+      isPublic
     ).then(({ oneproviderHostname, oneproviderToken }) => {
       return new Ember.RSVP.Promise((resolve, reject) => {
         // This promise will be resolved when WS connection is established

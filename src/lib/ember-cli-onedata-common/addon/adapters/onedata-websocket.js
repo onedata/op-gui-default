@@ -199,7 +199,6 @@ export default DS.RESTAdapter.extend({
       return reject();
     } else {
       this.set('initialized', true);
-      let adapter = this;
 
       let protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
 
@@ -217,46 +216,58 @@ export default DS.RESTAdapter.extend({
 
           console.debug('Connecting: ' + url);
 
-          if (adapter.socket === null) {
-            try {
-              adapter.socket = new WebSocket(url);
-              adapter.socket.onopen = function (event) {
-                adapter.open.apply(adapter, [event]);
-              };
-              adapter.socket.onmessage = function (event) {
-                adapter.receive.apply(adapter, [event]);
-              };
-              adapter.socket.onerror = function (event) {
-                adapter.error.apply(adapter, [event]);
-              };
-              adapter.socket.onclose = function (event) {
-                adapter.close.apply(adapter, [event]);
-              };
-            } catch (error) {
-              console.error(`WebSocket initializtion exception: ${error}`);
-              // invoke provided handler, it should idicate error to user
-              onClose();
-              throw error;
+          return new Promise((resolveWS, rejectWS) => {
+            if (this.socket === null) {
+              try {
+                this.socket = new WebSocket(url);
+                this.socket.onopen = (event) => {
+                  this.open(event)
+                    .then(() => resolveWS({
+                      oneproviderHostname,
+                      oneproviderToken
+                    }));
+                };
+                this.socket.onmessage = (event) => {
+                  this.receive.apply(this, [event]);
+                };
+                this.socket.onerror = (event) => {
+                  this.error.apply(this, [event]);
+                  rejectWS();
+                };
+                this.socket.onclose = (event) => {
+                  this.close.apply(this, [event]);
+                };
+              } catch (error) {
+                console.error(`WebSocket initializtion exception: ${error}`);
+                // invoke provided handler, it should idicate error to user
+                onClose();
+                throw error;
+              }
             }
-          }
-
-          return resolve({ oneproviderHostname, oneproviderToken });
+          });
         });
     }
   },
 
   closeWebsocket() {
-    if (this.socket) {
-      this.socket.close();
-    }
+    return new Promise(resolve => {
+      if (this.socket) {
+        this.socket.onclose = () => resolve();
+        this.socket.close();
+      } else {
+        return resolve();
+      }
+    });
   },
 
   clearWebsocket() {
-    this.closeWebsocket();
-    this.setProperties({
-      socket: null,
-      initialized: false
-    });
+    return this.closeWebsocket()
+      .then(() => {
+        this.setProperties({
+          socket: null,
+          initialized: false
+        });
+      });
   },
 
   /** -------------------------------------------------------------------
@@ -501,11 +512,13 @@ export default DS.RESTAdapter.extend({
   /** WebSocket onopen callback */
   open(event) {
     const onOpen = this.get('onOpenCallback');
-    if (onOpen) {
-      onOpen(event);
-    }
     // Flush messages waiting for connection open
     this.debounce(this.flushMessageBuffer, FLUSH_TIMEOUT)();
+    if (onOpen) {
+      return onOpen(event);
+    } else {
+      return resolve();
+    }
   },
 
   /** Used to send a message (JSON) through WebSocket.  */

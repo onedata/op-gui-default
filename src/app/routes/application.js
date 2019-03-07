@@ -7,7 +7,6 @@
  */
 
 import Ember from 'ember';
-import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
 import { WebFont } from 'webfontloader';
 
 const {
@@ -17,7 +16,7 @@ const {
   RSVP: { Promise },
 } = Ember;
 
-export default Ember.Route.extend(ApplicationRouteMixin, {
+export default Ember.Route.extend({
   session: service(),
   messageBox: service(),
 
@@ -27,33 +26,10 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
     }
   },
 
-  init() {
-    this._super(...arguments);
-    this.initSession();
-  },
-
   model() {
     return new Promise((resolve, reject) => {
       WebFont.on('active', resolve, true);
       WebFont.on('inactive', reject);
     });
-  },
-
-  initSession() {
-    return this.get('session').initSession()
-      .then(() => {
-        console.debug('route:application: initSession resolved');
-      })
-      .catch(error => {
-        console.debug('route:application: initSession rejected');
-        // TODO: messageBox doesn't work here because of loading route
-        this.get('messageBox').open({
-          type: 'error',
-          allowClose: false,
-          title: 'Session initialization error',
-          message: 'Fatal error: session cannot be initialized'
-        });
-        throw error;
-      });
   },
 });

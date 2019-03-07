@@ -19,11 +19,10 @@ export default Ember.Route.extend({
       commonLoader.reset();
     }
     this.get('adapter').clearWebsocket();
-    return this.get('session').initSession(false);
+    return this.get('session').initSession(true);
   },
 
   model() {
     sessionStorage.setItem('redirectFromOnezone', 'false');
-    return this.get('session.user');
   },
 });

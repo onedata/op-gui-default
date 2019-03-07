@@ -19,6 +19,9 @@ export default Route.extend(RedirectRoute, {
   session: service(),
   notify: service(),
   i18n: service(),
+  adapter: function () {
+    return this.get('store').adapterFor('application');
+  }.property(),
 
   /** 
    * @override
@@ -28,7 +31,9 @@ export default Route.extend(RedirectRoute, {
   },
 
   beforeModel() {
-    return this._super(...arguments);
+    this._super(...arguments);
+    this.get('adapter').clearWebsocket();
+    return this.get('session').initSession(true);
   },
 
   model(params, transition) {

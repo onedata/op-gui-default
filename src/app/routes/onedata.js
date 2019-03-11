@@ -18,8 +18,8 @@ export default Ember.Route.extend({
     if (get(commonLoader, 'type') === 'login') {
       commonLoader.reset();
     }
-    this.get('adapter').clearWebsocket();
-    return this.get('session').initSession(false);
+    return this.get('adapter').clearWebsocket()
+      .then(() => this.get('session').initSession(false));
   },
 
   model() {

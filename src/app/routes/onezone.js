@@ -13,6 +13,8 @@ import RedirectRoute from 'ember-cli-onedata-common/mixins/routes/redirect';
 const {
   Route,
   inject: { service },
+  RSVP: { resolve },
+  get,
 } = Ember;
 
 export default Route.extend(RedirectRoute, {
@@ -30,10 +32,15 @@ export default Route.extend(RedirectRoute, {
     return !/\/onezone/.test(currentHash);
   },
 
-  beforeModel() {
+  beforeModel(transition) {
     this._super(...arguments);
-    this.get('adapter').clearWebsocket();
-    return this.get('session').initSession(true);
+    if (!get(transition, 'isAborted')) {
+      if (this.get('adapter.socket')) {
+        return resolve();
+      } else {
+        return this.get('session').initSession(true);
+      }
+    }
   },
 
   model(params, transition) {

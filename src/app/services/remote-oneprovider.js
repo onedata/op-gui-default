@@ -62,7 +62,6 @@ export default Service.extend({
                                 `${location.origin}/op/${get(chosenOneprovider, 'cluster')}/i#/onedata/${type}/${resourceId}`;
                             });
                           } else {
-                            // FIXME: handle error
                             throw {
                               isOnedataCustomError: true,
                               type: 'endpoint-error',

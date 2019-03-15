@@ -91,19 +91,15 @@ function getApiToken(clusterId) {
         }),
       }
     ).then(resolve, reject))
-    .catch(error => {
-      if (error && error.status === 401) {
-        return new Promise(() => {
-          sessionStorage.setItem('authRedirect', '1');
-          sessionStorage.setItem(
-            'redirectUrl',
-            `${location.pathname}${location.hash}`
-          );
-          window.location = '/oz/onezone/i';
-        });
-      } else {
-        throw error;
-      }
+    .catch(() => {
+      return new Promise(() => {
+        sessionStorage.setItem('authRedirect', '1');
+        sessionStorage.setItem(
+          'redirectUrl',
+          `${location.pathname}${location.hash}`
+        );
+        window.location = '/oz/onezone/i';
+      });
     });
 }
 

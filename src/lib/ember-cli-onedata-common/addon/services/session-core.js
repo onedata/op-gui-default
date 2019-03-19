@@ -90,7 +90,7 @@ export default Service.extend({
           'redirectUrl',
           `${location.pathname}${location.hash}`
         );
-        window.location = '/oz/onezone/i';
+        window.location = '/ozw/onezone/i';
       });
     };
   }.property(),

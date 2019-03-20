@@ -24,12 +24,14 @@
         class="light"
       }}
     </div>
-    <div class="row row-info-line row-space-id">
-      {{input-copy
-        label=(t (concat i18nPrefix "spaceId"))
-        inputValue=spaceId
-        class="light"
-      }}
-    </div>
+    {{#if spaceId}}
+      <div class="row row-info-line row-space-id">
+        {{input-copy
+          label=(t (concat i18nPrefix "spaceId"))
+          inputValue=spaceId
+          class="light"
+        }}
+      </div>
+    {{/if}}
   </div>
 </td>

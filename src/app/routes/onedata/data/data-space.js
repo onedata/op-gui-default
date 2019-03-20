@@ -51,10 +51,15 @@ export default Ember.Route.extend(RouteRejectHandler, {
       if (space) {
         return space;
       } else {
+        transition.abort();
         const fileSystemTree = this.get('fileSystemTree');
-        if (get(fileSystemTree, 'prevSelectedSpace')) {
+        const prevSelectedSpace = get(fileSystemTree, 'prevSelectedSpace');
+        if (prevSelectedSpace) {
           transition.finally(() => {
-            fileSystemTree.backToPrevSpace();
+            this.transitionTo(
+              'onedata.data.data-space.index',
+              get(prevSelectedSpace, 'id')
+            );
           });
         } else {
           this.transitionTo('onedata.data.index');

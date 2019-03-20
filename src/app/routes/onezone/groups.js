@@ -7,19 +7,8 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-import Ember from 'ember';
+import RedirectBase from './-redirect-base';
 
-const {
-  Route,
-} = Ember;
-
-export default Route.extend({
-  /**
-   * Redirect to groups page of Onezone
-   * @param {object} model contains onezoneUrl: string
-   * @param {Ember.Transition} transition 
-   */
-  redirect(model) {
-    window.location = `${model.onezoneUrl}/#/onedata/groups`;
-  },
+export default RedirectBase.extend({
+  resourceType: 'groups',
 });

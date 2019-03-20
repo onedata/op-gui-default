@@ -11,6 +11,7 @@
 
 import Ember from 'ember';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
+import onezoneUrl from 'op-worker-gui/utils/onezone-url';
 
 const {
   computed,
@@ -90,7 +91,7 @@ export default Service.extend({
           'redirectUrl',
           `${location.pathname}${location.hash}`
         );
-        window.location = '/ozw/onezone/i';
+        window.location = onezoneUrl();
       });
     };
   }.property(),

@@ -1,3 +1,13 @@
+/**
+ * Utils for using other Oneproviders than this, eg. when we want to open
+ * space unsupported on this Oneprovider.
+ * 
+ * @module services/remote-oneprovider
+ * @author Jakub Liput
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 import checkImg from 'op-worker-gui/utils/check-img';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
@@ -14,6 +24,11 @@ export default Service.extend({
   i18n: service(),
   commonModals: service(),
 
+  /**
+   * Check if given `space` is supported by current Oneprovider - if it is not,
+   * then get list of online supporting providers and ask user if he want to
+   * redirect to some other Oneprovider.
+   */
   resolveOrRedirectOneprovider({
     space,
     currentProviderId,
@@ -47,7 +62,7 @@ export default Service.extend({
         } else {
           return get(providerList, 'queryList')
             .then(providers => {
-              const onlineProvider = providers.filter(p => get(p, 'online'))[0];
+              const onlineProvider = providers.isAny('online');
               if (onlineProvider) {
                 return this.chooseOneprovider(space, providers)
                   .then(chosenOneprovider => {
@@ -59,7 +74,7 @@ export default Service.extend({
                           if (isAvailable) {
                             return new Promise(() => {
                               window.location =
-                                `${location.origin}/op/${get(chosenOneprovider, 'cluster')}/i#/onedata/${type}/${resourceId}`;
+                                `/opw/${get(chosenOneprovider, 'cluster')}/i#/onedata/${type}/${resourceId}`;
                             });
                           } else {
                             throw {
@@ -88,13 +103,17 @@ export default Service.extend({
         }
       })
       .finally(() => {
-        if (commonLoader && loadingArea && get(commonLoader, 'type') ===
-          'resolveOneprovider') {
+        if (commonLoader && loadingArea &&
+          get(commonLoader, 'type') === 'resolveOneprovider') {
           safeExec(commonLoader, 'reset');
         }
       });
   },
 
+  /**
+   * Show modal with Oneprovider selection and resolve with this `provider`
+   * record
+   */
   chooseOneprovider(space, providers) {
     try {
       const deferredProviderChoice = defer();

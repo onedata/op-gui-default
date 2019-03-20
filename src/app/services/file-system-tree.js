@@ -7,7 +7,7 @@
  */
 
 import Ember from 'ember';
-
+import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 import getDefaultSpace from 'op-worker-gui/utils/get-default-space';
 
 const {
@@ -23,22 +23,22 @@ export default Service.extend(Evented, {
   store: service(),
   secondaryMenu: service(),
   session: service(),
-  
+
   spaces: null,
   prevSelectedSpace: null,
 
   isLoading: null,
-  
+
   selectedSpace: alias('secondaryMenu.activeSpace'),
-  
+
   providerId: reads('session.sessionDetails.providerId'),
-  
+
   /**
    * Stores ids of dirs that cannot be opened (eg. were rejected on request to backend).
    * @type Set<String>
    */
   failedDirs: null,
-  
+
   init() {
     this._super();
     this.set('failedDirs', new Set());
@@ -76,11 +76,11 @@ export default Service.extend(Evented, {
     file.set('isEditingMetadata', false);
   },
 
-  rootDirs: Ember.computed('spaces.[]', function() {
+  rootDirs: Ember.computed('spaces.[]', function () {
     return this.get('spaces').mapBy('rootDir');
   }),
 
-  rootSpaces: function() {
+  rootSpaces: function () {
     let rootSpaces = {};
     this.get('spaces').forEach((s) => {
       rootSpaces[s.get('rootDir.id')] = s.get('id');
@@ -88,15 +88,19 @@ export default Service.extend(Evented, {
     return rootSpaces;
   }.property('rootDirs.id'),
 
-  spacesChanged: function() {
-    console.debug(`FST: Spaces changed: len ${this.get('spaces.length')}, prev: ${this.get('prevSelectedSpace')}`);
+  spacesChanged: function () {
+    console.debug(
+      `FST: Spaces changed: len ${this.get('spaces.length')}, prev: ${this.get('prevSelectedSpace')}`
+    );
     const dataSpaces = this.get('spaces');
     if (!this.get('prevSelectedSpace') && this.get('spaces.length') > 0 &&
       dataSpaces.get('isUpdating') === false) {
       getDefaultSpace(dataSpaces, this.get('providerId'))
         .then(newSpaceToSelect => {
-          this.set('prevSelectedSpace', this.get('selectedSpace'));
-          this.set('selectedSpace', newSpaceToSelect);
+          safeExec(this, 'setProperties', {
+            prevSelectedSpace: this.get('selectedSpace'),
+            selectedSpace: newSpaceToSelect,
+          });
         });
     }
   }.observes('spaces', 'spaces.[]', 'spaces.@each.isDefault'),
@@ -127,7 +131,7 @@ export default Service.extend(Evented, {
       file.get('resolveDirsPath').apply(file).then(
         (path) => {
           let parentsLength = path.length - 1;
-          for (let i=0; i<parentsLength; ++i) {
+          for (let i = 0; i < parentsLength; ++i) {
             path[i].set('isExpanded', true);
           }
           resolve();
@@ -148,7 +152,7 @@ export default Service.extend(Evented, {
       this.openMetadataEditor(file);
     }
   },
-  
+
   /**
    * @param {Array<models.File>} files 
    */
@@ -161,12 +165,14 @@ export default Service.extend(Evented, {
       }
     });
   },
-  
+
   setSelectedSpace(space) {
-    this.set('prevSelectedSpace', this.get('selectedSpace'));
-    this.set('selectedSpace', space);
+    this.setProperties({
+      prevSelectedSpace: this.get('selectedSpace'),
+      selectedSpace: space,
+    });
   },
-  
+
   backToPrevSpace() {
     const prevSpace = this.get('prevSelectedSpace');
     if (prevSpace) {

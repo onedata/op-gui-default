@@ -1,3 +1,12 @@
+/**
+ * A single Onedata provider representation
+ * Created originally for file-distribution model.
+ * @module models/system-provider
+ * @author Jakub Liput
+ * @copyright (C) 2016-2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 import DS from 'ember-data';
 
@@ -11,14 +20,6 @@ const {
   computed: { equal },
 } = Ember;
 
-/**
- * A single Onedata provider representation
- * Created originally for file-distribution model.
- * @module models/system-provider
- * @author Jakub Liput
- * @copyright (C) 2016-2019 ACK CYFRONET AGH
- * @license This software is released under the MIT license cited in 'LICENSE.txt'.
- */
 export default Model.extend({
   name: attr('string'),
   latitude: attr('number'),

@@ -11,11 +11,19 @@
 
 import Ember from 'ember';
 
-export default Ember.Service.extend({
-  store: Ember.inject.service('store'),
-  adapter: function () {
+const {
+  Service,
+  inject: { service },
+  computed,
+} = Ember;
+
+export default Service.extend({
+  store: service('store'),
+  websocketConnection: service(),
+
+  adapter: computed(function adapter() {
     return this.get('store').adapterFor('application');
-  }.property(),
+  }),
 
   /**
    * Forces the WebSocket adapter to initialize a WebSocket connection.
@@ -27,15 +35,16 @@ export default Ember.Service.extend({
    * See WebSocket events on: https://developer.mozilla.org/en-US/docs/Web/Events
    */
   initWebSocket(onOpen, onError, onClose, isPublic) {
-    return this.get('adapter').initWebSocket(onOpen, onError, onClose, isPublic);
+    return this.get('websocketConnection')
+      .initWebSocket(onOpen, onError, onClose, isPublic);
   },
 
   clearWebsocket() {
-    return this.get('adapter').clearWebsocket();
+    return this.get('websocketConnection').clearWebsocket();
   },
 
   closeWebsocket() {
-    return this.get('adapter').closeWebsocket();
+    return this.get('websocketConnection').closeWebsocket();
   },
 
   /**

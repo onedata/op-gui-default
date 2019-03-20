@@ -15,15 +15,17 @@ const {
   inject: { service },
   RSVP: { resolve },
   get,
+  computed,
 } = Ember;
 
 export default Route.extend(RedirectRoute, {
   session: service(),
   notify: service(),
   i18n: service(),
-  adapter: function () {
+
+  adapter: computed(function adapter() {
     return this.get('store').adapterFor('application');
-  }.property(),
+  }),
 
   /** 
    * @override

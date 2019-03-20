@@ -1,3 +1,12 @@
+/**
+ * Content of file browser view then there is error loading space/dir
+ * 
+ * @module components/space-content-error
+ * @author Jakub Liput
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 
 const {
@@ -13,7 +22,7 @@ export default Component.extend({
 
   /**
    * @virtual
-   * Properties: type, space, provider (opt)
+   * Properties: type, space, provider (opt), providers (opt), transition (opt)
    * @type {object}
    */
   error: undefined,

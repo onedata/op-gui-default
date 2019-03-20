@@ -8,9 +8,7 @@ const {
 export default Ember.Route.extend({
   session: service(),
   commonLoader: service(),
-  adapter: function () {
-    return this.get('store').adapterFor('application');
-  }.property(),
+  websocketConnection: service(),
 
   beforeModel() {
     this._super(...arguments);
@@ -18,7 +16,7 @@ export default Ember.Route.extend({
     if (get(commonLoader, 'type') === 'login') {
       commonLoader.reset();
     }
-    return this.get('adapter').clearWebsocket()
+    return this.get('websocketConnection').clearWebsocket()
       .then(() => this.get('session').initSession(true));
   },
 

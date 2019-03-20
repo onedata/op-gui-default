@@ -66,7 +66,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   isLoading: computed(
     'providers.@each.isLoading',
     function isLoading() {
-      return this.get('providers').some(p => get(p, 'isLoading'));
+      return this.get('providers').isAny('isLoading');
     }
   ),
 

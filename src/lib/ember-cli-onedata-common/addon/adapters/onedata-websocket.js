@@ -12,16 +12,11 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
-const {
-  RSVP: { resolve, reject, Promise }
-} = Ember;
-
 /** -------------------------------------------------------------------
  * Interface between client and server
  * Corresponding interface is located in gui_ws_handler.erl.
  * ------------------------------------------------------------------- */
-// Path where WS server is hosted
-let WS_ENDPOINT = '/ws';
+
 // Flush timeout of batch requests - they are accumulated and if no new request
 // from ember store comes within this time, the batch is sent to the server.
 // Expressed in milliseconds.
@@ -77,62 +72,10 @@ const FETCH_MODEL_OPERATIONS = new Set([
   OP_CREATE_RECORD
 ]);
 
-const reInOnzoneUrl = /.*\/(opw)\/(.*?)\/(.*)/;
-
-function getApiToken(clusterId) {
-  return new Promise((resolve, reject) => $.ajax(
-      `/gui-token`, {
-        method: 'POST',
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-        data: JSON.stringify({
-          clusterId,
-          clusterType: 'oneprovider',
-        }),
-      }
-    ).then(resolve, reject))
-    .catch(() => {
-      return new Promise(() => {
-        sessionStorage.setItem('authRedirect', '1');
-        sessionStorage.setItem(
-          'redirectUrl',
-          `${location.pathname}${location.hash}`
-        );
-        window.location = '/ozw/onezone/i';
-      });
-    });
-}
-
-function getApiCredentials(clusterId, isPublic = false) {
-  return (isPublic ? resolve() : getApiToken(clusterId))
-    .then(tokenData => {
-      const token = tokenData && tokenData.token;
-      return new Promise((resolve, reject) => $.ajax(
-          `/gui-origin`, {
-            method: 'POST',
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            data: JSON.stringify({
-              clusterId,
-              clusterType: 'oneprovider',
-            }),
-          }
-        ).then(resolve, reject))
-        .then(({ domain }) => ({
-          token,
-          domain
-        }));
-    });
-}
-
 export default DS.RESTAdapter.extend({
   store: Ember.inject.service('store'),
   serverMessagesHandler: Ember.inject.service(),
-
-  initialized: false,
-  onOpenCallback: null,
-  onErrorCallback: null,
-  onCloseCallback: null,
+  websocketConnection: Ember.inject.service(),
 
   shouldBackgroundReloadRecord() {
     return false;
@@ -162,106 +105,11 @@ export default DS.RESTAdapter.extend({
   promises: new Map(),
 
   // The WebSocket
-  socket: null,
+  socket: Ember.computed.reads('websocketConnection.socket'),
+
   // Queue of messages. They are accumulated if requests from store come
   // frequently and flushed after FLUSH_TIMEOUT.
   messageBuffer: [],
-
-  /** -------------------------------------------------------------------
-   * WebSocket operations
-   * ------------------------------------------------------------------- */
-
-  getClusterIdFromUrl() {
-    const m = location.toString().match(reInOnzoneUrl);
-    return m && m[2];
-  },
-
-  /** Initializes the WebSocket */
-  initWebSocket(onOpen, onError, onClose, isPublic = false) {
-    // Register callbacks even if WebSocket is already being initialized.
-    if (onOpen) {
-      this.set('onOpenCallback', onOpen);
-    }
-    if (onError) {
-      this.set('onErrorCallback', onError);
-    }
-    if (onClose) {
-      this.set('onCloseCallback', onClose);
-    }
-    if (this.get('initialized') === true) {
-      return reject();
-    } else {
-      this.set('initialized', true);
-
-      let protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-
-      const clusterId = this.getClusterIdFromUrl();
-      // TODO: if getOneproviderToken fail, we will see infinite loading
-      return getApiCredentials(clusterId, isPublic)
-        .then(({ token: oneproviderToken, domain: oneproviderHostname }) => {
-          const port = window.location.port;
-          let url = protocol + oneproviderHostname +
-            (port === '' ? '' : ':' + port) + WS_ENDPOINT;
-
-          if (oneproviderToken) {
-            url += `?token=${oneproviderToken}`;
-          }
-
-          console.debug('Connecting: ' + url);
-
-          return new Promise((resolveWS, rejectWS) => {
-            if (this.socket === null) {
-              try {
-                this.socket = new WebSocket(url);
-                this.socket.onopen = (event) => {
-                  this.open(event)
-                    .then(() => resolveWS({
-                      oneproviderHostname,
-                      oneproviderToken
-                    }));
-                };
-                this.socket.onmessage = (event) => {
-                  this.receive.apply(this, [event]);
-                };
-                this.socket.onerror = (event) => {
-                  this.error.apply(this, [event]);
-                  rejectWS();
-                };
-                this.socket.onclose = (event) => {
-                  this.close.apply(this, [event]);
-                };
-              } catch (error) {
-                console.error(`WebSocket initializtion exception: ${error}`);
-                // invoke provided handler, it should idicate error to user
-                onClose();
-                throw error;
-              }
-            }
-          });
-        });
-    }
-  },
-
-  closeWebsocket() {
-    return new Promise(resolve => {
-      if (this.socket) {
-        this.socket.onclose = () => resolve();
-        this.socket.close();
-      } else {
-        return resolve();
-      }
-    });
-  },
-
-  clearWebsocket() {
-    return this.closeWebsocket()
-      .then(() => {
-        this.setProperties({
-          socket: null,
-          initialized: false
-        });
-      });
-  },
 
   /** -------------------------------------------------------------------
    * Adapter API
@@ -502,18 +350,6 @@ export default DS.RESTAdapter.extend({
     }
   },
 
-  /** WebSocket onopen callback */
-  open(event) {
-    const onOpen = this.get('onOpenCallback');
-    // Flush messages waiting for connection open
-    this.debounce(this.flushMessageBuffer, FLUSH_TIMEOUT)();
-    if (onOpen) {
-      return onOpen(event);
-    } else {
-      return resolve();
-    }
-  },
-
   /** Used to send a message (JSON) through WebSocket.  */
   send(payload) {
     this.messageBuffer.push(payload);
@@ -527,19 +363,20 @@ export default DS.RESTAdapter.extend({
   flushMessageBuffer() {
     console.debug('flush' + this);
     const adapter = this;
-    if (adapter.messageBuffer.length > 0 && this.socket) {
-      if (this.socket.readyState === 1) {
+    const socket = this.get('socket');
+    if (adapter.messageBuffer.length > 0 && socket) {
+      if (socket.readyState === 1) {
         let batch = { batch: [] };
         adapter.messageBuffer.forEach(function (payload) {
           batch.batch.push(payload);
         });
         adapter.messageBuffer = [];
-        adapter.socket.send(JSON.stringify(batch));
+        socket.send(JSON.stringify(batch));
 
         // readyState > 1 means that WS is closing/closed, so we reject promises
         // to avoid indefinitely wait for WS to be opened again (maybe TODO)
       }
-      if (this.socket.readyState > 1) {
+      if (socket.readyState > 1) {
         adapter.messageBuffer.forEach((message) => {
           const promise_spec = adapter.promises.get(message.uuid);
           promise_spec.error({ message: 'Cannot send message - WebSocket closed' });
@@ -568,28 +405,6 @@ export default DS.RESTAdapter.extend({
         func.apply(context, args);
       }
     };
-  },
-
-  /** WebSocket onmessage callback, resolves promises with received replies. */
-  receive(event) {
-    let json = JSON.parse(event.data);
-    if (Array.isArray(json.batch)) {
-      // as the for..of loop is currently tanspiled with Babel
-      // this can slightly increase performance
-      // and facilitates debugging
-      if (json.batch.length === 1) {
-        this.processMessage(json.batch[0]);
-      } else {
-        for (let message of json.batch) {
-          this.processMessage(message);
-        }
-      }
-    } else {
-      console.warn(
-        'A json.batch message was dropped because is not an Array, see debug logs for details'
-      );
-      console.debug('Warning: dropping message: ' + JSON.stringify(json));
-    }
   },
 
   processMessageLater(message) {
@@ -734,26 +549,4 @@ export default DS.RESTAdapter.extend({
       adapter.promises.delete(uuid);
     }
   },
-
-  /** WebSocket onerror callback */
-  error(event) {
-    // TODO @todo better error handling, maybe reconnection attempts?
-    console.error(`WebSocket connection error, event: ` + JSON.stringify(event));
-
-    const onError = this.get('onErrorCallback');
-    if (onError) {
-      onError(event);
-    }
-  },
-
-  /** WebSocket onclose callback */
-  close(event) {
-    console.error(`WebSocket connection closed, event: ` +
-      `code: ${event.code}, reason: ${event.reason}, wasClean: ${event.wasClean}`);
-
-    const onClose = this.get('onCloseCallback');
-    if (onClose) {
-      onClose(event);
-    }
-  }
 });

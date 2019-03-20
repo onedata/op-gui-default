@@ -1,10 +1,6 @@
 import Ember from 'ember';
 /* globals Resumable */
 
-const {
-  get,
-} = Ember;
-
 function matchResumableFileByUuid(rf, resumableFileId) {
   return rf.uniqueIdentifier === resumableFileId;
 }
@@ -69,7 +65,7 @@ export default Ember.Service.extend({
     eventsBus.on('dataFilesList:dirChanged', this, 'handleDataFilesListDirChanged');
   },
 
-  handleDataFilesListDirChanged({dir}) {
+  handleDataFilesListDirChanged({ dir }) {
     this.set('dir', dir);
 
     if (dir) {
@@ -96,7 +92,7 @@ export default Ember.Service.extend({
       this.set('dirUploads' + parentId, Ember.A());
       console.debug(`file-upload: Creating new dirUploads for parent: ${parentId}`);
     }
-    let dirUploads = this.get('dirUploads' + parentId); 
+    let dirUploads = this.get('dirUploads' + parentId);
     dirUploads.pushObject(resumableFile);
     this.get('eventsBus').trigger('fileUpload:dirUploadsChanged', {
       parentId: parentId,
@@ -130,7 +126,7 @@ export default Ember.Service.extend({
    *                            number of remain files in parent]
    */
   forgetUploadingFile(resumableFileId) {
-    console.debug(`file-upload: Forgetting uploaded file: ${resumableFileId}`); 
+    console.debug(`file-upload: Forgetting uploaded file: ${resumableFileId}`);
     let dirsUploadIds = this.get('dirsUploadIds');
     for (let parentId of dirsUploadIds) {
       /* jshint loopfunc: true */
@@ -167,7 +163,7 @@ ${resumableFileId}, but it could not be found in any dir`);
    * we observe both dir and lockedDir properties for change - if we are not
    * "locked" we can set lockedDir to dir value.
    */
-  dirChanged: function() {
+  dirChanged: function () {
     if (!this.get('locked')) {
       this.set('lockedDir', this.get('dir'));
       console.debug(`file-upload: Locked dir changed: ${this.get('lockedDir.id')}`);
@@ -226,7 +222,7 @@ ${resumableFileId}, but it could not be found in any dir`);
         this.onAllFilesForDirUploaded(parentId);
       }
     }, WAIT_TIME);
-    
+
   },
 
   /**
@@ -255,10 +251,10 @@ ${resumableFileId}, but it could not be found in any dir`);
       console.warn('dirId in batch upload complete RPC is null - do not make RPC call');
     } else {
       let rpc = this.get('oneproviderServer').fileBatchUploadComplete(dirId);
-          rpc.catch(error => {
-            console.error(`fileBatchUploadComplete RPC failed: ${error.message},
+      rpc.catch(error => {
+        console.error(`fileBatchUploadComplete RPC failed: ${error.message},
 Directory content won't be updated!`);
-          });
+      });
     }
   },
 
@@ -268,15 +264,14 @@ Directory content won't be updated!`);
     r.chunks = [];
   },
 
-  resumable: Ember.computed(function() {
+  resumable: Ember.computed(function () {
     console.debug(`file-upload: Creating new Resumable`);
-    const session = this.get('session');
     const oneproviderHostname = this.get('session.oneproviderHostname');
-    const oneproviderToken = get(session, 'oneproviderToken');
+    const oneproviderToken = this.get('session.oneproviderToken');
     const targetUrl = `https://${oneproviderHostname}/upload`;
     const r = new Resumable({
       target: targetUrl,
-      chunkSize: 1*1024*1024,
+      chunkSize: 1 * 1024 * 1024,
       simultaneousUploads: 4,
       testChunks: false,
       throttleProgressCallbacks: 1,
@@ -289,13 +284,14 @@ Directory content won't be updated!`);
           parentId: this.getParentIdOfUploadingFile(file.uniqueIdentifier)
         };
       },
-      generateUniqueIdentifier: function() {
+      generateUniqueIdentifier: function () {
         let date = new Date().getTime();
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
           function (character) {
             let random = (date + Math.random() * 16) % 16 | 0;
             date = Math.floor(date / 16);
-            return (character === 'x' ? random : (random & 0x7 | 0x8)).toString(16);
+            return (character === 'x' ? random : (random & 0x7 | 0x8))
+              .toString(16);
           });
       },
       minFileSize: 0,
@@ -326,12 +322,12 @@ Directory content won't be updated!`);
 
     let lastEnter;
 
-    let startDrag = function(event) {
+    let startDrag = function (event) {
       lastEnter = event.target;
       jqDropElement.addClass('file-drag');
     };
 
-    let endDrag = function(event) {
+    let endDrag = function (event) {
       if (lastEnter === event.target) {
         jqDropElement.removeClass('file-drag');
       }
@@ -340,7 +336,7 @@ Directory content won't be updated!`);
     jqDropElement.on('dragenter', startDrag);
     jqDropElement.on('dragleave', endDrag);
     jqDropElement.on('dragend', endDrag);
-    jqDropElement.on('drop',  endDrag);
+    jqDropElement.on('drop', endDrag);
   },
 
   /**

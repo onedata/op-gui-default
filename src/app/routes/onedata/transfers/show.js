@@ -46,18 +46,19 @@ export default Route.extend(RouteRejectHandler, {
       loadingArea: 'content',
       transition,
     }).then(space => {
-      if (!space) {
+      if (space) {
+        return space;
+      } else {
+        transition.abort();
         const m = /.*\/onedata\/transfers\/((.*)\?.*|(.*))/.exec(location.hash);
         const spaceId = m[2] || m[1];
-        transition.then(() => {
+        transition.finally(() => {
           if (spaceId && spaceId !== get(model, 'id')) {
             this.transitionTo('onedata.transfers.show', spaceId);
           } else {
             this.transitionTo('onedata.transfers.index');
           }
         });
-      } else {
-        return space;
       }
     });
   },

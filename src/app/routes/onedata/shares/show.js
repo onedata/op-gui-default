@@ -41,16 +41,19 @@ export default Ember.Route.extend(RouteRejectHandler, {
         })
       )
       .then(space => {
-        if (!space) {
+        if (space) {
+          return model;
+        } else {
+          transition.abort();
           const m = /.*\/onedata\/shares\/(.*)\//.exec(location.hash);
           const shareId = m[1];
-          if (shareId && shareId !== get(model, 'id')) {
-            this.transitionTo('onedata.shares.show', shareId);
-          } else {
-            this.transitionTo('onedata.shares.index');
-          }
-        } else {
-          return model;
+          transition.finally(() => {
+            if (shareId && shareId !== get(model, 'id')) {
+              this.transitionTo('onedata.shares.show', shareId);
+            } else {
+              this.transitionTo('onedata.shares.index');
+            }
+          });
         }
       });
   },

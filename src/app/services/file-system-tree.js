@@ -171,12 +171,13 @@ export default Service.extend(Evented, {
       prevSelectedSpace: this.get('selectedSpace'),
       selectedSpace: space,
     });
+    return space;
   },
 
   backToPrevSpace() {
     const prevSpace = this.get('prevSelectedSpace');
     if (prevSpace) {
-      this.setSelectedSpace(prevSpace);
+      return this.setSelectedSpace(prevSpace);
     }
   },
 });

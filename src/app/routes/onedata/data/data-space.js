@@ -48,12 +48,17 @@ export default Ember.Route.extend(RouteRejectHandler, {
       loadingArea: 'content-with-secondary-top',
       transition,
     }).then(space => {
-      if (!space) {
-        transition.then(() => {
-          this.get('fileSystemTree').backToPrevSpace();
-        });
-      } else {
+      if (space) {
         return space;
+      } else {
+        const fileSystemTree = this.get('fileSystemTree');
+        if (get(fileSystemTree, 'prevSelectedSpace')) {
+          transition.finally(() => {
+            fileSystemTree.backToPrevSpace();
+          });
+        } else {
+          this.transitionTo('onedata.data.index');
+        }
       }
     });
   },

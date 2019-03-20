@@ -77,7 +77,7 @@ const FETCH_MODEL_OPERATIONS = new Set([
   OP_CREATE_RECORD
 ]);
 
-const reInOnzoneUrl = /.*\/(op)\/(.*?)\/(.*)/;
+const reInOnzoneUrl = /.*\/(opw)\/(.*?)\/(.*)/;
 
 function getApiToken(clusterId) {
   return new Promise((resolve, reject) => $.ajax(

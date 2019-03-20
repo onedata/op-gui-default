@@ -10,19 +10,21 @@
 
 import Ember from 'ember';
 import _ from 'lodash';
+import resolveSupportedResource from 'op-worker-gui/utils/resolve-supported-resource';
 
 const {
   get,
   RSVP: { reject },
 } = Ember;
- 
+
 export default function getDefaultSpace(spaces, currentProviderId) {
   let selectedSpace;
   let defaultSpace = spaces.find((s) => s.get('isDefault'));
   if (defaultSpace) {
     selectedSpace = defaultSpace;
   } else {
-    console.debug('util:get-default-space: No default data-space found - choose data-space instead');
+    console.debug(
+      'util:get-default-space: No default data-space found - choose data-space instead');
     const firstSpace = spaces.sortBy('name').objectAt(0);
     if (firstSpace) {
       selectedSpace = firstSpace;
@@ -35,19 +37,8 @@ export default function getDefaultSpace(spaces, currentProviderId) {
   return resolveSupportedSpace(orderedSpaces, 0, currentProviderId);
 }
 
-function resolveSupportedSpace(spaces, i, currentProviderId) {
-  const selectedSpace = spaces[i];
-  if (selectedSpace) {
-    return get(selectedSpace, 'providerList')
-    .then(providerList => {
-      const supportingProviderIds = get(providerList, 'list');
-      if (supportingProviderIds.indexOf(currentProviderId) !== -1) {
-        return selectedSpace;
-      } else {
-        return resolveSupportedSpace(spaces, i + 1, currentProviderId);
-      }
-    }); 
-  } else {
-    return null;
-  }
+function resolveSupportedSpace(shares, i, currentProviderId) {
+  return resolveSupportedResource(shares, i, currentProviderId, (space) =>
+    get(space, 'providerList').then(providerList => get(providerList, 'list'))
+  );
 }

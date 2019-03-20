@@ -67,6 +67,9 @@ export default Service.extend({
                 return this.chooseOneprovider(space, providers)
                   .then(chosenOneprovider => {
                     if (chosenOneprovider) {
+                      // we check if favicon.ico is served from Oneprovider server
+                      // - in old OPs it will serve static file
+                      // - in new OPs it will serve image data
                       return checkImg(
                           `https://${get(chosenOneprovider, 'domain')}/favicon.ico`
                         )

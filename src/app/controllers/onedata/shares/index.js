@@ -7,18 +7,19 @@
  */
 
 import Ember from 'ember';
+import resolveSupportedResource from 'op-worker-gui/utils/resolve-supported-resource';
 
 const {
   computed: { reads },
   inject: { service },
   get,
 } = Ember;
- 
+
 export default Ember.Controller.extend({
   session: service(),
-  
+
   providerId: reads('session.sessionDetails.providerId'),
-  
+
   goToDefault() {
     console.debug(`shares.index: Will try to go to first share`);
     let shares = this.get('model').filterBy('isDeleted', false);
@@ -28,14 +29,14 @@ export default Ember.Controller.extend({
           if (share) {
             return this.transitionToRoute(
               'onedata.shares.show',
-              share  
+              share
             );
           }
         });
     }
   },
 
-  onModelChange: Ember.observer('model.[]', 'model.@each.id', function() {
+  onModelChange: Ember.observer('model.[]', 'model.@each.id', function () {
     // TODO: the observer works even if we are not on this route
     if (this.get('isActive')) {
       this.goToDefault();
@@ -43,22 +44,10 @@ export default Ember.Controller.extend({
   }),
 });
 
-function resolveSupportedShare(shares, i, currentProviderId) {
-  const selectedShare = shares[i];
-  if (selectedShare) {
-    return get(selectedShare, 'dataSpace')
-      .then(space => {
-        return get(space, 'providerList')
-          .then(providerList => {
-            const supportingProviderIds = get(providerList, 'list');
-            if (supportingProviderIds.indexOf(currentProviderId) !== -1) {
-              return selectedShare;
-            } else {
-              return resolveSupportedShare(shares, i + 1, currentProviderId);
-            }
-          }); 
-      });
-  } else {
-    return null;
-  }
+export function resolveSupportedShare(shares, i, currentProviderId) {
+  return resolveSupportedResource(shares, i, currentProviderId, (share) =>
+    get(share, 'dataSpace')
+    .then(space => get(space, 'providerList'))
+    .then(providerList => get(providerList, 'list'))
+  );
 }

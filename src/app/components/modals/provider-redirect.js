@@ -1,5 +1,17 @@
+/**
+ * When space or other resource is not supported on current Oneprovider
+ * this modal asks for choosing other provider to redirect.
+ * It resolves `deferredProviderChoice` with chosen `provider` model.
+ * 
+ * @module components/modals/provider-redirect
+ * @author Jakub Liput
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
 import PromiseLoadingMixin from 'ember-cli-onedata-common/mixins/promise-loading';
+import sortDisabledAndText from 'op-worker-gui/utils/sort-disabled-and-text';
 
 const {
   computed,
@@ -11,13 +23,14 @@ const {
 
 export default Ember.Component.extend(PromiseLoadingMixin, {
   classNames: ['provider-redirect'],
-  
+
   session: service(),
+  i18n: service(),
 
   modalId: 'provider-redirect',
 
   currentProviderName: reads('session.sessionDetails.providerName'),
-  
+
   title: computed(function title() {
     return this.get('i18n').t('components.modals.providerRedirect.title');
   }),
@@ -39,7 +52,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
    * @type {Function}
    */
   close: () => {},
-  
+
   /**
    * @virtual
    * @type {Array<models/SystemProvider}
@@ -47,9 +60,9 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   providers: undefined,
 
   chosenProvider: undefined,
-  
+
   isSingleProvider: equal('providers.length', 1),
-  
+
   isLoading: computed(
     'providers.@each.isLoading',
     function isLoading() {
@@ -65,26 +78,15 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
         id: get(provider, 'id'),
         text: get(provider, 'name'),
         disabled: !get(provider, 'online'),
-        description: !get(provider, 'online') ? i18n.t('components.modals.providerRedirect.providerItem.offline') : null,
+        description: !get(provider, 'online') ? i18n.t(
+          'components.modals.providerRedirect.providerItem.offline') : null,
         provider,
       }));
-      options.sort((a, b) => {
-        const aOnline = !get(a, 'disabled');
-        const bOnline = !get(b, 'disabled');
-        if (aOnline && !bOnline) {
-          return -1;
-        } else if (aOnline && bOnline || !aOnline && !bOnline) {
-          const aName = get(a, 'text');
-          const bName = get(b, 'text');
-          return aName.localeCompare(bName);
-        } else {
-          return 1;
-        }
-      });
+      options.sort(sortDisabledAndText);
       return options;
     }
   ),
-  
+
   providerSelectionChanged: observer(
     'chosenProvider',
     function providerSelectionChanged() {
@@ -94,22 +96,22 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
       }
     }
   ),
-  
-  providerChosen(providerItem) {
-    this.get('deferredProviderChoice').resolve(get(providerItem, 'provider'));
+
+  resolveProviderChoiceAndClose(provider) {
+    this.get('deferredProviderChoice').resolve(provider);
     this.get('close')();
   },
-  
+
+  providerChosen(providerItem) {
+    this.resolveProviderChoiceAndClose(get(providerItem, 'provider'));
+  },
+
   actions: {
     goToSingleProvider() {
-      this.get('deferredProviderChoice').resolve(this.get('providers.firstObject'));
-      this.get('close')();
+      this.resolveProviderChoiceAndClose(this.get('providers.firstObject'));
     },
     cancel() {
-      this.get('close')();
-      this.get('deferredProviderChoice').resolve(null);
+      this.resolveProviderChoiceAndClose(null);
     },
   }
-
-
 });

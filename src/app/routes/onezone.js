@@ -8,7 +8,6 @@
  */
 
 import Ember from 'ember';
-import RedirectRoute from 'ember-cli-onedata-common/mixins/routes/redirect';
 
 const {
   Route,
@@ -18,7 +17,7 @@ const {
   computed,
 } = Ember;
 
-export default Route.extend(RedirectRoute, {
+export default Route.extend({
   session: service(),
   notify: service(),
   i18n: service(),
@@ -26,13 +25,6 @@ export default Route.extend(RedirectRoute, {
   adapter: computed(function adapter() {
     return this.get('store').adapterFor('application');
   }),
-
-  /** 
-   * @override
-   */
-  checkComeFromOtherRoute(currentHash) {
-    return !/\/onezone/.test(currentHash);
-  },
 
   beforeModel(transition) {
     this._super(...arguments);

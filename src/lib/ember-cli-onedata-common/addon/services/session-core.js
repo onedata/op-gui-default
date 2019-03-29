@@ -87,11 +87,9 @@ export default Service.extend({
       });
       return new Promise(() => {
         sessionStorage.setItem('authRedirect', '1');
-        sessionStorage.setItem(
-          'redirectUrl',
-          `${location.pathname}${location.hash}`
+        window.location = onezoneUrl(
+          `?redirect_url=${location.pathname}${location.hash}`
         );
-        window.location = onezoneUrl();
       });
     };
   }.property(),

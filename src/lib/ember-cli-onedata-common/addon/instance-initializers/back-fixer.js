@@ -8,6 +8,11 @@
  */
 
 import $ from 'jquery';
+import Ember from 'ember';
+
+const {
+  run: { next },
+} = Ember;
 
 export function initialize(applicationInstance) {
   // Fix for Firefox
@@ -19,7 +24,8 @@ export function initialize(applicationInstance) {
   if (isSafari) {
     // hack to not use Safari cache
     $(window).bind('pagehide', function () {
-      setTimeout(() => window.location.reload(), 0);
+      window.onedataIsReloadingApp = 1;
+      next(() => window.location.reload());
     });
   }
 }

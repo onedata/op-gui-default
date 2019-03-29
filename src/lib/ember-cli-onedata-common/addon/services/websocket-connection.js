@@ -16,6 +16,7 @@ const {
   run: { debounce },
   inject: { service },
   computed,
+  run: { next },
 } = Ember;
 
 // Path where WS server is hosted
@@ -56,11 +57,13 @@ const reInOnzoneUrl = /.*\/(opw)\/(.*?)\/(.*)/;
 function getApiToken(clusterId) {
   return ajaxGuiCreds('gui-token', clusterId)
     .catch(() => {
-      return new Promise(() => {
-        sessionStorage.setItem('authRedirect', '1');
-        window.location = onezoneUrl(
-          `?redirect_url=${location.pathname}${location.hash}`
-        );
+      next(() => {
+        if (!window.onedataIsReloadingApp) {
+          sessionStorage.setItem('authRedirect', '1');
+          window.location = onezoneUrl(
+            `?redirect_url=${location.pathname}${location.hash}`
+          );
+        }
       });
     });
 }

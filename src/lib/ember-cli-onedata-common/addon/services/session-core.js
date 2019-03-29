@@ -18,6 +18,7 @@ const {
   Service,
   inject: { service },
   RSVP: { Promise },
+  run: { next },
 } = Ember;
 
 export default Service.extend({
@@ -86,10 +87,14 @@ export default Service.extend({
         sessionRestoreReject: null
       });
       return new Promise(() => {
-        sessionStorage.setItem('authRedirect', '1');
-        window.location = onezoneUrl(
-          `?redirect_url=${location.pathname}${location.hash}`
-        );
+        next(() => {
+          if (!window.onedataIsReloadingApp) {
+            sessionStorage.setItem('authRedirect', '1');
+            window.location = onezoneUrl(
+              `?redirect_url=${location.pathname}${location.hash}`
+            );
+          }
+        });
       });
     };
   }.property(),

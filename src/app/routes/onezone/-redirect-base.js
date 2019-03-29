@@ -2,7 +2,7 @@
  * Redirect to some path in Onezone GUI
  *
  * @module routes/onezone/-redirect-base
- * @author Jakub Liput
+ * @author Jakub Liput, Michał Borzęcki
  * @copyright (C) 2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
@@ -23,9 +23,9 @@ export default Route.extend({
 
   /**
    * Redirect to page in Onezone
-   * @param {Ember.Transition} transition 
    */
-  redirect() {
-    window.location = onezoneUrl(`onedata/${this.get('resourceType')}`);
+  afterModel(model, transition) {
+    setTimeout(() => window.location = onezoneUrl(`onedata/${this.get('resourceType')}`));
+    transition.abort();
   },
 });

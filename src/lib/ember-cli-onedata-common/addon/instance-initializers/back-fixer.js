@@ -16,13 +16,12 @@ const {
 
 export function initialize(applicationInstance) {
   // Fix for Firefox
-  window.onunload = function () {};
+  window.addEventListener('unload', function () {});
 
   // Hack to not use Safari cache
   const browser = applicationInstance.lookup('service:browser');
   const isSafari = browser.get('browser.browserCode') === 'safari';
   if (isSafari) {
-    // hack to not use Safari cache
     $(window).bind('pagehide', function () {
       window.onedataIsReloadingApp = 1;
       next(() => window.location.reload());

@@ -1,15 +1,28 @@
-import Ember from 'ember';
-import RouteRejectHandler from 'op-worker-gui/mixins/route-reject-handler';
-
 /**
  * Load model for space - to be able to browse it's root dir.
  *
- * @module routes/data
+ * @module routes/data-space
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
+
+import Ember from 'ember';
+import RouteRejectHandler from 'op-worker-gui/mixins/route-reject-handler';
+
+const {
+  inject: { service },
+  computed: { reads },
+  get,
+} = Ember;
+
 export default Ember.Route.extend(RouteRejectHandler, {
+  session: service(),
+  remoteOneprovider: service(),
+  fileSystemTree: service(),
+
+  providerId: reads('session.sessionDetails.providerId'),
+
   // TODO: rejection of model causes a file tree component to be broken
   // url resolves correct - this is a common problem with routing in data spaces
   fallbackRoute: 'onedata.data.index',
@@ -20,14 +33,49 @@ export default Ember.Route.extend(RouteRejectHandler, {
     );
   },
 
+  afterModel(model, transition) {
+    this._super(...arguments);
+    const {
+      providerId,
+      remoteOneprovider,
+    } = this.getProperties('providerId', 'remoteOneprovider');
+    const space = model;
+    return remoteOneprovider.resolveOrRedirectOneprovider({
+      space,
+      currentProviderId: providerId,
+      type: 'data',
+      resourceId: get(space, 'id'),
+      loadingArea: 'content-with-secondary-top',
+      transition,
+    }).then(space => {
+      if (space) {
+        return space;
+      } else {
+        transition.abort();
+        const fileSystemTree = this.get('fileSystemTree');
+        const prevSelectedSpace = get(fileSystemTree, 'prevSelectedSpace');
+        if (prevSelectedSpace) {
+          transition.finally(() => {
+            this.transitionTo(
+              'onedata.data.data-space.index',
+              get(prevSelectedSpace, 'id')
+            );
+          });
+        } else {
+          this.transitionTo('onedata.data.index');
+        }
+      }
+    });
+  },
+
   setupController(controller, model) {
     this._super(controller, model);
     controller.setSelectedSpace(model);
   },
 
   renderTemplate() {
-    this.render({outlet: 'data-space-sidebar'});
-    this.render('application-loading', {outlet: 'data-content-scroll'});
+    this.render({ outlet: 'data-space-sidebar' });
+    this.render('application-loading', { outlet: 'data-content-scroll' });
   },
 
   actions: {

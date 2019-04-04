@@ -4,7 +4,7 @@ import Ember from 'ember';
  * Transit to root dir of current data-space.
  * @module routes/data/data-space/index
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Route.extend({
@@ -27,8 +27,10 @@ export default Ember.Route.extend({
         this.set('invalidRootDir', true);
       } else {
         this.set('invalidRootDir', false);
-        console.debug(`Redirecting to root dir "${rootDir.get('id')}" of space "${dataSpace.get('id')}"`);
-        Ember.run.scheduleOnce('afterRender', this, function() {
+        console.debug(
+          `Redirecting to root dir "${rootDir.get('id')}" of space "${dataSpace.get('id')}"`
+        );
+        Ember.run.scheduleOnce('afterRender', this, function () {
           this.replaceWith('onedata.data.data-space.dir', rootDir.get('id'));
         });
       }

@@ -147,7 +147,7 @@
     max-width: 430px;
     height: 95px;
     margin: 0 auto $padding-large-vertical auto;
-    background-image: url("/assets/images/chart-placeholder.svg");
+    background-image: url($root-url + "images/chart-placeholder.svg");
     background-position-x: center;
     opacity: 0.15;
   }

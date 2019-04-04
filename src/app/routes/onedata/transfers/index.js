@@ -5,7 +5,7 @@ import Ember from 'ember';
  * See controllers/transfers/index for details.
  * @module routes/transfers/index
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Route.extend({
@@ -15,6 +15,6 @@ export default Ember.Route.extend({
 
   setupController(controller, model) {
     this._super(controller, model);
-    controller.goToDefaultTransfersForSpace(model);
+    return controller.goToDefaultTransfersForSpace(model);
   },
 });

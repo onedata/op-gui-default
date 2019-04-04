@@ -29,9 +29,9 @@
 {{else}}
   {{!-- Secondary top bar --}}
   <div class="secondary-top-bar">
-    {{#unless fileBrowser.invalidRootDir}}
+    {{#if (and fileBrowser.dir (not fileBrowser.invalidRootDir))}}
       {{file-breadcrumbs file=(readonly fileBrowser.dir) changeDir="openDirInBrowser"}}
-    {{/unless}}
+    {{/if}}
   </div>
 
   <div class="lower-main-content">

@@ -9,7 +9,7 @@ import filePermissions from './file-permissions';
  *
  * @module locales/en/translations
  * @author Jakub Liput
- * @copyright (C) 2016-2018 ACK CYFRONET AGH
+ * @copyright (C) 2016-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default {
@@ -42,16 +42,34 @@ export default {
     noPrivileges: 'You do not have privileges to {{privileges}}.'
   },
   services: {
-    session: sessionLocales
+    session: sessionLocales,
+    remoteOneprovider: {
+      checkSupportingOneprovider: 'Checking supporting Oneprovider...',
+    },
   },
   components: {
+    spaceContentError: {
+      noSupport: 'Selected space is not supported by any Oneprovider.',
+      getSupport: 'You can get support for this space',
+      getSupportLink: 'here',
+      endpointError: {
+        text1: 'Cannot establish a connection to the Oneprovider server at',
+        text2: 'Please consider checking your network settings. The reason for this error can be one of the following:',
+        liOffline: 'The {{serverType}} server is offline',
+        liCert: 'The TLS certificate of the server is not trusted by your browser (verify by visiting',
+        liDomain: 'Your browser (or system) cannot resolve the domain',
+        liNetwork: 'Your browser (or system) cannot reach the server’s network',
+      },
+      allSupportOffline: 'All Oneproviders supporting selected space are currently offline.',
+      chooseOtherOneprovider: 'Try again',
+      supportingOneproviders: 'Supporting Oneproviders',
+    },
     resourceLoadError,
     errorInline,
     filePermissions: {
       error: 'An error occured when loading permissions data:',
       posix: {
-        differentPermissionsMessage:
-          'Selected files have different POSIX permissions - you can reset them to common value',
+        differentPermissionsMessage: 'Selected files have different POSIX permissions - you can reset them to common value',
         resetPermissions: 'Set new permissions for all files'
       },
       acl: {
@@ -91,6 +109,7 @@ export default {
       token: 'tokens',
       providers: 'providers',
       transfers: 'transfers',
+      clusters: 'clusters',
     },
     queryOptions: {
       expand: 'Expand options',
@@ -98,6 +117,18 @@ export default {
       copy: 'Copy',
     },
     modals: {
+      providerRedirect: {
+        title: 'Oneprovider redirect',
+        selectPlaceholder: 'Choose Oneprovider to open',
+        textIntro1: 'Space',
+        textIntro2: 'is not supported by this Oneprovider',
+        textIntro3: 'Please choose a supporting Oneprovider (you will be redirected automatically):',
+        textSingleIntro2: 'is only supported by the Oneprovider',
+        takeMeThere: 'Take me there',
+        providerItem: {
+          offline: '(offline)',
+        },
+      },
       dbIndexModal: {
         title: 'Database index information',
         tabs: {
@@ -379,8 +410,6 @@ export default {
         completed: 'There are no ended transfers',
       },
       initializingTransfers: 'Initializing transfers...',
-      notSupported: 'Cannot list transfers of selected space because it is not ' +
-        'supported by current provider',
       in: 'Input',
       out: 'Output',
       fileHistoryLimitReached: 'History limit per file reached',

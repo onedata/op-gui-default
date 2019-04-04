@@ -3,7 +3,7 @@
  * @module services/server
  * @author Lukasz Opiola
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -11,11 +11,19 @@
 
 import Ember from 'ember';
 
-export default Ember.Service.extend({
-  store: Ember.inject.service('store'),
-  adapter: function () {
+const {
+  Service,
+  inject: { service },
+  computed,
+} = Ember;
+
+export default Service.extend({
+  store: service('store'),
+  websocketConnection: service(),
+
+  adapter: computed(function adapter() {
     return this.get('store').adapterFor('application');
-  }.property(),
+  }),
 
   /**
    * Forces the WebSocket adapter to initialize a WebSocket connection.
@@ -26,16 +34,17 @@ export default Ember.Service.extend({
    *
    * See WebSocket events on: https://developer.mozilla.org/en-US/docs/Web/Events
    */
-  initWebSocket: function (onOpen, onError, onClose) {
-    this.get('adapter').initWebSocket(onOpen, onError, onClose);
+  initWebSocket(onOpen, onError, onClose, isPublic) {
+    return this.get('websocketConnection')
+      .initWebSocket(onOpen, onError, onClose, isPublic);
   },
 
   clearWebsocket() {
-    this.get('adapter').clearWebsocket();
+    return this.get('websocketConnection').clearWebsocket();
   },
 
   closeWebsocket() {
-    this.get('adapter').closeWebsocket();
+    return this.get('websocketConnection').closeWebsocket();
   },
 
   /**

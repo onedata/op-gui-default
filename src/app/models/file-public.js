@@ -11,4 +11,6 @@ import DS from 'ember-data';
 
 import createFileModel from 'op-worker-gui/mixin-factories/models/file';
 
-export default DS.Model.extend(createFileModel('public'));
+export default DS.Model.extend(createFileModel('public'), {
+  cdmiObjectId: DS.attr('string'),
+});

@@ -131,8 +131,8 @@ $screen-lg-min: $min-width-desktop-medium;
     @import 'components/dropdown';
 }
 
-// original stylesheet for ember-power-select
-@import "ember-power-select";
+// ember-power-select original styles
+@import 'ember-power-select';
 
 @import 'chartist';
 @import 'chartist-overrides';
@@ -160,6 +160,7 @@ $screen-lg-min: $min-width-desktop-medium;
 @import 'components/query-options';
 @import 'components/db-index-modal';
 @import 'components/input-copy';
+@import 'components/modals/provider-redirect';
 
 // onedata-common components
 @import 'components/button-common';

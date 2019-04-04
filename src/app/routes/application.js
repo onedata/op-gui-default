@@ -2,12 +2,11 @@
  * A main route, setting up whole application.
  * @module routes/application
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
 import Ember from 'ember';
-import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
 import { WebFont } from 'webfontloader';
 
 const {
@@ -17,8 +16,9 @@ const {
   RSVP: { Promise },
 } = Ember;
 
-export default Ember.Route.extend(ApplicationRouteMixin, {
+export default Ember.Route.extend({
   session: service(),
+  messageBox: service(),
 
   actions: {
     transitionTo() {
@@ -26,39 +26,10 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
     }
   },
 
-  
-  init() {
-    this._super(...arguments);
-    this.initSession();
-  },
-  
   model() {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       WebFont.on('active', resolve, true);
+      WebFont.on('inactive', reject);
     });
-  },
-  
-  initSession() {
-    let {
-      session
-    } = this.getProperties('session');
-
-    let sessionInitialization = session.initSession();
-
-    sessionInitialization.then(() => {
-      console.debug('route:application: initSession resolved');
-    });
-    // TODO: translations
-    sessionInitialization.catch(() => {
-      console.debug('route:application: initSession rejected');
-      this.get('messageBox').open({
-        type: 'error',
-        allowClose: false,
-        title: 'Session initialization error',
-        message: 'Fatal error: session cannot be initialized'
-      });
-    });
-
-    return sessionInitialization;
   },
 });

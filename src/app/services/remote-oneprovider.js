@@ -67,17 +67,22 @@ export default Service.extend({
                 return this.chooseOneprovider(space, providers)
                   .then(chosenOneprovider => {
                     if (chosenOneprovider) {
-                      // we check if favicon.ico is served from Oneprovider server
-                      // - in old OPs it will serve static file
-                      // - in new OPs it will serve image data
-                      return checkImg(
-                          `https://${get(chosenOneprovider, 'domain')}/favicon.ico`
-                        )
+                      const chosenOneproviderOrigin =
+                        `https://${get(chosenOneprovider, 'domain')}`;
+                      return checkImg(`${chosenOneproviderOrigin}/favicon.ico`)
+                        .then(isAvailable => {
+                          // workaround for legacy Oneproviders
+                          return isAvailable || checkImg(
+                            `${chosenOneproviderOrigin}/robots.txt`
+                          );
+                        })
                         .then(isAvailable => {
                           if (isAvailable) {
                             return new Promise(() => {
+                              const clusterId = get(chosenOneprovider,
+                                'cluster');
                               window.location =
-                                `/opw/${get(chosenOneprovider, 'cluster')}/i#/onedata/${type}/${resourceId}`;
+                                `/ozw/onezone/i#/provider-redirect/${clusterId}?space_id=${resourceId}&resource_type=${type}`;
                             });
                           } else {
                             throw {

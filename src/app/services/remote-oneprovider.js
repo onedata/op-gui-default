@@ -73,7 +73,7 @@ export default Service.extend({
                         .then(isAvailable => {
                           // workaround for legacy Oneproviders
                           return isAvailable || checkImg(
-                            `${chosenOneproviderOrigin}/robots.txt`
+                            `${chosenOneproviderOrigin}/assets/images/empty-dir.svg`
                           );
                         })
                         .then(isAvailable => {

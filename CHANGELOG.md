@@ -6,7 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
-* VFS-5380 Fixed redirection to lecagy Oneproviders throught Onezone
+* VFS-5380 Fixed redirection to legacy Oneproviders throught Onezone
 * VFS-4596 Onedata Unified GUI
 * VFS-5038 Added possibility to publish shared directory with no metadata specified
 * VFS-5030 Removed debug code from db-index view

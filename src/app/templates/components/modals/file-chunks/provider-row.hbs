@@ -1,0 +1,50 @@
+<td class="provider-name">
+  {{#truncated-string}}
+    {{providerName}}
+  {{/truncated-string}}
+</td>
+<td class="transfer-btns">
+  <div class="btn-group">
+    {{!-- TODO: a partial loading state only for these buttons
+      can be done to render distribution first --}}
+    <a class={{concat replicateButtonClasses " btn-replicate"}}
+      {{action "startReplication" file providerId}}>
+      {{#one-icon icon="replicate"}}
+        {{bs-tooltip placement="top" title=replicateButtonTooltip}}
+      {{/one-icon}}
+    </a>
+    <a class={{concat migrateButtonClasses " btn-migrate"}}
+      {{action "openMigrationOptions" file providerId}}>
+      {{#one-icon icon="migrate"}}
+        {{bs-tooltip placement="top" title=migrateButtonTooltip}}
+      {{/one-icon}}
+    </a>
+    <a class={{concat evictButtonClasses " btn-evict"}}
+      {{action "startEviction" file providerId}}>
+      {{#one-icon icon="invalidate"}}
+        {{bs-tooltip placement="top" title=evictButtonTooltip}}
+      {{/one-icon}}
+    </a>
+  </div>
+</td>
+{{#if (not file.isDir)}}
+  <td class="chunks">
+    {{#if neverSynchronized}}
+      <div class="file-chunks never-synchronized">
+        <span>
+          {{t "components.dataFilesListToolbar.fileChunksModal.neverSynchronized"}}
+        </span>
+      </div>
+      {{bs-tooltip
+        placement="top"
+        title=(t "components.dataFilesListToolbar.fileChunksModal.neverSynchronizedHint")
+      }}
+    {{else}}
+      {{file-chunks-bar
+        file=file
+        blocksPercentage=fileDistribution.blocksPercentage
+        chunksBarData=fileDistribution.chunksBarData
+      }}
+    {{/if}}
+  </td>
+{{/if}}

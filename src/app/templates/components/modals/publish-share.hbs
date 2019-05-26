@@ -34,7 +34,7 @@
         {{t 'components.modals.publishShare.dublinCoreLabel'}}
       </div>
       {{!-- TODO: this editor should not be named "rdf-editor" --}}
-      {{metadata/rdf-editor data=metadataString disabled=metadataEditorDisabled}}
+      {{metadata/rdf-editor disabled=metadataEditorDisabled onChange=(action "onMetadataChange")}}
     </div>
 
     {{else}}

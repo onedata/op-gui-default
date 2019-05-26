@@ -6,22 +6,50 @@ const {
 } = Ember;
 
 export default Ember.Component.extend({
-  layout,
+  tagName: 'div',
+  classNames: ['truncated-string'],
+  classNameBindings: ['widthBased::truncate'],
 
   eventsBus: Ember.inject.service(),
 
-  tagName: 'div',
-  classNames: ['truncated-string'],
+  layout,
 
-  parentSelector: null,
-  shrinkBy: 0,
-
-  // disabled by default due to tooltip update bugs, and lack of truncate detect
   /**
-    If true, shows Bootstrap tooltip with this component yielded text
-    If false, uses HTML "title" property with this component yielded text
-  */
+   * @type {string}
+   */
+  tooltipPlacement: 'top',
+
+  /**
+   * Should tooltip be enabled? (set by overflow detection algorithm)
+   * @type {boolean}
+   */
+  tooltipEnabled: false,
+
+  /**
+   * If true, tooltip is visible (makes sense only if tooltipEnabled = true)
+   * @type {boolean}
+   */
   showTooltip: false,
+
+  /**
+   * If true, overflow element max-width will be calculated according to 
+   * its parent width
+   * @type {boolean}
+   */
+  widthBased: false,
+
+  /**
+   * Overflow element' parent selector [only for widthBased = true]
+   * @type {string}
+   */
+  parentSelector: null,
+
+  /**
+   * Value that is subtracted from element' parent width 
+   * while max-width calculation [only for widthBased = true]
+   * @type {number}
+   */
+  shrinkBy: 0,
 
   /**
    * Function for updating max width
@@ -33,48 +61,67 @@ export default Ember.Component.extend({
     this._super(...arguments);
     let {
       parentSelector,
-      shrinkBy
-    } = this.getProperties('parentSelector', 'shrinkBy');
-    shrinkBy = shrinkBy || 0;
+      shrinkBy,
+      widthBased
+    } = this.getProperties('parentSelector', 'shrinkBy', 'widthBased');
 
-    // FIXME: this performance degradation workaround can be ineffective...
+    if (widthBased) {
+      shrinkBy = shrinkBy || 0;
 
-    run.scheduleOnce('afterRender', this, function() {
-      let parent = parentSelector ? this.$().closest(parentSelector) : this.$().parent();
-      let $element = this.$();
-      let changeMaxWidth = (/*event*/) => {
-        let maxWidth = parent.width();
-        $element.css({
-          maxWidth: (parseInt(maxWidth) - shrinkBy)
-        });
-      };
+      run.scheduleOnce('afterRender', this, function () {
+        let parent = parentSelector ?
+          this.$().closest(parentSelector) : this.$().parent();
+        let $element = this.$();
+        let changeMaxWidth = ( /*event*/ ) => {
+          let maxWidth = parent.width();
+          $element.css({
+            maxWidth: (parseInt(maxWidth) - shrinkBy)
+          });
+        };
 
-      this.set('__changeMaxWidthFun', changeMaxWidth);
+        this.set('__changeMaxWidthFun', changeMaxWidth);
 
-      $(window).resize(changeMaxWidth);
-      if (this.get('eventsBus')) {
-        this.get('eventsBus').on('secondarySidebar:resized', changeMaxWidth);
-      }
+        $(window).resize(changeMaxWidth);
+        if (this.get('eventsBus')) {
+          this.get('eventsBus').on('secondarySidebar:resized', changeMaxWidth);
+        }
 
-      changeMaxWidth();
+        changeMaxWidth();
 
-      this.updateTooltipText();
-    });
+        this.updateTooltipText();
+      });
+    }
   },
 
   willDestroyElement() {
-    let changeMaxWidth = this.get('__changeMaxWidthFun');
-    $(window).off('resize', changeMaxWidth);
-    if (this.get('eventsBus')) {
-      this.get('eventsBus').off('secondarySidebar:resized', changeMaxWidth);
+    let {
+      __changeMaxWidthFun,
+      widthBased
+    } = this.getProperties('__changeMaxWidthFun', 'widthBased');
+    if (widthBased) {
+      $(window).off('resize', __changeMaxWidthFun);
+      if (this.get('eventsBus')) {
+        this.get('eventsBus').off('secondarySidebar:resized', __changeMaxWidthFun);
+      }
     }
   },
 
   updateTooltipText() {
-    this.set('tooltipText', this.$().find('.truncated-string-content').text().trim());
+    let element = !this.get('widthBased') ? this.$() : this.$().find('.truncated-string-content');
+    this.set('tooltipText', element.text().trim());
   },
 
   mouseEnter() {
+    let overflowElement =
+      this.$('.truncate.truncated-string-content')[0] || this.$()[0];
+    this.set('tooltipEnabled',
+      overflowElement.offsetWidth < overflowElement.scrollWidth
+    );
     this.updateTooltipText();
+    this.set('showTooltip', true);
+  },
+
+  mouseLeave() {
+    this.set('showTooltip', false);
   }
 });

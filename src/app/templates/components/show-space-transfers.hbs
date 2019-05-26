@@ -1,0 +1,291 @@
+{{#if (eq isSupportedByCurrentProvider false)}}
+  <div class="row loadable-row row-space-not-supported">
+    {{#route-error icon="provider" class="error-space-not-supported"}}
+      {{t "components.transfers.notSupported"}}
+    {{/route-error}}
+  </div>
+{{else}}
+  <div class="row loadable-row row-transfers-data-container">
+    {{#loading-container
+      isLoading=(not (eq isSupportedByCurrentProvider true))
+    }}
+      {{#loading-container isLoading=(or
+        (not providersLoaded)
+        (not currentTransfersLoaded)
+      )}}
+        {{show-space-transfers/transfers-overview
+          space=space
+          providers=providers
+          providerTransfers=providerTransfers
+          someTransfersRemote=someTransfersRemote
+          throughputChartError=throughputChartError
+          providerTransferConnections=providerTransferConnections
+          destinationProviderIds=destinationProviderIds
+          sourceProviderIds=sourceProviderIds
+          providersColors=providersColors
+          providersLoaded=providersLoaded
+        }}
+      {{/loading-container}}
+      
+      {{#loading-container isLoaded=initialTab.isSettled}}
+        <div class="row row-transfers-tables">
+          {{#bs-tab
+            class="bs-tab"
+            fade=false
+            customTabs=true
+            activeId=activeTabId
+            action=(action (mut activeTabId))
+            as |activeTabId select|
+          }}
+            {{#bs-nav
+              type="tabs"
+              class="nav-tabs-transfers nav-tabs-with-loading"
+            }}
+              {{#if fileProxy.isSettled}}
+                {{#bs-nav-item
+                  active=(eq activeTabId "file")
+                }}
+                  <a href="#file"
+                    class="nav-link nav-link-file"
+                    role="tab" {{action select "file"}}>
+                    <span class="tab-label">
+                      {{#unless (eq _tabJustChangedId "file")}}
+                        {{one-icon class="tab-icon" icon=_fileTabIcon}}
+                      {{/unless}}
+                      {{#if fileProxy.isFulfilled}}
+                        {{#truncated-string class="one-label tab-name"}}
+                          {{file.name}}
+                        {{/truncated-string}}
+                      {{else}}
+                        ?
+                      {{/if}}
+                    </span>
+                    {{#if (eq _tabJustChangedId "file")}}
+                      {{spin-spinner-block sizeClass="xs" class="tab-spinner tab-spinner-left"}}
+                    {{/if}}
+                    <span class="tab-close clickable" {{action "closeFileTab"}}>
+                      {{one-icon icon="close"}}
+                    </span>
+                  </a>
+                {{/bs-nav-item}}
+              {{/if}}
+              {{#bs-nav-item
+                active=(eq activeTabId "scheduled")
+              }}
+                <a href="#scheduled"
+                  class="nav-link"
+                  role="tab" {{action select "scheduled"}}>
+                  <span class="tab-label">
+                    {{t "components.transfers.scheduledTransfers"}}
+                  </span>
+                  {{#if (eq _tabJustChangedId "scheduled")}}
+                    {{spin-spinner-block sizeClass="xs" class="tab-spinner"}}
+                  {{/if}}
+                </a>
+              {{/bs-nav-item}}
+              {{#bs-nav-item
+                active=(eq activeTabId "current")
+              }}
+                <a href="#current"
+                  class="nav-link"
+                  role="tab" {{action select "current"}}>
+                  <span class="tab-label">
+                    {{t "components.transfers.activeTransfers"}}
+                  </span>
+                  {{#if (eq _tabJustChangedId "current")}}
+                    {{spin-spinner-block sizeClass="xs" class="tab-spinner"}}
+                  {{/if}}
+                </a>
+              {{/bs-nav-item}}
+              {{#bs-nav-item
+                active=(eq activeTabId "completed")
+              }}
+                <a href="#completed"
+                  class="nav-link"
+                  role="tab" {{action select "completed"}}>
+                  <span class="tab-label">
+                    {{t "components.transfers.completedTransfers"}}
+                  </span>
+                  {{#if (eq _tabJustChangedId "completed")}}
+                    {{spin-spinner-block sizeClass="xs" class="tab-spinner"}}
+                  {{/if}}
+                </a>
+              {{/bs-nav-item}}
+              {{#bs-nav-item
+                active=(eq activeTabId "on-the-fly")
+              }}
+                <a href="#on-the-fly"
+                  class="nav-link"
+                  role="tab" {{action select "on-the-fly"}}>
+                  {{t "components.transfers.onTheFlyTransfers"}}
+                </a>
+              {{/bs-nav-item}}
+            {{/bs-nav}}
+            <div class="tab-content tab-content-transfers-list">
+              {{#if fileId}}
+                {{#bs-tab-pane elementId="file"}}
+                  {{#if (eq activeTabId "file")}}
+                    <div class="row row-file-transfers">
+                      <div class="col-xs-12 col-file-transfers">
+                        <div class="row loadable-row">
+                          {{#loading-container isLoading=(or
+                              (not providersLoaded)
+                              fileTransferList.isPending
+                            )
+                            class="loading-file-table"
+                          }}
+                            {{#if fileProxy.isFulfilled}}
+                              {{transfers/live-stats-table
+                                transfers=fileTransfers
+                                transferType="file"
+                                providers=providers
+                                providersColors=providersColors
+                                updaterId=(concat transfersUpdater.updaterId "-file-" file.id)
+                                notifyTransferListChanged=(action "transferListChanged")
+                                justOpened=(eq _tabJustChangedId "file")
+                                clearJustOpened=(action "clearJustChangedTabId" "file")
+                                rerunTransfer=(action "rerunTransfer")
+                                cancelTransfer=(action "cancelTransfer")
+                              }}
+                              {{#if _fileHistoryLimitReached}}
+                                <p class="file-history-limit-message">
+                                  {{t "components.transfers.fileHistoryLimitReached"}}
+                                </p>
+                              {{/if}}
+                            {{else}}
+                              <p>{{t "components.transfers.fileNotExists"}}</p>
+                            {{/if}}
+                          {{/loading-container}}
+                        </div>
+                      </div>
+                    </div>
+                  {{/if}}
+                {{/bs-tab-pane}}
+              {{/if}}
+              {{#bs-tab-pane elementId="on-the-fly"}}
+                {{#if (eq activeTabId "on-the-fly")}}
+                  <div class="row row-on-the-fly-transfers">
+                    <div class="col-xs-12 col-on-the-fly-transfers">
+                      <div class="row loadable-row">
+                        {{#loading-container
+                          isLoading=(not onTheFlyTransfersProvidersLoaded)
+                          class="loading-on-the-fly-list"
+                        }}
+                          {{transfers/on-the-fly-list
+                            transfers=onTheFlyTransfers
+                            providers=onTheFlyProviders
+                            providersColors=providersColors
+                            openedProviderIds=_onTheFlyOpenedProviderIds
+                            toggleProviderId=(action "toggleOnTheFlyProviderId")
+                          }}
+                        {{/loading-container}}
+                      </div>
+                    </div>
+                  </div>
+                {{/if}}
+              {{/bs-tab-pane}}
+              {{#bs-tab-pane elementId="scheduled"}}
+                {{#if (eq activeTabId "scheduled")}}
+                  <div class="row row-scheduled-transfers">
+                    <div class="col-xs-12 col-scheduled-transfers">
+                      <div class="row loadable-row">
+                        {{#loading-container isLoading=(or
+                            (not providersLoaded)
+                            (not scheduledTransfersLoaded)
+                          )
+                          class="loading-scheduled-table"
+                        }}
+                          {{transfers/live-stats-table
+                            transfers=scheduledTransfers
+                            transferType="scheduled"
+                            providers=providers
+                            providersColors=providersColors
+                            updaterId=(concat transfersUpdater.updaterId "-scheduled")
+                            notifyTransferListChanged=(action "transferListChanged")
+                            justOpened=(eq _tabJustChangedId "scheduled")
+                            clearJustOpened=(action "clearJustChangedTabId" "scheduled")
+                            rerunTransfer=(action "rerunTransfer")
+                            cancelTransfer=(action "cancelTransfer")
+                          }}
+                        {{/loading-container}}
+                      </div>
+                      {{#if scheduledTransfersLoadingMore}}
+                        {{loading-more-spinner}}
+                      {{/if}}
+                    </div>
+                  </div>
+                {{/if}}
+              {{/bs-tab-pane}}
+              {{#bs-tab-pane elementId="current"}}
+                {{#if (eq activeTabId "current")}}
+                  <div class="row row-active-transfers-table">
+                    <div class="col-xs-12 col-active-transfers">
+                      <div class="row loadable-row">
+                        {{#loading-container isLoading=(or
+                            (not providersLoaded)
+                            (not currentTransfersLoaded)
+                          )
+                          class="loading-active-table"
+                        }}
+                          {{transfers/live-stats-table
+                            transfers=currentTransfers
+                            transferType="current"
+                            providers=providers
+                            providersColors=providersColors
+                            updaterId=(concat transfersUpdater.updaterId "-current")
+                            notifyTransferListChanged=(action "transferListChanged")
+                            justOpened=(eq _tabJustChangedId "current")
+                            clearJustOpened=(action "clearJustChangedTabId" "current")
+                            rerunTransfer=(action "rerunTransfer")
+                            cancelTransfer=(action "cancelTransfer")
+                          }}
+                        {{/loading-container}}
+                      </div>
+                      {{#if currentTransfersLoadingMore}}
+                        {{loading-more-spinner}}
+                      {{/if}}
+                    </div>
+                  </div>
+                {{/if}}
+              {{/bs-tab-pane}}
+              {{#bs-tab-pane elementId="completed"}}
+                {{#if (eq activeTabId "completed")}}
+                  <div class="row row-completed-transfers">
+                    <div class="col-xs-12 col-completed-transfers">
+                      <div class="row loadable-row">
+                        {{#loading-container isLoading=(or
+                            (not providersLoaded)
+                            (not completedTransfersLoaded)
+                          )
+                          class="loading-completed-table"
+                        }}
+                          {{transfers/live-stats-table
+                            transfers=completedTransfers
+                            transferType="completed"
+                            providers=providers
+                            providersColors=providersColors
+                            updaterId=(concat transfersUpdater.updaterId "-completed")
+                            notifyTransferListChanged=(action "transferListChanged")
+                            justOpened=(eq _tabJustChangedId "completed")
+                            clearJustOpened=(action "clearJustChangedTabId" "completed")
+                            rerunTransfer=(action "rerunTransfer")
+                          }}
+                        {{/loading-container}}
+                      </div>
+                      {{#if completedTransfersLoadingMore}}
+                        {{loading-more-spinner}}
+                      {{/if}}
+                    </div>
+                  </div>
+                {{/if}}
+              {{/bs-tab-pane}}
+            </div>
+          {{/bs-tab}}
+          
+        </div>
+      {{/loading-container}}
+    {{/loading-container}}
+  </div>
+  
+  {{yield}}
+{{/if}}

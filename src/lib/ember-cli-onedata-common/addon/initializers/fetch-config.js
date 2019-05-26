@@ -17,7 +17,7 @@ export function initialize(application) {
   application.getOnedataConfig = function() {
     return new Ember.RSVP.Promise((resolve, reject) => {
       $.ajax({
-        dataType: 'json',
+        dataSourceType: 'json',
         url: '/app-config.json',
         success: function(data) {
           try {

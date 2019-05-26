@@ -1,4 +1,14 @@
+/**
+ * Provides set of tools for file manipulation and getting info.
+ * Beside toolbar buttons, contains a set of modals for toolbar actions.
+ * @module components/data-files-list-toolbar
+ * @author Jakub Liput
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Ember from 'ember';
+import _ from 'lodash';
 
 const {
   run,
@@ -13,28 +23,18 @@ const {
   }
 } = Ember;
 
-/**
- * Provides set of tools for file manipulation and getting info.
- * Beside toolbar buttons, contains a set of modals for toolbar actions.
- * @module components/data-files-list-toolbar
- * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
- * @license This software is released under the MIT license cited in 'LICENSE.txt'.
- */
 export default Ember.Component.extend({
-  notify: inject.service('notify'),
-  fileUpload: inject.service('fileUpload'),
+  notify: inject.service(),
+  fileUpload: inject.service(),
   store: inject.service(),
   fileSystemTree: inject.service(),
+  session: inject.service(),
+  commonModals: inject.service(),
 
   tagName: 'ul',
   classNames: ['data-files-list-toolbar', 'nav', 'navbar-nav', 'navbar-right', 'toolbar-group'],
 
   fileForChunks: null,
-  fileBlocksSorting: ['provider.name'],
-  fileBlocksSorted: computed.sort('fileBlocks', 'fileBlocksSorting'),
-
-  chunksModalError: null,
 
   init() {
     this._super(...arguments);
@@ -52,11 +52,26 @@ export default Ember.Component.extend({
 
   selectedCount: computed.alias('dir.selectedFiles.length'),
   
+  currentProviderId: computed.alias('session.sessionDetails.providerId'),
+  
   /**
    * A width of its element. Updated on window resize (see ``didInsertElement``).
    * @type {Number}
    */
   width: undefined,
+  
+  currentProviderSupport: computed(
+    'currentProviderId',
+    'fileSystemTree.selectedSpace.providerList.list',
+    function () {
+      const providerIdList =
+        this.get('fileSystemTree.selectedSpace.providerList.list');
+      const currentProviderId = this.get('currentProviderId');
+      if (providerIdList) {
+        return _.includes(providerIdList, currentProviderId);
+      }
+    }
+  ),
 
   // TODO: compute or detect dynamically, when the toolbar should collapse
   /**
@@ -145,6 +160,13 @@ export default Ember.Component.extend({
           tooltip: i18n.t('components.dataFilesListToolbar.tooltip.shareFile')
         },
         {
+          id: 'file-info-tool',
+          icon: 'info',
+          action: 'showFileInfo',
+          disabled: !isSomeFileSelected,
+          tooltip: i18n.t('components.dataFilesListToolbar.tooltip.info')
+        },
+        {
           id: 'file-metadata-tool',
           icon: 'metadata',
           action: 'editFileMetadata',
@@ -202,7 +224,7 @@ export default Ember.Component.extend({
           id: 'file-chunks-tool',
           icon: 'provider',
           action: 'showChunks',
-          disabled: !(isSingleFileSelected && isSingleSelectedFileAFile),
+          disabled: !isSingleFileSelected,
           tooltip: i18n.t('components.dataFilesListToolbar.tooltip.chunks')
         },
       ];
@@ -286,34 +308,23 @@ export default Ember.Component.extend({
     },
 
     showChunks() {
-      this.set('isFileChunksModal', true);
-      this.set('fileForChunks', this.get('dir.singleSelectedFile'));
-      let fileId = this.get('fileForChunks.id');
-      // TODO: if fileId null...
-
-      this.get('store').query('file-distribution', { fileId }).then(
-        (fbs) => {
-          this.set('fileBlocks', fbs);
-        },
-        (error) => {
-          console.error('Error loading file blocks: ' + error.message);
-          this.set('chunksModalError', error.message);
-        }
-      );
-    },
-
-    chunksModalClosed() {
-      this.setProperties({
-        fileForChunks: null,
-        fileBlocks: null,
-        chunksModalError: null
+      this.get('commonModals').openModal('dataDistribution', {
+        fileForChunks: this.get('dir.singleSelectedFile'),
+        currentProviderSupport: this.get('currentProviderSupport'),
+        space: this.get('fileSystemTree.selectedSpace'),
       });
     },
-
+    
     editFileMetadata() {
       const file = this.get('dir.singleSelectedFile');
       const fileSystemTree = this.get('fileSystemTree');
       fileSystemTree.toggleMetadataEditor(file);
+    },
+    
+    showFileInfo() {
+      const files = this.get('dir.selectedFiles');
+      const fileSystemTree = this.get('fileSystemTree');
+      fileSystemTree.toggleInfoViewer(files);
     },
 
     uploadBrowse() {

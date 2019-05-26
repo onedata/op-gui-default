@@ -4,6 +4,91 @@
 CHANGELOG
 ---------
 
+### Latest changes
+
+* VFS-5038 Added possibility to publish shared directory with no metadata specified
+* VFS-5030 Removed debug code from db-index view
+* VFS-4980 Added support for index transfers
+* VFS-4927 Fixed delay before loading transfers list; error handling
+* VFS-3774 Fixed broken request for OpenSans font in Safari if redirecting to Onezone
+* VFS-4454 Fix hanging authorization loader spinner
+* VFS-4856 Added CDMI object ID and file path info to file row
+* VFS-4553 Fixed browser back from Onezone to Oneprovider GUI (wrong redirect and broken WebSocket in Safari)
+* VFS-4806 Fixed regression bug: file distribution modal for directory has no transfers buttons
+* VFS-4791 Support for highly scattered files in file distribution charts
+* VFS-4242 Added transfers cancelling and rerunning actions
+* VFS-4753 Allow to start new transfers if other transfers are pending for file/provider
+* VFS-4566 Added transfers list tab for specific file
+* VFS-4507 Multiple improvements in transfers list view
+* VFS-4538 Better control of invalidation feature availability for files
+* VFS-4471 Improved file chunks bar rendering
+* VFS-4391 More efficient infinite scroll for transfers list and file transfer status 
+* VFS-4487 Fixed not updating completed transfer stats
+* VFS-4387 Fixed not updating current transfers stats if user not scrolled view
+* VFS-4453 Fixed incorrect total files counter in transfers table
+* VFS-3945 Added data invalidation functionality.
+* VFS-4355 Added summarized transfer charts per provider.
+* VFS-4239 Infinite scroll for transfers lists.
+* VFS-4305 Added charts for on-the-fly transfers.
+* VFS-4232 Added line chart which shows providers transfer throughput.
+* VFS-4260 Added menu for managing space root dir data distribution
+* VFS-4157 Requesting completed transfers list with delay to be compatible with backend fixes
+* VFS-4223 Fixed long time of loading data distribution modal
+* VFS-4027 Added support for peta-, exa-, zetta- and yottabytes
+* VFS-4206 Changed speed units on transfers view to Xbits/s
+* VFS-4012 Info about remote statistics on transfers view; fixed transfer row sort issues
+* VFS-4154 Dynamically adjust polling interval of transfers data; fixed transfer chart loading
+* VFS-4088 Fixed incorrect ordering and stacking of transfer chart series
+* VFS-4068 Fixed incorrect icons positioning in transfers table
+* VFS-4062 Remember opened space when switching between data-spaces-transfers views; fixes in data-space sidebar
+* VFS-4059 Fixed provider icon scaling in transfers view
+* VFS-4002 Showing transfer type (replication/migration/invalidation) in transfers table
+* VFS-4000 Fixed fetching wrong transfer statistics for chosen timespan
+* VFS-3956 Fixed provider name tooltip rendering in migrate menu of data distribution modal
+* VFS-3595 Fixed locking ACL edit when switching between ACL and POSIX in permissions modal
+* VFS-3591 Fixed infinite loading of metadata panel when failed to fetch metadata for file
+* VFS-3210 Fixed displaying long text in basic file metadata keys and values
+* VFS-3880 Various improvements in transfers management and statistics display
+* VFS-3752 Added transfers tab; added replication and migration options from data distribution
+* VFS-3710 Using binary prefix units for displaying sizes (MiB, GiB, etc.)
+* VFS-3455 Refactored reconnect Websocket modal
+* VFS-3600 Refactored file distribution modal
+* VFS-3561 Fixed crash of spaces and groups view when new one is created
+* VFS-3560 Fixed lack of handle-public relation in model when a share is public
+* VFS-3402 Fixed redirection from login route when authenticated
+* VFS-3421 Showing no permissions to view directory message when necessary
+* VFS-3303 Fix files progress upload indicator when uploading empty file (0 bytes) 
+
+
+### 17.06.0-rc2
+
+* No changes in GUI since 17.06.0-rc1
+
+
+### 17.06.0-rc1
+
+* No changes in GUI since 17.06.0-beta6
+
+
+### 17.06.0-beta1 - 17.06.0-beta6
+
+* VFS-3068 Fixing bug: do not stuck on finalizing file upload after all files upload failure
+* VFS-3414 Fixing modals button actions
+* VFS-3390 Improved names truncating and tooltips for long names
+
+
+### 3.0.0-rc15
+
+* VFS-3172 Display Provider software version
+
+
+### 3.0.0-rc13
+
+* VFS-3126 Fixing share info modal infinite loader
+* HOTFIX Fixing date display in file modification date
+* VFS-3004 Upgrading Ember to 2.11; upgrading dependencies
+
+
 ### 3.0.0-rc12
 
 * VFS-2968 Fixing hanging "Waiting for Onezone session" message
@@ -39,7 +124,7 @@ CHANGELOG
 
 * VFS-2698 Spinners on loading users/groups names
 * VFS-2698 Refactored spaces index go to default
-* VFS-2697 Cleared FIXMEs and fixed tests
+* VFS-2697 Cleaned code and fixed tests
 * VFS-2697 Clearing ResumableJS files on complete - Slight style change of file upload to not allow progress bar to disappear - Dynamic visible property - Experimental upload of dir files in Chrome - Refactored error-notifier service (currently unused) - Allow upload of 0-sized files - Reverting ResumableJS as singleton instance
 * VFS-2697 Major refactoring of files upload comp.
 * VFS-2494 Non-uppercase space name in selector

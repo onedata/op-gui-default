@@ -4,16 +4,11 @@
     isLoadingList=isLoadingList
     isListRejected=isListRejected}}
 {{else}}
-  {{#one-icon tagName="div" icon="group" class="content-error-icon"}}
-    {{#one-overlay fog=false}}
-      {{one-icon tagName="div" icon="ban-left-thin" class="content-error-icon icon-overlay ban"}}
-    {{/one-overlay}}
-  {{/one-icon}}
-  <div class="inner-content content-error">
+  {{#route-error icon="group"}}
     {{t "common.noPrivileges"
       privileges=(t "spaces.show.viewMembersPrivileges")
     }}
-  </div>
+  {{/route-error}}
 {{/if}}
 
 

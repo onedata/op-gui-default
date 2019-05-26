@@ -1,0 +1,68 @@
+.one-collapsible-list-item-header {
+  border-bottom: 1px solid $one-main-border-color;
+  position: relative;
+  .toggle-icon {
+    display: none;
+    font-size: 1.7em;
+    font-weight: bold;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%) rotate(0deg);
+    transition: transform .2s ease;
+  }
+  &.toolbar-when-opened {
+    .btn-toolbar {
+      display: none;
+    }
+  }
+  &.opened {
+    .toggle-icon {
+      transform: translateY(-50%) rotate(180deg);
+    }
+    .btn-toolbar {
+      display: block;
+    }
+  }
+  &.collapsible {
+    cursor: pointer;
+    &:hover {
+      background-color: $onedata-light-gray;
+    }
+    .toggle-icon {
+      display: block;
+    }
+    .btn-toolbar {
+      margin-right: 5em;
+    }
+  }
+
+  &.header-fixed {
+    // override inline styles
+    cursor: not-allowed !important;
+    > *:not(.item-checkbox) {
+      opacity: 0.4;
+    }
+  }
+
+  .item-checkbox {
+    margin-bottom: -3px;
+    margin-right: 1.2em;
+  }
+  
+  .item-icon-container {
+    $-item-icon-size: 2em;
+    
+    display: inline-block;
+    .item-icon {
+      font-size: $-item-icon-size;
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    + .one-label {
+      padding-left: $-item-icon-size;
+    }
+  }
+}

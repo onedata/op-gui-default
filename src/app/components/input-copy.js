@@ -4,13 +4,13 @@ export default Ember.Component.extend({
   notify: Ember.inject.service(),
   i18n: Ember.inject.service(),
 
-  classNames: ['input-with-button'],
+  classNames: ['input-copy', 'input-with-button'],
 
   /// Options
   autofocus: true,
 
   clipboardTarget: Ember.computed('elementId', function() {
-    return `#${this.get('elementId')} input[type=text]`;
+    return `#${this.get('elementId')} .copy-text`;
   }),
 
   selectTokenText() {

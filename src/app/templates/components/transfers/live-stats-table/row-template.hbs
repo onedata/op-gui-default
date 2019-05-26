@@ -1,0 +1,21 @@
+{{#if record.firstRowSpace}}
+  {{transfers/live-stats-table/first-row-space
+    processedColumnsCount=processedColumns.length
+    firstRowListIndex=record.firstRowListIndex
+    justOpened=justOpened
+  }}
+{{else}}
+  {{transfers/live-stats-table/transfer-row
+    record=record
+    selectedItems=_selectedItems
+    expandedRowIndexes=_expandedRowIndexes
+    processedColumns=processedColumns
+    expandedRowTemplate=expandedRowTemplate
+    index=index
+    data=data
+    table=table
+    expandRow=(if expandedRowTemplate (action "expandRow"))
+    collapseRow=(if expandedRowTemplate (action "collapseRow"))
+  }}
+{{/if}}
+  

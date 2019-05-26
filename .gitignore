@@ -69,3 +69,6 @@ typings/
 
 # ES Lint (currently we force developers to use only JSHint)
 .eslintrc.js
+
+# Currenlty we use NPM5 as experimental
+package-lock.json

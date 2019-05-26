@@ -14,19 +14,23 @@
  *
  * @module services/secondary-menu
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
 import Ember from 'ember';
 
-export default Ember.Service.extend({
+const {
+  computed,
+} = Ember;
+
+export default Ember.Service.extend({  
   component: null,
 
   activeItem: null,
   activeOption: null,
 
-  itemType: function() {
+  itemType: computed('activeItem', function() {
     let item = this.get('activeItem');
     if (item) {
       console.debug(`item type: ${item.constructor.toString()}`);
@@ -36,39 +40,40 @@ export default Ember.Service.extend({
       item.constructor.toString() ||
       undefined
     );
-  }.property('activeItem'),
+  }),
 
   /// specific item getters - this is a "syntatic sugar" to pass the itemType check
 
-  activeSpace: Ember.computed('activeItem', 'itemType', {
+  activeSpace: computed('activeItem', 'itemType', {
     get() {
       return this.get('itemType') === 'space' ?
         this.get('activeItem') : null;
     },
     set(key, value) {
-      this.set('activeItem', value);
+      return this.set('activeItem', value);
     }
   }),
-  activeGroup: Ember.computed('activeItem', 'itemType', {
+  
+  activeGroup: computed('activeItem', 'itemType', {
     get() {
       return this.get('itemType') === 'group' ?
         this.get('activeItem') : null;
     },
     set(key, value) {
-      this.set('activeItem', value);
+      return this.set('activeItem', value);
     }
   }),
-  activeShare: Ember.computed('activeItem', 'itemType', {
+  
+  activeShare: computed('activeItem', 'itemType', {
     get() {
       return this.get('itemType') === 'share' ?
         this.get('activeItem') : null;
     },
     set(key, value) {
-      this.set('activeItem', value);
+      return this.set('activeItem', value);
     }
   }),
-
-
+  
   clear: function() {
     this.setProperties({
       component: null,
@@ -76,8 +81,4 @@ export default Ember.Service.extend({
       activeOption: null,
     });
   },
-
-  resetActiveOption: function() {
-    this.set('activeOption', null);
-  }.observes('activeItem'),
 });

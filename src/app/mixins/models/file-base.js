@@ -41,4 +41,9 @@ export default Ember.Mixin.create({
    * See also: ``allChildrenLoaded`` computed property.
    */
   totalChildrenCount: attr('number'),
+  
+  /**
+   * If true, user can browser contents of directory
+   */
+  canViewDir: attr('boolean'),
 });

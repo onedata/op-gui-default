@@ -1,0 +1,600 @@
+.show-space-transfers {
+  $-table-padding: 8px;
+  
+  tr.transfer-row, .transfer-item-header {
+    height: 73px;
+    
+    &.other-collection {
+      td {
+        opacity: 0.6;
+      }
+    }
+  }
+  
+  .transfer-item-header .cell-data-name {
+    margin-top: 8px;
+  }
+  
+  // TODO: this seems to be generic for new style in content views
+  h1, h2 {
+    font-size: 100%;
+    text-transform: uppercase;
+    margin: 0;
+    padding: 17px 0px;
+    font-weight: bold;
+    .btn-group {
+      position: relative;
+      top: -9px;
+    }
+  }
+
+  .file-history-limit-message {
+    margin-top: 20px;
+    border-top: 1px solid $table-border-color;
+    padding-top: 16px;
+    padding-left: $-table-padding;
+    text-align: center;
+    color: darken($table-border-color, 20%);
+  }
+  
+  .ct-label.ct-vertical, .ct-label.ct-horizontal {
+    white-space: nowrap;
+  }
+
+  .ct-label.ct-horizontal {
+    display: block;
+    text-align: center;
+  }
+
+  .transfers-throughput-distribution {
+    $-ct-chart-height: 350px;
+    $-ct-chart-padding-top: 20px;
+    
+    position: relative;
+    .loadable-row {
+      height: $-ct-chart-height + $-ct-chart-padding-top;
+    }
+    .ct-chart {
+      margin-top: $-ct-chart-padding-top;
+      margin-bottom: 0;
+    }
+    .ct-grid.ct-vertical {
+      stroke: darken($onedata-light-gray, 9%);
+      &.x-axis-line {
+        stroke: black;
+      }
+    }
+    .x-axis-line {
+      stroke: black;
+    }
+    .ct-chart {
+      height: $-ct-chart-height;
+    }
+    .btn-group {
+      float: right;
+    }
+    .ct-label.ct-vertical {
+      margin-top: 0.5em;
+    }
+    .half-description {
+      display: none;
+      position: absolute;
+      left: 0;
+      text-transform: uppercase;
+      transform: translateX(-50%) translateY(-50%) rotate(-90deg) translateY(50%);
+      font-weight: bold;
+      text-align: center;
+      font-size: 70%;
+      line-height: 30px;
+      background-color: $onedata-light-gray;
+    }
+    .throughput-provider-selector {
+      display: inline-block;
+      max-width: 100%;
+      margin: 5px 0;
+      .dropdown-menu {
+        width: 300px;
+        right: initial;
+        &:before {
+          right: initial;
+        }
+      }
+      .dropdown-toggle {
+        display: inline-block;
+        padding-left: 25px;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        .dropdown-trigger-arrow {
+          position: absolute;
+          top: 0;
+          left: -2px;
+          font-size: 140%;
+        }
+      }
+      li .item-label {
+        max-width: 250px;
+        text-transform: none;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .map-column {
+    overflow: hidden;
+  }
+
+  .map-container {
+    .one-atlas {
+      padding-top: 73%;
+      margin-bottom: -15%;
+    }
+  }
+
+  .waiting-for-stats {
+    @include vertical-align-middle();
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    .one-label {
+      @include absolute-align-middle-center();
+    }
+  }
+
+  .chart-placeholder-image {
+    width: 80%;
+    max-width: 430px;
+    height: 95px;
+    margin: 0 auto $padding-large-vertical auto;
+    background-image: url("/assets/images/chart-placeholder.svg");
+    background-position-x: center;
+    opacity: 0.15;
+  }
+
+  .transfers-transfer-chart {
+    $-ct-chart-padding-top: 40px;
+    
+    position: relative;
+    .loadable-row {
+      // height of chart + top-padding (TODO: parametrize height of chart?)
+      min-height: 160px + $-ct-chart-padding-top;
+    }
+    .btn-group {
+      position: absolute;
+      top: $padding-small-vertical;
+      right: $padding-small-vertical;
+      .btn.btn-default:not(.active) {
+        background-color: transparent;
+      }
+    }
+    .ct-chart {
+      margin-top: $-ct-chart-padding-top;
+      margin-bottom: 0;
+    }
+    .ct-grid.ct-vertical {
+      stroke: darken($onedata-light-gray, 9%);
+    }
+    .ct-tooltip-entry::before {
+      height: 0;
+      width: 0;
+      border-color: inherit;
+      border-width: 5px;
+    }
+
+    .row-main-chart > .resource-load-error{
+      margin-top: 64px;
+      margin-left: 5%;
+      margin-right: 5%;
+    }
+  }
+
+  .ct-tooltip {
+    $arrow-top-position: $chart-tooltip-arrow-size * 0.65;
+    position: absolute;
+    display: none;
+    transform: translateX(-100%) translateX(-$chart-tooltip-arrow-size / 2 - 5px) translateY(-$arrow-top-position);
+    padding: $chart-tooltip-padding;
+    background-color: white;
+    border: 1px solid $chart-border-color;
+    border-radius: $border-radius-small;
+    z-index: 2;
+    font-size: $chart-font-size-base;
+    white-space: nowrap;
+    width: 200px;
+    .ct-tooltip-arrow {
+      border: ($chart-tooltip-arrow-size / 2) solid transparent;
+      border-left-color: $chart-border-color;
+      height: $chart-tooltip-arrow-size;
+      position: absolute;
+      bottom: 0;
+      border-right-width: 0;
+      top: $arrow-top-position;
+      transform: translateY(-50%);
+      left: 100%;
+      &::after {
+        content: '';
+        position: absolute;
+        border: ($chart-tooltip-arrow-size / 2) solid transparent;
+        border-left-color: white;
+        border-right-width: 0;
+        height: $chart-tooltip-arrow-size - 4px;
+        margin-left: -$chart-tooltip-arrow-size / 2 - 1px;
+        margin-top: -($chart-tooltip-arrow-size / 2);
+      }
+    }
+    &.right {
+      transform: translateX($chart-tooltip-arrow-size / 2 + 5px) translateY(-$arrow-top-position);
+      .ct-tooltip-arrow {
+        left: initial;
+        right: 100%;
+        transform: translateY(-50%) rotate(180deg);
+      }
+      &.top {
+        transform: translateX($chart-tooltip-arrow-size / 2 + 5px) translateY(-100%) translateY($arrow-top-position);
+        .ct-tooltip-arrow {
+          transform: translateY(50%) rotate(180deg);
+        }
+      }
+    }
+    &.top {
+      transform: translateX(-100%) translateX(-$chart-tooltip-arrow-size / 2 - 5px) translateY(-100%) translateY($arrow-top-position);
+      .ct-tooltip-arrow {
+        top: initial;
+        bottom: $arrow-top-position;
+        transform: translateY(50%);
+      }
+    }
+    .tooltip-header {
+      font-weight: bold;
+    }
+    .providers-list-header {
+      position: relative;
+      margin-top: $padding-base-vertical;
+      margin-bottom: $padding-base-vertical;
+      padding-top: $padding-base-vertical;
+      border-top: 1px solid $chart-border-color;
+      font-weight: bold;
+      .throughput {
+        top: $padding-base-vertical;
+      }
+    }
+    .ct-legend li {
+      position: relative;
+      display: block;
+      padding: 0 65px 0 15px;
+      margin: 0;
+      .provider-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    .throughput {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+    .legend-square {
+      position: absolute;
+      top: 3px;
+      left: 0;
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: $border-radius-small;
+    }
+  }
+
+  .cell-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+
+    .action-message {
+      $-left-border-style: 5px solid;
+      position: absolute;
+      bottom: -15px;
+      right: 12px;
+      padding: 2px $padding-base-horizontal;
+      background-color: $onedata-light-gray;
+      white-space: nowrap;
+      font-size: 80%;
+
+      &.success {
+        border-left: $-left-border-style $color-one-mint;
+      }
+      &.failure {
+        border-left: $-left-border-style $color-one-red;
+      }
+      &.warning {
+        border-left: $-left-border-style $color-one-yellow;
+      }
+    }
+  }
+
+  .one-collapsible-list-item {
+    position: relative;
+    .cell-actions {
+      position: absolute;
+      top: 18px;
+      right: 8px;
+      .action-message {
+        display: none;
+      }
+    }
+  }
+
+  .one-collapsible-list-item-header.row {
+    padding-left: $padding-large-horizontal;
+    padding-right: 45px;
+  }
+
+  .content-row {
+    border-bottom: 1px solid $one-main-border-color;
+    padding: $padding-large-vertical 0;
+    margin: 0 $padding-large-horizontal;
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  
+  .transfer-file-icon {
+    font-size: 32px;
+    line-height: 20px;
+    float: left;
+  }
+  
+  .transfers-table {
+    tr.data-row {
+      // to hold an absolute-positioned spinner
+      position: relative;
+      &:hover {
+        background-color: $onedata-light-gray;
+        cursor: pointer;
+      }
+      &.expanded-row {
+        background-color: darken($onedata-light-gray, 4%);
+        &:hover {
+          background-color: darken($onedata-light-gray, 9%);
+        }
+      }
+      .loadable-row {
+        min-height: 24px;
+      }
+    }
+    th {
+      white-space: nowrap;
+      background-color: $color-tab-content-background;
+    }
+    th, td {
+      padding: 2 * $-table-padding $-table-padding;
+      text-align: center;
+      &:first-child {
+        text-align: left;
+      }
+    }
+
+    .expand-row td {
+      background-color: $onedata-light-gray;
+    }
+    
+    table {
+      table-layout: fixed;
+      thead {
+        th {
+          border-bottom-width: 1px;
+          .oneicon {
+            vertical-align: middle;
+          }
+        }
+      }
+    }
+    .cell-status {
+      top: 1px;
+    }
+  }
+  
+  .transfers-table.scheduled tr.data-row:hover {
+    background-color: initial;
+    cursor: initial;
+  }
+  
+  // TODO: HACK for scheduled table, which does not have status column
+  .transfers-table th.table-header:nth-last-of-type(1) {
+    width: 70px;
+  }
+  .transfers-table:not(.scheduled) th.table-header:nth-last-of-type(2) {
+    width: 70px;
+  }
+  .transfers-table.scheduled th.table-header:nth-last-of-type(2) {
+    width: auto;
+  }
+  
+  .cell-data-name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    .one-icon {
+      position: absolute;
+    }
+    .oneicon-folder, .oneicon-folder-deleted {
+      // custom pull up for folder icons
+      margin-top: -2px;
+    }
+    .transfer-file-name {
+      padding-left: 40px;
+    }
+  }
+  .col-icon {
+    .cell-icon {
+      display: block;
+      position: relative;
+      top: -4px;
+    }
+  }
+  .cell-icon {
+    font-size: 2em;
+    line-height: 0;
+    vertical-align: middle;
+    &.completed {
+      color: $color-one-mint;
+    }
+    &.skipped {
+      color: $onedata-azure;
+    }
+    &.failed,
+    &.cancelled {
+      color: $color-one-red;
+    }
+    &.replicating, &.evicting, &.enqueued {
+      color: $color-one-yellow;
+    }
+    &.scheduled {
+      color: $onedata-graphite;
+    }
+    // action pending states (frontend)
+    &.aborting {
+      @extend .animated;
+      @extend .infinite;
+      @extend .hinge;
+      @extend .pulse-red-transparent;
+    }
+  }
+  .transfer-actions-cell {
+    position: relative;
+    width: 40px;
+    .cell-actions {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+  }
+  .cell-total-files {
+    display: inline-block;
+  }
+  .table-empty-message {
+    padding-left: $-table-padding;
+  }
+  
+  .row-transfer-query-params {
+    position: relative;
+    margin-left: $padding-base-horizontal;
+    margin-right: $padding-base-horizontal / 2;
+    margin-bottom: $padding-base-horizontal;
+    padding-top: $padding-base-horizontal;
+    padding-bottom: $padding-base-horizontal;
+    .query-params-empty {
+      color: $onedata-gray;
+    }
+    .query-options {
+      @include vertical-align-middle();
+      margin-left: 140px;
+      width: calc(100% - 140px);
+    }
+    .query-string-input-copy {
+      .query-string-input-copy.truncate {
+        max-width: 500px;
+      }
+      .query-string {
+        @include vertical-align-middle();
+      }
+    }
+  }
+}
+
+.transfers-overview {
+  &:focus {
+    outline: none;
+  }
+  .row-active-transfers {
+    transition: top 0.25s ease-out;
+    padding-bottom: 50px;
+    &.sticky {
+      // on top of spinner
+      z-index: 2000000001;
+      position: fixed;
+      padding-bottom: 0;
+    }
+  }
+  
+  .row-overview {
+    background-color: $color-main-background;
+  }
+  
+  .row-expand-handler {
+    opacity: 0;
+    display: block;
+    padding-left: 22px;
+    padding-right: 22px;
+    background-color: $onedata-light-gray;
+    line-height: 50px;
+    transition: opacity 0.5s linear;
+    pointer-events: none;
+  }
+  
+  .sticky {
+    .row-expand-handler {      
+      opacity: 1;
+      cursor: pointer;
+      pointer-events: all;
+    }
+  }
+ 
+  
+  tr.transfer-row:nth-of-type(2) {
+    td {
+      border-top: none;
+    }
+  }
+}
+
+.middle-sticky {
+  position: fixed;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.1s linear;
+  &.middle-sticky-hide {
+    opacity: 0;
+  }
+}
+
+.show-space-transfers .transfers-table tr.first-row-space {
+  width: 100%;
+  td {
+    padding: 0;
+    width: 100%;
+  }
+}
+
+.nav-tabs-transfers {
+  .nav-link-file {
+    min-width: 120px;
+    padding-right: 20px;
+    .tab-icon {
+      @include vertical-align-middle();
+      left: 8px;
+      font-size: 28px;
+      &.oneicon-folder {
+        // custom pull up for folder icons
+        margin-top: -2px;
+      }
+    }
+    .tab-name {
+      padding-left: 10px;
+      padding-right: 8px;
+      &.truncate {
+        max-width: 200px;  
+      }
+    }
+    .tab-close {
+      .one-icon {
+        @include vertical-align-middle();
+        right: 8px;
+        font-size: 24px;
+        &:hover {
+          color: $color-one-red;
+        }
+      }
+    }
+  }
+}

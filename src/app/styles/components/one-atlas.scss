@@ -1,0 +1,17 @@
+.one-atlas {
+  position: relative;
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  background-image: url("/assets/images/atlas-dark.svg");
+  // size will be set by script
+  background-size: cover;
+  background-position: top left;
+  background-repeat: no-repeat;
+
+  .one-atlas-point {
+    position: absolute;
+    // top and left properties are calculated by JS
+    transform: translateX(-50%) translateY(-50%);
+  }
+}

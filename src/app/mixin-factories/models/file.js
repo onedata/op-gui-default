@@ -3,6 +3,7 @@ import DS from 'ember-data';
 
 import FileBaseMixin from 'op-worker-gui/mixins/models/file-base';
 import FileRuntimeMixin from 'op-worker-gui/mixins/models/file-runtime';
+import FileTransfersMixin from 'op-worker-gui/mixins/models/file-transfers';
 
 const {
   belongsTo,
@@ -78,12 +79,12 @@ function create(type) {
   });
 
   relations['parent'] = belongsTo(parentModel, {
-    inverse: 'children',
+    inverse: null,
     async: true
   });
 
   relations['children'] = hasMany(parentModel, {
-    inverse: 'parent',
+    inverse: null,
     async: true
   });
 
@@ -92,5 +93,10 @@ function create(type) {
     async: true
   });
 
-  return Ember.Mixin.create(FileBaseMixin, FileRuntimeMixin, relations);
+  return Ember.Mixin.create(
+    FileBaseMixin, 
+    FileRuntimeMixin, 
+    FileTransfersMixin,
+    relations
+  );
 }

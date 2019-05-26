@@ -1,21 +1,30 @@
 import DS from 'ember-data';
+import Ember from 'ember';
 import isDefaultMixinFactory from 'ember-cli-onedata-common/mixin-factories/models/is-default';
+import computedTransfersList from 'op-worker-gui/utils/computed-transfers-list';
 
 const {
   attr,
-  belongsTo
+  belongsTo,
 } = DS;
+
+const {
+  RSVP: { Promise },
+  inject: { service },
+} = Ember;
 
 /**
  * A configuration of a space - entry point for all options
  * that can be reached from "spaces" button in primary sidebar.
  *
  * @module models/space
- * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @author Jakub Liput, Michal Borzecki
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
+  oneproviderServer: service(),
+  
   /** User specified name of space that will be exposed in GUI */
   name: attr('string'),
 
@@ -30,8 +39,72 @@ export default DS.Model.extend(isDefaultMixinFactory('defaultSpaceId'), {
 
   /** Collection of users permissions - effectively all rows in permissions table */
   userList: belongsTo('space-user-list', { async: true }),
-  
+
   /** Collection of group permissions - effectively all rows in permissions table */
   groupList: belongsTo('space-group-list', { async: true }),
+  
+  onTheFlyTransferList: belongsTo('space-on-the-fly-transfer-list', { async: true, inverse: null }),
+  
+  providerList: belongsTo('space-provider-list', { async: true, inverse: null }),
 
+  transferOnTheFlyStat: belongsTo('space-transfer-stat', { async: true, inverse: null }),
+  transferJobStat: belongsTo('space-transfer-stat', { async: true, inverse: null }),
+  transferAllStat: belongsTo('space-transfer-stat', { async: true, inverse: null }),
+  transferLinkState: belongsTo('space-transfer-link-state', { async: true, inverse: null }),
+
+  /**
+   * On-the-fly, job and all transfer stats for each provider.
+   * It is an object in format:
+   * ``
+   * {
+   *   provider1Id: {
+   *       onTheFlyStat: id_of_space-transfer-stat,
+   *       jobStat: id_of_space-transfer-stat,
+   *       allStat: id_of_space-transfer-stat,
+   *   },
+   *   provider2Id: {
+   *       ...like above...
+   *   },
+   *   ...
+   * }
+   * ``
+   */
+  transferProviderStat: attr('object'),
+  
+  /**
+   * @type {Ember.ComputedProperty<FakeListRecordRelation>}
+   */
+  scheduledTransferList: computedTransfersList('waiting'),
+  
+  /**
+   * @type {Ember.ComputedProperty<FakeListRecordRelation>}
+   */
+  currentTransferList: computedTransfersList('ongoing'),
+  
+  /**
+   * @type {Ember.ComputedProperty<FakeListRecordRelation>}
+   */
+  completedTransferList: computedTransfersList('ended'),
+    
+  /**
+   * Fetch partial list of space transfer records
+   * @param {string} type one of: waiting, ongoing, ended
+   * @returns {Promise<object>} promise of RPC request with transfers list
+   */
+  fetchTransfers(type, startFromIndex, size, offset) {
+    const {
+      oneproviderServer,
+      store,
+    } = this.getProperties('oneproviderServer', 'store');
+    return oneproviderServer.getSpaceTransfers(
+      this.get('id'),
+      type,
+      startFromIndex,
+      size,
+      offset
+    ).then(({ list }) =>
+      Promise.all(list.map(id => store.findRecord('transfer', id)))
+    );
+  },
 });
+

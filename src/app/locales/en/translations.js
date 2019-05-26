@@ -1,4 +1,6 @@
 import sessionLocales from 'ember-cli-onedata-common/locales/en/session';
+import resourceLoadError from 'ember-cli-onedata-common/locales/en/components/resource-load-error';
+import errorInline from 'ember-cli-onedata-common/locales/en/components/error-inline';
 import filePermissions from './file-permissions';
 
 /**
@@ -7,9 +9,9 @@ import filePermissions from './file-permissions';
  *
  * @module locales/en/translations
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
-*/
+ */
 export default {
   common: {
     file: 'file',
@@ -43,6 +45,8 @@ export default {
     session: sessionLocales
   },
   components: {
+    resourceLoadError,
+    errorInline,
     filePermissions: {
       error: 'An error occured when loading permissions data:',
       posix: {
@@ -74,6 +78,7 @@ export default {
     topBar: {
       logout: 'Log out',
       manageProviders: 'Manage account',
+      about: 'About this provider',
     },
     mainMenu: {
       data: 'data',
@@ -84,9 +89,42 @@ export default {
       spaces: 'spaces',
       groups: 'groups',
       token: 'tokens',
-      providers: 'providers'
+      providers: 'providers',
+      transfers: 'transfers',
+    },
+    queryOptions: {
+      expand: 'Expand options',
+      hide: 'Hide options',
+      copy: 'Copy',
     },
     modals: {
+      dbIndexModal: {
+        title: 'Database index information',
+        tabs: {
+          general: 'General',
+          mapFunction: 'Map function',
+          reduceFunction: 'Reduce function',
+        },
+        tabGeneral: {
+          indexName: 'Index name',
+          spaceName: 'Space name',
+          providers: 'Providers',
+          spatial: 'Spatial',
+          indexOptions: 'Index options',
+        },
+        tabMapFunction: {
+          empty: 'This index has no map function',
+        },
+        tabReduceFunction: {
+          empty: 'This index has no reduce function',
+        },
+      },
+      aboutModal: {
+        title: 'About this provider',
+        providerName: 'Provider name:',
+        version: 'Software version:',
+        registeredIn: 'Registered in Zone:',
+      },
       renameModal: {
         renameSuccess: 'Element "{{oldName}}" renamed to "{{newName}}"',
         renameFailed: 'Element "{{oldName}}" rename to "{{newName}}" failed due to an error',
@@ -124,7 +162,7 @@ export default {
         selectHandleServicePlaceholder: "Choose a handle service",
         publishButton: "Publish",
         noHandleServices: 'Unfortunately, currently you do not have access to any handle service.',
-        dublinCoreLabel: 'Please enter Dublin Core metadata here:',
+        dublinCoreLabel: 'Optionally, you can associate Dublin Core (XML) metadata with your dataset below:',
         publishFailure: 'Publishing share "{{shareName}}" failed: {{errorMessage}}',
         publishSuccess: 'Share "{{shareName}}" has been published successfully!',
       },
@@ -261,6 +299,9 @@ export default {
 
       }
     },
+    transfersMenu: {
+      title: 'space data transfers',
+    },
     sharesMenu: {
       title: 'shares',
       join: 'Join',
@@ -345,8 +386,21 @@ export default {
         metadataDeleteFailed: 'Could not delete metadata for file "{{fileName}": {{errorMessage}}',
         metadataDeleteSuccess: 'Deleted metadata for file "{{fileName}}"',
       },
+      fileInfoRow: {
+        cdmiObjectId: 'File ID',
+        spaceId: 'Space ID',
+        name: {
+          file: 'File name',
+          dir: 'Directory name',
+        },
+        path: {
+          file: 'File path',
+          dir: 'Directory path',
+        },
+      },
       uploadIndicator: 'Uploading: {{currentlyUploadingCount}} file(s) left...',
-      uploadFinishedWait: 'Finalizing the upload...'
+      uploadFinishedWait: 'Finalizing the upload...',
+      noViewPrivileges: 'view contents of this directory',
     },
     metadataPanel: {
       saveAllChanges: 'Save all changes',
@@ -366,8 +420,9 @@ export default {
         copy: 'Copy element',
         cut: 'Cut element',
         remove: 'Remove element',
-        chunks: 'Show file distribution',
+        chunks: 'Show data distribution',
         metadata: 'Edit metadata',
+        info: 'Toggle element info',
       },
       renameFileModal: {
         title: 'Rename file or directory',
@@ -399,16 +454,73 @@ export default {
         text: 'Enter new file permissions code:'
       },
       fileChunksModal: {
-        title: 'File distribution',
-        text: 'Distribution of file blocks among providers for file',
+        file: 'file',
+        directory: 'directory',
+        rootDirectory: 'root directory',
+        title: 'Data distribution',
+        text: 'Management of data distribution for',
+        fileIsEmpty: 'This file has no content.',
+        neverSynchronized: 'Never synchronized',
+        neverSynchronizedHint: 'This file was never read or modified on selected ' +
+          'provider. File blocks will be synchronized when needed.  ' +
+          'You can also manually replicate the file to selected provider',
         providerName: 'Provider',
-        dataDitribution: 'File blocks',
-        loading: 'Loading file chunks table...',
-        error: 'File chunks table cannot be loaded due to an error'
+        dataDistribution: 'Data blocks',
+        migrateFileDataInto: 'Migrate the data into',
+        loading: 'Loading file distribution data...',
+        error: 'Data distribution table cannot be loaded due to an error',
+        noCurrentProviderSupport: 'Current space is not supported by this ' +
+          'provider, thus advanced data replication or migration features are ' +
+          'not available here. To access them, visit one of the supporting ',
+        providersLink: 'providers',
+        onlySingleProviderSupport: 'Current space is supported by only one provider, ' +
+          'thus advanced data replication or migration features are not available.',
+        currentlyTransferredText: 'This {{elementType}} is currently transferred between ' +
+          'providers',
+        currentlyTransferredLink: 'see ongoing transfers',
+        endedTransfersText: 'This {{elementType}} was transferred manually',
+        orMore: 'or more',
+        time: 'time',
+        times: 'times',
+        endedTransfersLink: 'see history',
+        noTransfersText: 'This {{elementType}} has never been transferred manually',
+        providerRow: {
+          replication: 'replication',
+          migration: 'migration',
+          eviction: 'eviction',
+          migrationStart: 'Migrate the data to other provider...',
+          replicationStart: 'Replicate the data to selected provider',
+          evictionStart: 'Evict redundant data blocks on this provider',
+          disabledSingleProvider: 'is available only with two or more supporting providers',
+          disabledProxyProvider: 'Visit a supporting provider in order to schedule',
+          disabledMigrationIsEmpty: 'Cannot schedule migration as there are no file blocks on this provider',
+          disabledMigrationInProgress: 'The data is currently migrated from selected provider',
+          disabledReplicationIsComplete: 'Cannot schedule replication as all file block are already on this provider',
+          disabledReplicationInProgress: 'The data is currently replicated to selected provider',
+          disabledInProgress: 'Operation is unavailable as there are transfers in progress on this provider',
+          disabledEvictionNoBlocks: 'Eviction is not possible unless some data blocks on this provider are redundant',
+          disabledEvictionInProgress: 'The data is currently evicted in selected provider',
+          disabledMigrationUnknown: 'The data cannot be migrated from selected provider now',
+          disabledReplicationUnknown: 'The data cannot be replicated into selected provider now',
+          disabledEvictionUnknown: 'The data cannot be evicted in selected provider now',
+        },
+        migratePopover: {
+          migrateItem: {
+            busy: 'busy',
+          },
+        },
+        confirmStart: 'Start',
+        confirmType: {
+          replicate: 'replication',
+          migrate: 'migration',
+          evict: 'eviction',
+        },
+        pendingTransfersWarning: 'There are pending transfers of the file in this provider. Starting a new {{type}} can interrupt existing transfers. Do you want to start a new {{type}} anyway?',
+        confirmDialogTitle: 'Warning',
       },
       notify: {
         createFileFailed: 'File or directory "{{fileName}}" creation failed'
-      }
+      },
     },
     fileUpload: {
       titleUpload: 'Uploading {{count}} file(s)',
@@ -446,7 +558,116 @@ export default {
       publicUrl: 'Public URL',
       publicHandle: 'Public handle',
       publish: 'Publish',
-    }
+    },
+    transfers: {
+      providersMapOfDist: 'Ongoing transfers map',
+      scheduledTransfers: 'Waiting',
+      activeTransfers: 'Ongoing',
+      completedTransfers: 'Ended',
+      onTheFlyTransfers: 'On-the-fly',
+      noTransfers: {
+        file: 'There are no transfers for selected file or directory',
+        scheduled: 'There are no waiting transfers',
+        current: 'There are no ongoing transfers',
+        completed: 'There are no ended transfers',
+      },
+      initializingTransfers: 'Initializing transfers...',
+      notSupported: 'Cannot list transfers of selected space because it is not ' +
+        'supported by current provider',
+      in: 'Input',
+      out: 'Output',
+      fileHistoryLimitReached: 'History limit per file reached',
+      fileNotExists: 'Selected file or directory does not exist',
+      liveTableStats: {
+        type: 'Type',
+        path: 'File/directory',
+        userName: 'Username',
+        destination: 'Destination',
+        scheduledAt: 'Scheduled at',
+        startedAt: 'Started at',
+        finishedAt: 'Finished at',
+        totalBytes: 'Replicated',
+        totalFiles: 'Processed files',
+        status: 'Status',
+        destinationUnknown: '-',
+        cancelFailure: 'Error occurred during transfer cancellation.',
+        rerunFailure: 'Error occurred during transfer rerun.',
+        rerunStarting: 'Rerunning transfer...',
+        rerunSuccess: 'Rerun transfer may be found in "Waiting" tab.',
+        cellActions: {
+          cancelTransfer: 'Cancel transfer',
+          rerunTransfer: 'Rerun transfer',
+        },
+        cellFileName: {
+          file: 'File:',
+          dir: 'Directory',
+          index: 'Index',
+          deleted: 'deleted',
+        },
+        cellStatus: {
+          completed: 'Completed',
+          skipped: 'Skipped',
+          cancelled: 'Cancelled',
+          failed: 'Failed',
+          replicating: 'Replicating',
+          scheduled: 'Scheduled',
+          enqueued: 'Enqueued',
+          aborting: 'Aborting',
+          evicting: 'Evicting',
+        },
+        cellType: {
+          replication: 'Replication',
+          migration: 'Migration',
+          eviction: 'Eviction',
+        },
+        cellTotalFiles: {
+          evicted: 'evicted',
+          replicated: 'replicated',
+        },
+      },
+      queryParams: {
+        label: 'Query parameters',
+        empty: 'No query parameters provided for index transfer'
+      },
+      transferChart: {
+        minute: 'Minute',
+        hour: 'Hour',
+        day: 'Day',
+        month: 'Month',
+        time: 'Time',
+        throughput: 'Throughput',
+        output: 'Output',
+        waitingForTransferStart: 'Waiting for the transfer to start...',
+        noStatsForUnit: 'No activity in the last {{timeUnit}}.',
+        waitingForStats: 'Gathering transfer statistics...',
+        waitingForStatsTip: 'Statistics are delayed due to synchronization ' +
+          'latency caused by data distribution.',
+      },
+      throughputDistribution: {
+        title: 'Providers throughput',
+        input: 'Input',
+        output: 'Output',
+        receivedFrom: 'Received from',
+        sentTo: 'Sent to',
+        timeLastUpdate: 'Time (last update: {{lastUpdate}})',
+        throughput: 'Throughput',
+        onTheFly: 'On-the-fly',
+        all: 'All',
+        jobs: 'Jobs',
+        providerSelector: {
+          allProviders: 'All providers',
+        },
+      },
+      transfersOverview: {
+        hide: 'Hide transfers overview',
+        show: 'Show transfers overview',
+      },
+    },
+    rootDirSettingsDrop: {
+      drop: {
+        dataDistribution: 'Data distribution',
+      },
+    },
   },
   notFound: {
     notifyMessage: 'Requested path not found'
@@ -466,7 +687,10 @@ export default {
     }
   },
   shares: {
-    title: 'Shared'
+    title: 'Shared',
+    show: {
+      noMetadata: 'There is no metadata associated with this dataset.',
+    },
   },
   trash: {
     title: 'Trash'
@@ -507,5 +731,24 @@ export default {
         }
       }
     }
-  }
+  },
+  transfers: {
+    title: 'Transfers',
+    show: {
+      title: 'Transfers for space'
+    },
+  },
+  spacesError: {
+    fetchFailure: 'An error occured on fetching spaces list.',
+    noSpaceSupported: 'This provider does not support any space.',
+    errorCauses: 'It may be a sync error or failure of the provider.',
+    advice: 'Please try to refresh the page or contact system administrator.'
+  },
+  error: {
+    cannotLoadResource: 'A fatal error occured: the requested resource cannot be loaded.',
+    tryRefreshOrContact: 'You can try to refresh the page or contact administrators.'
+  },
+  onezone: {
+    cannotResolveUrl: 'Cannot resolve Onezone URL',
+  },
 };

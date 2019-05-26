@@ -58,6 +58,7 @@ export default Ember.Component.extend({
   notify: inject.service(),
   oneproviderServer: inject.service(),
   session: inject.service(),
+  eventsBus: inject.service(),
 
   classNames: ['file-upload'],
   classNameBindings: ['isPanelVisible:file-upload-visible:file-upload-hidden'],
@@ -199,6 +200,7 @@ export default Ember.Component.extend({
       } else if (failedFilesCount < filesCount) {
         notify.warning(`${failedFilesCount} of ${filesCount} file(s) cannot be uploaded`);
       } else {
+        this.get('eventsBus').trigger('fileUpload:uploadAllFailed');
         notify.error(`Files upload failed!`);
       }
       
@@ -250,7 +252,11 @@ export default Ember.Component.extend({
     return (file) => {
       // Handle progress for both the file and the overall upload
       let ufile = this.addOrGetUploadingFile(file);
-      ufile.set('progress', file.progress());
+      if (file.size === 0) {
+        ufile.set('progress', file.isComplete() ? 1 : 0);
+      } else {
+        ufile.set('progress', file.progress());
+      }
     };
   }),
 

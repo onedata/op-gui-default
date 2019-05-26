@@ -1,0 +1,15 @@
+<div class="dots-trigger" {{action "toggleVisibility"}}>
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+</div>
+<ul class="dropdown-menu open dropdown-menu-list space-dropdown-menu dropdown-menu-settings {{posXClasses}}">
+  {{#each menuActions as |act index|}}
+    {{dots-menu/menu-item
+      icon=act.icon
+      title=act.title
+      action=(action "runAction" index)
+      disabled=act.disabled
+    }}
+  {{/each}}
+</ul>

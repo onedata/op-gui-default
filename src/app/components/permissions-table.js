@@ -59,7 +59,7 @@ export default Ember.Component.extend({
 
   permissionsSorting: ['owner'],
 
-  // FIXME jsdoc
+  // TODO: jsdoc
   isLoadingList: undefined,
 
   /**

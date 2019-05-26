@@ -1,0 +1,89 @@
+{{#if _mobileMode}}
+  {{!-- there can be a firstRowSpace row --}}
+  {{#if _tableDataEmpty}}
+    {{#if justOpened}}
+      {{loading-more-spinner size="sm"}}
+    {{else}}
+      <p>{{_tableCustomMessages.noDataToShow}}</p>
+    {{/if}}
+  {{else}}
+    {{#one-collapsible-list as |list|}}
+      {{#each _tableData as |tableRowData|}}
+        {{#if tableRowData.firstRowSpace}}
+          {{transfers/live-stats-table/first-row-space
+            tagName="li"
+            visibleColumnsCount=1
+            firstRowListIndex=firstRowSpace.firstRowListIndex
+            justOpened=justOpened
+          }}
+        {{else}}
+          {{#list.item as |listItem|}}
+            {{#listItem.header disableToggleIcon=tableRowData.actions.length class="transfer-item-header"}}
+              <div
+                class="transfer-row"
+                id="transfer-row-{{tableRowData.transferId}}"
+                data-transfer-id={{tableRowData.transferId}}
+                data-list-index={{tableRowData.listIndex}}
+              >
+                {{transfers/live-stats-table/cell-data-name record=tableRowData}}
+              </div>
+            {{/listItem.header}}
+            {{#if tableRowData.actions.length}}
+              {{transfers/live-stats-table/cell-actions record=tableRowData}}
+            {{/if}}
+            {{#listItem.content}}
+              <div class="item-table">
+                <div class="item-table-content-cell">
+                  {{#each _tableColumns as |column|}}
+                    {{#unless column.isHidden}}
+                      <div class="row content-row">
+                        {{!-- using data processing similar to the one used by ember-models-table --}}
+                        <strong>{{column.title}}:</strong>
+                        {{#if column.component}}
+                          {{component column.component data=_tableData record=tableRowData column=column}}
+                        {{else}}
+                          <span class="one-label">{{get tableRowData column.propertyName}}</span>
+                        {{/if}}
+                      </div>
+                    {{/unless}}
+                  {{/each}}
+                  {{#if listItem.isActive}}
+                    <div class="row content-row chart-row">
+                      {{transfers/live-stats-table/expanded-row-template record=tableRowData}}
+                    </div>
+                  {{/if}}
+                </div>
+              </div>
+            {{/listItem.content}}
+          {{/list.item}}
+        {{/if}}
+      {{/each}}
+    {{/one-collapsible-list}}
+  {{/if}}
+{{else}}
+  {{#if _transfersError}}
+    {{resource-load-error reason=_transfersError}}
+  {{else}}
+    {{models-table
+      data=_tableData
+      columns=_tableColumns
+      customIcons=_tableCustomIcons
+      customClasses=_tableCustomClasses
+      customMessages=_tableCustomMessages
+      showColumnsDropdown=false
+      showGlobalFilter=false
+      useFilteringByColumns=false
+      showComponentFooter=false
+      multipleColumnsSorting=false
+      multipleExpand=_hasExpandableRows
+      pageSize=1000000
+      rowTemplate="components/transfers/live-stats-table/row-template"
+      expandedRowTemplate=(if _hasExpandableRows "components/transfers/live-stats-table/expanded-row-template" null)
+      isReloading=_isReloading
+      justOpened=justOpened
+    }}
+    {{#if (and _tableDataEmpty (not justOpened))}}
+      <p class="table-empty-message">{{_tableCustomMessages.noDataToShow}}</p>
+    {{/if}}
+  {{/if}}
+{{/if}}

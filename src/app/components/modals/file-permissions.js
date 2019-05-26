@@ -88,6 +88,12 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
    */
   mixedAcl: false,
 
+  /**
+   * If true, ACL has been started editing
+   * @type {boolean}
+   */
+  aclEditing: false,
+  
   init() {
     this._super();
     this.resetProperties();

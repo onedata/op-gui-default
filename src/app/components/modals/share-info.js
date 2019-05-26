@@ -26,7 +26,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   error: null,
 
   /**
-   * @type Share or Ember.ObjectProxy of Share
+   * @type {Ember.ObjectProxy.Share}
    */
   share: null,
 

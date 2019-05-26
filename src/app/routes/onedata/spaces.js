@@ -2,21 +2,30 @@
  * A Spaces page from main-menu.
  *
  * Could list a Spaces for user, who can select the Space and configure it.
- * @module routes/spaces
+ * @module routes/onedata/spaces
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
 import Ember from 'ember';
+import userCollectionModel from 'ember-cli-onedata-common/mixin-factories/routes/user-collection-model';
 
-export default Ember.Route.extend({
+const {
+  Route,
+  inject: { service },
+} = Ember;
+
+export default Route.extend(userCollectionModel('spaces', { nonEmpty: true }), {
   mainRouteName: 'spaces',
+  
+  secondaryMenu: service(),
 
-  model() {
-    return this.modelFor('onedata').get('spaces');
+  beforeModel() {
+    this._super(...arguments);
+    this.set('secondaryMenu.component', null);
   },
-
+  
   actions: {
     /** Show submenu for Space */
     goToSpace(space) {

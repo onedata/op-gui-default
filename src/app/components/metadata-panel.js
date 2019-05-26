@@ -13,11 +13,23 @@ export default Ember.Component.extend({
 
   /**
    * A metadata record to edit in this panel.
-   * To inject.
+   * @virtual
    * @type {ObjectProxy<FileProperty>}
    */
   metadataProxy: null,
 
+  /**
+   * @virtual
+   * @type {Function}
+   */
+  removeMetadata: () => {},
+  
+  /**
+   * @virtual
+   * @type {Function}
+   */
+  closeMetadataPanel: () => {},
+    
   /**
    * To inject.
    * If true, metadata cannot be edited.
@@ -85,14 +97,14 @@ export default Ember.Component.extend({
       if (this.get('metadata.isNew')) {
         // we created new local record, and by discarding changes, we remove it completely
         this.get('metadata').deleteRecord();
-        this.sendAction('closeMetadataPanel');
+        this.get('closeMetadataPanel')();
       } else {
         this.get('metadata').rollbackAttributes();
       }
     },
 
     removeMetadata() {
-      this.sendAction('removeMetadata');
+      this.get('removeMetadata')();
     },
   }
 });

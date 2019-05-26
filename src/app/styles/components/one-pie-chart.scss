@@ -1,0 +1,56 @@
+.one-pie-chart {
+  position: relative;
+
+  @media (min-width: $screen-sm-min) {
+    padding-top: 40%;
+
+    .ct-chart {
+      position: absolute;
+      height: initial;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+
+      .ct-legend {
+        display: none;
+      }
+    }
+  }
+  @media (max-width: $screen-xs-max) {
+    .ct-chart {
+      height: initial;
+      .ct-legend.ct-legend-inside {
+        position: initial;
+      }
+      svg {
+        min-height: 200px;
+      }
+    }
+  }
+
+  .ct-chart {
+    margin-bottom: 0;
+  }
+
+  .ct-centered-text {
+    font-weight: bold;
+    fill: $text-color;
+  }
+  .label-hidden {
+    opacity: 0;
+  }
+  .ct-pie-label-line {
+    stroke: $text-color;
+  }
+  .ct-pie-label-text {
+    font-size: 8pt;
+    fill: $text-color;
+    &.ct-pie-label-text-bottom {
+      font-weight: bold;
+    }
+  }
+  .ct-slice-donut {
+    fill: none;
+  }
+}

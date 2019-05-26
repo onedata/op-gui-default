@@ -1,0 +1,18 @@
+<div class="secondary-sidebar-item first-level">
+  <span class="item-element item-click-area"
+    {{action "activate"}}>
+    <span class="item-element item-icon">
+      {{one-icon
+        icon=(if space.isDefault "space-home" "space")
+        class=(if space.isDefault "color-space-default" "color-space")
+      }}
+    </span>
+
+    <span class="item-element item-label" title="{{space.name}}">
+      <div class="truncate truncate-secondary-sidebar-select">
+        {{space.name}}
+      </div>
+    </span>
+
+  </span>
+</div>

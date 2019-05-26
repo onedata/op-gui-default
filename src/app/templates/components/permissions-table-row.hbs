@@ -4,11 +4,13 @@
 {{#if (and (eq type 'groups') (array-contains availableGroupIds perm.owner.id))}}
 <div class="one-td one-first hidden-xs hidden-sm" {{action 'activate'}}>
   {{#link-to 'onedata.groups.show' perm.owner.id class="full-size"}}
-    {{#truncated-string parentSelector=".one-first" shrinkBy=20}}
-      {{#if (or (not perm.owner) perm.owner.isLoading)}}
+    {{#truncated-string widthBased=true parentSelector=".one-first" shrinkBy=20}}
+      {{#if perm.owner.isPending}}
         <div class="spinner-container spinner-32">
           {{spin-spinner scale=0.2 lines=12 length=20 width=10}}
         </div>
+      {{else if perm.owner.isRejected}}
+        <em>Cannot fetch name</em>
       {{else}}
         {{perm.owner.name}}
       {{/if}}
@@ -17,11 +19,13 @@
 </div>
 {{else}}
   <div class="one-td one-first hidden-xs hidden-sm" {{action 'activate'}}>
-    {{#truncated-string parentSelector=".one-first" shrinkBy=20}}
-      {{#if (or (not perm.owner) perm.owner.isLoading)}}
+    {{#truncated-string widthBased=true parentSelector=".one-first" shrinkBy=20}}
+      {{#if perm.owner.isPending}}
         <div class="spinner-container spinner-32">
           {{spin-spinner scale=0.2 lines=12 length=20 width=10}}
         </div>
+      {{else if perm.owner.isRejected}}
+        <em>Cannot fetch name</em>
       {{else}}
         {{perm.owner.name}}
       {{/if}}
@@ -30,7 +34,7 @@
 {{/if}}
 
 <div class="one-td one-first hidden-md hidden-lg" {{action 'activate'}}>
-  {{#truncated-string parentSelector=".one-first" shrinkBy=20}}
+  {{#truncated-string widthBased=true parentSelector=".one-first" shrinkBy=20}}
     {{#if (or (not perm.owner) perm.owner.isLoading)}}
       <div class="spinner-container spinner-32">
         {{spin-spinner scale=0.2 lines=12 length=20 width=10}}

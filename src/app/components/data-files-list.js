@@ -1,13 +1,13 @@
 import Ember from 'ember';
-import conflictProviderId from 'op-worker-gui/utils/conflict-provider-id';
+import addConflictLabels from 'ember-cli-onedata-common/utils/add-conflict-labels';
 
 const {
   computed,
+  computed: { reads },
   inject,
   run,
   observer,
   on,
-  assert,
   run: {
     debounce
   }
@@ -64,18 +64,18 @@ export default Ember.Component.extend({
   classNames: ['data-files-list'],
 
   /// Options, features
-
+  
   /**
-   * To inject. Optional.
+   * @virtual optional
    *
    * If true, files list will have a file drop area to upload files.
    * @type {Boolean}
    * @default true
    */
   uploadEnabled: true,
-
+  
   /**
-   * To inject. Optional.
+   * @virtual optional
    *
    * If true, a breadcrumbs component will be shown on top of file browser.
    * It allows to naviage through dirs tree of the list.
@@ -85,7 +85,7 @@ export default Ember.Component.extend({
   breadcrumbsEnabled: false,
 
   /**
-   * To inject.
+   * @virtual
    * Where the browser is used.
    * Possible values: data, shared, public
    * @type {String}
@@ -93,7 +93,7 @@ export default Ember.Component.extend({
   browserLocation: 'data',
 
   /**
-   * To inject.
+   * @virtual
    * Optional: if specified, breadcrumbs will have this dir as a root.
    * Otherwise, breadcrumbs will display full parents path.
    * @type {File}
@@ -101,7 +101,7 @@ export default Ember.Component.extend({
   rootDir: null,
 
   /**
-   * To inject.
+   * @virtual
    * If true, content cannot be edited.
    * @type {Boolean}
    * @default
@@ -109,14 +109,14 @@ export default Ember.Component.extend({
   readOnly: false,
 
   /**
-   * To inject.
+   * @virtual
    * A parent directory to list its files
    * @type {File}
    */
   dir: null,
 
   /**
-   * To inject. Optional.
+   * @virtual optional
    * If scrolling, how many files ahead we should invoke more files loading.
    * @type {Number}
    */
@@ -164,10 +164,29 @@ export default Ember.Component.extend({
    * @type {Boolean}
    */
   firstLoadDone: false,
-
+  
+  /**
+   * @type {Ember.ComputedProperty<string>}
+   */
+  spaceId: reads('fileSystemTree.selectedSpace.id'),
+  
   init() {
     this._super(...arguments);
     this.dirChanged();
+    this.registerUploadErrorHandler();
+  },
+
+
+  registerUploadErrorHandler() {
+    let eventsBus = this.get('eventsBus');
+    let setLastUploadFailed = function () {
+      this.set('lastUploadFailed', true);
+    };
+    eventsBus.on('fileUpload:uploadAllFailed', this, setLastUploadFailed);
+    this.on(
+      'willDestroyElement',
+      () => eventsBus.off('fileUpload:uploadAllFailed', this, setLastUploadFailed)
+    );
   },
 
   /**
@@ -340,45 +359,13 @@ export default Ember.Component.extend({
   ),
 
   updateProviderLabels() {
-    let {
+    const {
       visibleFiles,
       providerId
     } = this.getProperties('visibleFiles', 'providerId');
-
-    // maps: file name -> array of files with that name
-    let nameFilesMap = new Map();
-    for (let f of visibleFiles || []) {
-      let name = f.get('name');
-      if (nameFilesMap.has(name)) {
-        nameFilesMap.get(name).push(f);
-      } else {
-        nameFilesMap.set(name, [f]);
-      }
-
-      for (let [, files] of nameFilesMap) {
-        assert(
-          'files list for name should not be empty',
-          files.length > 0
-        );
-
-        if (files.length > 1) {
-          let providerLabels = conflictProviderId(files.mapBy('provider'));
-          for (let i = 0; i < files.length; i += 1) {
-            let file = files[i];
-            file.set(
-              'listProviderLabel',
-              file.get('provider') === providerId ? null : providerLabels[i]
-            );
-          }
-
-        } else {
-          files[0].set('listProviderLabel', undefined);
-        }
-      }
-    }
+    addConflictLabels(visibleFiles, 'name', 'provider', providerId);
   },
-
-
+  
   /**
    * True if there is no files to display in files browser.
    * However, there can be some children files, but they cannot be displayed.
@@ -392,6 +379,8 @@ export default Ember.Component.extend({
     return visibleFiles == null ? undefined : visibleFiles.get('length') === 0;
   }),
 
+  showNoPermissionsMessage: computed.equal('dir.canViewDir', false),
+  
   showEmptyDirMessage: computed('dirIsEmpty', 'firstLoadDone', function() {
     return this.get('dirIsEmpty') === true && this.get('firstLoadDone');
   }),
@@ -401,6 +390,7 @@ export default Ember.Component.extend({
     'currentlyUploadingCount',
     'isWaitingForPushAfterUpload',
     'firstLoadDone',
+    'showNoPermissionsMessage',
     function() {
       let {
         dirIsEmpty,
@@ -408,14 +398,16 @@ export default Ember.Component.extend({
         currentlyUploadingCount,
         // finished uploading, but waiting for files to receive - table should be presented
         isWaitingForPushAfterUpload,
-        firstLoadDone
+        firstLoadDone,
+        showNoPermissionsMessage
       } = this.getProperties(
         'dirIsEmpty', 
         'currentlyUploadingCount', 
         'isWaitingForPushAfterUpload',
-        'firstLoadDone'
+        'firstLoadDone',
+        'showNoPermissionsMessage'
       );
-      return firstLoadDone && (
+      return !showNoPermissionsMessage && firstLoadDone && (
         dirIsEmpty === false || currentlyUploadingCount || isWaitingForPushAfterUpload
       );
     }
@@ -481,7 +473,7 @@ export default Ember.Component.extend({
     }
   }),
 
-  toggleLoader: on('init', observer('showGlobalLoader', 'commonLoader.isLoading', 'commonLoader.type', function() {
+  toggleLoader: on('init', observer('showGlobalLoader', 'commonLoader.{isLoading,type}', function() {
     if (this.get('showGlobalLoader')) {
       // prevent loader stealing
       if (!this.get('commonLoader.isLoading')) {
@@ -543,7 +535,11 @@ export default Ember.Component.extend({
       this.getProperties('currentlyUploadingCount', '__prevCurrentlyUploadingCount');
     if (!currentlyUploadingCount && __prevCurrentlyUploadingCount) {
       console.debug(`Batch upload finished for ${this.get('dir.name')}`);
-      this.set('isWaitingForPushAfterUpload', true);
+      if (!this.get('lastUploadFailed')) {
+        this.set('isWaitingForPushAfterUpload', true);
+      } else {
+        this.set('lastUploadFailed');
+      }
     }
   }),
 
@@ -815,6 +811,10 @@ export default Ember.Component.extend({
 
     toggleFileMetadata(file) {
       this.get('fileSystemTree').toggleMetadataEditor(file);
+    },
+    
+    toggleFilesInfo(files) {
+      this.get('fileSystemTree').toggleInfoViewer(files);
     },
 
     fetchMoreFiles(resolve, reject) {

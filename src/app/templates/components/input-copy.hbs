@@ -1,8 +1,19 @@
-<div class="form-group">
-  {{input type="text" value=inputValue autofocus=autofocus readonly=true
-    class='ember-view ember-text-field form-control'}}
+<div class="form-group form-group-input-copy">
+  {{#if label}}
+    <label class="control-label">
+      {{label}}
+    </label>
+  {{/if}}
+  {{#if hasBlock}}
+    <div class="form-control copy-text copy-text-static">
+      {{yield}}
+    </div>
+  {{else}}
+    {{input type="text" value=inputValue autofocus=autofocus readonly=true
+      class="ember-text-field form-control copy-text"}}  
+  {{/if}}
 </div>
-{{#copy-button success='copySuccess' error='copyError'
+{{#copy-button success="copySuccess" error="copyError"
   clipboardTarget=clipboardTarget class="btn btn-primary btn-right"}}
-  {{one-icon icon='copy'}}
+  {{one-icon icon="copy"}}
 {{/copy-button}}

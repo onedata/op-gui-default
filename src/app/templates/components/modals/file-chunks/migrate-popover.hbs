@@ -1,0 +1,13 @@
+<li class="menu-group-name">
+  <span class="item-label">
+    {{t "components.dataFilesListToolbar.fileChunksModal.migrateFileDataInto"}}:
+  </span>
+</li>
+{{#each visibleProviders as |p|}}
+  {{modals/file-chunks/migrate-popover/migrate-item
+    providerId=p.id
+    providerName=p.name
+    disabled=(contains p.id disabledProviderIds)
+    action=(action "startMigration")
+  }}
+{{/each}}

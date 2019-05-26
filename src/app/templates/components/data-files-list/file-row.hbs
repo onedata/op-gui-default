@@ -7,14 +7,19 @@
       {{#if file.isBroken}}
         <em>{{t 'components.dataFilesList.fileIsBroken'}}</em>
       {{else if providerLabel}}
-        {{displayedFileLabel}}<span class="file-provider-label">@provider</span><span class="file-provider-label-name">@{{providerLabel}}</span>
+        {{displayedFileLabel}}<span class="file-provider-label-name">@{{providerLabel}}</span>
       {{else}}
         {{displayedFileLabel}}
       {{/if}}
     </div>
   </div>
-  {{data-files-list/file-row-tools file=file readOnly=readOnly
-    shareFile='shareFile' toggleFileMetadata='toggleFileMetadata'}}
+  {{data-files-list/file-row-tools
+    file=file
+    readOnly=readOnly
+    shareFile='shareFile'
+    toggleFileMetadata='toggleFileMetadata'
+    toggleFileInfo="toggleFileInfo"
+  }}
 </td>
 <td class="hidden-xs file-list-col-size file-list-col-text nowrap">
   {{file.sizeHumanReadable}}

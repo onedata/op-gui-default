@@ -19,6 +19,8 @@ export default Ember.Component.extend({
 
   isOpened: false,
 
+  close: () => {},
+  
   init() {
     this._super(...arguments);
     this.setProperties({
@@ -73,6 +75,7 @@ export default Ember.Component.extend({
     closeModal() {
       this.set('inviteToken', null);
       this.set('errorMessage', null);
+      this.get('close')();
     },
   }
 });

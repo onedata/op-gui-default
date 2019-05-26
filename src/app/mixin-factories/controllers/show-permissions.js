@@ -3,7 +3,6 @@ import Ember from 'ember';
 const {
   inject,
   computed,
-  observer,
   isArray
 } = Ember;
 
@@ -39,11 +38,6 @@ function create(permissionType) {
       //   $('nav.secondary-sidebar').removeClass('visible');
       // });
     },
-
-    onModelChange: observer('model', function () {
-      this.changeMenuActiveOption();
-    }),
-
   });
 
   let additionalAttributes = {};

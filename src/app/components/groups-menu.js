@@ -6,21 +6,24 @@
  *
  * @module components/groups-menu
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
 */
 
 import Ember from 'ember';
 import PromiseLoadingMixin from 'ember-cli-onedata-common/mixins/promise-loading';
+import ForceReloadCollectionMixin from 'op-worker-gui/mixins/force-reload-collection';
 
 const {
   computed,
   inject,
   observer,
-  on
+  on,
+  get,
+  computed: { readOnly },
 } = Ember;
 
-export default Ember.Component.extend(PromiseLoadingMixin, {
+export default Ember.Component.extend(PromiseLoadingMixin, ForceReloadCollectionMixin, {
   secondaryMenu: inject.service(),
   store: inject.service(),
   notify: inject.service(),
@@ -39,6 +42,8 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
   modalGroup: null,
 
   groups: null,
+  collection: readOnly('groups'),
+  
   validGroups: function() {
     return this.get('groups').filter((s) => s.get('isLoaded') && !s.get('isDeleted'));
   }.property('groups', 'groups.[]', 'groups.@each.isLoaded', 'groups.@each.isDeleted'),
@@ -255,12 +260,13 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
           this.groupActionMessage('info', 'joinSuccess', data.groupName);
         },
         (errorJson) => {
-          console.log(errorJson.message);
+          console.debug(errorJson.message);
           let message = this.get('i18n').t('components.groupsMenu.notify.joinFailed', {errorDetails: errorJson.message});
           this.get('notify').error(message);
         }
       );
       serverPromise.finally(() => {
+        this.scheduleReloadCollection();
         this.setProperties({
           inputToken: null,
           isJoiningGroupWorking: false,
@@ -286,7 +292,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
             }
           },
           (error) => {
-            console.log(`Leave group ${groupName} failed ${error.message}`);
+            console.debug(`Leave group ${groupName} failed ${error.message}`);
             let message = this.get('i18n').t('components.groupsMenu.notify.leaveFailed', {
               name: groupName
             });
@@ -337,7 +343,7 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
             notify.info(message);
           },
           (error) => {
-            console.log(error.message);
+            console.debug(error.message);
             let message = i18n.t('components.groupsMenu.notify.joinSpaceFailed', {
               groupName: group.get('name'),
             });
@@ -359,27 +365,44 @@ export default Ember.Component.extend(PromiseLoadingMixin, {
     },
 
     submitJoinAsSubgroup() {
-      let token = this.get('inputToken') && this.get('inputToken').trim();
-      let group = this.get('modalGroup');
-      let promise = this.promiseLoading(this.get('oneproviderServer')
-        .groupJoinGroup(this.get('modalGroup.id'), token)).then(
+      let {
+        inputToken,
+        modalGroup: group,
+        oneproviderServer,
+        i18n,
+        reloadCollectionTimeout,
+        notify,
+      } = this.getProperties(
+        'inputToken',
+        'modalGroup',
+        'oneproviderServer',
+        'i18n',
+        'reloadCollectionTimeout',
+        'notify'
+      );
+      let token = inputToken && inputToken.trim();
+      let promise = this.promiseLoading(
+        oneproviderServer.groupJoinGroup(get(group, 'id'), token)
+      ).then(
           (data) => {
-            let message = this.get('i18n').t('components.groupsMenu.notify.joinAsSubgroupSuccess', {
-              thisGroupName: group.get('name'),
+            let message = i18n.t('components.groupsMenu.notify.joinAsSubgroupSuccess', {
+              thisGroupName: get(group, 'name'),
               groupName: data.groupName
             });
-            this.get('notify').info(message);
+            notify.info(message);
           },
           (error) => {
-            console.log(error.message);
-            let message = this.get('i18n').t('components.groupsMenu.notify.joinAsSubgroupFailed', {
-              groupName: group.get('name'),
+            console.debug(error.message);
+            let message = i18n.t('components.groupsMenu.notify.joinAsSubgroupFailed', {
+              groupName: get(group, 'name'),
             });
             message = message + ': ' + error.message;
-            this.get('notify').error(message);
+            notify.error(message);
           }
       );
       promise.finally(() => {
+        this.scheduleReloadCollection();
+        setTimeout(() => group.reload(), reloadCollectionTimeout);
         this.setProperties({
           inputToken: null,
           isJoiningAsSubgroupWorking: false,

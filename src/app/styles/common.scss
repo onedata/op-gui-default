@@ -61,6 +61,23 @@ html, body {
   }
 }
 
+.toolbar-icon {
+  color: $color-toolbar-icon;
+  // we do not want hover
+  background-color: transparent !important;
+  cursor: pointer; cursor: hand;
+
+  &:not(.disabled):hover {
+    color: $onedata-red !important;
+  }
+
+  &.disabled {
+    color: $color-toolbar-icon-disabled;
+    pointer-events: none;
+    cursor: default;
+  }
+}
+
 #app {
   $brand-top-padding: 15px;
 
@@ -96,23 +113,6 @@ html, body {
         min-height: $top-bar-height !important;
       }
 
-      .toolbar-icon {
-        color: $color-toolbar-icon;
-        // we do not want hover
-        background-color: transparent !important;
-        cursor: pointer; cursor: hand;
-
-        &:hover {
-          color: $onedata-red !important;
-        }
-
-        &.disabled {
-          color: $color-toolbar-icon-disabled;
-          pointer-events: none;
-          cursor: default;
-        }
-      }
-
       .navbar-header {
         // 4px to align with border for sidebar items hover left line
         margin-left: 4px - $navbar-padding-horizontal;
@@ -146,7 +146,7 @@ html, body {
               line-height: inherit;
               color: #000;
             }
-
+            
             .provider-name {
               display: block;
               float: left;
@@ -403,6 +403,7 @@ html, body {
         .item-element {
           display: table-cell;
           vertical-align: middle;
+          @include vendor-prefix(user-select, none);
         }
 
         .item-icon {
@@ -528,27 +529,28 @@ html, body {
       .inner-content {
         padding-top: $content-padding;
       }
+    }
 
-      .content-error {
-        margin-top: 20px;
-        font-size: 2em;
-        text-align: center;
-      }
+    .content-error {
+      margin-top: 20px;
+      font-size: 2em;
+      text-align: center;
+    }
 
-      .content-error-icon {
-        width: 100%;
-        margin-top: 40px;
-        font-size: 128px;
-        text-align: center;
+    .content-error-icon {
+      width: 100%;
+      margin-top: 40px;
+      font-size: 128px;
+      text-align: center;
 
-        .icon-overlay {
-          margin-top: 0;
-          font-size: 256px;
-          transform: translateY(-25%);
-         
-          &.ban {
-            color: $color-red-ban;
-          }
+      .icon-overlay {
+        margin-top: 0;
+        font-size: 256px;
+        // translateX is a HACK because icon under overlay is not properly centered (maybe fault of font icon)
+        transform: translateY(-25%) translateX(2px);
+        
+        &.ban {
+          color: $color-red-ban;
         }
       }
     }
@@ -586,23 +588,11 @@ html, body {
   }
 
   input, .form-control {
-    height: 42px !important;
+    height: 42px;
     text-overflow: ellipsis;
   }
 
   .btn {
-    // TODO these hacks could be removed if:
-    // .form-control style for input will not have a strange Bootstrap border
-
-    // a hack to pull up
-    margin-top: -2px;
-
-    @-moz-document url-prefix() {
-      vertical-align: baseline;
-      position: relative;
-      top: -2px;
-    }
-
     width: 48px;
 
     padding-top: 0;
@@ -610,6 +600,25 @@ html, body {
     height: 42px;
     padding-left: 4px;
     padding-right: 4px;
+  }
+  
+  &.light {
+    input, .form-control {
+      height: $input-height-base;
+    }
+    .btn {
+      width: 34px;
+      height: 34px;
+      margin-top: -4px;
+      color: inherit !important;
+      background: transparent;
+      .oneicon {
+        font-size: 26px;
+      }
+      &:hover, &:focus, &:active {
+        background: transparent;
+      }
+    }
   }
 }
 
@@ -664,6 +673,12 @@ html, body {
   position: relative;
   display: inline-block;
 }
+
+@include animation-fg-color-change(
+  pulse-mint,
+  inherit,
+  $color-one-mint
+);
 
 /* Safari and Chrome */
 @-webkit-keyframes rotating {
@@ -787,6 +802,18 @@ html, body {
 }
 
 
+.bs-tab .nav.nav-tabs-with-loading > li {
+  > a.nav-link {
+    padding-left: 38px;
+    padding-right: 38px;
+  }
+  .tab-spinner {
+    position: absolute;
+    left: 10px;
+    top: 8px;
+  }
+}
+
 /// New look experimental
 
 .op-panel {
@@ -829,5 +856,93 @@ html, body {
 
   &.op-panel-graphite {
     border-color: $color-panel-graphite;
+  }
+}
+
+.about-info-list {
+  list-style: none;
+  padding-left: 0;
+  li {
+    line-height: 150%;
+    .one-label {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .about-label {
+      font-weight: bold;
+    }
+    .about-info {
+      margin-left: 4px;
+    }
+    .about-info.truncate {
+      max-width: 280px;
+    }
+  }
+}
+
+h1.content-header {
+  border-bottom: 1px solid $color-toolbar-separator;
+  padding: 22px 15px;
+  text-transform: uppercase;
+  margin: 0;
+  padding: 17px 0px;
+  font-size: 100%;
+  font-weight: bold;
+}
+
+.toggle-expand {
+  .toggle-icon {
+    display: block;
+    font-size: 1.7em;
+    font-weight: bold;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%) rotate(0deg);
+  }
+
+  &.left {
+    padding-right: 40px;
+    .toggle-icon {
+      left: 20px;
+      right: initial;
+    }
+  }
+  
+  &.opened {
+    .toggle-icon {
+      transform: translateY(-50%) rotate(180deg);
+    }
+  }
+}
+
+.one-list {
+  .one-list-row {
+    padding: 15px 0;
+    &:not(:last-of-type) {
+      border-bottom: 1px solid #DEE1E2;
+    }
+    .one-list-row-label {
+      font-weight: bold;
+    }
+    .one-list-row-value {
+      margin-left: 4px;
+    }
+  }
+}
+
+.empty-file-info {
+  position: relative;
+  height: 190px;
+  background-image: url(/assets/images/empty-file.svg);
+  background-position: center top;
+  background-size: 150px auto;
+  background-repeat: no-repeat;
+  .empty-file-info-msg {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
   }
 }

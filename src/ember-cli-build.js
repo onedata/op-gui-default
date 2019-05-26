@@ -5,6 +5,12 @@ var fs = require('fs');
 
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
+    'ember-math-helpers': {
+      only: ['mult', 'add', 'sub'],
+    },
+    'ember-prism': {
+      components: ['javascript'],
+    },
     sassOptions: {
       includePaths: [
         'app/styles',
@@ -38,7 +44,18 @@ module.exports = function(defaults) {
       'importBootstrapCSS': false,
       'importBootstrapTheme': false,
       'importBootstrapFont': false
-    }
+    },
+    'ember-cli-chartist': {
+      'useCustomCSS': true
+    },
+    nodeAssets: {
+      'chartist-plugin-legend': {
+        vendor: {
+          include: ['chartist-plugin-legend.js'],
+        },
+        public: {},
+      },
+    },
   });
 
   // Generate app-config.json for environment that is used.
@@ -73,9 +90,12 @@ module.exports = function(defaults) {
     'jquery-resizable/dist/jquery-resizable.min.js',
     'df-visible/jquery.visible.min.js',
     'jquery-sticky/jquery.sticky.js',
+    'js-beautify/js/lib/beautify.js'
   ];
 
   BOWER_ASSETS.forEach(path => app.import(app.bowerDirectory + '/' + path));
+
+  app.import('vendor/chartist-plugin-legend/chartist-plugin-legend.js');
 
   return app.toTree();
 };

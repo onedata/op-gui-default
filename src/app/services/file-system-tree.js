@@ -1,29 +1,40 @@
-import Ember from 'ember';
-
-import getDefaultSpace from 'op-worker-gui/utils/get-default-space';
-
 /**
  * A global state of file browser
  * @module service/file-system-tree
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default Ember.Service.extend(Ember.Evented, {
-  store: Ember.inject.service(),
+
+import Ember from 'ember';
+
+import getDefaultSpace from 'op-worker-gui/utils/get-default-space';
+
+const {
+  Service,
+  inject: { service },
+  Evented,
+  computed: { alias },
+  get,
+  set,
+} = Ember;
+
+export default Service.extend(Evented, {
+  store: service(),
+  secondaryMenu: service(),
 
   spaces: null,
-  selectedSpace: null,
+  selectedSpace: alias('secondaryMenu.activeSpace'),
   prevSelectedSpace: null,
 
   isLoading: null,
-
+  
   /**
    * Stores ids of dirs that cannot be opened (eg. were rejected on request to backend).
    * @type Set<String>
    */
   failedDirs: null,
-
+  
   init() {
     this._super();
     this.set('failedDirs', new Set());
@@ -36,20 +47,24 @@ export default Ember.Service.extend(Ember.Evented, {
    * @param  {File} file
    */
   openMetadataEditor(file) {
-    file.get('fileProperty').then(
-      (metadata) => {
-        if (!metadata) {
-          const fileType = file.get('constructor.modelName');
-          const metadataType =
-            (fileType === 'file-shared') ? 'filePropertyShared' : 'fileProperty';
-          metadata = this.get('store').createRecord(metadataType, {
-            file: file
-          });
-          file.set('fileProperty', metadata);
-        }
-      }
-    );
-
+    // TODO: try to reload a file property if it failed before
+    if (!file.get('metadataError')) {
+      file.get('fileProperty')
+        .then(
+          (metadata) => {
+            if (!metadata) {
+              const fileType = file.get('constructor.modelName');
+              const metadataType =
+                (fileType === 'file-shared') ? 'filePropertyShared' : 'fileProperty';
+              metadata = this.get('store').createRecord(metadataType, { file });
+              file.set('fileProperty', metadata);
+            }
+          }
+        )
+        .catch(error => {
+          file.set('metadataError', error);
+        });
+    }
     file.set('isEditingMetadata', true);
   },
 
@@ -126,7 +141,21 @@ export default Ember.Service.extend(Ember.Evented, {
     if (file.get('isEditingMetadata')) {
       this.closeMetadataEditor(file);
     } else {
+      set(file, 'isShowingInfo', false);
       this.openMetadataEditor(file);
     }
-  }
+  },
+  
+  /**
+   * @param {Array<models.File>} files 
+   */
+  toggleInfoViewer(files) {
+    const openAll = files.some(f => !get(f, 'isShowingInfo'));
+    files.forEach(f => {
+      set(f, 'isShowingInfo', openAll);
+      if (openAll && f.get('isEditingMetadata')) {
+        this.closeMetadataEditor(f);
+      }
+    });
+  },
 });

@@ -54,7 +54,13 @@ export default Ember.Component.extend({
    * MetadataString that will be added to handle created with this modal.
    * @type {String}
    */
-  metadataString: null,
+  metadataString: '',
+
+  /**
+   * True if medatadaString is not valid
+   * @type {boolean}
+   */
+  isMetadataIncorrect: false,
 
   init() {
     this._super();
@@ -90,15 +96,20 @@ export default Ember.Component.extend({
 
   isBusy: Ember.computed.alias('isSubmitting'),
 
-  isReadyToSubmit: Ember.computed('metadataString', function() {
-    return !!this.get('handleService') && !!this.get('metadataString');
-  }),
+  isReadyToSubmit: Ember.computed(
+    'handleService',
+    'isMetadataIncorrect',
+    function isReadyToSubmit() {
+      return !!this.get('handleService') && !this.get('isMetadataIncorrect');
+    }
+  ),
 
   resetProperties() {
     this.setProperties({
       availableHandleServices: null,
       noHandleServicesAvailable: false,
-      metadataString: null,
+      metadataString: '',
+      isMetadataIncorrect: false,
       isSubmitting: false,
     });
   },
@@ -121,6 +132,13 @@ export default Ember.Component.extend({
       this.set('handleService', handleService);
     },
 
+    onMetadataChange(metadataString, isError) {
+      this.setProperties({
+        metadataString,
+        isMetadataIncorrect: isError,
+      });
+    },
+
     submit() {
       this.set('isSubmitting', true);
 
@@ -130,12 +148,13 @@ export default Ember.Component.extend({
         metadataString: this.get('metadataString'),
       });
 
-      this.set('share.handle', handle);
-
       const savePromise = handle.save();
 
       savePromise
-        .then((handle) => this.submitSucceed(this.get('share'), handle))
+        .then((handle) => {
+          this.set('share.handle', handle);
+          this.submitSucceed(this.get('share'), handle);
+        })
         .catch((error) => this.submitFailed(this.get('share'), handle, error))
         .finally(() => this.submitCompleted());
     },
@@ -164,7 +183,10 @@ export default Ember.Component.extend({
   },
 
   submitCompleted() {
-    this.set('open', false);
+    this.setProperties({
+      open: false,
+      isSubmitting: false,
+    });
   }
 
 });

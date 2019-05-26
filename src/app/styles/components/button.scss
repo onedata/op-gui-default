@@ -1,4 +1,17 @@
 // TODO: box-shadow none?
+
+.btn-group,
+.btn-group-vertical {
+  > .btn {
+    &:hover,
+    &:focus,
+    &:active,
+    &.active {
+      z-index: 1;
+    }
+  }
+}
+
 .btn {
   border: none !important;
   padding: 10px 40px;
@@ -105,6 +118,37 @@
 
     &:not(.in-flight) {
       @include btn-before-oneicon-permissions($oneicon-checkbox-x);
+    }
+  }
+}
+
+.btn-group {
+  .btn {
+    font-weight: bold;
+    border: 2px solid $color-one-blue-gray !important;
+    & + .btn {
+      margin-left: -2px;
+    }
+    &.btn-default {
+      &:not(.active) {
+        background-color: $color-one-white;
+        color: $color-one-blue-gray !important;
+        &:focus,
+        &.focus,
+        &:hover,
+        &:active {
+          background-color: lighten($color-one-blue-gray, 50%);
+        }
+      }
+      &.active {
+        background-color: $color-one-blue-gray;
+        &:focus,
+        &.focus,
+        &:hover,
+        &:active {
+          background-color: darken($color-one-blue-gray, 7%);
+        }
+      }
     }
   }
 }

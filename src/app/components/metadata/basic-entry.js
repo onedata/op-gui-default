@@ -1,8 +1,13 @@
 import Ember from 'ember';
 
-export default Ember.Component.extend({
+const {
+  Component,
+  computed,
+  RSVP: { Promise },
+} = Ember;
+
+export default Component.extend({
   tagName: 'tr',
-  classNameBindings: ['isRecent:animated', 'isRecent:flash', ''],
 
   /**
    * To inject.
@@ -13,42 +18,41 @@ export default Ember.Component.extend({
   readOnly: false,
 
   /**
-   * To inject.
-   * Truthy if this entry should flash itself, because it was recently added.
-   * @type {Boolean}
-   */
-  isRecent: false,
-
-  /**
    * To inject
    * @type {String}
    */
   key: null,
+  
   /**
    * To inject.
-   * @type {String}
+   * @type {any}
    */
   value: null,
-
-  init() {
-    this._super(...arguments);
-    if (this.get('isRecent')) {
-      this.sendAction('clearRecentKey');
+  
+  _stringValue: computed('value', function getStringValue() {
+    const value = this.get('value');
+    if (value && value instanceof Object) {
+      try {
+        return JSON.stringify(value);
+      } catch (error) {
+        return value;
+      }
+    } else {
+      return value && value.toString();
     }
-  },
-
-  /**
-   * Value of entry changed - notify ``basic-editor``.
-   */
-  valueChanged: Ember.observer('value', function() {
-    this.sendAction('entryChanged', this.get('key'), this.get('value'));
   }),
-
+  
+  /**
+   * @virtual
+   * @type {Function}
+   */
+  removeEntry: () => {},
+  
   actions: {
     remove() {
       this.set('disabled', true);
-      const p = new Ember.RSVP.Promise((resolve) => {
-        this.sendAction('removeEntry', this.get('key'), resolve);
+      const p = new Promise((resolve) => {
+        this.get('removeEntry')(this.get('key'), resolve);
       });
       p.finally(() => {
         if (this) {

@@ -11,4 +11,5 @@ export default Ember.Controller.extend({
   isCreatingShare: false,
 
   fileShareFile: null,
+  share: null,
 });

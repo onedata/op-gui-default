@@ -1,0 +1,19 @@
+{{#if (eq tagName "tr")}}
+  <td class="first-row-inner" style={{tdStyle}} colspan={{visibleColumnsCount}}>
+    {{#if justOpened}}
+      {{loading-more-spinner size="sm"}}
+    {{/if}}
+    <div class="sticky-container middle-sticky {{middleStickyClass}}">
+      {{loading-more-spinner}}
+    </div>
+  </td>
+{{else}}
+  <div class="first-row-inner" style={{tdStyle}}>
+    {{#if justOpened}}
+      {{loading-more-spinner size="sm"}}
+    {{/if}}
+    <div class="sticky-container middle-sticky {{middleStickyClass}}">
+      {{loading-more-spinner}}
+    </div>
+  </div>
+{{/if}}

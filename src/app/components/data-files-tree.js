@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import _ from 'lodash';
 
 const {
   run,
@@ -13,14 +14,16 @@ const {
  * - openDirInBrowser(file) - open dir for browsing
  * @module components/data-files-tree
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
   fileBrowser: inject.service(),
-  fileSystemTreeService: inject.service('fileSystemTree'),
+  fileSystemTree: inject.service(),
   eventsBus: inject.service(),
-
+  commonModals: inject.service(),
+  session: inject.service(),
+  
   classNames: ['data-files-tree'],
 
   /**
@@ -29,6 +32,28 @@ export default Ember.Component.extend({
    */
   rootDir: null,
 
+  /**
+   * @type {Ember.ComputedProperty<string>}
+   */
+  currentProviderId: computed.alias('session.sessionDetails.providerId'),
+
+  /**
+   * True if the current provider supports selected space
+   * @type {Ember.ComputedProperty<boolean|undefined>}
+   */
+  currentProviderSupport: computed(
+    'currentProviderId',
+    'fileSystemTree.selectedSpace.providerList.list',
+    function () {
+      const providerIdList =
+        this.get('fileSystemTree.selectedSpace.providerList.list');
+      const currentProviderId = this.get('currentProviderId');
+      if (providerIdList) {
+        return _.includes(providerIdList, currentProviderId);
+      }
+    }
+  ),
+  
   didInsertElement() {
     this._super(...arguments);
     this.bindResizeHandler();
@@ -77,6 +102,15 @@ export default Ember.Component.extend({
     /** Typically invoked by actions passed up from tree nodes */
     openDirInBrowser(file) {
       this.sendAction('openDirInBrowser', file);
-    }
+    },
+    rootDataDistribution() {
+      this.get('fileSystemTree.selectedSpace.providerList').then(() => {
+        this.get('commonModals').openModal('dataDistribution', {
+          fileForChunks: this.get('rootDir'),
+          currentProviderSupport: this.get('currentProviderSupport'),
+          space: this.get('fileSystemTree.selectedSpace'),
+        });
+      });
+    },
   }
 });

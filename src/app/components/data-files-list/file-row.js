@@ -37,11 +37,22 @@ export default Ember.Component.extend({
     return htmlSafe(style);
   }),
 
-  highlightClass: computed('file.isSelected', 'file.isEditingMetadata', function() {
-    return this.get('file.isSelected') && 'active' ||
-      this.get('file.isEditingMetadata') && 'metadata-opened' ||
-      '';
-  }),
+  highlightClass: computed(
+    'file.{isSelected,isEditingMetadata,isShowingInfo}',
+    function highlightClass() {
+      let classes = '';
+      if (this.get('file.isSelected')) {
+        classes += 'active';
+      }
+      if (this.get('file.isEditingMetadata')) {
+        classes += ' panel-opened metadata-opened';
+      }
+      if (this.get('file.isShowingInfo')) {
+        classes += ' panel-opened info-opened';
+      }
+      return classes;
+    }
+  ),
 
   isNewlyCreated: computed.alias('file.isNewlyCreated'),
 
@@ -65,7 +76,7 @@ export default Ember.Component.extend({
    * for distinguishing conflicting files.
    * @type {String}
    */
-  providerLabel: computed.alias('file.listProviderLabel'),
+  providerLabel: computed.alias('file.conflictLabel'),
 
   /**
    * If true, the file is currently downloaded, so it will be indicated in GUI.
@@ -222,6 +233,9 @@ export default Ember.Component.extend({
     },
     toggleFileMetadata(file) {
       this.sendAction('toggleFileMetadata', file || this.get('file'));
+    },
+    toggleFileInfo(file) {
+      this.sendAction('toggleFilesInfo', [ file || this.get('file') ]);
     }
   }
 });

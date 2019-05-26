@@ -1,5 +1,9 @@
 import Ember from 'ember';
 
+const {
+  A
+} = Ember;
+
 export default Ember.Component.extend({
   /**
    * To inject.
@@ -31,24 +35,22 @@ export default Ember.Component.extend({
   editedKey: null,
 
   /**
-   * A latest key that was added in this editor session.
-   * Used for flashing new keys in frontend.
-   * @type {String}
+   * Will be initialized on init and updated on
+   * entry create/remove/new entry changed.
+   * @type {Ember.Array}
    */
-  recentKey: null,
-
-  /**
-   * Store previous recentKey, because we want to remove information about
-   * ``recentKey`` after data rebuild.
-   * @type {String}
-   */
-  prevRecentKey: null,
+  existingKeys: null,
 
   init() {
     this._super(...arguments);
     this.setProperties({
       isValid: true,
     });
+    // Initialize existingKeys - because we do not want use computed property
+    // that creates new array every time the data changes.
+    // Further existing keys add/remove will be done on create/remove entry etc.
+    let data = this.get('data');
+    this.set('existingKeys', A(Object.keys(data)));
   },
 
   /**
@@ -71,6 +73,8 @@ export default Ember.Component.extend({
    * Converts the ``data``, which is a plain object, to ``Ember.Array``
    * of arrays ([key, value]).
    * We do it, because we need ``Ember.Array``'s notifications.
+   * // TODO this creates new Ember Array every time the data is changed
+   * // TODO this is inefficient, because creates new array everytime the edited key is changed
    */
   liveData: Ember.computed('data', 'editedKey', {
     get() {
@@ -95,10 +99,6 @@ export default Ember.Component.extend({
     }
   }),
 
-  existingKeys: Ember.computed('data', 'editedKey', function() {
-    return Object.keys(this.get('data')).filter(key => key !== this.get('editedKey'));
-  }),
-
   // TODO
   // dataChanged: Ember.observer('data', function() {
   //   this.sendAction('hasBeenModified');
@@ -111,10 +111,11 @@ export default Ember.Component.extend({
      * "Add new entry" on the bottom is clicked.
      */
     createNewEntry(key, value, resolve) {
-      this.setProperties({
-        recentKey: this.get('editedKey'),
-        editedKey: null,
-      });
+      let existingKeys = this.get('existingKeys');
+
+      this.set('editedKey', null);
+      existingKeys.pushObject(key);
+
       if (resolve) {
         resolve();
       }
@@ -123,6 +124,7 @@ export default Ember.Component.extend({
     removeEntry(key, resolve) {
       const tmpData = this.get('data');
       delete tmpData[key];
+      this.get('existingKeys').removeObject(key);
       this.set('data', tmpData);
       if (resolve) {
         resolve();
@@ -144,26 +146,16 @@ export default Ember.Component.extend({
         if (oldKey !== key) {
           // remove old edited key, because we got new key
           delete tmpData[this.get('editedKey')];
+          this.set('editedKey', key);
         }
-        this.set('editedKey', key);
         tmpData[key] = value;
-        this.setProperties({
-          isValid: true,
-        });
+        this.set('isValid', true);        
       } else {
         this.set('isValid', false);
         delete tmpData[oldKey];
       }
 
       this.set('data', tmpData);
-    },
-
-    /**
-     * ``basic-entry`` is flashed when recentKey maches it name - after use,
-     * it should be cleared.
-     */
-    clearRecentKey() {
-      this.set('recentKey', null);
     },
 
     // TODO: disabled, because we do not allow to edit not-new entries

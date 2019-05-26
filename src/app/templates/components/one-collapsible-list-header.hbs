@@ -1,0 +1,22 @@
+{{#if _hasCheckbox}}
+  {{one-checkbox 
+    class="item-checkbox"
+    isReadOnly=(not _isCheckboxActive)
+    checked=_isSelected
+    update=toggleSelection}}
+{{/if}}
+<span class="list-title">{{title}}</span>
+{{#if (and isCollapsible (not disableToggleIcon))}}
+  {{one-icon class="toggle-icon" icon="arrow-down"}}
+{{/if}}
+<div class="list-header-content collapse-animation collapse-small {{if _isListCollapsed "collapse-hidden"}}">
+  {{yield}}
+</div>
+<div class="form-group form-group-sm form-group-light search-group collapse-animation collapse-small {{if _isListCollapsed "collapse-hidden"}}">
+  <div class="input-group with-icon-addon">
+    {{search-bar search=(action search) class="form-control"}}
+    <div class="input-group-addon">
+      {{one-icon icon="search"}}
+    </div>
+  </div>
+</div>

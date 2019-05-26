@@ -83,6 +83,14 @@ export default DS.RESTAdapter.extend({
   onErrorCallback: null,
   onCloseCallback: null,
 
+  shouldBackgroundReloadRecord() {
+    return false;
+  },
+  
+  shouldReloadRecord() {
+    return false;
+  },
+  
   //
   /**
    * Map of promises that will be resolved when response for message with
@@ -287,6 +295,7 @@ export default DS.RESTAdapter.extend({
       operation: operation,
       data: data
     };
+    this.respSemaphoreAcquire();
     return this.sendAndRegisterPromise(operation, type, payload);
   },
 
@@ -568,18 +577,23 @@ export default DS.RESTAdapter.extend({
         break;
     
       case TYPE_RPC_RESP:
-        // Received a response to RPC call
-        promise = adapter.promises.get(uuid);
-        if (result === RESULT_OK) {
-          console.debug(`RPC_RESP success, (uuid=${uuid}): ${JSON.stringify(data)}`);
-          promise.success(data);
-        } else if (result === RESULT_ERROR) {
-          console.debug(`RPC_RESP error, (uuid=${uuid}): ${JSON.stringify(data)}`);
-          promise.error(data);
-        } else {
-          console.warn(`Received RPC response (uuid=${uuid}) with unknown result: ${result}`);
-          promise.error(data);
+        try {
+          // Received a response to RPC call
+          promise = adapter.promises.get(uuid);
+          if (result === RESULT_OK) {
+            console.debug(`RPC_RESP success, (uuid=${uuid}): ${JSON.stringify(data)}`);
+            promise.success(data);
+          } else if (result === RESULT_ERROR) {
+            console.debug(`RPC_RESP error, (uuid=${uuid}): ${JSON.stringify(data)}`);
+            promise.error(data);
+          } else {
+            console.warn(`Received RPC response (uuid=${uuid}) with unknown result: ${result}`);
+            promise.error(data);
+          }
+        } finally {
+          this.respSemaphoreRelease();
         }
+
         break;
 
       case TYPE_MODEL_CRT_PUSH:

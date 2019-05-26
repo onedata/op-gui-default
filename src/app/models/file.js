@@ -13,4 +13,6 @@ import createFileModel from 'op-worker-gui/mixin-factories/models/file';
 
 export default DS.Model.extend(createFileModel('regular'), {
   filePermission: DS.belongsTo('file-permission', {inverse: 'file', async: true}),
+  
+  cdmiObjectId: DS.attr('string'),
 });

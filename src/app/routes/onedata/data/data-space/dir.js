@@ -1,5 +1,10 @@
 import Ember from 'ember';
 import RouteRejectHandler from 'op-worker-gui/mixins/route-reject-handler';
+import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
+
+const {
+  get,
+} = Ember;
 
 /**
  * Load a single dir (File model) and show a file browser for it (passed as route name).
@@ -33,13 +38,14 @@ export default Ember.Route.extend(RouteRejectHandler, {
     }
 
     if (!file.get('isDir')) {
-      console.error('Loaded file is not a directory - it cannot be viewed in browser');
-      // TODO: translate
-      this.get('notify').error(`Cannot start file browser, because selected directory is not valid`);
-      invalid = true;
+      this.set('commonLoader.isLoading', true);
+      return get(file, 'parent')
+        .finally(() => safeExec(this, 'set', 'commonLoader.isLoading', false))
+        .then(parent => this.replaceWith('onedata.data.data-space.dir', parent))
+        .catch(() => safeExec(this, 'set', 'invalid', true));
     }
 
-    this.set('ivalid', true);
+    this.set('invalid', invalid);
 
     // @todo this sometimes runs too early and getSpaceIdForFile does not work
     //let loadedDirSpaceId = this.get('fileSystemTree').getSpaceIdForFile(file);
@@ -98,33 +104,17 @@ export default Ember.Route.extend(RouteRejectHandler, {
      *
      * @param {File} file
      */
-    openFileShareModal(file, resolveAction) {
-      const p = file.get('share').then(
-        (share) => {
-          if (share) {
-            // we already got a Share, show info
-            this.controller.set('isShowingShareInfo', true);
-          } else {
-            // we do not have a Share - open create modal
-            this.controller.set('isCreatingShare', true);
-          }
-          if (resolveAction) {
-            resolveAction();
-          }
-        },
-        () => {
-          this.controller.set('isCreatingShare', true);
-          if (resolveAction) {
-            resolveAction();
-          }
-        }
-      );
-
-      p.finally(() => {
-        this.controller.setProperties({
-          fileShareFile: file,
-          share: null,
-        });
+    openFileShareModal(file) {
+      if (file.get('hasShare')) {
+        // we already got a Share, show info
+        this.controller.set('isShowingShareInfo', true);
+      } else {
+        // we do not have a Share - open create modal
+        this.controller.set('isCreatingShare', true);
+      }
+      this.controller.setProperties({
+        fileShareFile: file,
+        share: file.get('share'),
       });
     },
 

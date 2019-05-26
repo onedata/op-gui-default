@@ -1,26 +1,25 @@
 /**
- * Lists a Spaces whose allows to browse files in sub-routes.
+ * Lists Spaces to browse files in sub-routes.
  *
  * @module routes/data
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
 import Ember from 'ember';
+import userCollectionModel from 'ember-cli-onedata-common/mixin-factories/routes/user-collection-model';
 
 const {
-  inject
+  inject: {
+    service
+  }
 } = Ember;
 
-export default Ember.Route.extend({
-  fileSystemTree: inject.service(),
+export default Ember.Route.extend(userCollectionModel('spaces', { nonEmpty: true }), {
+  fileSystemTree: service(),
 
   mainRouteName: 'data',
-
-  model() {
-    return this.modelFor('onedata').get('spaces');
-  },
 
   afterModel(dataSpaces) {
     this.set('fileSystemTree.spaces', dataSpaces);
@@ -28,7 +27,11 @@ export default Ember.Route.extend({
 
   actions: {
     goToDataSpace(spaceId) {
-      this.transitionTo('onedata.data.data-space', spaceId);
+      if (spaceId) {
+        this.replaceWith('onedata.data.data-space', spaceId);
+      } else {
+        this.replaceWith('onedata.data.index');
+      }
     }
   }
 });

@@ -1,0 +1,12 @@
+{{#if icon}}
+  {{#one-icon tagName="div" icon=icon class="content-error-icon"}}
+    {{#one-overlay fog=false}}
+      {{one-icon tagName="div" icon="ban-left-thin" class="content-error-icon icon-overlay ban"}}
+    {{/one-overlay}}
+  {{/one-icon}}
+{{else}}
+  {{one-icon tagName="div" icon="sign-error" class="content-error-icon"}}
+{{/if}}
+<div class="inner-content content-error">
+  {{yield}}
+</div>

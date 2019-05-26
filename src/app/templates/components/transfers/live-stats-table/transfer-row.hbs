@@ -1,0 +1,52 @@
+<tr
+  id="transfer-row-{{record.transferId}}"
+  data-transfer-id={{record.transferId}}
+  data-list-index={{record.listIndex}}
+  class="transfer-row data-row {{if (exists-in selectedItems record) "selected-row"}} {{if (exists-in expandedRowIndexes record.transferIndex) "expanded-row"}} {{if record.isInCorrectCollection "correct-collection" "other-collection"}}"
+  onClick={{action (if (not record.isLoading)
+    (if (exists-in expandedRowIndexes record.transferIndex) "collapseRow" "expandRow")
+    "collapseRow"
+  ) record.transferIndex bubbles=false}}>
+  {{!-- not using loading-container because we are in tr --}}
+  {{#if record.isLoading}}
+    {{!-- subtract hidden list index column --}}
+    <td colspan={{visibleColumnsCount}}>
+      <div class="row loadable-row xs">
+        {{spin-spinner-block sizeClass="xs" class="absolute-middle-centered"}}
+      </div>
+    </td>
+  {{else}}
+    {{#each processedColumns as |column|}}
+      {{#if column.isVisible}}
+        <td class="{{column.className}}">
+          {{#if column.routeName}}
+            {{#link-to column.routeName record.id}}
+              {{#if column.propertyName}}
+                {{get record column.propertyName}}
+              {{else}}
+                {{record.id}}
+              {{/if}}
+            {{/link-to}}
+          {{else}}
+            {{#if column.template}}
+              {{partial column.template}}
+            {{else}}
+              {{#if column.component}}
+                {{component column.component data=data record=record column=column table=table}}
+              {{else}}
+                {{get record column.propertyName}}
+              {{/if}}
+            {{/if}}
+          {{/if}}
+        </td>
+      {{/if}}
+    {{/each}}
+  {{/if}}
+</tr>
+{{#if (exists-in expandedRowIndexes record.transferIndex)}}
+  <tr class="expand-row {{concat "expand-" record.transferIndex}} {{if (exists-in selectedItems record) "selected-expand"}}">
+    <td colspan={{visibleColumnsCount}}>
+      {{partial expandedRowTemplate}}
+    </td>
+  </tr>
+{{/if}}

@@ -11,12 +11,4 @@
 import Ember from 'ember';
 import showPermissionsMixinFactory from 'op-worker-gui/mixin-factories/routes/show-permissions';
 
-export default Ember.Route.extend(showPermissionsMixinFactory('groups'), {
-  oneproviderServer: Ember.inject.service(),
-
-  actions: {
-    didTransition() {
-      this.controller.changeMenuActiveOption();
-    },
-  }
-});
+export default Ember.Route.extend(showPermissionsMixinFactory('groups'), {});

@@ -19,7 +19,7 @@ const {
  * 
  * @module mixins/models/file-runtime
  * @author Jakub Liput
- * @copyright (C) 2017 ACK CYFRONET AGH
+ * @copyright (C) 2017-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Mixin.create({
@@ -33,6 +33,7 @@ export default Ember.Mixin.create({
   isExpanded: false,
   isSelected: false,
   isEditingMetadata: false,
+  isShowingInfo: false,
   isNewlyCreated: false,
 
   /*** INIT */
@@ -84,7 +85,7 @@ export default Ember.Mixin.create({
 
   modificationMoment: computed('modificationTime', function () {
     let timestamp = this.get('modificationTime');
-    return timestamp ? moment(timestamp * 1000).format('YYYY-MM-DD HH:MM') : '-';
+    return timestamp ? moment(timestamp * 1000).format('YYYY-MM-DD HH:mm') : '-';
   }),
 
   permissionsHumanReadable: computed('permissions', function () {
@@ -102,8 +103,6 @@ export default Ember.Mixin.create({
 
   isVisible: computed('parent.isExpanded', function () {
     var visible = this.get('parent.isExpanded');
-    console.log('deselect(' + this.get('name') + '): ' +
-      (this.get('isSelected') && !visible));
     if (this.get('isSelected') && !visible) {
       this.set('isSelected', false);
     }
@@ -114,9 +113,15 @@ export default Ember.Mixin.create({
    * A stringified path to file
    * @type {computed<string>}
    */
-  path: computed('dirsPath.@each.name', function () {
+  path: computed('dirsPath.@each.name', function path() {
     const dp = this.get('dirsPath');
-    return dp && dp.mapBy('name').join('/');
+    if (dp) {
+      let fpath = '/' + dp.mapBy('name').join('/');
+      if (this.get('isDir')) {
+        fpath += '/';
+      }
+      return fpath;
+    }
   }),
 
   hasSubDirs: computed('children.@each.isDir', function () {
@@ -137,11 +142,13 @@ export default Ember.Mixin.create({
 
   selectedFilesType: computed('selectedFiles.@each.type', function () {
     const sf = this.get('selectedFiles');
-    let firstType = sf.length > 0 ? sf[0].get('type') : undefined;
-    if (sf.length > 0 && sf.every(f => f.get('type') === firstType)) {
-      return firstType;
-    } else {
-      return 'mixed';
+    if (sf) {
+      let firstType = sf.length > 0 ? sf[0].get('type') : undefined;
+      if (sf.length > 0 && sf.every(f => f.get('type') === firstType)) {
+        return firstType;
+      } else {
+        return 'mixed';
+      }
     }
   }),
 

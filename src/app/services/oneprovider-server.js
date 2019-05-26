@@ -388,4 +388,77 @@ export default Ember.Service.extend({
       childGroupId: childGroupId
     });
   },
+
+  /**--------------------------------------------------------------------
+   Transfer related procedures
+   -------------------------------------------------------------------- */
+  
+  /**
+   * Cancels the transfer
+   * 
+   * @param {string} transferId 
+   * @returns {RSVP.Promise} A backend operation completion,
+   * ``resolve()`` when cancelling procedure has started successfully
+   * ``reject(object: error)`` on failure
+   */
+  cancelTransfer(transferId) {
+    return this.get('server').privateRPC('cancelTransfer', {
+      transferId,
+    });
+  },
+
+  /**
+   * Reruns the transfer
+   * 
+   * @param {string} transferId 
+   * @returns {RSVP.Promise} A backend operation completion,
+   * ``resolve(transferId: string)`` when rerunning procedure has started
+   *   successfully. Passes id of the newly created transfer
+   * ``reject(object: error)`` on failure
+   */
+  rerunTransfer(transferId) {
+    return this.get('server').privateRPC('rerunTransfer', {
+      transferId,
+    });
+  },
+     
+  /**
+   * @param {String} spaceId
+   * @param {String} type one of: waiting, ongoing, ended
+   * @param {String} startFromIndex
+   * @param {number} offset
+   * @param {number} size
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - `resolve(object: data)` when successfully fetched the list
+   *  - `data.list: Array<string>` - list of transfer IDs
+   * - `reject(object: error)` on failure
+   */
+  getSpaceTransfers(spaceId, type, startFromIndex = '', size = 0, offset = 0) {
+    return this.get('server').privateRPC('getSpaceTransfers', {
+      spaceId,
+      type,
+      startFromIndex: startFromIndex,
+      offset: offset,
+      size: size,
+    });
+  },
+  
+  /**
+   * @param {String} fileId
+   * @returns {RSVP.Promise} A backend operation completion:
+   * - `resolve(object: data)` when successfully fetched the list
+   *  - `data.ongoing: Array<string>` - list of non-ended transfers (waiting
+   *       and outgoing) transfer IDs for the file
+   *  - `data.ended: Array<string>|Number` - list of ended transfer IDs for the file,
+   *       which size is limited to the value of
+   *       `session.sessionDetails.config.transfersHistoryLimitPerFile`
+   *        or number of ended transfers if endedInfo is "count"
+   * - `reject(object: error)` on failure
+   */
+  getTransfersForFile(fileId, endedInfo = 'count') {
+    return this.get('server').privateRPC('getTransfersForFile', {
+      fileId,
+      endedInfo,
+    });
+  },
 });

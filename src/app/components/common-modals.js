@@ -1,5 +1,3 @@
-import Ember from 'ember';
-
 /**
  * Adds common modals to HTML, which can be opened with common-modals service.
  * Uses camelCase-keyed, boolean-valued properties: opened<ModalName>
@@ -18,20 +16,30 @@ import Ember from 'ember';
  *
  * @module components/common-modals
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
-export default Ember.Component.extend({
-  commonModals: Ember.inject.service(),
+
+import Ember from 'ember';
+
+const {
+  Component,
+  inject: { service },
+} = Ember;
+
+export default Component.extend({
+  commonModals: service(),
 
   /**
     Before opening modal, additional params may be required
     which can be used in specific modals
   */
-  modalParams: {},
+  modalParams: null,
 
-  registerInService: function() {
-    this.set('commonModals.component', this);
-  }.on('init'),
+  actions: {
+    closeModal(type) {
+      this.get('commonModals').closeModal(type);
+    },
+  },
 
 });

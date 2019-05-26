@@ -1,0 +1,37 @@
+{{#bs-modal open=open body=false footer=false
+    id="about-provider"
+    title=(t 'components.modals.aboutModal.title')
+    keyboard=true
+    autoClose=true
+    backdropClose=true
+    closeButton=true
+  }}
+  {{#bs-modal-body class='about-provider-modal-body'}}
+      <div class="one-row status-panel-inner">
+        <div class="message-icon info oneicon oneicon-sign-info"></div>
+        <div class="message-text">
+          <ul class="about-info-list">
+            <li>
+              <span class="one-label about-label">{{t 'components.modals.aboutModal.providerName'}}</span>
+              <span class="one-label about-info truncate">{{providerName}}</span>
+            </li>
+            <li>
+              <span class="one-label about-label">{{t 'components.modals.aboutModal.version'}}</span>
+              <span class="one-label about-info truncate">{{serviceVersion}}</span>
+            </li>
+            <li>
+              <span class="one-label about-label">{{t 'components.modals.aboutModal.registeredIn'}}</span>
+              <a class="one-label about-info truncate" href={{onezoneUrl}}>{{onezoneUrl}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+  
+
+  {{/bs-modal-body}}
+  {{#bs-modal-footer as |footer|}}
+    {{#bs-button action=(action "close" target=footer) type="primary"}}
+      {{t "common.modal.close"}}
+    {{/bs-button}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}

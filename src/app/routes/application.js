@@ -1,6 +1,6 @@
 /**
  * A main route, setting up whole application.
- * @module routes/spaces
+ * @module routes/application
  * @author Jakub Liput
  * @copyright (C) 2016-2017 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
@@ -8,28 +8,37 @@
 
 import Ember from 'ember';
 import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
+import { WebFont } from 'webfontloader';
 
 const {
   inject: {
     service
   },
-  on
+  RSVP: { Promise },
 } = Ember;
 
 export default Ember.Route.extend(ApplicationRouteMixin, {
   session: service(),
 
   actions: {
-    goToItem(name) {
-      this.transitionTo(`onedata.${name}.index`);
-    },
-
     transitionTo() {
       this.transitionTo(...arguments);
     }
   },
 
-  initSession: on('init', function() {
+  
+  init() {
+    this._super(...arguments);
+    this.initSession();
+  },
+  
+  model() {
+    return new Promise(resolve => {
+      WebFont.on('active', resolve, true);
+    });
+  },
+  
+  initSession() {
     let {
       session
     } = this.getProperties('session');
@@ -51,5 +60,5 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
     });
 
     return sessionInitialization;
-  }),
+  },
 });

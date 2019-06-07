@@ -39,7 +39,7 @@ function getApiCredentials(isPublic = false) {
 const reInOnzoneUrl = /.*\/(opw)\/(.*?)\/(.*)/;
 
 function getApiToken() {
-  return resolve($.ajax('./gui-preauthorize'))
+  return resolve($.post('./gui-preauthorize'))
     .catch(() => {
       next(() => {
         if (!window.onedataIsReloadingApp) {

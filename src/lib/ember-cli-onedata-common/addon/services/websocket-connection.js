@@ -52,6 +52,14 @@ function getApiToken() {
     });
 }
 
+/**
+ * Change origin from gui-context to WebSocket origin (change protocol)
+ * @param {string} httpOrigin 
+ */
+function originToWebSocketOrigin(httpOrigin) {
+  return httpOrigin.replace(/^http/, 'ws');
+}
+
 export default Service.extend({
   store: service(),
 
@@ -129,7 +137,7 @@ export default Service.extend({
       // TODO: if getOneproviderToken fail, we will see infinite loading
       return getApiCredentials(isPublic)
         .then(({ token: oneproviderToken, origin: oneproviderOrigin }) => {
-          let url = oneproviderOrigin + wsEndpoint;
+          let url = originToWebSocketOrigin(oneproviderOrigin) + wsEndpoint;
 
           if (oneproviderToken) {
             url += `?token=${oneproviderToken}`;

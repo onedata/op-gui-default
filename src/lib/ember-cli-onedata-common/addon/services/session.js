@@ -227,10 +227,10 @@ export default SessionCore.extend({
       this.get('onWebSocketError'),
       this.get('onWebSocketClose'),
       isPublic
-    ).then(({ oneproviderOrigin, oneproviderToken }) =>
+    ).then(({ oneproviderApiOrigin, oneproviderToken }) =>
       safeExec(this, 'setProperties', {
         oneproviderToken,
-        oneproviderOrigin,
+        oneproviderApiOrigin,
       })
     );
 

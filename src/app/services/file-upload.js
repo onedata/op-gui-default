@@ -266,9 +266,9 @@ Directory content won't be updated!`);
 
   resumable: Ember.computed(function () {
     console.debug(`file-upload: Creating new Resumable`);
-    const oneproviderOrigin = this.get('session.oneproviderOrigin');
+    const oneproviderApiOrigin = this.get('session.oneproviderApiOrigin');
     const oneproviderToken = this.get('session.oneproviderToken');
-    const targetUrl = `https://${oneproviderOrigin}/upload`;
+    const targetUrl = `https://${oneproviderApiOrigin}/upload`;
     const r = new Resumable({
       target: targetUrl,
       chunkSize: 1 * 1024 * 1024,

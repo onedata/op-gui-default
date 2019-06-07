@@ -29,9 +29,9 @@ function getApiCredentials(isPublic = false) {
     .then(tokenData => {
       const token = tokenData && tokenData.token;
       return resolve($.ajax('./gui-context'))
-        .then(({ origin }) => ({
+        .then(({ apiOrigin }) => ({
           token,
-          origin
+          apiOrigin
         }));
     });
 }
@@ -136,8 +136,8 @@ export default Service.extend({
       const clusterId = this.getClusterIdFromUrl();
       // TODO: if getOneproviderToken fail, we will see infinite loading
       return getApiCredentials(isPublic)
-        .then(({ token: oneproviderToken, origin: oneproviderOrigin }) => {
-          let url = originToWebSocketOrigin(oneproviderOrigin) + wsEndpoint;
+        .then(({ token: oneproviderToken, apiOrigin: oneproviderApiOrigin }) => {
+          let url = `wss://${oneproviderApiOrigin}${wsEndpoint}`;
 
           if (oneproviderToken) {
             url += `?token=${oneproviderToken}`;
@@ -152,7 +152,7 @@ export default Service.extend({
                 this.socket.onopen = (event) => {
                   this.open(event)
                     .then(() => resolveWS({
-                      oneproviderOrigin,
+                      oneproviderApiOrigin,
                       oneproviderToken
                     }));
                 };

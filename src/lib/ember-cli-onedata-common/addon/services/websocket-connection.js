@@ -52,14 +52,6 @@ function getApiToken() {
     });
 }
 
-/**
- * Change origin from gui-context to WebSocket origin (change protocol)
- * @param {string} httpOrigin 
- */
-function originToWebSocketOrigin(httpOrigin) {
-  return httpOrigin.replace(/^http/, 'ws');
-}
-
 export default Service.extend({
   store: service(),
 

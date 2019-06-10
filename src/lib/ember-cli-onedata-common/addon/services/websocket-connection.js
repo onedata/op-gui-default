@@ -24,38 +24,22 @@ const wsEndpoint = '/ws';
 
 const flushTimeout = 20;
 
-function ajaxGuiCreds(methodName, clusterId) {
-  return new Promise((resolve, reject) => {
-    $.ajax(
-      `/${methodName}`, {
-        method: 'POST',
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-        data: JSON.stringify({
-          clusterId,
-          clusterType: 'oneprovider',
-        }),
-      }
-    ).then(resolve, reject);
-  });
-}
-
-function getApiCredentials(clusterId, isPublic = false) {
-  return (isPublic ? resolve() : getApiToken(clusterId))
+function getApiCredentials(isPublic = false) {
+  return (isPublic ? resolve() : getApiToken())
     .then(tokenData => {
       const token = tokenData && tokenData.token;
-      return ajaxGuiCreds('gui-origin', clusterId)
-        .then(({ domain }) => ({
+      return resolve($.ajax('./gui-context'))
+        .then(({ apiOrigin }) => ({
           token,
-          domain
+          apiOrigin
         }));
     });
 }
 
 const reInOnzoneUrl = /.*\/(opw)\/(.*?)\/(.*)/;
 
-function getApiToken(clusterId) {
-  return ajaxGuiCreds('gui-token', clusterId)
+function getApiToken() {
+  return resolve($.post('./gui-preauthorize'))
     .catch(() => {
       next(() => {
         if (!window.onedataIsReloadingApp) {
@@ -143,11 +127,9 @@ export default Service.extend({
 
       const clusterId = this.getClusterIdFromUrl();
       // TODO: if getOneproviderToken fail, we will see infinite loading
-      return getApiCredentials(clusterId, isPublic)
-        .then(({ token: oneproviderToken, domain: oneproviderHostname }) => {
-          const port = window.location.port;
-          let url = protocol + oneproviderHostname +
-            (port === '' ? '' : ':' + port) + wsEndpoint;
+      return getApiCredentials(isPublic)
+        .then(({ token: oneproviderToken, apiOrigin: oneproviderApiOrigin }) => {
+          let url = `wss://${oneproviderApiOrigin}${wsEndpoint}`;
 
           if (oneproviderToken) {
             url += `?token=${oneproviderToken}`;
@@ -162,7 +144,7 @@ export default Service.extend({
                 this.socket.onopen = (event) => {
                   this.open(event)
                     .then(() => resolveWS({
-                      oneproviderHostname,
+                      oneproviderApiOrigin,
                       oneproviderToken
                     }));
                 };

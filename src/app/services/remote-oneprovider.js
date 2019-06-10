@@ -11,6 +11,7 @@
 import Ember from 'ember';
 import checkImg from 'op-worker-gui/utils/check-img';
 import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
+import onezoneUrl from 'op-worker-gui/utils/onezone-url';
 
 const {
   Service,
@@ -81,8 +82,9 @@ export default Service.extend({
                             return new Promise(() => {
                               const clusterId = get(chosenOneprovider,
                                 'cluster');
-                              window.location =
-                                `/ozw/onezone/i#/provider-redirect/${clusterId}?space_id=${resourceId}&resource_type=${type}`;
+                              window.location = onezoneUrl(
+                                `provider-redirect/${clusterId}?space_id=${resourceId}&resource_type=${type}`
+                              );
                             });
                           } else {
                             throw {

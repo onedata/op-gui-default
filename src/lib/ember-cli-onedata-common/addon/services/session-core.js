@@ -117,9 +117,9 @@ export default Service.extend({
       this.get('onWebSocketError'),
       this.get('onWebSocketClose'),
       isPublic
-    ).then(({ oneproviderHostname, oneproviderToken }) => {
+    ).then(({ oneproviderApiOrigin, oneproviderToken }) => {
       safeExec(this, 'setProperties', {
-        oneproviderHostname,
+        oneproviderApiOrigin,
         oneproviderToken,
       });
     });

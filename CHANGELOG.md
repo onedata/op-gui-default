@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-5476 Refactoring of token/origin endpoints and unfied GUI URL
 * VFS-5380 Fixed redirection to legacy Oneproviders throught Onezone
 * VFS-4596 Onedata Unified GUI
 * VFS-5038 Added possibility to publish shared directory with no metadata specified

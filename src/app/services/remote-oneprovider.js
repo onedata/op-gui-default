@@ -83,7 +83,7 @@ export default Service.extend({
                               const clusterId = get(chosenOneprovider,
                                 'cluster');
                               window.location = onezoneUrl(
-                                `ozw/onezone/i#/provider-redirect/${clusterId}?space_id=${resourceId}&resource_type=${type}`
+                                `provider-redirect/${clusterId}?space_id=${resourceId}&resource_type=${type}`
                               );
                             });
                           } else {

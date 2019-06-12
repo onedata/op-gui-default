@@ -38,15 +38,21 @@ export default Ember.Component.extend({
       return JSON.stringify(json, null, 2);
     },
     set(key, value) {
-      try {
-        const json = JSON.parse(value);
-        this.set('data', json);
-        this.set('error', null);
-      } catch (error) {
-        console.debug(`JSON editor parse error: ${error}`);
-        this.set('error', error);
+      if (value === '') {
+        this.setProperties({
+          data: null,
+          error: null
+        });
+      } else {
+        try {
+          const json = JSON.parse(value);
+          this.set('data', json);
+          this.set('error', null);
+        } catch (error) {
+          console.debug(`JSON editor parse error: ${error}`);
+          this.set('error', error);
+        }
       }
-
       return value;
     }
   })

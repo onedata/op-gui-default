@@ -36,8 +36,6 @@ function getApiCredentials(isPublic = false) {
     });
 }
 
-const reInOnzoneUrl = /.*\/(opw)\/(.*?)\/(.*)/;
-
 function getApiToken() {
   return resolve($.post('./gui-preauthorize'))
     .catch(() => {
@@ -99,11 +97,6 @@ export default Service.extend({
     }
   },
 
-  getClusterIdFromUrl() {
-    const m = location.toString().match(reInOnzoneUrl);
-    return m && m[2];
-  },
-
   /**
    * Initializes the WebSocket
    */
@@ -123,13 +116,12 @@ export default Service.extend({
     } else {
       this.set('initialized', true);
 
-      let protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+      const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
 
-      const clusterId = this.getClusterIdFromUrl();
       // TODO: if getOneproviderToken fail, we will see infinite loading
       return getApiCredentials(isPublic)
         .then(({ token: oneproviderToken, apiOrigin: oneproviderApiOrigin }) => {
-          let url = `wss://${oneproviderApiOrigin}${wsEndpoint}`;
+          let url = `${protocol}${oneproviderApiOrigin}${wsEndpoint}`;
 
           if (oneproviderToken) {
             url += `?token=${oneproviderToken}`;

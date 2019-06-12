@@ -14,7 +14,7 @@ import DS from 'ember-data';
  */
 export default DS.Transform.extend({
   deserialize: function(value) {
-    if (Ember.$.isPlainObject(value)) {
+    if (Ember.$.isPlainObject(value) || value === null) {
       return JSON.stringify(value);
     } else {
       return '{}';

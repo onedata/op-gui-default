@@ -19,9 +19,9 @@ function create(type) {
 
   let mixin = Ember.Mixin.create({
     file: belongsTo(fileModel, {async: true}),
-    basic: attr('object-string', { defaultValue: '{}'}),
-    json: attr('object-string', { defaultValue: '{}'}),
-    rdf: attr('string', { defaultValue: ''} ),
+    basic: attr('object-string', { defaultValue: '{}' }),
+    json: attr('object-string', { defaultValue: 'null'}),
+    rdf: attr('string', { defaultValue: null}),
   });
 
   return mixin;

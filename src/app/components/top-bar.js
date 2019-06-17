@@ -9,7 +9,7 @@ const {
  * Just a top bar - container for toolbars and other stuff.
  * @module components/top-bar
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
@@ -19,10 +19,26 @@ export default Ember.Component.extend({
   aboutOpened: false,
 
   userName: computed.alias('session.user.name'),
-  
+
+  onezoneUrl: computed.reads('session.sessionDetails.onezoneURL'),
+
+  logoutUrl: computed('onezoneUrl', function logoutUrl() {
+    return `${this.get('onezoneUrl')}/logout`;
+  }),
+
+  manageAccountUrl: computed('session.sessionDetails.onezoneURL', function manageAccountLink() {
+    const onezoneUrl = this.get('session.sessionDetails.onezoneURL');
+    return `${onezoneUrl}/#/onedata/users`;
+  }),
+
   actions: {
     showAbout() {
       this.set('aboutOpened', true);
+    },
+
+    logout() {
+      $.post(this.get('logoutUrl'))
+        .always(() => location.reload());
     },
   },
 });

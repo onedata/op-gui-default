@@ -3,23 +3,12 @@
  *
  * @module routes/onezone/tokens
  * @author Jakub Liput
- * @copyright (C) 2017 ACK CYFRONET AGH
+ * @copyright (C) 2017-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-import Ember from 'ember';
+import RedirectBase from './-redirect-base';
 
-const {
-  Route,
-} = Ember;
-
-export default Route.extend({
-  /**
-   * Redirect to tokens page of Onezone
-   * @param {object} model contains onezoneUrl: string
-   * @param {Ember.Transition} transition 
-   */
-  redirect(model) {
-    window.location = `${model.onezoneUrl}?expand_tokens=true`;
-  },
+export default RedirectBase.extend({
+  resourceType: 'tokens',
 });

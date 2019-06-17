@@ -4,7 +4,7 @@ module.exports = function(environment) {
   var ENV = {
     modulePrefix: 'op-worker-gui',
     environment: environment,
-    rootURL: '/',
+    rootURL: null,
     // set has location, because we want to have uris to share
     // without History API
     // see: http://emberjs.com/api/classes/Ember.Location.html
@@ -41,7 +41,7 @@ module.exports = function(environment) {
       custom: {
         families: ['Open Sans'],
       },
-      timeout: 60000,
+      timeout: 20000,
     },
   };
 
@@ -54,6 +54,8 @@ module.exports = function(environment) {
   }
 
   if (environment === 'test') {
+    ENV.rootURL = '/';
+    
     // Testem prefers this...
     ENV.locationType = 'none';
 

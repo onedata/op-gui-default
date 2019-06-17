@@ -59,11 +59,11 @@ describe('Unit | Utility | array slice', function() {
       endIndex: 35,
     });
     
-    const native = as.toArray();
+    const nativeArr = as.toArray();
     return wait().then(() => {
       expect(
-        native,
-        `${JSON.stringify(native)} should be array from 20 to 45`
+        nativeArr,
+        `${JSON.stringify(nativeArr)} should be array from 20 to 45`
       ).to.deep.equal(_.range(20, 45));
     });
   });
@@ -111,10 +111,10 @@ describe('Unit | Utility | array slice', function() {
     });
     
     return wait().then(() => {
-      const native = as.toArray();
+      const nativeArr = as.toArray();
       expect(
-        native,
-        `${JSON.stringify(native)} should contain pushed object`
+        nativeArr,
+        `${JSON.stringify(nativeArr)} should contain pushed object`
       ).to.deep.equal([99, 'x']);
     });
   });

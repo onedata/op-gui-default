@@ -16,7 +16,7 @@ const {
  * 
  * @module controllers/onedata/data
  * @author Jakub Liput
- * @copyright (C) 2016-2018 ACK CYFRONET AGH
+ * @copyright (C) 2016-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Controller.extend({
@@ -45,12 +45,7 @@ export default Ember.Controller.extend({
         type: 'dataSpaces',
       });
     } else if (this.get('commonLoader.type') === 'dataSpaces') {
-      commonLoader.setProperties({
-        isLoading: false,
-        message: null,
-        messageSecondary: null,
-        type: null,
-      });
+      commonLoader.clear();
     }
   }),
   

@@ -72,3 +72,6 @@ typings/
 
 # Currenlty we use NPM5 as experimental
 package-lock.json
+
+gui_static.tar.gz
+gui_static

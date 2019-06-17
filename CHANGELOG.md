@@ -6,6 +6,10 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-5507 Fixed sending arbitral values in file metadata editor
+* VFS-5476 Refactoring of token/origin endpoints and unfied GUI URL
+* VFS-5380 Fixed redirection to legacy Oneproviders throught Onezone
+* VFS-4596 Onedata Unified GUI
 * VFS-5038 Added possibility to publish shared directory with no metadata specified
 * VFS-5030 Removed debug code from db-index view
 * VFS-4980 Added support for index transfers
@@ -14,9 +18,11 @@ CHANGELOG
 * VFS-4454 Fix hanging authorization loader spinner
 * VFS-4856 Added CDMI object ID and file path info to file row
 * VFS-4553 Fixed browser back from Onezone to Oneprovider GUI (wrong redirect and broken WebSocket in Safari)
+* VFS-4385 Fixed blank ACL permissions modal after changing permissions
 * VFS-4806 Fixed regression bug: file distribution modal for directory has no transfers buttons
 * VFS-4791 Support for highly scattered files in file distribution charts
 * VFS-4242 Added transfers cancelling and rerunning actions
+* VFS-4738 Removed spaces and groups tabs implementation and redirect to Zone GUI spaces and groups
 * VFS-4753 Allow to start new transfers if other transfers are pending for file/provider
 * VFS-4566 Added transfers list tab for specific file
 * VFS-4507 Multiple improvements in transfers list view

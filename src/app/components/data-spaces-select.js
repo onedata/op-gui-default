@@ -15,7 +15,7 @@ const {
  *     specifically, loads a root of tree of space directories
  * @module components/data-spaces-select
  * @author Jakub Liput
- * @copyright (C) 2016 ACK CYFRONET AGH
+ * @copyright (C) 2016-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default Ember.Component.extend({
@@ -49,16 +49,15 @@ export default Ember.Component.extend({
       });
     }
   }),
-
+  
   init() {
     this._super(...arguments);
     this.selectedSpaceDidChange();
   },
 
   actions: {
-    setSelectedSpace(space) {
-      this.set('prevSelectedSpace', this.get('selectedSpace'));
-      this.set('selectedSpace', space);
+    setSelectedSpace() {
+      return this.get('fileSystemTree').setSelectedSpace(...arguments);
     }
   }
 });

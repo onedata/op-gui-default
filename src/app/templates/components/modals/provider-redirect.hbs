@@ -1,0 +1,51 @@
+{{#bs-modal open=open body=false footer=false
+  id=modalId
+  title=title
+  keyboard=false
+  autoClose=false
+  backdropClose=false
+  closeButton=false
+}}
+  {{#bs-modal-body}}
+    {{#if isSingleProvider}}
+      <p>
+        {{t "components.modals.providerRedirect.textIntro1"}}
+        <strong>{{space.name}}</strong>
+        {{t "components.modals.providerRedirect.textSingleIntro2"}}
+        <strong>{{providers.firstObject.name}}</strong>.
+      </p>
+    {{else}}
+      <p>
+        {{t "components.modals.providerRedirect.textIntro1"}}
+        <strong>{{space.name}}</strong>
+        {{t "components.modals.providerRedirect.textIntro2"}}
+        (<strong>{{currentProviderName}}</strong>).
+        {{t "components.modals.providerRedirect.textIntro3"}}
+      </p>
+      <div class="row row-oneprovider-select">
+        {{select-2
+          content=providerOptions
+          value=chosenProvider
+          placeholder=(t "components.modals.providerRedirect.selectPlaceholder")
+        }}
+      </div>
+    {{/if}}
+  {{/bs-modal-body}}
+  {{#bs-modal-footer}}
+    {{#if isSingleProvider}}
+      {{#bs-button
+        type="primary"
+        class="btn-go-to-provider"
+        action=(action "goToSingleProvider")
+      }}
+        {{t "components.modals.providerRedirect.takeMeThere"}}
+      {{/bs-button}}
+    {{/if}}
+    {{#bs-button
+      action=(action "cancel")
+      type="default"
+    }}
+      {{t "common.modal.cancel"}}
+    {{/bs-button}}
+  {{/bs-modal-footer}}
+{{/bs-modal}}

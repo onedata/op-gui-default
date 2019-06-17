@@ -54,16 +54,6 @@ export default Ember.Service.extend({
     }
   }),
   
-  activeGroup: computed('activeItem', 'itemType', {
-    get() {
-      return this.get('itemType') === 'group' ?
-        this.get('activeItem') : null;
-    },
-    set(key, value) {
-      return this.set('activeItem', value);
-    }
-  }),
-  
   activeShare: computed('activeItem', 'itemType', {
     get() {
       return this.get('itemType') === 'share' ?

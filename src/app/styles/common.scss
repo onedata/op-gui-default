@@ -122,7 +122,7 @@ html, body {
           width: 156px;
           margin-left: $secondary-sidebar-item-padding;
           margin-right: 62px;
-          background-image: url("/assets/images/logo-dark.svg");
+          background-image: url($root-url + "images/logo-dark.svg");
           background-position-x: left;
           background-position-y: $brand-top-padding;
           background-size: auto 26px;
@@ -224,7 +224,7 @@ html, body {
         text-align: center;
 
         // TODO: use SVG
-        background-image: url("/assets/images/logo-short-light.svg");
+        background-image: url($root-url + "images/logo-short-light.svg");
         background-size: 40px 26px;
         background-repeat: no-repeat;
         background-position: center $brand-top-padding;
@@ -237,9 +237,16 @@ html, body {
         overflow: hidden;
         vertical-align: middle;
         border-bottom: solid #565960 1px;
-
-        .oneicon {
+        
+        .oneicon.menu-item-icon {
           font-size: 40px;
+        }
+        
+        .oneicon.menu-item-external-link {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          font-size: 16px;
         }
 
         &.active a {
@@ -260,7 +267,8 @@ html, body {
 
 
           // TODO: generic figure styles moved up
-          figure {
+          figure.menu-item-figure {
+            position: relative;
             max-height: $sidebar-item-height;
             color: #fff;
 
@@ -533,8 +541,13 @@ html, body {
 
     .content-error {
       margin-top: 20px;
-      font-size: 2em;
+      font-size: 150%;
       text-align: center;
+      .container-error-secondary {
+        margin-top: 20px;
+        font-size: 75%;
+        text-align: left;
+      }
     }
 
     .content-error-icon {
@@ -839,14 +852,14 @@ html, body {
   &.op-panel-azure, &.op-panel-metadata {
     border-color: $color-panel-azure;
     &.op-panel-background {
-      background-image: url(/assets/images/panels/metadata.svg);
+      background-image: url($root-url + "images/panels/metadata.svg");
     }
   }
 
   &.op-panel-red, &.op-panel-files {
     border-color: $color-panel-red;
     &.op-panel-background {
-      background-image: url(/assets/images/panels/files.svg);
+      background-image: url($root-url + "images/panels/files.svg");
     }
   }
 
@@ -934,7 +947,7 @@ h1.content-header {
 .empty-file-info {
   position: relative;
   height: 190px;
-  background-image: url(/assets/images/empty-file.svg);
+  background-image: url($root-url + "images/empty-file.svg");
   background-position: center top;
   background-size: 150px auto;
   background-repeat: no-repeat;
@@ -945,4 +958,13 @@ h1.content-header {
     transform: translateX(-50%);
     margin: 0;
   }
+}
+
+.col-centered{
+  float: none;
+  margin: 0 auto;
+}
+
+.nowrap {
+  white-space: nowrap;
 }

@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import ACE from 'op-worker-gui/utils/access-control-entity';
+import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
 
 const {
   computed,
@@ -7,6 +8,7 @@ const {
   observer,
   inject,
   run,
+  get,
   RSVP: {
     Promise
   }
@@ -47,6 +49,8 @@ export default Ember.Component.extend({
     } else if (this.get('isEditing')) {
       acl.forEach(ace => ace.set('isCreatedItem', false));
     }
+    
+    this.dataSpaceChanged();
   },
 
   didInsertElement() {
@@ -106,34 +110,22 @@ export default Ember.Component.extend({
    * @param {String} type - one of: user, group
    */
   fetchSystemModel(type) {
-    const thisModel = `system${type.capitalize()}sModel`;
-    let listModel = `${type}List`;
-    let systemModel = `system${type.capitalize()}`;
-    let space = this.get('dataSpace');
+      const modelName = `system${type.capitalize()}sModel`;
+      let listModel = `${type}List`;
+      let space = this.get('dataSpace');
 
-    let fetch = new Promise((resolve, reject) => {
-      let getSpace = space.get(listModel);
-      getSpace.then(list => {
-        let getPermissions = list.get('permissions');
-        getPermissions.then(permissions => {
-          let getSystems = Promise.all(
-            permissions.map(p => p.get(systemModel))
-          );
-          getSystems.then(resolve);
-          getSystems.catch(reject);
+      get(space, listModel)
+        .then(list => get(list, `system${type.capitalize()}Records`))
+        .then(systemRecords => safeExec(this, 'set', modelName, systemRecords))
+        .catch(error => {
+          safeExec(this, 'set', modelName, null);
+          throw error;
         });
-        getPermissions.catch(error => reject(error));
-      });
-      getSpace.catch(reject);
-    });
-    fetch.then(permissions => this.set(thisModel, permissions));
-    fetch.catch(() => this.set(thisModel, null));
-    return fetch;
   },
 
   // -- try to fetch system users/groups list for selector
 
-  dataSpaceChanged: on('init', observer('dataSpace', function() {
+  dataSpaceChanged: observer('dataSpace', function() {
     this.set('isLoadingModel', true);
     const promises = [
       this.fetchSystemModel('user'),
@@ -147,26 +139,34 @@ export default Ember.Component.extend({
         statusMessage: 'List of available users or groups could not be loaded',
         statusType: 'error'
       }));
-  })),
+  }),
 
   // -- convert systemUsers/Groups RecordArrays to selectors elements
 
   systemUsers: computed('systemUsersModel.@each.{name,id}', function() {
     const models = this.get('systemUsersModel');
-    let selectData = models.map(m => ({
-      id: m.get('id'),
-      text: m.get('name')
-    }));
-    return selectData;
+    if (models) {
+      const selectData = models.map(m => ({
+        id: m.get('id'),
+        text: m.get('name')
+      }));      
+      return selectData;
+    } else {
+      return [];
+    }
   }),
 
   systemGroups: computed('systemGroupsModel.@each.{name,id}', function() {
     const models = this.get('systemGroupsModel');
-    let selectData = models.map(m => ({
-      id: m.get('id'),
-      text: m.get('name')
-    }));
-    return selectData;
+    if (models) {
+      const selectData = models.map(m => ({
+        id: m.get('id'),
+        text: m.get('name')
+      }));
+      return selectData;
+    } else {
+      return [];
+    }
   }),
 
   setMaxHeightFun: computed(function() {

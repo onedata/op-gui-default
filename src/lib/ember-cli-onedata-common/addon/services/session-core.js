@@ -1,47 +1,29 @@
 /**
- * Provides a session abstraction using ember-simple-auth. The session validity
- * is resolved via WebSocket.
+ * Hacky session service (please do not ask)
  * @module services/session
  * @author Lukasz Opiola
  * @author Jakub Liput
- * @copyright (C) 2016-2017 ACK CYFRONET AGH
+ * @copyright (C) 2016-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
 // This file should be linked to app/services/session.js
 
 import Ember from 'ember';
-import SessionService from 'ember-simple-auth/services/session';
+import safeExec from 'ember-cli-onedata-common/utils/safe-method-execution';
+import onezoneUrl from 'op-worker-gui/utils/onezone-url';
 
 const {
   computed,
+  Service,
+  inject: { service },
+  RSVP: { Promise },
+  run: { next },
 } = Ember;
 
-export default SessionService.extend({
-  server: Ember.inject.service(),
-  store: Ember.inject.service(),
-
-  /**
-   * @type {function}
-   * A resolve function bound in initSession or tryToRestoreSession.
-   * It will resolve the promise returned in initSession or tryToRestoreSession.
-   *
-   * - Value of this properties are set in initSession or tryToRestoreSession
-   * - Value is nulled in resolveSession and onWebsocketError
-   */
-  sessionInitResolve: null,
-
-  /**
-   * @type {function}
-   * A reject function bound in initSession or tryToRestoreSession.
-   * It will reject the promise returned in initSession or tryToRestoreSession.
-   *
-   * - Value of this properties are set in initSession or tryToRestoreSession
-   * - Value is nulled in resolveSession and onWebsocketError
-   */
-  sessionInitReject: null,
-  sessionRestoreResolve: null,
-  sessionRestoreReject: null,
+export default Service.extend({
+  server: service(),
+  store: service(),
 
   /**
    * This flag indicates if the client has active session. Null when
@@ -68,11 +50,11 @@ export default SessionService.extend({
   /**
    * Returns a function that shout be bound to websocket onopen event.
    */
-  onWebSocketOpen: computed(function() {
+  onWebSocketOpen: computed(function () {
     // Ask the server for session details when the WebSocket connection
     // is established
-    return (/*event*/) => {
-      this.resolveSession().finally(() => {
+    return ( /*event*/ ) => {
+      return this.resolveSession().finally(() => {
         this.setProperties({
           websocketWasOpened: true,
           websocketOpen: true
@@ -84,8 +66,8 @@ export default SessionService.extend({
   /**
    * Returns a function that shout be bound to websocket onerror event.
    */
-  onWebSocketError: function() {
-    return (/*event*/) => {
+  onWebSocketError: function () {
+    return ( /*event*/ ) => {
       // Reject session restoration if WebSocket connection
       // could not be established
       const initRejectFunction = this.get('sessionInitReject');
@@ -104,6 +86,16 @@ export default SessionService.extend({
         sessionRestoreResolve: null,
         sessionRestoreReject: null
       });
+      return new Promise(() => {
+        next(() => {
+          if (!window.onedataIsReloadingApp) {
+            sessionStorage.setItem('authRedirect', '1');
+            window.location = onezoneUrl(
+              `?redirect_url=${location.pathname}${location.hash}`
+            );
+          }
+        });
+      });
     };
   }.property(),
 
@@ -118,38 +110,18 @@ export default SessionService.extend({
    * NOTE: This requires server service and WebSocket adapter.
    * If this is called, session data from WebSocket will resolve session
    * restoration rather than run authenticate. */
-  initSession: function () {
+  initSession(isPublic) {
     // bind session service websocket event handlers
-    this.get('server').initWebSocket(
+    return this.get('server').initWebSocket(
       this.get('onWebSocketOpen'),
       this.get('onWebSocketError'),
-      this.get('onWebSocketClose')
-    );
-    return new Ember.RSVP.Promise((resolve, reject) => {
-      // This promise will be resolved when WS connection is established
-      // and session details are sent via WS.
-      this.setProperties({
-        sessionInitResolve: resolve,
-        sessionInitReject: reject
+      this.get('onWebSocketClose'),
+      isPublic
+    ).then(({ oneproviderApiOrigin, oneproviderToken }) => {
+      safeExec(this, 'setProperties', {
+        oneproviderApiOrigin,
+        oneproviderToken,
       });
-    });
-  },
-
-  /** If this is called, session data from WebSocket will resolve session
-   * restoration rather than run authenticate. */
-  tryToRestoreSession: function () {
-    return new Ember.RSVP.Promise((resolve, reject) => {
-      console.debug('tryToRestoreSession, sessionValid = ', this.get('sessionValid'));
-      if (this.get('sessionValid') === true) {
-        resolve();
-      } else {
-        // This promise will be resolved when WS connection is established
-        // and session details are sent via WS.
-        this.setProperties({
-          sessionRestoreResolve: resolve,
-          sessionRestoreReject: reject
-        });
-      }
     });
   },
 
@@ -165,10 +137,11 @@ export default SessionService.extend({
       console.debug('data: ' + JSON.stringify(data));
       let isSessionValid = (data.sessionValid === true);
       this.set('sessionValid', isSessionValid);
+      let promise;
       if (isSessionValid) {
-        this.onResolveSessionValid(data);
+        promise = this.onResolveSessionValid(data);
       } else {
-        this.onResolveSessionInvalid();
+        promise = this.onResolveSessionInvalid();
       }
       const resolveFunction = this.get('sessionInitResolve');
       // the resoleFunction can be undefined/null only if we (re)open WebSocket
@@ -183,6 +156,8 @@ export default SessionService.extend({
         sessionRestoreResolve: null,
         sessionRestoreReject: null
       });
+
+      return promise;
     });
   },
 
@@ -210,13 +185,13 @@ export default SessionService.extend({
         sessionRestoreResolveFun();
       } else {
         console.debug("SESSION VALID, AUTHENTICATED");
-        this.get('session').authenticate('authenticator:basic');
       }
     });
     sessionUserPromise.catch(() => {
       console.debug("SESSION: USER CANNOT BE FETCHED (findRecord rejected)");
       this.onResolveSessionInvalid();
     });
+    return sessionUserPromise;
   },
 
   /**

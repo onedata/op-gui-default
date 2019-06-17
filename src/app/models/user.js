@@ -20,10 +20,6 @@ export default DS.Model.extend({
 
   /*** Relations ***/
 
-  groups: hasMany('group', {
-    async: true
-  }),
-
   spaces: hasMany('spaces', {
     async: true
   }),

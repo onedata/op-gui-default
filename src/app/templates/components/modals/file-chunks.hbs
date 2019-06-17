@@ -82,7 +82,7 @@
                 {{#if areTransfersInProgress}}
                   {{t
                     "components.dataFilesListToolbar.fileChunksModal.currentlyTransferredText"
-                    elementType=fileType
+                    elementType=(t (concat "components.dataFilesListToolbar.fileChunksModal." fileType))
                   }}
                   &ndash;
                   {{#link-to "onedata.transfers.show" space.id (query-params file_id=file.id)}}{{t
@@ -92,7 +92,7 @@
                   {{t
                     "components.dataFilesListToolbar.fileChunksModal.endedTransfersText"
                     count=_endedTransfersCount
-                    elementType=fileType
+                    elementType=(t (concat "components.dataFilesListToolbar.fileChunksModal." fileType))
                   }}
                   {{_endedTransfersCount}}
                   {{t (concat "components.dataFilesListToolbar.fileChunksModal.time" (if (gt _endedTransfersCount 1) "s"))}}
@@ -104,7 +104,7 @@
                 {{else}}
                   {{t
                     "components.dataFilesListToolbar.fileChunksModal.noTransfersText"
-                    elementType=fileType
+                    elementType=(t (concat "components.dataFilesListToolbar.fileChunksModal." fileType))
                   }}.
                 {{/if}}
               </div>

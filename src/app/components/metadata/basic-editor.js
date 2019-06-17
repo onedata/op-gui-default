@@ -49,7 +49,7 @@ export default Ember.Component.extend({
     // Initialize existingKeys - because we do not want use computed property
     // that creates new array every time the data changes.
     // Further existing keys add/remove will be done on create/remove entry etc.
-    let data = this.get('data');
+    let data = this.get('data') || {};
     this.set('existingKeys', A(Object.keys(data)));
   },
 
@@ -78,7 +78,7 @@ export default Ember.Component.extend({
    */
   liveData: Ember.computed('data', 'editedKey', {
     get() {
-      const data = this.get('data');
+      const data = this.get('data') || {};
       if (data) {
         const flat = Object.keys(data)
           .filter(key => key !== this.get('editedKey'))
@@ -122,7 +122,7 @@ export default Ember.Component.extend({
     },
 
     removeEntry(key, resolve) {
-      const tmpData = this.get('data');
+      const tmpData = this.get('data') || {};
       delete tmpData[key];
       this.get('existingKeys').removeObject(key);
       this.set('data', tmpData);
@@ -141,7 +141,7 @@ export default Ember.Component.extend({
      */
     newEntryChanged(key, value, isValid) {
       const oldKey = this.get('editedKey');
-      const tmpData = this.get('data');
+      const tmpData = this.get('data') || {};
       if (isValid) {
         if (oldKey !== key) {
           // remove old edited key, because we got new key

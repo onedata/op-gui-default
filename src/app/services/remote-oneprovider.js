@@ -20,6 +20,12 @@ const {
   RSVP: { Promise, reject, defer },
 } = Ember;
 
+function getTestImagePath(type) {
+  return `/api/v3/${type}/test_image`;
+}
+
+const oneproviderTestImagePath = getTestImagePath('oneprovider');
+
 export default Service.extend({
   commonLoader: service(),
   i18n: service(),
@@ -70,8 +76,9 @@ export default Service.extend({
                     if (chosenOneprovider) {
                       const chosenOneproviderOrigin =
                         `https://${get(chosenOneprovider, 'domain')}`;
-                      return checkImg(`${chosenOneproviderOrigin}/favicon.ico`)
-                        .then(isAvailable => {
+                      return checkImg(
+                          `${chosenOneproviderOrigin}${oneproviderTestImagePath}`
+                        ).then(isAvailable => {
                           // workaround for legacy Oneproviders
                           return isAvailable || checkImg(
                             `${chosenOneproviderOrigin}/assets/images/empty-dir.svg`

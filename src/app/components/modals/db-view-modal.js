@@ -11,9 +11,9 @@ const {
 } = Ember;
 
 /**
- * Modal that displays information about DbIndex
+ * Modal that displays information about DbView
  *
- * @module components/modals/db-index-modal
+ * @module components/modals/db-view-modal
  * @author Jakub Liput
  * @copyright (C) 2018 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
@@ -26,17 +26,17 @@ export default Ember.Component.extend({
   
   close: () => {},
   
-  dbIndexId: undefined,
+  dbViewId: undefined,
   
-  dbIndex: reads('dbIndexProxy.content'),
+  dbView: reads('dbViewProxy.content'),
   
-  dbIndexProxy: computed('dbIndexId', function dbIndexProxy() {
+  dbViewProxy: computed('dbViewId', function dbViewProxy() {
     try {
       const {
-        dbIndexId,
+        dbViewId,
         store,
-      } = this.getProperties('dbIndexId', 'store');
-      return PromiseObject.create({ promise: store.findRecord('db-index', dbIndexId) });
+      } = this.getProperties('dbViewId', 'store');
+      return PromiseObject.create({ promise: store.findRecord('db-view', dbViewId) });
     } catch (error) {
       return PromiseObject.create({ promise: reject(error) });
     }

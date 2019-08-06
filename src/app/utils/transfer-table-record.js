@@ -85,7 +85,7 @@ export default EmberObject.extend({
   transferCollection: undefined,
   
   transferId: computed.reads('transfer.id'),
-  indexName: computed.reads('transfer.indexName'),
+  viewName: computed.reads('transfer.viewName'),
   path: computed.reads('transfer.path'),
   file: computed.reads('transfer.file'),
   space: computed.reads('transfer.space'),

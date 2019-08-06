@@ -2,7 +2,7 @@
   {{#each displayedProperties as |property|}}
     <div class="one-list-row">
       <span class="one-list-row-label">
-        {{t (concat "components.modals.dbIndexModal.tabGeneral." property)}}:
+        {{t (concat "components.modals.dbViewModal.tabGeneral." property)}}:
       </span>
       <span class="one-list-row-value">
         {{get this property}}
@@ -10,7 +10,7 @@
     </div>
   {{/each}}
   <div class="one-list-row row-query-options">
-    <span class="one-list-row-label">{{t "components.modals.dbIndexModal.tabGeneral.indexOptions"}}:</span>
-      {{query-options options=indexOptions}}
+    <span class="one-list-row-label">{{t "components.modals.dbViewModal.tabGeneral.viewOptions"}}:</span>
+      {{query-options options=viewOptions}}
   </div>
 </div>

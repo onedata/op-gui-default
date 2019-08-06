@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-5683 Renamed indices to views
 * VFS-5507 Fixed sending arbitral values in file metadata editor
 * VFS-5476 Refactoring of token/origin endpoints and unfied GUI URL
 * VFS-5380 Fixed redirection to legacy Oneproviders throught Onezone

@@ -1,8 +1,8 @@
-{{#if commonModals.openedDbIndex}}
-  {{modals/db-index-modal
-    open=commonModals.openedDbIndex
-    close=(action "closeModal" "dbIndex")
-    dbIndexId=commonModals.modalParams.dbIndexId
+{{#if commonModals.openedDbView}}
+  {{modals/db-view-modal
+    open=commonModals.openedDbView
+    close=(action "closeModal" "dbView")
+    dbViewId=commonModals.modalParams.dbViewId
   }}
 {{/if}}
 

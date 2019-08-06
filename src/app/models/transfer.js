@@ -51,13 +51,13 @@ export default Model.extend({
   queryParams: attr('object'),
   
   /**
-   * One of: dir, file, deleted, index, unknown
+   * One of: dir, file, deleted, view, unknown
    */
   dataSourceType: attr('string'),
   
   /**
    * If data type is file/dir/deleted, then it's absolute path of file.
-   * If data type is index then it's index name.
+   * If data type is view then it's view name.
    */
   dataSourceName: attr('string'),
   
@@ -66,7 +66,7 @@ export default Model.extend({
   /**
    * Id of record that holds data that is transferred. Depends of data type:
    * - for file, dir, deleted: id of file record
-   * - for index: id od db-index record
+   * - for view: id od db-view record
    */
   dataSourceRecord: computed('dataSourceType', 'dataSourceIdentifier', function dataSourceRecord() {
     const {
@@ -80,8 +80,8 @@ export default Model.extend({
       case 'file':
         promise = store.findRecord('file', dataSourceIdentifier);
         break;
-      case 'index':
-        promise = store.findRecord('db-index', dataSourceIdentifier);
+      case 'view':
+        promise = store.findRecord('db-view', dataSourceIdentifier);
         break;
       default:
         promise = resolve();
@@ -121,11 +121,11 @@ export default Model.extend({
   space: belongsTo('space', { async: true, inverse: null }),
  
   /**
-   * Index name
+   * View name
    */
-  indexName: computed('dataSourceName', 'dataSourceType', function path() {
+  viewName: computed('dataSourceName', 'dataSourceType', function viewName() {
     const dataSourceType = this.get('dataSourceType');
-    if (dataSourceType === 'index') {
+    if (dataSourceType === 'view') {
       return this.get('dataSourceName');
     }
   }),

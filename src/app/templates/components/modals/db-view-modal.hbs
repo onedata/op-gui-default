@@ -1,0 +1,48 @@
+{{#bs-modal open=open body=false footer=false
+  id="db-view"
+  title=(t "components.modals.dbViewModal.title")
+  keyboard=true
+  autoClose=true
+  backdropClose=true
+  closeButton=true
+  size="lg"
+}}
+  {{#if dbViewProxy.isPending}}
+    <div class="loader-container">
+      {{spin-spinner-block sizeClass="md" class="centered"}}
+    </div>
+  {{else}}
+    {{#bs-modal-body class="db-view-modal-body"}}
+      {{#bs-tab class="bs-tab" fade=false}}
+        {{#bs-tab-pane title=(t "components.modals.dbViewModal.tabs.general")}}
+          {{modals/db-view-modal/tab-general
+            viewName=dbView.name
+            spaceName=dbView.space.name
+            spatial=dbView.spatial
+            providerNames=(and dbView.providersRecords.content (map-by "name" dbView.providersRecords))
+            viewOptions=dbView.viewOptions
+          }}
+        {{/bs-tab-pane}}
+        {{#bs-tab-pane title=(t "components.modals.dbViewModal.tabs.mapFunction")}}
+          {{modals/db-view-modal/tab-function
+            functionString=dbView.mapFunction
+            emptyMessage=(t "components.modals.dbViewModal.tabMapFunction.empty")
+            class="tab-function-reduce"
+          }}
+        {{/bs-tab-pane}}
+        {{#bs-tab-pane title=(t "components.modals.dbViewModal.tabs.reduceFunction")}}
+          {{modals/db-view-modal/tab-function
+            functionString=dbView.reduceFunction
+            emptyMessage=(t "components.modals.dbViewModal.tabReduceFunction.empty")
+            class="tab-function-reduce"
+          }}
+        {{/bs-tab-pane}}
+      {{/bs-tab}}
+    {{/bs-modal-body}}
+    {{#bs-modal-footer as |footer|}}
+      {{#bs-button action=(action "close" target=footer) type="primary"}}
+        {{t "common.modal.close"}}
+      {{/bs-button}}
+    {{/bs-modal-footer}}
+  {{/if}}
+{{/bs-modal}}

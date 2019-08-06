@@ -1,9 +1,9 @@
 /**
- * Database index with which a set of files can be transferred
+ * Database view with which a set of files can be transferred
  *
- * @module models/db-index
- * @author Jakub Liput
- * @copyright (C) 2018 ACK CYFRONET AGH
+ * @module models/db-view
+ * @author Jakub Liput, Michał Borzęcki
+ * @copyright (C) 2018-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
@@ -28,7 +28,7 @@ export default Model.extend({
   space: belongsTo('space', { async: true, inverse: null }),
   providers: attr('array'),
   spatial: attr('boolean'),
-  indexOptions: attr('object'),
+  viewOptions: attr('object'),
   mapFunction: attr('string'),
   reduceFunction: attr('string'),
   

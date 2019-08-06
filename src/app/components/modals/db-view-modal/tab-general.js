@@ -6,11 +6,11 @@ const {
 } = Ember;
 
 export default Component.extend({  
-  indexName: undefined,
+  viewName: undefined,
   spaceName: undefined,
   spatial: undefined,
   providerNames: undefined,
-  indexOptions: undefined,
+  viewOptions: undefined,
   
   providers: computed('providerNames.[]', function providers() {
     const providerNames = this.get('providerNames');
@@ -20,7 +20,7 @@ export default Component.extend({
   }),
   
   displayedProperties: Object.freeze([
-    'indexName',
+    'viewName',
     'spaceName',
     'providers',
     'spatial',

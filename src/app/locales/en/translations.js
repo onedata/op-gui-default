@@ -129,25 +129,25 @@ export default {
           offline: '(offline)',
         },
       },
-      dbIndexModal: {
-        title: 'Database index information',
+      dbViewModal: {
+        title: 'Database view information',
         tabs: {
           general: 'General',
           mapFunction: 'Map function',
           reduceFunction: 'Reduce function',
         },
         tabGeneral: {
-          indexName: 'Index name',
+          viewName: 'View name',
           spaceName: 'Space name',
           providers: 'Providers',
           spatial: 'Spatial',
-          indexOptions: 'Index options',
+          viewOptions: 'View options',
         },
         tabMapFunction: {
-          empty: 'This index has no map function',
+          empty: 'This view has no map function',
         },
         tabReduceFunction: {
-          empty: 'This index has no reduce function',
+          empty: 'This view has no reduce function',
         },
       },
       aboutModal: {
@@ -437,7 +437,7 @@ export default {
         cellFileName: {
           file: 'File:',
           dir: 'Directory',
-          index: 'Index',
+          view: 'View',
           deleted: 'deleted',
         },
         cellStatus: {
@@ -463,7 +463,7 @@ export default {
       },
       queryParams: {
         label: 'Query parameters',
-        empty: 'No query parameters provided for index transfer'
+        empty: 'No query parameters provided for view transfer'
       },
       transferChart: {
         minute: 'Minute',

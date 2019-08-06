@@ -29,24 +29,24 @@ export default Component.extend({
   
   /**
    * Same as in `Transfer.dataSourceType`.
-   * One of: dir, file, deleted, index, unknown
+   * One of: dir, file, deleted, view, unknown
    */
   dataSourceType: computed.reads('record.dataSourceType'),
   filePath: computed.reads('record.path'),
-  indexName: computed.reads('record.indexName'),
+  viewName: computed.reads('record.viewName'),
   totalFiles: computed.reads('record.totalFiles'),
   dataSourceRecordProxy: computed.reads('record.dataSourceRecord'),
   dataSourceRecord: computed.reads('record.dataSourceRecord.content'),
   space: computed.reads('record.space'),
   
-  dataSourceName: computed('dataSourceType', 'indexName', 'filePath', function () {
+  dataSourceName: computed('dataSourceType', 'viewName', 'filePath', function () {
     switch (this.get('dataSourceType')) {
       case 'file':
       case 'dir':
       case 'deleted':
         return fileName(this.get('filePath'));
-      case 'index':
-        return this.get('indexName');
+      case 'view':
+        return this.get('viewName');
       default:
         break;
     }
@@ -62,7 +62,7 @@ export default Component.extend({
       deletedIsDir
     } = this.getProperties('dataSourceType', 'deletedIsDir');
     switch (dataSourceType) {
-      case 'index':
+      case 'view':
         return 'index';
       case 'file':
         return 'file';
@@ -78,14 +78,14 @@ export default Component.extend({
   /**
    * @type {ComputedProperty<string>}
    */
-  hint: computed('filePath', 'indexName', 'dataSourceType', 'deletedIsDir', function hint() {
+  hint: computed('filePath', 'viewName', 'dataSourceType', 'deletedIsDir', function hint() {
     const {
       i18n,
       filePath,
-      indexName,
+      viewName,
       dataSourceType,
       deletedIsDir,
-    } = this.getProperties('i18n', 'filePath', 'indexName', 'dataSourceType', 'deletedIsDir');
+    } = this.getProperties('i18n', 'filePath', 'viewName', 'dataSourceType', 'deletedIsDir');
     
     switch (dataSourceType) {
       case 'file':
@@ -94,18 +94,18 @@ export default Component.extend({
         return `${i18n.t(i18nPrefix + 'dir')}: ${filePath}`;
       case 'deleted':
         return `${i18n.t(i18nPrefix + (deletedIsDir ? 'file' : 'dir'))}: ${filePath}`;
-      case 'index':
-        return `${i18n.t(i18nPrefix + 'index')}: ${indexName}`;
+      case 'view':
+        return `${i18n.t(i18nPrefix + 'view')}: ${viewName}`;
       default:
         break;
     }
   }),
   
   actions: {
-    openIndexModal(mouseEvent) {
-      const dbIndexId = this.get('record.dataSourceIdentifier');
-      this.get('commonModals').openModal('dbIndex', {
-        dbIndexId,
+    openViewModal(mouseEvent) {
+      const dbViewId = this.get('record.dataSourceIdentifier');
+      this.get('commonModals').openModal('dbView', {
+        dbViewId,
       });
       mouseEvent.preventDefault();
       mouseEvent.stopImmediatePropagation();

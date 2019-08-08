@@ -1,6 +1,10 @@
 import Ember from 'ember';
 /* globals Resumable */
 
+const {
+  get,
+} = Ember;
+
 function matchResumableFileByUuid(rf, resumableFileId) {
   return rf.uniqueIdentifier === resumableFileId;
 }
@@ -56,6 +60,12 @@ export default Ember.Service.extend({
    * @type {Computed<Ember.Array>}
    */
   dirsUploadIds: Ember.A(),
+
+  /**
+   * True if there is any file upload in progress
+   * @type {ComputedProperty<boolean>}
+   */
+  uploadInProgress: undefined,
 
   init() {
     this._super(...arguments);
@@ -231,6 +241,8 @@ ${resumableFileId}, but it could not be found in any dir`);
    * we can "unlock" the service (see "locked" property).
    */
   filesAdded(files) {
+    this.set('uploadInProgress', true);
+
     // Ember.run is used because this fun is invoked from ResumableJS event
     Ember.run(() => {
       // TODO: unlocking on filesAdded disabled due to problems with multiple files upload
@@ -242,7 +254,12 @@ ${resumableFileId}, but it could not be found in any dir`);
   },
 
   complete() {
-    Ember.run(() => this.set('locked', false));
+    Ember.run(() => {
+      this.setProperties({
+        locked: false,
+        uploadInProgress: false,
+      });
+    });
   },
 
   onAllFilesForDirUploaded(dirId) {
@@ -266,8 +283,8 @@ Directory content won't be updated!`);
 
   resumable: Ember.computed(function () {
     console.debug(`file-upload: Creating new Resumable`);
+    const session = this.get('session');
     const oneproviderApiOrigin = this.get('session.oneproviderApiOrigin');
-    const oneproviderToken = this.get('session.oneproviderToken');
     const targetUrl = `https://${oneproviderApiOrigin}/upload`;
     const r = new Resumable({
       target: targetUrl,
@@ -276,9 +293,9 @@ Directory content won't be updated!`);
       testChunks: false,
       throttleProgressCallbacks: 1,
       permanentErrors: [400, 404, 405, 415, 500, 501],
-      headers: {
-        'X-Auth-Token': oneproviderToken,
-      },
+      headers: () => ({
+        'X-Auth-Token': get(session, 'oneproviderToken'),
+      }),
       query: (file) => {
         return {
           parentId: this.getParentIdOfUploadingFile(file.uniqueIdentifier)

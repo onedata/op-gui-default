@@ -9,10 +9,14 @@ const RECONNECTION_TIMEOUT = 30 * 1000;
 const MAX_RECONNECT_TRIES = 10;
 
 const {
+  Object: EmberObject,
   computed,
   String: { htmlSafe },
   observer,
   get,
+  RSVP: { Promise, resolve },
+  run: { later },
+  inject: { service },
 } = Ember;
 
 /**
@@ -30,12 +34,25 @@ const {
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 export default SessionCore.extend({
-  i18n: Ember.inject.service(),
-  browser: Ember.inject.service(),
-  commonLoader: Ember.inject.service(),
+  i18n: service(),
+  browser: service(),
+  commonLoader: service(),
+  store: service(),
+  websocketConnection: service(),
 
-  reconnectModal: Ember.Object.create(),
+  adapter: computed(function adapter() {
+    return this.get('store').adapterFor('application');
+  }),
+
+  reconnectModal: EmberObject.create(),
   firstReconnect: true,
+
+  /**
+   * Max time to wait for pending operations on Websocket that will be closed
+   * because of user request in milliseconds.
+   * @type {number}
+   */
+  waitForPendingOperationsTimeout: 10000,
 
   init() {
     this._super();
@@ -182,7 +199,9 @@ export default SessionCore.extend({
       // reconnect after some time
       let reconnectTryTimeout = setTimeout(() => {
         clearInterval(modalUpdaterInterval);
-        this.websocketReconnect();
+        this.websocketReconnect({
+          isPublic: this.get('websocketConnection.currentConnectionIsPublic'),
+        });
       }, reconnectInterval);
 
       this.set('reconnectTryTimeout', reconnectTryTimeout);
@@ -217,30 +236,53 @@ export default SessionCore.extend({
     this.set('reconnectInterval', newReconnectInterval);
   },
 
-  websocketReconnect(isPublic) {
-    this.incrementProperty('reconnectionsCount');
-    this.openReconnectingModal();
+  websocketReconnect({ isPublic, onDemand }) {
+    const server = this.get('server');
 
-    this.get('server').clearWebsocket();
-    this.get('server').initWebSocket(
-      this.get('onWebSocketOpen'),
-      this.get('onWebSocketError'),
-      this.get('onWebSocketClose'),
-      isPublic
-    ).then(({ oneproviderApiOrigin, oneproviderToken }) =>
-      safeExec(this, 'setProperties', {
-        oneproviderToken,
-        oneproviderApiOrigin,
-      })
-    );
+    if (!onDemand) {
+      this.incrementProperty('reconnectionsCount');
+      this.openReconnectingModal();
+    }
 
-    // set a timeout for reconnection
-    const reconnectionTimeout = setTimeout(() => {
-      this.get('server').closeWebsocket();
-    }, RECONNECTION_TIMEOUT);
-    // make sure there is no old reconnection timeouts
-    clearTimeout(this.get('reconnectionTimeout'));
-    this.set('reconnectionTimeout', reconnectionTimeout);
+    let waitAndClose;
+
+    if (onDemand) {
+      waitAndClose = this.waitForPendingOperations();
+    } else {
+      waitAndClose = resolve();
+    }
+
+    const reconnectingPromise = new Promise((resolve, reject) => {
+      waitAndClose
+        .then(() => server.clearWebsocket())
+        .then(() => {
+          server.initWebSocket(
+            this.get('onWebSocketOpen'),
+            this.get('onWebSocketError'),
+            this.get('onWebSocketClose'),
+            isPublic
+          ).then(({ oneproviderApiOrigin, oneproviderToken }) => {
+            safeExec(this, 'setProperties', {
+              oneproviderToken,
+              oneproviderApiOrigin,
+            });
+            console.debug('WebSocket reconnected successfully');
+            resolve();
+          });
+        });
+
+      // set a timeout for reconnection
+      const reconnectionTimeout = setTimeout(() => {
+        this.get('server').closeWebsocket();
+        reject();
+      }, RECONNECTION_TIMEOUT);
+      // make sure there is no old reconnection timeouts
+      clearTimeout(this.get('reconnectionTimeout'));
+      this.set('reconnectionTimeout', reconnectionTimeout);
+    });
+
+    this.set('reconnectingPromise', reconnectingPromise);
+    return reconnectingPromise;
   },
 
   resetReconnectionTries() {
@@ -252,7 +294,28 @@ export default SessionCore.extend({
 
   reconnectNow() {
     this.stopAutoReconnector();
-    return this.websocketReconnect();
+    return this.websocketReconnect({
+      isPublic: this.get('websocketConnection.currentConnectionIsPublic'),
+    });
+  },
+
+  waitForPendingOperations() {
+    const adapter = this.get('adapter');
+    const waitForPendingOperationsTimeout = this.get('waitForPendingOperationsTimeout');
+    if (get(adapter, 'isRespSemaphoreAcquired')) {
+      return new Promise((resolve) => {
+        let laterId;
+        const onRespSemaphoreReleased = () => {
+          adapter.off('respSemaphoreReleased', onRespSemaphoreReleased);
+          clearTimeout(laterId);
+          resolve();
+        };
+        adapter.on('respSemaphoreReleased', onRespSemaphoreReleased);
+        laterId = later(onRespSemaphoreReleased, waitForPendingOperationsTimeout);
+      });
+    } else {
+      return resolve();
+    }
   },
 
   websocketOpenChanged: observer('websocketOpen', function () {

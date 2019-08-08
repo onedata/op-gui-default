@@ -28,6 +28,7 @@ describe('FileUploadComponent', function () {
       'service:browser',
       'service:commonLoader',
       'service:server',
+      'service:websocketConnection',
     ],
     unit: true,
     setup() {

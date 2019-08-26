@@ -12,6 +12,10 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+const {
+  inject: { service },
+} = Ember;
+
 /** -------------------------------------------------------------------
  * Interface between client and server
  * Corresponding interface is located in gui_ws_handler.erl.
@@ -72,10 +76,10 @@ const FETCH_MODEL_OPERATIONS = new Set([
   OP_CREATE_RECORD
 ]);
 
-export default DS.RESTAdapter.extend({
-  store: Ember.inject.service('store'),
-  serverMessagesHandler: Ember.inject.service(),
-  websocketConnection: Ember.inject.service(),
+export default DS.RESTAdapter.extend(Ember.Evented, {
+  store: service(),
+  serverMessagesHandler: service(),
+  websocketConnection: service(),
 
   shouldBackgroundReloadRecord() {
     return false;
@@ -224,12 +228,11 @@ export default DS.RESTAdapter.extend({
       operation: operation,
       data: data
     };
-    this.respSemaphoreAcquire();
     return this.sendAndRegisterPromise(operation, type, payload);
   },
 
   /** -------------------------------------------------------------------
-   * Semaphore to not allow pushing before all model resp are done
+   * Semaphore to not allow pushing before all responses are done
    * ------------------------------------------------------------------- */
 
   _respSemaphore: 0,
@@ -246,8 +249,12 @@ export default DS.RESTAdapter.extend({
 
   respSemaphoreRelease() {
     this.decrementProperty('_respSemaphore');
-    if (this.get('_respSemaphore') < 0) {
-      this.set('_respSemaphore', 0);
+    const _respSemaphore = this.get('_respSemaphore');
+    if (_respSemaphore <= 0) {
+      this.trigger('respSemaphoreReleased');
+      if (_respSemaphore < 0) {
+        this.set('_respSemaphore', 0);
+      }
     }
   },
 
@@ -274,7 +281,6 @@ export default DS.RESTAdapter.extend({
       resourceIds: ids,
       data: this.transformRequest(data, type, operation)
     };
-    this.respSemaphoreAcquire();
     return this.sendAndRegisterPromise(operation, type, payload);
   },
 
@@ -286,6 +292,7 @@ export default DS.RESTAdapter.extend({
    * TODO: document type of "payload" (Message without uuid?)
    */
   sendAndRegisterPromise(operation, type, payload) {
+    this.respSemaphoreAcquire();
     // Add UUID to payload so we can later connect the response with a promise
     // (the server will include this uuid in the response)
     let uuid = this.generateUuid();

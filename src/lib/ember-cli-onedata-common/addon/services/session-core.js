@@ -121,6 +121,7 @@ export default Service.extend({
       safeExec(this, 'setProperties', {
         oneproviderApiOrigin,
         oneproviderToken,
+        currentConnectionIsPublic: isPublic,
       });
     });
   },

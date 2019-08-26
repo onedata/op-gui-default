@@ -12,6 +12,7 @@ import onezoneUrl from 'op-worker-gui/utils/onezone-url';
 
 const {
   Service,
+  get,
   RSVP: { Promise, resolve, reject },
   run: { debounce },
   inject: { service },
@@ -24,13 +25,21 @@ const wsEndpoint = '/ws';
 
 const flushTimeout = 20;
 
+/**
+ * Interval for checking if token expired and WS connection should be restarted
+ * @type {number} in milliseconds
+ */
+const checkExpirationIntervalTime = 20000;
+
 function getApiCredentials(isPublic = false) {
   return (isPublic ? resolve() : getApiToken())
     .then(tokenData => {
       const token = tokenData && tokenData.token;
+      const ttl = tokenData && tokenData.ttl;
       return resolve($.ajax('./gui-context'))
         .then(({ apiOrigin }) => ({
           token,
+          ttl,
           apiOrigin
         }));
     });
@@ -52,6 +61,8 @@ function getApiToken() {
 
 export default Service.extend({
   store: service(),
+  session: service(),
+  fileUpload: service(),
 
   initialized: false,
   onOpenCallback: null,
@@ -61,6 +72,38 @@ export default Service.extend({
   adapter: computed(function adapter() {
     return this.get('store').adapterFor('application');
   }),
+
+  /**
+   * @type {number}
+   */
+  secondsBeforeExpire: undefined,
+
+  /**
+   * @type {Date}
+   */
+  tokenExpireDate: undefined,
+
+  /**
+   * Id of interval for checking if token expired
+   * @type {number}
+   */
+  checkExpirationInterval: undefined,
+
+  init() {
+    this._super(...arguments);
+    setInterval(() => {
+      this.reconnectIfNeeded();
+    }, checkExpirationIntervalTime);
+
+  },
+
+  destroy() {
+    try {
+      clearInterval(this.get('checkExpirationInterval'));
+    } finally {
+      this._super(...arguments);
+    }
+  },
 
   /** WebSocket onopen callback */
   open(event) {
@@ -97,6 +140,41 @@ export default Service.extend({
     }
   },
 
+  reconnectIfNeeded() {
+    const {
+      socket,
+      tokenExpireDate,
+      fileUpload,
+      currentConnectionIsPublic,
+      store,
+    } = this.getProperties(
+      'socket',
+      'tokenExpireDate',
+      'fileUpload',
+      'currentConnectionIsPublic',
+      'store'
+    );
+    console.debug('Checking if session token needs refresh...');
+    const uploadInProgress = get(fileUpload, 'uploadInProgress');
+    if (socket && socket.readyState === WebSocket.OPEN && !
+      uploadInProgress && tokenExpireDate && Date.now() >= tokenExpireDate) {
+      console.debug('Will refresh session token');
+      return this.get('session').websocketReconnect({
+          isPublic: currentConnectionIsPublic,
+          onDemand: true,
+        })
+        .then(() => {
+          store
+            .peekAll('file')
+            .filterBy('isDir')
+            .map(f => f.reload());
+        });
+    } else {
+      console.debug('Not performing token refresh');
+      return resolve();
+    }
+  },
+
   /**
    * Initializes the WebSocket
    */
@@ -120,8 +198,15 @@ export default Service.extend({
 
       // TODO: if getOneproviderToken fail, we will see infinite loading
       return getApiCredentials(isPublic)
-        .then(({ token: oneproviderToken, apiOrigin: oneproviderApiOrigin }) => {
+        .then(({ token: oneproviderToken, apiOrigin: oneproviderApiOrigin, ttl }) => {
           let url = `${protocol}${oneproviderApiOrigin}${wsEndpoint}`;
+          const secondsBeforeExpire = this.set('secondsBeforeExpire', ttl / 2);
+          const tokenExpireDate = this.set(
+            'tokenExpireDate',
+            new Date(Date.now() + ttl * 1000 - secondsBeforeExpire * 1000)
+          );
+
+          console.debug('Next token refresh will be done after: ' + tokenExpireDate);
 
           if (oneproviderToken) {
             url += `?token=${oneproviderToken}`;
@@ -130,24 +215,24 @@ export default Service.extend({
           console.debug('Connecting: ' + url);
 
           return new Promise((resolveWS, rejectWS) => {
-            if (this.socket === null) {
+            if (this.get('socket') === null) {
               try {
-                this.socket = new WebSocket(url);
-                this.socket.onopen = (event) => {
+                const socket = this.set('socket', new WebSocket(url));
+                socket.onopen = (event) => {
                   this.open(event)
                     .then(() => resolveWS({
                       oneproviderApiOrigin,
                       oneproviderToken
                     }));
                 };
-                this.socket.onmessage = (event) => {
+                socket.onmessage = (event) => {
                   this.receive(event);
                 };
-                this.socket.onerror = (event) => {
+                socket.onerror = (event) => {
                   this.error(event);
                   rejectWS();
                 };
-                this.socket.onclose = (event) => {
+                socket.onclose = (event) => {
                   this.close(event);
                 };
               } catch (error) {
@@ -186,23 +271,21 @@ export default Service.extend({
   },
 
   closeWebsocket() {
+    const socket = this.get('socket');
     return new Promise(resolve => {
-      if (this.socket) {
-        this.socket.onclose = () => resolve();
-        this.socket.close();
+      if (socket && socket.readyState !== WebSocket.CLOSED) {
+        socket.onclose = () => resolve();
+        socket.close();
       } else {
         return resolve();
       }
-    });
+    }).then(() => this.set('initialized', false));
   },
 
   clearWebsocket() {
     return this.closeWebsocket()
       .then(() => {
-        this.setProperties({
-          socket: null,
-          initialized: false
-        });
+        this.set('socket', null);
       });
   },
 });

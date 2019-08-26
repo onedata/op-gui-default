@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-5689 Refreshing session token periodically
 * VFS-5683 Renamed indices to views
 * VFS-5599 Using new API for checking other Oneproviders availability
 * VFS-5507 Fixed sending arbitral values in file metadata editor

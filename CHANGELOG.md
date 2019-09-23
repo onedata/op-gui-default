@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-5766 Removed obsolete permissions from ACE
 * VFS-5689 Refreshing session token periodically
 * VFS-5683 Renamed indices to views
 * VFS-5599 Using new API for checking other Oneproviders availability

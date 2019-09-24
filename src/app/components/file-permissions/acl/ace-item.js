@@ -108,17 +108,13 @@ export default Ember.Component.extend({
   filePermissionKeys: [
     'perm_read_object',
     'perm_write_object',
-    'perm_append_data',
     'perm_read_metadata',
     'perm_write_metadata',
-    'perm_execute',
-    'perm_delete_object',
     'perm_read_attributes',
     'perm_write_attributes',
     'perm_delete',
     'perm_read_acl',
     'perm_write_acl',
-    'perm_write_owner'
   ],
 
   /**
@@ -131,13 +127,12 @@ export default Ember.Component.extend({
     'perm_read_metadata',
     'perm_write_metadata',
     'perm_traverse_container',
-    'perm_delete_subcontainer',
+    'perm_delete_child',
     'perm_read_attributes',
     'perm_write_attributes',
     'perm_delete',
     'perm_read_acl',
     'perm_write_acl',
-    'perm_write_owner'
   ],
 
   permissionKeys: computed('file.type', function() {

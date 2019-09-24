@@ -23,7 +23,7 @@ describe('accessControlEntity', function() {
 
   it('after setting a permission with setPermission using type name, it is true checking with hasPermission', function() {
     let ace = AccessControlEntity.create({});
-    const permissionType = 'execute';
+    const permissionType = 'list_container';
 
     ace.setPermission(permissionType);
 
@@ -32,7 +32,7 @@ describe('accessControlEntity', function() {
 
   it('after unsetting a permission with unsetPermission using type name, it is false checking with hasPermission', function() {
     let ace = AccessControlEntity.create({});
-    const permissionType = 'execute';
+    const permissionType = 'list_container';
 
     ace.setPermission(permissionType);
     ace.setPermission(permissionType, false);
@@ -68,11 +68,11 @@ describe('accessControlEntity', function() {
       permissions: 0
     });
 
-    expect(ace.get('perm_write_owner')).to.be.false;
+    expect(ace.get('perm_write_acl')).to.be.false;
 
-    ace.set('perm_write_owner', true);
+    ace.set('perm_write_acl', true);
 
-    expect(ace.get('perm_write_owner')).to.be.true;
+    expect(ace.get('perm_write_acl')).to.be.true;
   });
 
   it('should support compare to other ACE with same properties', function() {

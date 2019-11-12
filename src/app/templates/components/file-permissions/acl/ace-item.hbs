@@ -35,7 +35,15 @@
               }}
           {{/if}}
         {{else}}
-          {{subjectName}}
+          {{#if subjectName}}
+            {{#if hasMetaSubject}}
+              <span class="meta-subject">{{subjectName}}</span>
+            {{else}}
+              {{subjectName}}
+            {{/if}}
+          {{else}}
+            <span class="meta-subject">{{t "components.filePermissions.acl.aceItem.unknownSubject"}}</span>
+          {{/if}}
         {{/if}}
       </div>
   </div>

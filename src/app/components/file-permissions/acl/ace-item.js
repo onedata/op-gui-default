@@ -25,6 +25,7 @@ function iconHTML(icon) {
  */
 export default Ember.Component.extend({
   store: inject.service(),
+  i18n: inject.service(),
 
   /**
    * @type AccessControlEntity
@@ -56,7 +57,15 @@ export default Ember.Component.extend({
     function subjectName() {
       let subjectsListProperty;
       let subjectIdProperty;
-      switch (this.get('ace.subject')) {
+      const subject = this.get('ace.subject');
+      switch (subject) {
+        case 'everyone@':
+        case 'group@':
+        case 'owner@':
+          const translationName = subject.slice(0, -1);
+          return this.get('i18n').t(
+            `components.filePermissions.acl.aceItem.metaSubjects.${translationName}`
+          );
         case 'user':
           subjectsListProperty = 'systemUsers';
           subjectIdProperty = 'ace.user';
@@ -78,12 +87,27 @@ export default Ember.Component.extend({
    * This should resolve subject type icon name for ace.type.
    * Currently icon names are the same as type name.
    */
-  subjectTypeIcon: computed.alias('ace.subject'),
+  subjectTypeIcon: computed('ace.subject', function subjectTypeIcon() {
+    switch (this.get('ace.subject')) {
+      case 'user':
+      case 'owner@':
+        return 'user';
+      default:
+        return 'group';
+    }
+  }),
 
-  subjectItems: computed(function() {
+  /**
+   * Is true when subject is a meta subject (owner, owning group, everyone).
+   */
+  hasMetaSubject: computed('ace.subject', function hasMetaSubject() {
+    return ['owner@', 'group@', 'everyone@'].includes(this.get('ace.subject'));
+  }),
+
+  subjectItems: computed(function () {
     return [
-      {id: 'user', text: iconHTML('user')},
-      {id: 'group', text: iconHTML('group')},
+      { id: 'user', text: iconHTML('user') },
+      { id: 'group', text: iconHTML('group') },
     ];
   }).readOnly(),
 
@@ -135,7 +159,7 @@ export default Ember.Component.extend({
     'perm_write_acl',
   ],
 
-  permissionKeys: computed('file.type', function() {
+  permissionKeys: computed('file.type', function () {
     switch (this.get('fileType')) {
       case 'file':
         return this.get('filePermissionKeys');

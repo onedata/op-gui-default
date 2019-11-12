@@ -78,10 +78,16 @@ export default {
         aceItem: {
           selectUser: 'Select a user',
           selectGroup: 'Select a group',
+          unknownSubject: 'Unknown',
           permissions: filePermissions,
           types: {
             allow: 'Allow',
             deny: 'Deny'
+          },
+          metaSubjects: {
+            owner: 'Owner',
+            group: 'Owning group',
+            everyone: 'Everyone',
           }
         }
       }

@@ -100,7 +100,10 @@ const ACE = Ember.Object.extend(Ember.Comparable, {
    */
   compare(other) {
     return !!other &&
-      (this === other || JSON.stringify(this.toJSON()) === JSON.stringify(other.toJSON()));
+      (
+        this === other ||
+        JSON.stringify(this.toJSON()) === JSON.stringify(other.toJSON())
+      );
   },
 
   /**
@@ -135,19 +138,21 @@ const ACE = Ember.Object.extend(Ember.Comparable, {
   /**
    * True if this ACL item can be submitted to backend.
    */
-  isValid: function() {
+  isValid: function () {
     const ps = this.getProperties('subject', 'user', 'group');
+    const hasMetaSubject = ['everyone@', 'group@', 'owner@'].includes(ps.subject);
     return (ps.subject === 'user' && ps.user) ||
-      (ps.subject === 'group' && ps.group);
+      (ps.subject === 'group' && ps.group) ||
+      hasMetaSubject;
   }.property('subject', 'user', 'group')
 });
 
 let computedPermissions = {};
 
 // Create computed properties for each mask in form: perm_<mask_name>, eg. perm_read_object
-Object.keys(MASKS).forEach(function(maskName) {
+Object.keys(MASKS).forEach(function (maskName) {
   computedPermissions['perm_' + maskName] = Ember.computed({
-    get(/*key*/) {
+    get( /*key*/ ) {
       return this.hasPermission(maskName);
     },
     set(key, value) {

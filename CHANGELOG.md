@@ -6,6 +6,7 @@ CHANGELOG
 
 ### Latest changes
 
+* VFS-5900 Added showing special subjects in ACL editor
 * VFS-5766 Removed obsolete permissions from ACE
 * VFS-5689 Refreshing session token periodically
 * VFS-5683 Renamed indices to views

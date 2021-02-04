@@ -38,7 +38,7 @@ export default Ember.Component.extend({
 
     logout() {
       $.post(this.get('logoutUrl'))
-        .always(() => location.reload());
+        .always(() => window.location.href = this.get('onezoneUrl'));
     },
   },
 });

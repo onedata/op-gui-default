@@ -8,7 +8,7 @@ all: build_dev
 rel: build_prod
 
 deps:
-	cd $(SRC_DIR) && npm install --no-package-lock
+	cd $(SRC_DIR) && npm install
 	cd $(SRC_DIR) && bower install --allow-root
 
 build_dev: deps

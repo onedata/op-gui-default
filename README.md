@@ -3,6 +3,13 @@ About
 
 *op-gui-default* is GUI written in Ember distributed with OP worker.
 
+**Note: this is legacy version of web GUI used in Onedata op-worker version 19.02.x
+and it is no longer maintained. Newer versions use `oneprovider-gui`.**
+
+You can find `oneprovider-gui` in the repositories:
+- https://github.com/onedata/oneprovider-gui (publicly available repo)
+- https://git.onedata.org/projects/VFS/repos/oneprovider-gui (internal development repo, private)
+
 Goals
 -----
 
@@ -21,8 +28,8 @@ To build a development release of GUI:
 make             # run natively (requires npm, bower, ember)
 ```
 ```
-make submodules  # run in docker (onedata/builder) that has all deps
-./make.py        
+make submodules
+./make.py -i onedata/gui_builder:v14    # run in docker (onedata/builder) that has all deps
 ```
 <br />
 
@@ -33,7 +40,7 @@ make rel         # run natively (requires npm, bower, ember)
 ```
 ```
 make submodules
-./make.py rel    # run in docker (onedata/builder) that has all deps
+./make.py -i onedata/gui_builder:v14 rel    # run in docker (onedata/builder) that has all deps
 ```
 <br />
 
@@ -73,8 +80,21 @@ To find all broken symbolic links (those that point to nothing):
 ```
 <br />
 
-Support
--------
+Testing and publishing on CI (eg. Bamboo)
+-----------------------------------------
 
-For more information visit project Confluence or
-write to wrzeszcz@agh.edu.pl.
+To run tests on CI use:
+
+```
+make submodules
+./make.py -i onedata/gui_builder:v14 test_xunit_output
+```
+
+Results of tests will be available in: `src/tests/test-results.xml` (use JUnit Parser
+on Bamboo to parse tests).
+
+To build docker image and publish it use:
+
+```
+./bamboos/scripts/publish_gui_pkg_docker.sh --user <docker_user> --password <docker_password>
+```

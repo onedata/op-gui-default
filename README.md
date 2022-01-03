@@ -4,7 +4,7 @@ About
 *op-gui-default* is GUI written in Ember distributed with OP worker.
 
 **Note: this is legacy version of web GUI used in Onedata op-worker version 19.02.x
-and it is not longer maintained. Newer version use `oneprovider-gui`.**
+and it is no longer maintained. Newer versions use `oneprovider-gui`.**
 
 You can find `oneprovider-gui` in the repositories:
 - https://github.com/onedata/oneprovider-gui (publicly available repo)
